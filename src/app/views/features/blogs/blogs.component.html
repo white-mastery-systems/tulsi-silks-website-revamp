@@ -1,0 +1,77 @@
+<section *ngIf="pageLoader">
+  <app-loading-spinner></app-loading-spinner>
+</section>
+
+<section class="over-all smooth-fadein" *ngIf="!pageLoader">
+
+  <!-- SEO h1 tag -->
+  <h1 *ngIf="seo_details?.status" [hidden]="true">{{seo_details?.h1_tag}}</h1>
+  <!-- #SEO h1 tag -->
+
+  <!-- breadcrumb -->
+  <section class="head-breadcrumb">
+    <div class="{{template_setting?.body_type}}">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="head-breadcrumb-inner border-btm d-flex justify-content-between">
+            <div>
+              <h2>Blogs</h2>
+              <p>Stories that inspire</p>
+            </div>
+            <div *ngIf="template_setting?.display_goback && commonService?.desktop_device" class="d-flex align-items-center justify-content-end">
+              <span (click)="commonService.goBack();">GO BACK</span>
+            </div>
+          </div>
+        </div>
+
+        <div *ngIf="template_setting?.breadcrumb" class="col-md-12">
+          <div class="breadcrumb-navigation mt-3">
+            <ul class="collapsed">
+              <li><a routerLink="/">Home</a></li>
+              <li><span class="active-page">Blogs</span></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!--# breadcrumb #-->
+
+  <section class="common-site-section">
+    <div class="{{template_setting?.body_type}}">
+      <div *ngIf="list?.length" class="row">
+        <div class="col-md-6 d-flex" *ngFor="let x of list;">
+          <div class="blog-post primary-card p-3 mb-4" style="width: 100%">
+            <figure class="w-100 d-flex justify-content-center">
+              <a (click)="onSelectBlog(x);" routerLink="{{ x.seo_status ? '/blogs/'+x.seo_details.page_url : '/blogs/'+x._id }}">
+                <img width="100%" height="100%" appSmallImg [ImagelazyLoad]="imgBaseUrl+x.image" alt="{{(x.img_alt)? x.img_alt: 'blog-image'}}">
+              </a>
+            </figure>
+            <div class="blog-content d-flex flex-column">
+              <span class="post-info">{{x.created_on | date: "dd MMMM yyyy"}} | {{x.author}}</span>
+              <a (click)="onSelectBlog(x);" routerLink="{{ x.seo_status ? '/blogs/'+x.seo_details.page_url : '/blogs/'+x._id }}">
+                <h5>{{x.name}}</h5>
+              </a>
+              <p class="overflow-dots blog-description" [innerHtml]="x.description"></p>
+              <a (click)="onSelectBlog(x);" routerLink="{{ x.seo_status ? '/blogs/'+x.seo_details.page_url : '/blogs/'+x._id }}">READ MORE</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-12 navigation-ngx">
+          <ng-container *ngFor="let td of tempList | paginate: { itemsPerPage: pageSize, currentPage: page };"></ng-container>
+          <pagination-controls (pageChange)="page=$event; commonService.pageScrollTop(); getList();" autoHide="true" responsive="true" maxSize="5" previousLabel="" nextLabel=""></pagination-controls>
+        </div>
+      </div>
+
+      <div *ngIf="!list?.length" class="row">
+        <div class="col-12">
+          <div class="live_order_id">
+            <h5 align="center">No blogs found</h5>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</section>

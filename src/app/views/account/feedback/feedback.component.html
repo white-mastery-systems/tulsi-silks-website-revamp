@@ -1,0 +1,239 @@
+<section class="over-all smooth-fadein">
+  <!-- breadcrumb -->
+  <section class="head-breadcrumb">
+    <div class="{{template_setting?.body_type}}">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="head-breadcrumb-inner border-btm d-flex justify-content-between">
+            <div>
+              <h2>Feedback</h2>
+              <p>Review our products and services</p>
+            </div>
+            <div *ngIf="template_setting?.display_goback && commonService?.desktop_device"
+              class="d-flex align-items-center justify-content-end">
+              <span (click)="commonService.goBack();">GO BACK</span>
+            </div>
+          </div>
+        </div>
+
+        <div *ngIf="template_setting?.breadcrumb" class="col-md-12">
+          <div class="breadcrumb-navigation mt-3">
+            <ul class="collapsed">
+              <li><a routerLink="/">Home</a></li>
+              <li><a routerLink="/account">My Account</a></li>
+              <li><span class="active-page">Feedback</span></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- #breadcrumb# -->
+
+  <section class="common-site-section">
+    <form id="smileys" autocomplete="off" (ngSubmit)="onSubmit();" ngNativeValidate>
+      <div class="{{template_setting?.body_type}}">
+        <div class="gray-card primary-card p-3">
+          <div *ngIf="commonService.ys_features.indexOf('customer_feedback')!=-1 && commonService.application_setting?.feedback" class="row">
+
+            <div class="col-lg-6">
+              <div class="row pb-3">
+                <div class="col-lg-12">
+                  <h6>Quality</h6>
+                </div>
+                <div class="col-lg-12 pb-3">
+                  <div class="hr-theme-slash-2 justify-content-between">
+
+                    <div class="hr-icon scale-up-animation">
+                      <input type="radio" name="quality_smiley" value="1" [(ngModel)]="feedForm.quality" class="bad">
+                      <div class="hr-icon scale-up-animation">
+                        <div class="emotion-name">Bad</div>
+                      </div>
+                    </div>
+
+                    <div class="hr-icon scale-up-animation">
+                      <input type="radio" name="quality_smiley" value="3" [(ngModel)]="feedForm.quality"
+                        class="average">
+                      <div class="hr-icon scale-up-animation">
+                        <div class="emotion-name">Average</div>
+                      </div>
+                    </div>
+
+                    <div class="hr-icon scale-up-animation">
+                      <input type="radio" name="quality_smiley" value="4" [(ngModel)]="feedForm.quality"
+                        class="satisfactory">
+                      <div class="hr-icon scale-up-animation">
+                        <div class="emotion-name">Satisfactory</div>
+                      </div>
+                    </div>
+
+                    <div class="hr-icon scale-up-animation">
+                      <input type="radio" name="quality_smiley" value="2" [(ngModel)]="feedForm.quality" class="good">
+                      <div class="hr-icon scale-up-animation">
+                        <div class="emotion-name">Good</div>
+                      </div>
+                    </div>
+
+                    <div class="hr-icon scale-up-animation">
+                      <input type="radio" name="quality_smiley" value="5" [(ngModel)]="feedForm.quality"
+                        class="excellent">
+                      <div class="hr-icon scale-up-animation">
+                        <div class="emotion-name">Excellent</div>
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+              </div>
+
+              <div class="row pb-3">
+                <div class="col-lg-12">
+                  <h6>Pricing</h6>
+                </div>
+                <div class="col-lg-12 pb-3">
+                  <div class="hr-theme-slash-2 justify-content-between">
+
+                    <div class="hr-icon scale-up-animation">
+                      <input type="radio" name="pricing_smiley" value="1" [(ngModel)]="feedForm.pricing" class="bad">
+                      <div class="hr-icon scale-up-animation">
+                        <div class="emotion-name">Bad</div>
+                      </div>
+                    </div>
+
+                    <div class="hr-icon scale-up-animation">
+                      <input type="radio" name="pricing_smiley" value="3" [(ngModel)]="feedForm.pricing"
+                        class="average">
+                      <div class="hr-icon scale-up-animation">
+                        <div class="emotion-name">Average</div>
+                      </div>
+                    </div>
+
+                    <div class="hr-icon scale-up-animation">
+                      <input type="radio" name="pricing_smiley" value="4" [(ngModel)]="feedForm.pricing"
+                        class="satisfactory">
+                      <div class="hr-icon scale-up-animation">
+                        <div class="emotion-name">Satisfactory</div>
+                      </div>
+                    </div>
+
+                    <div class="hr-icon scale-up-animation">
+                      <input type="radio" name="pricing_smiley" value="2" [(ngModel)]="feedForm.pricing" class="good">
+                      <div class="hr-icon scale-up-animation">
+                        <div class="emotion-name">Good</div>
+                      </div>
+                    </div>
+
+                    <div class="hr-icon scale-up-animation">
+                      <input type="radio" name="pricing_smiley" value="5" [(ngModel)]="feedForm.pricing"
+                        class="excellent">
+                      <div class="hr-icon scale-up-animation">
+                        <div class="emotion-name">Excellent</div>
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+              </div>
+
+              <div class="row pb-3">
+                <div class="col-lg-12">
+                  <h6>Shipping</h6>
+                </div>
+                <div class="col-lg-12 pb-3">
+                  <div class="hr-theme-slash-2 justify-content-between">
+
+                    <div class="hr-icon scale-up-animation">
+                      <input type="radio" name="shipping_smiley" value="1" [(ngModel)]="feedForm.shipping" class="bad">
+                      <div class="hr-icon scale-up-animation">
+                        <div class="emotion-name">Bad</div>
+                      </div>
+                    </div>
+
+                    <div class="hr-icon scale-up-animation">
+                      <input type="radio" name="shipping_smiley" value="3" [(ngModel)]="feedForm.shipping"
+                        class="average">
+                      <div class="hr-icon scale-up-animation">
+                        <div class="emotion-name">Average</div>
+                      </div>
+                    </div>
+
+                    <div class="hr-icon scale-up-animation">
+                      <input type="radio" name="shipping_smiley" value="4" [(ngModel)]="feedForm.shipping"
+                        class="satisfactory">
+                      <div class="hr-icon scale-up-animation">
+                        <div class="emotion-name">Satisfactory</div>
+                      </div>
+                    </div>
+
+                    <div class="hr-icon scale-up-animation">
+                      <input type="radio" name="shipping_smiley" value="2" [(ngModel)]="feedForm.shipping" class="good">
+                      <div class="hr-icon scale-up-animation">
+                        <div class="emotion-name">Good</div>
+                      </div>
+                    </div>
+
+                    <div class="hr-icon scale-up-animation">
+                      <input type="radio" name="shipping_smiley" value="5" [(ngModel)]="feedForm.shipping"
+                        class="excellent">
+                      <div class="hr-icon scale-up-animation">
+                        <div class="emotion-name">Excellent</div>
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-lg-6">
+              <div class="row">
+                <div class="col-lg-12">
+                  <h6>Comments</h6>
+                </div>
+                <div class="col-lg-12">
+                  <div class="hr-theme-slash-2 feedback_comments">
+                    <textarea name="comment" [(ngModel)]="feedForm.comment" #comment="ngModel"
+                      class="materialize-textarea ftextarea"></textarea>
+                  </div>
+                </div>
+
+                <!-- Alert -->
+                <div class="col-lg-12" *ngIf="feedbackSuccess || feedbackFailure">
+                  <div [ngClass]="feedbackSuccess? 'success-alert': 'danger-alert'">
+                    <div class="alert-msg d-flex align-items-center justify-content-center p-2">
+                      <span class="material-icons"></span>
+                      <p class="m-0">
+                        {{ feedbackSuccess? 'Your feedback submitted successfully': 'Failure, try again later' }}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                <!-- #Alert -->
+
+                <div class="col-lg-12">
+                  <div class="mt-2" align="right">
+                    <button class="primary-btn d-flex justify-content-center align-items-center" type="submit" [disabled]="feedForm.submit">
+                      SUBMIT FEEDBACK
+                      <div class="box" *ngIf="feedForm.submit">
+                        <div class="spinner"></div>
+                      </div>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <div class="row" *ngIf="commonService.ys_features.indexOf('customer_feedback')==-1 || !commonService.application_setting?.feedback">
+            <div class="col-lg-12">
+              <h5 align="center">Temporarily not available</h5>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </form>
+  </section>
+
+</section>

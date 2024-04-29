@@ -1,0 +1,144 @@
+<section *ngIf="pageLoader">
+  <app-loading-spinner></app-loading-spinner>
+</section>
+
+<section class="over-all smooth-fadein" *ngIf="!pageLoader">
+
+  <!-- breadcrumb -->
+  <section class="head-breadcrumb">
+    <div class="{{template_setting?.body_type}}">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="head-breadcrumb-inner border-btm d-flex justify-content-between">
+            <div>
+              <h2>My Wishlist</h2>
+              <p>This is your wishlist</p>
+            </div>
+            <div *ngIf="template_setting?.display_goback && commonService?.desktop_device" class="d-flex align-items-center justify-content-end">
+              <span (click)="commonService.goBack();">GO BACK</span>
+            </div>
+          </div>
+        </div>
+
+        <div *ngIf="template_setting?.breadcrumb" class="col-md-12">
+          <div class="breadcrumb-navigation mt-3">
+            <ul class="collapsed">
+              <li><a routerLink="/">Home</a></li>
+              <li *ngIf="commonService?.previous_route=='/account'"><a routerLink="/account">My Account</a></li>
+              <li><span class="active-page">My Wishlist</span></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!--# breadcrumb #-->
+
+  <section class="common-site-section shopping-cart">
+
+    <div *ngIf="list?.length" class="{{template_setting?.body_type}}">
+      <div class="row">
+        <div class="col-12">
+          <!-- for mobile -->
+          <div *ngIf="commonService?.screen_width<992" class="mobile-cart">
+            <div class="gray-card primary-card p-3">
+              <div class="row">
+                <div class="col-md-12">
+                  <h6 class="m-0">PRODUCT</h6>
+                </div>
+                <ng-container *ngFor="let x of list; let i=index;">
+                  <div class="col-md-12">
+                    <div class="product border-top border-btm pt-3 pb-3 mt-3 mb-3">
+                      <div class="product-img">
+                        <figure class="cursor" routerLink="{{ x.seo_status ? '/product/'+x.seo_details.page_url+'/1' : '/product/'+x.product_id+'/1' }}">
+                          <img width="100%" height="100%" appImgLazyLoad [ImagelazyLoad]="imgBaseUrl+x.image" alt="thum">
+                        </figure>
+                      </div>
+                      <div class="d-flex flex-column w-100">
+                        <div class="product-name mt-2 mb-2">
+                          <h4 class="cursor" routerLink="{{ x.seo_status ? '/product/'+x.seo_details.page_url+'/1' : '/product/'+x.product_id+'/1' }}">
+                            {{x.name}}</h4>
+                        </div>
+                        <div class="mt-2 mb-2">
+                          <span class="cursor" routerLink="{{ x.seo_status ? '/product/'+x.seo_details.page_url+'/1' : '/product/'+x.product_id+'/1' }}">
+                            {{ x.temp_discounted_price | currency:cc.currency?.country_code:'symbol':cc.format }}
+                          </span>
+                        </div>
+                        <div class="mt-2 mb-2">
+                          <button class="primary-btn w-100" routerLink="{{ x.seo_status ? '/product/'+x.seo_details.page_url+'/1' : '/product/'+x.product_id+'/1' }}">PURCHASE</button>
+                        </div>
+                        <div class="d-flex justify-content-end mt-2 mb-2" (click)="removeFromWishList(i);">
+                          <i class="material-icons delete-icon">delete</i>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </ng-container>
+              </div>
+            </div>
+          </div>
+          <!-- #for mobile# -->
+
+          <!-- for desktop -->
+          <div *ngIf="commonService?.screen_width>=992">
+            <table class="table">
+              <thead class="wishlist-head">
+                <tr>
+                  <td colspan="2"><h6>PRODUCT</h6></td>
+                  <td><h6>PRICE</h6></td>
+                  <td></td>
+                  <td></td>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let x of list; let i=index;">
+                  <td>
+                    <figure class="cursor" routerLink="{{ x.seo_status ? '/product/'+x.seo_details.page_url+'/1' : '/product/'+x.product_id+'/1' }}">
+                      <img width="100%" height="100%" appImgLazyLoad [ImagelazyLoad]="imgBaseUrl+x.image" alt="thum">
+                    </figure>
+                  </td>
+                  <td>
+                    <h4 class="cursor" routerLink="{{ x.seo_status ? '/product/'+x.seo_details.page_url+'/1' : '/product/'+x.product_id+'/1' }}">
+                      {{x.name}}
+                    </h4>
+                  </td>
+                  <td>
+                    <span class="cursor" routerLink="{{ x.seo_status ? '/product/'+x.seo_details.page_url+'/1' : '/product/'+x.product_id+'/1' }}">
+                      {{ x.temp_discounted_price | currency:cc.currency?.country_code:'symbol':cc.format }}
+                    </span>
+                  </td>
+                  <td>
+                    <button class="primary-btn" routerLink="{{ x.seo_status ? '/product/'+x.seo_details.page_url+'/1' : '/product/'+x.product_id+'/1' }}">PURCHASE</button>
+                  </td>
+                  <td class="text-center">
+                    <a (click)="removeFromWishList(i);">
+                      <i class="material-icons delete-icon">delete</i>
+                    </a>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <!-- #for desktop# -->
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="!list?.length" class="{{template_setting?.body_type}}">
+      <div class="row">
+        <div class="col-12">
+          <div class="no-items d-flex align-items-center justify-content-center">
+            <img width="100%" height="100%" imgBroken src="assets/images/no_items_found.svg" alt="not-found">
+          </div>
+        </div>
+        <div class="col-12" align="center">
+          <div class="no-items-letter">
+            <p>No items to show</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </section>
+
+</section>

@@ -1,0 +1,269 @@
+<section *ngIf="pageLoader">
+  <app-loading-spinner></app-loading-spinner>
+</section>
+
+<section class="over-all smooth-fadein" *ngIf="!pageLoader">
+
+  <!-- breadcrumb -->
+  <section class="head-breadcrumb">
+    <div class="{{template_setting?.body_type}}">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="head-breadcrumb-inner border-btm d-flex justify-content-between">
+            <div>
+              <h2>Addresses</h2>
+              <p>Edit your address here</p>
+            </div>
+            <div *ngIf="template_setting?.display_goback && commonService?.desktop_device" class="d-flex align-items-center justify-content-end">
+              <span (click)="commonService.goBack();">GO BACK</span>
+            </div>
+          </div>
+        </div>
+
+        <div *ngIf="template_setting?.breadcrumb" class="col-md-12">
+          <div class="breadcrumb-navigation mt-3">
+            <ul class="collapsed">
+              <li><a routerLink="/">Home</a></li>
+              <li><a routerLink="/account">My Account</a></li>
+              <li><a routerLink="/account/profile">My Profile</a></li>
+              <li><span class="active-page">Addresses</span></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!--# breadcrumb #-->
+
+  <section class="common-site-section">
+    <div class="{{template_setting?.body_type}}">
+
+      <div class="mb-5" *ngFor="let x of list | paginate: { itemsPerPage: pageSize, currentPage: page }; let i=index;">
+        <div *ngIf="list?.length>1">
+          <h5>Address {{x.index}}</h5>
+        </div>
+        <div class="gray-card primary-card p-3">
+          <div class="row">
+            <div class="col-lg-3 col-md-6">
+              <div class="profile_address">
+                <h6>Shipping Address</h6>
+                <p>{{x.address}}</p>
+                <p>{{x.country}}</p>
+              </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+              <div class="profile_address">
+                <h6>Name</h6>
+                <p>{{x.name}}</p>
+              </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+              <div class="profile_address">
+                <h6>Phone</h6>
+                <p>{{x.dial_code}} {{x.mobile}}</p>
+              </div>
+            </div>
+            <div class="col-lg-3 col-md-12">
+              <div class="profile_address-btn">
+                <button type="button" (click)="onEdit(x, addressModal);" class="primary-btn">EDIT</button>
+                <button type="button" (click)="deleteForm=x; removeModal.show();" class="secondary-btn">REMOVE</button>
+              </div>
+            </div>
+            <div class="col-12">
+              <div class="billing_address_div">
+                <span *ngIf="x.billing_address || x.shipping_address" class="notify-badge">
+                  {{ (x.billing_address && x.shipping_address)? 'Billing & Shipping': (x.billing_address)? 'Billing': 'Shipping' }} Address
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-12">
+          <button class="primary-btn" type="button" (click)="onAddAddress(addressModal);">ADD NEW ADDRESS</button>
+        </div>
+      </div>
+
+      <!-- pagination -->
+      <div class="row">
+        <div class="col-md-12 navigation-ngx">
+          <div>
+            <pagination-controls (pageChange)="page=$event; commonService.pageScrollTop();" autoHide="true" responsive="true" maxSize="5" previousLabel="" nextLabel=""></pagination-controls>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+</section>
+
+<!-- address modal -->
+<div bsModal #addressModal="bs-modal" class="modal fade" [config]="{backdrop: 'static'}" tabindex="-1" role="dialog" aria-labelledby="dialog-addr">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h6 class="modal-title">{{ (addressFormType=='add')? 'Add New': 'Update' }} Address</h6>
+      </div>
+      <form autocomplete="off" (ngSubmit)="onSubmit(addressFormType, addressModal);" ngNativeValidate>
+        <div class="modal-body modal-scroll slim-scroll">
+          <div class="row">
+            <div class="col-12">
+              <div class="w-100 d-flex align-items-center justify-content-center mt-3 mb-3">
+                <div class="pr-2 pl-2">
+                  <label class="store-label d-flex align-items-center m-0">
+                    <input type="radio" class="option-input radio" name="type" value="home" [(ngModel)]="addressForm.type" />
+                    <span>HOME</span>
+                  </label>
+                </div>
+                <div class="pr-2 pl-2">
+                  <label class="store-label d-flex align-items-center m-0">
+                    <input type="radio" class="option-input radio" name="type" value="office" [(ngModel)]="addressForm.type" />
+                    <span>OFFICE</span>
+                  </label>
+                </div>
+                <div class="pr-2 pl-2">
+                  <label class="store-label d-flex align-items-center m-0">
+                    <input type="radio" class="option-input radio" name="type" value="other" [(ngModel)]="addressForm.type" />
+                    <span>OTHER</span>
+                  </label>
+                </div>
+              </div>
+            </div>
+            <ng-container *ngIf="list?.length">
+              <div class="col-lg-6">
+                <label class="store-label d-flex align-items-center justify-content-center mt-3 mb-3">
+                  <input type="checkbox" class="option-input checkbox" name="billing_address" [(ngModel)]="addressForm.billing_address" #billing_address="ngModel"
+                  [checked]="addressForm.exist_billing" [disabled]="addressForm.exist_billing" />
+                  <span class="m-0">{{ (addressForm.exist_billing)? '': 'Mark as' }} Default Billing Address</span>
+                </label>
+              </div>
+              <div class="col-lg-6">
+                <label class="store-label d-flex align-items-center justify-content-center mt-3 mb-3">
+                  <input type="checkbox" class="option-input checkbox" name="shipping_address" [(ngModel)]="addressForm.shipping_address" #shipping_address="ngModel"
+                  [checked]="addressForm.exist_shipping" [disabled]="addressForm.exist_shipping" />
+                  <span class="m-0">{{ (addressForm.exist_shipping)? '': 'Mark as' }} Default Shipping Address</span>
+                </label>
+              </div>
+            </ng-container>
+            <div *ngIf="addressForm.type=='other'" class="col-md-12">
+              <div class="gray-card primary-card p-3">
+                <p>Address Title:</p>
+                <input class="w-100" type="text" name="other_place" [(ngModel)]="addressForm.other_place" #other_place="ngModel" required />
+              </div>
+            </div>
+            <div class="col-lg-6">
+              <div class="gray-card primary-card p-3">
+                <p>Full Name:</p>
+                <input class="w-100" type="text" name="name" [(ngModel)]="addressForm.name" #name="ngModel" required />
+              </div>
+            </div>
+            <div class="col-lg-6">
+              <div class="gray-card primary-card p-3">
+                <p>Country:</p>
+                <select class="w-100" name="country" [(ngModel)]="addressForm.country" (change)="addressForm.state=null; onCountryChange(addressForm.country);"
+                [disabled]="commonService?.application_setting?.ship_only_in_domestic" required>
+                  <option *ngFor="let x of commonService.country_list | orderAsc: 'name';" [ngValue]="x.name">{{x.name}}</option>
+                </select>
+              </div>
+            </div>
+            <div class="col-lg-6">
+              <div class="gray-card primary-card p-3">
+                <p>Mobile No:</p>
+                <div class="input-group modal-phone-no">
+                  <div class="input-group-prepend">
+                    <select name="dial_code" [(ngModel)]="addressForm.dial_code" #dial_code="ngModel" required class="form-control h-auto">
+                      <option *ngFor="let x of commonService.country_list | orderAsc: 'dial_code';" [ngValue]="x.dial_code">{{x.dial_code}}</option>
+                    </select>
+                  </div>
+                  <input *ngIf="!mobile_pattern" type="tel" class="form-control border-radius-0" name="mobile" [(ngModel)]="addressForm.mobile" #mobile="ngModel" appNumberOnly required>
+                  <input *ngIf="mobile_pattern" type="tel" class="form-control border-radius-0" name="mobile" [(ngModel)]="addressForm.mobile" #mobile="ngModel" [pattern]="mobile_pattern"
+                  maxlength="{{country_details?.mobileno_length}}" title="Please fill {{country_details?.mobileno_length}} digit mobile number" appNumberOnly required>
+                </div>
+              </div>
+            </div>
+            <ng-container *ngFor="let field of address_fields; let j=index;">
+              <ng-container *ngIf="field.keyword=='state'">
+                <!-- if state list exist -->
+                <div *ngIf="state_list?.length" class="col-lg-6">
+                  <div class="gray-card primary-card p-3">
+                    <p>{{field.label}}:</p>
+                    <select class="w-100" name="field{{j}}" [(ngModel)]="field.value" required>
+                      <option *ngFor="let x of state_list | orderAsc: 'name';" [ngValue]="x.name">{{x.name}}</option>
+                    </select>
+                  </div>
+                </div>
+                <!-- if not state list exist -->
+                <div *ngIf="!state_list?.length" class="col-lg-6">
+                  <div class="gray-card primary-card p-3">
+                    <p>{{field.label}}:</p>
+                    <input class="w-100" type="text" name="field{{j}}" [(ngModel)]="field.value" required>
+                  </div>
+                </div>
+              </ng-container>
+              <div *ngIf="field.keyword!='state'" class="col-lg-6">
+                <div class="gray-card primary-card p-3">
+                  <p>{{field.label}}:</p>
+                  <input class="w-100" type="text" name="field{{j}}" [(ngModel)]="field.value" (input)="addressForm.error_msg=null;" required>
+                </div>
+              </div>
+            </ng-container>
+            <div class="col-lg-12">
+              <div class="gray-card primary-card p-3">
+                <p>Complete Address:</p>
+                <textarea class="w-100" name="address" [(ngModel)]="addressForm.address" #address="ngModel" required></textarea>
+              </div>
+            </div>
+            <div class="col-lg-12">
+              <div class="gray-card primary-card p-3">
+                <p>Landmark:</p>
+                <input class="w-100" type="text" name="landmark" [(ngModel)]="addressForm.landmark" #landmark="ngModel">
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer" style="display: block;">
+          <div *ngIf="addressForm?.error_msg" class="col-12 px-0 danger-alert">
+            <div class="alert-msg d-flex align-items-center justify-content-center p-2">
+              <span class="material-icons"></span>
+              <p class="m-0">{{addressForm.error_msg}}</p>
+            </div>
+          </div>
+          <div class="col-12 px-0 d-flex justify-content-end">
+            <button type="button" class="secondary-btn mr-2" (click)="addressModal.hide();">CLOSE</button>
+            <button class="primary-btn d-flex justify-content-center align-items-center" type="submit" [disabled]="addressForm.submit">
+              {{ (addressFormType=='add')? 'ADD': 'SAVE CHANGES' }}
+              <div class="box" *ngIf="addressForm.submit">
+                <div class="spinner"></div>
+              </div>
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- remove address modal -->
+<div bsModal #removeModal="bs-modal" class="modal fade" [config]="{backdrop: 'static'}" tabindex="-1" role="dialog" aria-labelledby="dialog-remo">
+  <div class="modal-dialog modal-md" role="document">
+    <div class="modal-content mat-elevation-z2">
+      <div class="modal-body">
+        <div class="col-md-12 m-t-25 nopad">
+          <p>Are you sure to remove this address?</p>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="secondary-btn" type="button" (click)="removeModal.hide();">NO</button>
+        <button class="primary-btn d-flex justify-content-center align-items-center" type="button" (click)="onDelete(removeModal);" [disabled]="deleteForm.submit">
+          YES
+          <div class="box" *ngIf="deleteForm.submit">
+            <div class="spinner"></div>
+          </div>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

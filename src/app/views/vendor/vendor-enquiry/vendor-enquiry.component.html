@@ -1,0 +1,54 @@
+<section class="over-all smooth-fadein">
+  <section class="common-site-section contact">
+    <div class="row m-0">
+      <div class="col-lg-12">
+        <div class="contact_contents ptb10 titles">
+          <h3 class="text-center">VENDOR ENQUIRY</h3>
+          <p class="text-center">
+            We are glad to see you have made it this far. If you own a business of products and are looking to sell on a digital platform curated to your needs, then look no further.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="row m-0">
+      <div class="col-md-3"></div>
+      <div class="col-md-6">
+        <div class="contact-us-form mb-3">
+          <form autocomplete="off" (ngSubmit)="onSubmit();" ngNativeValidate>
+            <div class="primary-card p-3 mb-3">
+              <p>Name</p>
+              <input type="text" name="name" class="w-100" [(ngModel)]="contactForm.name" required />
+            </div>
+            <div class="primary-card p-3 mb-3">
+              <p>Email</p>
+              <input type="email" name="email" class="w-100" [(ngModel)]="contactForm.email"
+              pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" title="Please enter a valid Email ID" appLowercase required />
+            </div>
+            <div class="primary-card p-3 mb-3">
+              <p>Mobile</p>
+              <input type="tel" name="mobile" class="w-100" [(ngModel)]="contactForm.mobile" appNumberOnly />
+            </div>
+            <div class="primary-card p-3 mb-3">
+              <p>Message</p>
+              <textarea name="message" class="w-100" [(ngModel)]="contactForm.message"></textarea>
+            </div>
+            <div *ngIf="alert_msg" [ngClass]="success_alert? 'success-alert': 'danger-alert'">
+              <div class="alert-msg d-flex align-items-center justify-content-center p-2">
+                <span class="material-icons"></span>
+                <p class="m-0">{{ alert_msg }}</p>
+              </div>
+            </div>
+            <button type="submit" [disabled]="contactForm.submit" class="primary-btn d-flex justify-content-center align-items-center w-100">
+              SEND
+              <div *ngIf="contactForm.submit" class="box">
+                <div class="spinner"></div>
+              </div>
+            </button>
+          </form>
+        </div>
+      </div>
+      <div class="col-md-3"></div>
+    </div>
+  </section>
+</section>

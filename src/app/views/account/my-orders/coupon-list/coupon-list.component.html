@@ -1,0 +1,167 @@
+<section *ngIf="pageLoader">
+  <app-loading-spinner></app-loading-spinner>
+</section>
+
+<section class="over-all" *ngIf="!pageLoader">
+
+  <!-- breadcrumb -->
+  <section class="head-breadcrumb">
+    <div class="{{template_setting?.body_type}}">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="head-breadcrumb-inner border-btm d-flex justify-content-between">
+            <div>
+              <h2>Gift Coupons</h2>
+              <p>Check your purchased gift cards</p>
+            </div>
+            <div *ngIf="template_setting?.display_goback && commonService?.desktop_device" class="d-flex align-items-center justify-content-end">
+              <span (click)="commonService.goBack();">GO BACK</span>
+            </div>
+          </div>
+        </div>
+
+        <div *ngIf="template_setting?.breadcrumb" class="col-md-12">
+          <div class="breadcrumb-navigation mt-3">
+            <ul class="collapsed">
+              <li><a routerLink="/">Home</a></li>
+              <li><a routerLink="/account">My Account</a></li>
+              <li><a routerLink="/account/my-orders">My Orders</a></li>
+              <li><span class="active-page">Gift Coupons</span></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!--# breadcrumb #-->
+
+  <section *ngIf="list?.length" class="common-site-section myaccount">
+    <div class="{{template_setting?.body_type}}">
+      <!-- search -->
+      <div class="row">
+        <div class="col-md-12">
+          <div class="order-search">
+            <div class="input-group icon-input-group order-search-group mb-5">
+              <input type="text" class="form-control" placeholder="Search all orders..." name="coupon_search" [(ngModel)]="commonService.coupon_search"
+                autocomplete="off">
+              <div class="input-group-append icon-append">
+                <span (click)="(commonService.coupon_search?.length)? commonService.coupon_search='': '';" class="input-group-text">
+                  <i class="material-icons" *ngIf="commonService.coupon_search?.length">close</i>
+                  <i class="material-icons" *ngIf="!commonService.coupon_search?.length">search</i>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- order list -->
+      <ng-container *ngFor="let x of list | orderDesc:'created_on' | orderSearch:'order_number':commonService.coupon_search | paginate: { itemsPerPage: pageSize, currentPage: page }; let i=index;">
+
+        <ng-container *ngIf="!x.notFound">
+          <div class="mb-5">
+            <div>
+              <h5>#{{x.order_number}}</h5>
+            </div>
+            <div class="gray-card primary-card p-3">
+              <div class="row">
+                <div class="col-lg-3 col-md-6">
+                  <div class="live_order_card_inner">
+                    <h6>Order On</h6>
+                    <p>{{x.created_on | date: "dd MMM yyyy"}}</p>
+                  </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                  <div class="live_order_card_inner">
+                    <h6>Coupon Value</h6>
+                    <p>{{ x.temp_price | currency:x.currency_type?.country_code:'symbol':cc.format }}</p>
+                  </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                  <div class="live_order_card_inner">
+                    <h6>Payment Method</h6>
+                    <p>{{ (x?.payment_details?.name)? x.payment_details.name: 'NA' }}</p>
+                  </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                  <div class="live_order_card_inner">
+                    <h6>Valid Till</h6>
+                    <p>{{x.expiry_on | date: "dd MMM yyyy"}}</p>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-lg-3 col-md-6">
+                  <div class="live_order_card_inner">
+                    <h6>From</h6>
+                    <p>{{x.from_name}}</p>
+                  </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                  <div class="live_order_card_inner">
+                    <h6>To</h6>
+                    <p>{{x.to_name}} ({{x.to_email}})</p>
+                  </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                  <div class="live_order_card_inner">
+                    <h6>Message</h6>
+                    <p [innerHTML]="x.message"></p>
+                  </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                  <button class="primary-btn w-100" type="button" routerLink="/account/my-orders/invoice/coupon/{{x._id}}">VIEW INVOICE</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </ng-container>
+
+        <ng-container *ngIf="x.notFound">
+          <div class="row">
+            <div class="col-md-12">
+              <div class="no-items d-flex align-items-center justify-content-center">
+                <img width="100%" height="100%" imgBroken src="assets/images/no_items_found.svg" alt="not-found">
+              </div>
+            </div>
+            <div class="col-md-12" align="center">
+              <div class="no-items-letter">
+                <p>Search result not found</p>
+              </div>
+            </div>
+          </div>
+        </ng-container>
+        
+      </ng-container>
+
+      <!-- pagination -->
+      <div class="row">
+        <div class="col-md-12 navigation-ngx">
+          <div>
+            <pagination-controls (pageChange)="page=$event; commonService.pageScrollTop();" autoHide="true" responsive="true" maxSize="5" previousLabel="" nextLabel=""></pagination-controls>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section *ngIf="!list?.length" class="common-site-section myaccount">
+    <div class="{{template_setting?.body_type}}">
+
+      <div class="row">
+        <div class="col-md-12">
+          <div class="no-items d-flex align-items-center justify-content-center">
+            <img width="100%" height="100%" imgBroken src="assets/images/no_items_found.svg" alt="not-found">
+          </div>
+        </div>
+        <div class="col-md-12" align="center">
+          <div class="no-items-letter">
+            <p>No orders found</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+</section>

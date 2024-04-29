@@ -1,0 +1,406 @@
+<section *ngIf="pageLoader">
+  <app-loading-spinner></app-loading-spinner>
+</section>
+
+<section class="site-section" *ngIf="!pageLoader && errorMsg">
+  <div class="{{template_setting?.body_type}}">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="gray-card primary-card p-3">
+          <div class="content-404" align="center">
+            <h4>{{errorMsg}}</h4>
+            <p>
+              <button class="primary-btn" type="button" routerLink="/">GO TO HOME PAGE</button>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="over-all smooth-fadein" *ngIf="!pageLoader && !errorMsg">
+
+  <!-- breadcrumb -->
+  <section class="head-breadcrumb">
+    <div class="{{template_setting?.body_type}}">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="head-breadcrumb-inner border-btm d-flex justify-content-between">
+            <div>
+              <h2>Order Details</h2>
+              <p>Shipping and taxes included</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!--# breadcrumb #-->
+
+  <section class="common-site-section shopping-cart">
+    <div class="{{template_setting?.body_type}}">
+      <div class="row m-0">
+        <div class="col-lg-12 p-0">
+
+          <div *ngIf="item_list?.length" class="row">
+            <div class="col-lg-6">
+
+              <!-- item list(desktop) -->
+              <div *ngIf="commonService?.screen_width>=992" class="gray-card primary-card p-3 mt-0 mb-3">
+                <table class="table checkout-table mb-5">
+                  <thead class="wishlist-head">
+                    <tr>
+                      <td colspan="2">
+                        <h6>PRODUCT</h6>
+                      </td>
+                      <td>
+                        <h6>QUANTITY</h6>
+                      </td>
+                      <td>
+                        <h6>PRICE</h6>
+                      </td>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let x of item_list; let i=index;">
+                      <td>
+                        <figure>
+                          <img width="100%" height="100%" appImgLazyLoad [ImagelazyLoad]="imgBaseUrl+x.image" alt="thum">
+                        </figure>
+                      </td>
+                      <td>
+                        <h4 class="checkout-pro-name">{{x.name}}</h4>
+                        <ng-container *ngIf="x.variant_status">
+                          <small *ngFor="let y of x.variant_types; let j=index;">
+                            <strong>{{y.name}}:</strong> {{y.value}}
+                          </small>
+                        </ng-container>
+                        <small *ngIf="x.addon_status && x.selected_addon">
+                          <strong>Addon: </strong>
+                          <span>{{x.selected_addon?.name}}<ng-container *ngIf="x.customization_status"> - </ng-container></span>
+                          <span *ngIf="x.customization_status" class="cursor" (click)=" commonService.onViewModel(x.customized_model);">
+                            {{x.customized_model?.name}}
+                          </span>
+                        </small>
+                      </td>
+                      <td>
+                        <div class="d-flex justify-content-start align-items-center">
+                          <span class="ml-2">{{ x.quantity }} {{ (template_setting?.display_unit)? x.unit: '' }}</span>
+                        </div>
+                      </td>
+                      <td>
+                        <span>{{ x.temp_final_price | currency:cc.currency?.country_code:'symbol':cc.format }}</span>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <!-- #item list(desktop)# -->
+
+              <!-- item list(mobile) -->
+              <div *ngIf="commonService?.screen_width<992" class="mobile-cart">
+                <div class="gray-card primary-card mb-3 p-3">
+                  <div class="row">
+                    <div class="col-md-12">
+                      <h6 class="m-0">PRODUCT</h6>
+                    </div>
+
+                    <div *ngFor="let x of item_list; let i=index;" class="col-md-12">
+                      <div class="product border-top border-btm pt-3 pb-3 mt-3 mb-3">
+                        <div class="product-img">
+                          <figure>
+                            <img width="100%" height="100%" appImgLazyLoad [ImagelazyLoad]="imgBaseUrl+x.image" alt="thum">
+                          </figure>
+                        </div>
+
+                        <div class="d-flex flex-column w-100">
+                          <div class="product-name mt-2 mb-2">
+                            <h4>{{x.name}}</h4>
+                            <ng-container *ngIf="x.variant_status">
+                              <small *ngFor="let y of x.variant_types; let j=index;">
+                                <strong>{{y.name}}</strong>
+                                <span>: {{y.value}}</span>
+                              </small>
+                            </ng-container>
+                            <small *ngIf="x.addon_status && x.selected_addon">
+                              <strong>Addon: </strong>
+                              <span>{{x.selected_addon?.name}}<ng-container *ngIf="x.customization_status"> - </ng-container></span>
+                              <span *ngIf="x.customization_status" class="cursor" (click)=" commonService.onViewModel(x.customized_model);">
+                                {{x.customized_model?.name}}
+                              </span>
+                            </small>
+                          </div>
+
+                          <!-- qty scale -->
+                          <div class="mt-2 mb-2">
+                            <div class="d-flex justify-content-start align-items-center">
+                              <span *ngIf="!x.unavailable">{{ x.quantity }} {{ (template_setting?.display_unit)? x.unit: '' }}</span>
+                            </div>
+                          </div>
+                          <!-- ## qty scale ## -->
+
+                          <div class="mt-2 mb-2">
+                            <span>{{ x.temp_final_price | currency:cc.currency?.country_code:'symbol':cc.format }}</span>
+                          </div>
+                        </div>
+
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- #item list(mobile)# -->
+
+              <!-- Shipping Address -->
+              <div *ngIf="shipping_address" class="product-order-details gray-card primary-card p-3 mt-1 mb-3">
+                <div class="row">
+                  <div class="col-md-12">
+                    <div class="product-order-type pb-3">
+                      <div class="row">
+                        <div class="col-12 d-flex align-items-center">
+                          <h4>Shipping Address</h4>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-md-12">
+                    <div class="product-order-type-inner pt-3">
+                      <div class="row">
+                        <!-- name -->
+                        <div class="col-6 d-flex align-items-center">
+                          <h6>Name:</h6>
+                        </div>
+                        <div class="col-6 d-flex align-items-start justify-content-end">
+                          <span align="right">{{shipping_address.name}}</span>
+                        </div>
+                        <!-- phone -->
+                        <div class="col-6 d-flex align-items-center">
+                          <h6>Phone:</h6>
+                        </div>
+                        <div class="col-6  d-flex align-items-start justify-content-end">
+                          <span align="right">{{shipping_address?.dial_code}} {{shipping_address.mobile}}</span>
+                        </div>
+                        <!-- address -->
+                        <div class="col-6 d-flex align-items-center">
+                          <h6>Address:</h6>
+                        </div>
+                        <div class="col-6  d-flex align-items-start justify-content-end">
+                          <span align="right">{{shipping_address.address}}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- #Shipping Address#-->
+
+              <!-- Billing Address -->
+              <div *ngIf="billing_address" class="product-order-details gray-card primary-card p-3 mt-1 mb-3">
+                <div class="row">
+                  <div class="col-md-12">
+                    <div class="product-order-type pb-3">
+                      <div class="row">
+                        <div class="d-flex align-items-center" [ngClass]="commonService.guest_email? 'col-md-6': 'col-md-12'">
+                          <h4>Billing Address</h4>
+                        </div>
+                        <div *ngIf="commonService.guest_email" class="col-md-6 d-flex align-items-center justify-content-end">
+                          <div class="billing-email">
+                            <span align="right">{{commonService.guest_email}}</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-md-12">
+                    <div class="product-order-type-inner pt-3">
+                      <div class="row">
+                        <!-- name -->
+                        <div class="col-6 d-flex align-items-center">
+                          <h6>Name:</h6>
+                        </div>
+                        <div class="col-6 d-flex align-items-start justify-content-end">
+                          <span align="right">{{billing_address.name}}</span>
+                        </div>
+                        <!-- phone -->
+                        <div class="col-6 d-flex align-items-center">
+                          <h6>Phone:</h6>
+                        </div>
+                        <div class="col-6 d-flex align-items-start justify-content-end">
+                          <span align="right">{{billing_address?.dial_code}} {{billing_address.mobile}}</span>
+                        </div>
+                        <!-- address -->
+                        <div class="col-6 d-flex align-items-center">
+                          <h6>Address:</h6>
+                        </div>
+                        <div class="col-6 d-flex align-items-start justify-content-end">
+                          <span align="right">{{billing_address.address}}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- #Billing Address# -->
+
+              <div class="col-md-12">
+                <button type="button" (click)="routeNavigate();" class="primary-btn w-100 mb-1">
+                  {{ shipping_address? 'Choose Shipping Method': 'Add Shipping Address' }}
+                </button>
+              </div>
+              
+            </div>
+
+            <!-- right section -->
+            <div class="col-lg-6">
+              <div class="product-order-details gray-card primary-card p-3 mt-0 mb-3">
+                <div class="row">
+                  <div class="col-md-12">
+                    <div class="product-order-type pb-3">
+                      <h4> Order Total
+                        <span class="total-items">({{orderForm.cart_qty}} {{ orderForm.cart_qty>1 ? 'Items' : 'Item' }})</span>
+                      </h4>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="product-order-type-inner pt-3">
+                  <div class="row">
+                    <!-- subtotal -->
+                    <div class="col-6 d-flex align-items-center">
+                      <h6>Subtotal:</h6>
+                    </div>
+                    <div class="col-6 d-flex align-items-start justify-content-end">
+                      <span align="right">{{ orderForm.tempSubTotal | currency:cc.currency?.country_code:'symbol':cc.format }}</span>
+                    </div>
+                    <!-- shipping -->
+                    <div class="col-6 d-flex align-items-center">
+                      <h6>Shipping:</h6>
+                    </div>
+                    <div class="col-6 d-flex align-items-start justify-content-end">
+                      <span align="right">Calculated at next step</span>
+                    </div>
+                    <!-- packaging -->
+                    <ng-container *ngIf="orderForm.tempPackagingCharges>0">
+                      <div class="col-6 d-flex align-items-center">
+                        <h6>Packaging:</h6>
+                      </div>
+                      <div class="col-6 d-flex align-items-start justify-content-end">
+                        <span align="right">
+                          {{ orderForm.tempPackagingCharges | currency:cc.currency?.country_code:'symbol':cc.format }}
+                        </span>
+                      </div>
+                    </ng-container>
+                    <!-- discount -->
+                    <div class="col-6 d-flex align-items-center">
+                      <h6>Discount:</h6>
+                    </div>
+                    <div class="col-6 d-flex align-items-start justify-content-end">
+                      <span align="right">
+                        {{ orderForm.tempManualDiscAmount | currency:cc.currency?.country_code:'symbol':cc.format }}
+                      </span>
+                    </div>
+
+                    <!-- giftcard section-->
+                    <ng-container *ngIf="commonService.ys_features.indexOf('giftcard')!=-1 || commonService.ys_features.indexOf('manual_giftcard')!=-1">
+                      <div *ngIf="commonService.checkout_setting.apply_gift_card" class="col-md-12">
+                        <label class="store-label w-100 m-0 mt-2 mb-2">
+                          <div class="d-flex align-items-center">
+                            <input class="option-input checkbox" type="checkbox" name="coupon_status" [(ngModel)]="orderForm.coupon_status" #coupon_status="ngModel" [disabled]="true">
+                            <span class="m-0">Apply Gift Cards</span>
+                          </div>
+                        </label>
+                      </div>
+                    </ng-container>
+
+                    <!-- coupon section -->
+                    <div *ngIf="commonService.checkout_setting.apply_coupon && !orderForm.offer_applied" class="col-md-12">
+                      <label class="store-label w-100 m-0 mt-2 mb-2">
+                        <div class="d-flex align-items-center">
+                          <input class="option-input checkbox" type="checkbox" name="offer_applied" [(ngModel)]="orderForm.offer_applied" [disabled]="true" #offer_applied="ngModel">
+                          <span class="m-0">Apply Coupon</span>
+                        </div>
+                      </label>
+                    </div>
+
+                    <!-- amount payable -->
+                    <div class="col-6 d-flex align-items-center m-0 mt-3 mb-3">
+                      <h6 class="m-0">Amount Payable:</h6>
+                    </div>
+                    <div class="col-6 d-flex align-items-start justify-content-end m-0 mt-3 mb-3">
+                      <span class="m-0" align="right">
+                        {{ ((orderForm.tempPackagingCharges*1)+(orderForm.tempSubTotal*1))-(orderForm.tempManualDiscAmount*1) | currency:cc.currency?.country_code:'symbol':cc.format }}
+                      </span>
+                    </div>
+
+                    <!-- gift order -->
+                    <div *ngIf="commonService.ys_features.indexOf('gift_order')!=-1 && commonService.checkout_setting.gift_order" class="col-md-12">
+                      <label class="store-label w-100 m-0 mt-2 mb-2">
+                        <div class="d-flex align-items-center">
+                          <input class="option-input checkbox" type="checkbox" name="gift_status" [(ngModel)]="orderForm.gift_status" [disabled]="true" #gift_status="ngModel">
+                          <span *ngIf="commonService.application_setting.gift_wrapping_charges===0" class="m-0">This is a gift</span>
+                          <span *ngIf="commonService.application_setting.gift_wrapping_charges > 0" class="m-0">Gift wrapping ({{ orderForm.dispGiftWrappingCharges | currency:cc.currency?.country_code:'symbol':cc.format }})</span>
+                        </div>
+                      </label>
+                    </div>
+
+                    <!-- free sample -->
+                    <div *ngIf="commonService.ys_features.indexOf('sample_request')!=-1 && commonService.checkout_setting.sample_request" class="col-md-12">
+                      <label class="store-label w-100 m-0 mt-2 mb-2">
+                        <div class="d-flex align-items-center">
+                          <input class="option-input checkbox" type="checkbox" name="need_sample" [(ngModel)]="orderForm.need_sample" [disabled]="true" #need_sample="ngModel">
+                          <span class="m-0">Get free sample</span>
+                        </div>
+                      </label>
+                    </div>
+
+                    <!-- order note -->
+                    <div *ngIf="commonService.ys_features.indexOf('order_note')!=-1 && commonService.checkout_setting.order_note" class="col-md-12 mt-2 mb-2">
+                      <textarea placeholder="Order Notes" name="order_note" [(ngModel)]="orderForm.order_note" #order_note="ngModel" readonly></textarea>
+                    </div>
+
+                    <div *ngIf="((orderForm.sub_total*1)-(orderForm.manualDiscAmount*1)) > 0" class="col-md-12">
+                      <!-- payment list -->
+                      <button *ngFor="let x of commonService.payment_methods | orderAsc: 'rank';" type="button" class="primary-btn w-100 mb-1" [disabled]="true">
+                        {{ x.btn_name }}
+                      </button>
+                      <!-- call to store, if no payment methods exist -->
+                      <a *ngIf="!commonService?.payment_methods.length">
+                        <button class="primary-btn w-100 mb-1" [disabled]="true">PLACE ORDER</button>
+                      </a>
+                    </div>
+                    <!-- place order -->
+                    <div *ngIf="((orderForm.sub_total*1)-(orderForm.manualDiscAmount*1)) <= 0" class="col-md-12">
+                      <button type="button" class="primary-btn w-100" [disabled]="true">PLACE ORDER</button>
+                    </div>
+
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <div *ngIf="!item_list?.length" class="{{template_setting?.body_type}}">
+            <div class="row">
+              <div class="col-12">
+                <div class="no-items d-flex align-items-center justify-content-center">
+                  <img width="100%" height="100%" imgBroken src="assets/images/no_items_found.svg" alt="not-found">
+                </div>
+              </div>
+              <div class="col-12" align="center">
+                <div class="no-items-letter">
+                  <p>No items to show</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+        </div>
+        <!-- end col-12 -->
+      </div>
+      <!-- end row -->
+    </div>
+    <!-- end container -->
+  </section>
+</section>

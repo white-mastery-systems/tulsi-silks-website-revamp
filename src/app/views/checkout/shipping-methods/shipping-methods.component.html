@@ -1,0 +1,90 @@
+<section *ngIf="pageLoader">
+  <app-loading-spinner></app-loading-spinner>
+</section>
+
+<section class="over-all smooth-fadein" *ngIf="!pageLoader">
+
+  <!-- breadcrumb -->
+  <section class="head-breadcrumb">
+    <div class="{{template_setting?.body_type}}">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="head-breadcrumb-inner border-btm d-flex justify-content-between">
+            <div>
+              <h2>Choose Shipping Method</h2>
+              <p>Available delivery services</p>
+            </div>
+            <div *ngIf="template_setting?.display_goback && commonService?.desktop_device" class="d-flex align-items-center justify-content-end">
+              <span (click)="commonService.goBack();">GO BACK</span>
+            </div>
+          </div>
+        </div>
+
+        <div *ngIf="template_setting?.breadcrumb" class="col-md-12">
+          <div class="breadcrumb-navigation mt-3">
+            <ul class="collapsed">
+              <li><a routerLink="/">Home</a></li>
+              <li><a routerLink="/checkout/address-list/product">Address</a></li>
+              <li><a class="active-page">Choose Shipping Method</a></li>
+              <li><a class="opacity6">Order Details</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!--# breadcrumb #-->
+
+  <section class="common-site-section">
+    <div class="{{template_setting?.body_type}}">
+
+      <div class="mb-5" *ngFor="let x of list | orderAsc:'shipping_price'; let i=index;">
+        <div *ngIf="list?.length>1">
+          <h5>Shipping Method {{i+1}}</h5>
+        </div>
+        <div class="gray-card primary-card p-3">
+          <div class="row">
+            <div class="col-lg-3 col-md-6">
+              <div class="profile_address">
+                <h6>Carrier</h6>
+                <p>{{x.name}}<p>
+              </div>
+            </div>
+            <div class="col-md-6" [ngClass]="template_setting?.display_estimated_delivery_time? 'col-lg-3': 'col-lg-6'">
+              <div class="profile_address">
+                <h6>Cost</h6>
+                <p *ngIf="x.temp_shipping_price > 0">{{ x.temp_shipping_price | currency:cc.currency?.country_code:'symbol':cc.format }}</p>
+                <p *ngIf="x.temp_shipping_price==0">FREE</p>
+              </div>
+            </div>
+            <div *ngIf="template_setting?.display_estimated_delivery_time" class="col-lg-3 col-md-6">
+              <div class="profile_address">
+                <h6>Estimated Delivery Time</h6>
+                <p>{{x.delivery_time}}<p>
+              </div>
+            </div>
+            <div class="col-lg-3 col-md-12">
+              <div class="profile_address-btn">
+                <button type="button" (click)="x.submit=true; onSelect(x);" class="primary-btn d-flex justify-content-center align-items-center" [disabled]="x.submit">
+                  CONFIRM
+                  <div class="box" *ngIf="x.submit">
+                    <div class="spinner"></div>
+                  </div>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="!list?.length" class="row">
+        <div class="col-12">
+          <div class="live_order_id">
+            <h5 align="center">No records found</h5>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+</section>

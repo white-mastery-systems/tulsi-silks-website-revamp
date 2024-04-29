@@ -1,0 +1,50 @@
+*{outline: none !important}
+
+/* CUSTOM HTML TAGS */
+.hide-me{display: none;}
+.show-me{display: block !important;}
+.data-bg{background-size: cover;}
+
+/* CUSTOM LINES */
+.prettyprint{margin-bottom: 50px;}
+.overflow-hidden{ overflow: hidden;}
+
+/* SPACING */
+.no-margin{margin: 0 !important;}
+.no-padding{padding: 0 !important;}
+
+
+
+
+/* ACCORDION */
+.accordion{ width: 100%; float: left; background: #fff; padding: 0;}
+.accordion .card{ background: none; border-radius: 0; margin-top: -1px; border:1px solid #eee;}
+.accordion .card .card-header{ background: none; padding:0; border-bottom: none;}
+.accordion .card .card-header a { width: 100%; float: left; font-weight: 500; padding: 20px 25px;font-size:1rem; word-break: normal; word-wrap: normal; }
+.accordion .card .card-header a:hover{text-decoration: none;}
+.accordion .card .card-body{ width: 100%; border-top:1px solid #eee; line-height: 20px; font-size: 0.812rem;}
+/* .accordion .card [aria-expanded="true"]{ color: #485cc7;} */
+
+/* TABS */
+.tabs{ width:100%; float:left; margin-bottom:0px; overflow: hidden; position: relative}
+.tabs .in{ opacity: 1;}
+.tabs .nav-tabs{ float:left; display: flex; margin: 0; padding: 0; border-bottom:none; position: relative;}
+.tabs .nav-tabs:after{content: ""; width: 1000px; height: 1px; background: #eee; position: absolute; left: 100%; bottom: 0;}
+.tabs .nav-tabs li{ float: left; }
+.tabs .nav-tabs li a{ float: left; border-radius:0; font-weight:500; border:1px solid #eee; margin-right:-1px; } 
+.tabs .nav-tabs li a span{ float: left; padding:15px 20px;}
+.tabs .nav-tabs li a:hover{text-decoration: none; }
+.tabs .nav-tabs li .active {border:1px solid #eee;  border-bottom-color:transparent;}
+.tabs .nav-tabs li .active:focus{border:1px solid #eee;  border-bottom-color:transparent;}
+.tabs .nav-tabs li .active:hover{border:1px solid #eee;  border-bottom-color:transparent;}
+.tabs .tab-content{ width:100%; float:left; border:1px solid #eee; border-top: none; padding:20px;}
+.tabs .tab-content p:last-child{ margin-bottom:0;}
+
+/* SECTIONS */
+article, aside, footer, header, nav, section { width: 100%; float: left; position: relative;}
+
+/* TABLET RESPONSIVE FIXES */
+@media only screen and (max-width: 989px), only screen and (max-device-width: 989px) {
+	input{box-shadow: none !important; border-radius: 0 !important;}
+	textarea{box-shadow: none !important; border-radius: 0 !important;}
+}

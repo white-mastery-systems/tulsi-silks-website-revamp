@@ -1,0 +1,94 @@
+/* You can add global styles to this file, and also import other style files */
+@import "assets/css/bootstrap-grid.css";
+@import "assets/css/swiper.css";
+@import "assets/css/quill-core.css";
+
+@import "assets/scss/template.scss";
+@import "assets/scss/style.scss";
+@import "assets/scss/layout.scss";
+@import "assets/scss/custom.scss";
+@import "assets/scss/checkbox.scss";
+@import "assets/scss/button.scss";
+
+// header
+@import "assets/header/type-1.scss";
+
+// cart
+@import "assets/scss/cart/dropdown.scss";
+// @import "assets/scss/cart/overlay.scss";
+
+.blur-up {
+  -webkit-filter: blur(3px);
+  filter: blur(3px);
+  transition: filter 1500ms 250ms, -webkit-filter 1500ms 250ms;
+}
+.blur-up.lazyloaded {
+  -webkit-filter: blur(0);
+  filter: blur(0);
+}
+.lq-blur-up {
+  -webkit-filter: blur(3px);
+  filter: blur(3px);
+  transition: filter 1500ms 250ms, -webkit-filter 1500ms 250ms;
+}
+
+.menu-icon::before,
+.menu-icon-outline::before {
+  font-family: 'Material Icons Outlined';
+  content: '\e5d2';
+  font-style: normal;
+  font-size: 28px !important;
+}
+
+.search-icon::before,
+.search-icon-outline::before {
+  font-family: 'Material Icons Outlined';
+  content: '\e8b6';
+  font-style: normal;
+}
+
+.acc-icon::before {
+  font-family: 'Material Icons';
+  content: '\e853';
+  font-style: normal;
+}
+.acc-icon-outline::before {
+  font-family: 'Material Icons Outlined';
+  content: '\e853';
+  font-style: normal;
+}
+
+.wl-icon::before {
+  font-family: 'Material Icons';
+  content: '\e87d';
+  font-style: normal;
+}
+.wl-icon-outline::before {
+  font-family: 'Material Icons Outlined';
+  content: '\e87e';
+  font-style: normal;
+}
+
+.cart-icon::before {
+  font-family: 'Material Icons';
+  content: '\e54c';
+  font-style: normal;
+}
+.cart-icon-outline::before {
+  font-family: 'Material Icons Outlined';
+  content: '\e54c';
+  font-style: normal;
+}
+
+@media only screen and (max-width: 991px) {
+  .search-icon::before,
+  .search-icon-outline::before,
+  .acc-icon::before,
+  .acc-icon-outline::before,
+  .wl-icon::before,
+  .wl-icon-outline::before,
+  .cart-icon::before,
+  .cart-icon-outline::before {
+    font-size: 24px !important;
+  }
+}

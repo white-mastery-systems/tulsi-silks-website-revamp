@@ -1,0 +1,246 @@
+<section *ngIf="pageLoader">
+  <app-loading-spinner></app-loading-spinner>
+</section>
+
+<section *ngIf="!pageLoader" class="over-all smooth-fadein">
+  <section class="common-site-section contact">
+    <div class="row m-0">
+      <div class="col-lg-12">
+        <div class="contact_contents ptb10 titles">
+          <h3 class="text-center">Vendor Registration</h3>
+          <!-- <p class="text-center">
+            We are glad to see you have made it this far. If you own a business of products and are looking to sell on a digital platform curated to your needs, then look no further.
+          </p> -->
+        </div>
+      </div>
+    </div>
+
+    <div class="row m-0">
+      <div class="col-md-1"></div>
+      <div class="col-md-10">
+        <div class="contact-us-form mb-3">
+          <form autocomplete="off" (ngSubmit)="onSubmit();" ngNativeValidate>
+            <!-- CONTACT DETAILS -->
+            <div class="row m-0 py-3">
+              <h4 class="mb-3" style="font-size:16px;font-weight:600">CONTACT DETAILS</h4>
+              <div class="col-md-12 primary-card p-4">
+                <div class="row d-flex flex-wrap">
+                  <div class="col-md-6 form-group">
+                    <p>Contact Person Name</p>
+                    <input type="text" name="contact_person" class="w-100" [(ngModel)]="vendorForm.contact_person" required />
+                  </div>
+                  <div class="col-md-6 form-group">
+                    <p>Mobile</p>
+                    <input type="tel" name="mobile" class="w-100" [(ngModel)]="vendorForm.mobile" required />
+                  </div>
+                  <div class="col-md-6 form-group">
+                    <p>Email</p>
+                    <input type="text" name="email" class="w-100" [(ngModel)]="vendorForm.email" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" title="Please enter a valid Email ID" appLowercase required />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- STORE DETAILS -->
+            <div class="row m-0 py-3">
+              <h4 class="mb-3" style="font-size:16px;font-weight:600">STORE DETAILS</h4>
+              <div class="col-md-12 primary-card p-4">
+                <div class="row d-flex flex-wrap">
+                  <div class="col-md-6 form-group">
+                    <p>Business Name</p>
+                    <input type="text" name="company_name" class="w-100" [(ngModel)]="vendorForm.company_details.name" required />
+                  </div>
+                  <div class="col-md-6 form-group">
+                    <p>Brand Name</p>
+                    <input type="text" name="brand_name" class="w-100" [(ngModel)]="vendorForm.company_details.brand" required />
+                  </div>
+                  <div class="col-md-6 form-group">
+                    <p>Instagram Page URL</p>
+                    <input type="text" name="instagram" class="w-100" [(ngModel)]="vendorForm.company_details.instagram" />
+                  </div>
+                  <div class="col-md-6 form-group">
+                    <p>Website URL (if available)</p>
+                    <input type="text" name="website" class="w-100" [(ngModel)]="vendorForm.company_details.website" />
+                  </div>
+                  <ng-container *ngIf="commonService.store_details?.country=='India'">
+                    <div class="col-md-6 form-group">
+                      <p>GST No</p>
+                      <input type="text" name="gst_no" class="w-100" [(ngModel)]="vendorForm.company_details.gst_no" />
+                    </div>
+                    <div class="col-md-6 form-group">
+                      <p>PAN No</p>
+                      <input type="text" name="pan_no" class="w-100" [(ngModel)]="vendorForm.company_details.pan_no" />
+                    </div>
+                  </ng-container>
+                  <div *ngIf="commonService.store_details?.country!='India'" class="col-md-6 form-group">
+                    <p>TIN No</p>
+                    <input type="text" name="tin_no" class="w-100" [(ngModel)]="vendorForm.company_details.tin_no" />
+                  </div>
+                  <div class="col-md-6 form-group">
+                    <p>Are all the products made in {{commonService.store_details?.country}}?</p>
+                    <select name="made_in_home_country" class="w-100" [(ngModel)]="vendorForm.company_details.made_in_home_country" required>
+                      <option value="">-- Select --</option>
+                      <option value="yes">Yes</option>
+                      <option value="no">No</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- REGISTERED ADDRESS -->
+            <div class="row m-0 py-3">
+              <h4 class="mb-3" style="font-size:16px;font-weight:600">REGISTERED ADDRESS</h4>
+              <div class="col-md-12 primary-card p-4">
+                <div class="row d-flex flex-wrap">
+                  <div class="col-md-6 form-group">
+                    <p>Country</p>
+                    <input type="text" name="r_country" class="w-100" [(ngModel)]="vendorForm.registered_address.country" required readonly />
+                  </div>
+                  <ng-container *ngFor="let field of reg_address_fields; let j=index;">
+                    <ng-container *ngIf="field.keyword=='state'">
+                      <!-- if state list exist -->
+                      <div *ngIf="state_list?.length" class="col-md-6 form-group">
+                        <p>{{field.label}}</p>
+                        <select class="w-100" name="r_field{{j}}" [(ngModel)]="field.value" required>
+                          <option *ngFor="let x of state_list | orderAsc: 'name';" [ngValue]="x.name">{{x.name}}</option>
+                        </select>
+                      </div>
+                      <!-- if not state list exist -->
+                      <div *ngIf="!state_list?.length" class="col-md-6 form-group">
+                        <p>{{field.label}}</p>
+                        <input class="w-100" type="text" name="r_field{{j}}" [(ngModel)]="field.value" required>
+                      </div>
+                    </ng-container>
+                    <div *ngIf="field.keyword!='state'" class="col-md-6 form-group">
+                      <p>{{field.label}}</p>
+                      <input class="w-100" type="text" name="r_field{{j}}" [(ngModel)]="field.value" required>
+                    </div>
+                  </ng-container>
+                  <div class="col-md-12 form-group">
+                    <p>Complete Address</p>
+                    <textarea rows="2" name="r_address" [(ngModel)]="vendorForm.registered_address.address" class="w-100" required></textarea>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- PICKUP ADDRESS -->
+            <div class="row m-0 py-3">
+              <h4 class="mb-3" style="font-size:16px;font-weight:600">PICKUP ADDRESS</h4>
+              <div class="col-md-12 primary-card p-4">
+                <div class="row d-flex flex-wrap">
+                  <div class="col-md-6 form-group">
+                    <p>Country</p>
+                    <input type="text" name="p_country" class="w-100" [(ngModel)]="vendorForm.pickup_address.country" required readonly />
+                  </div>
+                  <ng-container *ngFor="let field of pick_address_fields; let j=index;">
+                    <ng-container *ngIf="field.keyword=='state'">
+                      <!-- if state list exist -->
+                      <div *ngIf="state_list?.length" class="col-md-6 form-group">
+                        <p>{{field.label}}</p>
+                        <select class="w-100" name="p_field{{j}}" [(ngModel)]="field.value" required>
+                          <option *ngFor="let x of state_list | orderAsc: 'name';" [ngValue]="x.name">{{x.name}}</option>
+                        </select>
+                      </div>
+                      <!-- if not state list exist -->
+                      <div *ngIf="!state_list?.length" class="col-md-6 form-group">
+                        <p>{{field.label}}</p>
+                        <input class="w-100" type="text" name="p_field{{j}}" [(ngModel)]="field.value" required>
+                      </div>
+                    </ng-container>
+                    <div *ngIf="field.keyword!='state'" class="col-md-6 form-group">
+                      <p>{{field.label}}</p>
+                      <input class="w-100" type="text" name="p_field{{j}}" [(ngModel)]="field.value" required>
+                    </div>
+                  </ng-container>
+                  <div class="col-md-12 form-group">
+                    <p>Complete Address</p>
+                    <textarea rows="2" name="p_address" [(ngModel)]="vendorForm.pickup_address.address" class="w-100" required></textarea>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- BANK DETAILS -->
+            <div class="row m-0 py-3">
+              <h4 class="mb-3" style="font-size:16px;font-weight:600">BANK DETAILS</h4>
+              <div class="col-md-12 primary-card p-4">
+                <div class="row d-flex flex-wrap">
+                  <div class="col-md-12 form-group">
+                    <p>Beneficiary Name</p>
+                    <input type="text" name="beneficiary_name" class="w-100" [(ngModel)]="vendorForm.bank_details.beneficiary" required />
+                  </div>
+                  <div class="col-md-6 form-group">
+                    <p>Bank Name</p>
+                    <input type="text" name="bank_name" class="w-100" [(ngModel)]="vendorForm.bank_details.name" required />
+                  </div>
+                  <div class="col-md-6 form-group">
+                    <p>Branch</p>
+                    <input type="text" name="branch" class="w-100" [(ngModel)]="vendorForm.bank_details.branch" required />
+                  </div>
+                  <div class="col-md-6 form-group">
+                    <p>IFSC Code</p>
+                    <input type="text" name="ifsc_code" class="w-100" [(ngModel)]="vendorForm.bank_details.ifsc_code" required />
+                  </div>
+                  <div class="col-md-6 form-group">
+                    <p>Account No</p>
+                    <input type="text" name="acc_no" class="w-100" [(ngModel)]="vendorForm.bank_details.acc_no" required />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- SHIPPING PREFERENCE -->
+            <div class="row m-0 py-3">
+              <h4 class="mb-3" style="font-size:16px;font-weight:600">Shipping Preference</h4>
+              <div class="col-md-12 primary-card p-4">
+                <div class="row d-flex flex-wrap">
+                  <div class="col-md-12 form-check mb-3">
+                    <label class="store-label d-flex align-items-center m-0">
+                      <input type="radio" class="option-input radio" name="shipping_type" value="free"
+                        [(ngModel)]="vendorForm.company_details.shipping_type" />
+                      <span>Willing to provide free shipping on all orders</span>
+                    </label>
+                  </div>
+                  <div class="col-md-12 form-check mb-3">
+                    <label class="store-label d-flex align-items-center m-0">
+                      <input type="radio" class="option-input radio" name="shipping_type" value="free_above"
+                        [(ngModel)]="vendorForm.company_details.shipping_type" />
+                      <span>Willing to provide free shipping on orders above some amount</span>
+                    </label>
+                  </div>
+                  <div class="col-md-12 form-check">
+                    <label class="store-label d-flex align-items-center m-0">
+                      <input type="radio" class="option-input radio" name="shipping_type" value="paid"
+                        [(ngModel)]="vendorForm.company_details.shipping_type" />
+                      <span>Will collect shipping charges on all orders</span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div *ngIf="alert_msg" [ngClass]="success_alert? 'success-alert': 'danger-alert'">
+              <div class="alert-msg d-flex align-items-center justify-content-center p-2">
+                <span class="material-icons"></span>
+                <p class="m-0">{{ alert_msg }}</p>
+              </div>
+            </div>
+
+            <div class="row m-0 justify-content-end">
+              <button type="submit" [disabled]="vendorForm.submit" class="primary-btn d-flex justify-content-center align-items-center">
+                SUBMIT
+                <div *ngIf="vendorForm.submit" class="box">
+                  <div class="spinner"></div>
+                </div>
+              </button>
+            </div>
+
+          </form>
+        </div>
+      </div>
+      <div class="col-md-1"></div>
+    </div>
+  </section>
+</section>

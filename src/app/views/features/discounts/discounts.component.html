@@ -1,0 +1,83 @@
+<section *ngIf="pageLoader">
+  <app-loading-spinner></app-loading-spinner>
+</section>
+
+<section *ngIf="!pageLoader && !commonService.discount_page?.discount_list" class="over-all smooth-fadein">
+  <section class="site-section">
+    <div class="{{template_setting?.body_type}}">
+      <div>
+        <div class="row">
+          <div class="col-md-12 d-flex align-items-center justify-content-center">
+            <p class="d-flex align-items-center justify-content-center mt-5">Sale</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</section>
+
+<section class="over-all smooth-fadein" *ngIf="!pageLoader && commonService.discount_page?.discount_list">
+
+  <!-- breadcrumb -->
+  <section class="head-breadcrumb">
+    <div class="{{template_setting?.body_type}}">
+      <div class="row">
+        <div *ngIf="commonService.discount_page?.page_config?.heading" class="col-md-12">
+          <div class="head-breadcrumb-inner border-btm d-flex justify-content-between">
+            <div>
+              <h2>{{ commonService.discount_page.page_config.heading }}</h2>
+              <p *ngIf="commonService.discount_page.page_config?.sub_heading">{{ commonService.discount_page.page_config.sub_heading }}</p>
+            </div>
+            <div *ngIf="template_setting?.display_goback && commonService?.desktop_device" class="d-flex align-items-center justify-content-end">
+              <span (click)="commonService.goBack();">GO BACK</span>
+            </div>
+          </div>
+        </div>
+
+        <div *ngIf="template_setting?.breadcrumb" class="col-md-12">
+          <div class="breadcrumb-navigation mt-3">
+            <ul class="collapsed">
+              <li><a routerLink="/">Home</a></li>
+              <li><span class="active-page">Sale</span></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!--# breadcrumb #-->
+
+  <section class="common-site-section our-team">
+    <div class="{{template_setting?.body_type}}">
+      <div *ngIf="commonService.discount_page?.discount_list?.length" class="row">
+        <div *ngFor="let x of commonService.discount_page.discount_list | orderDesc:'rank' | paginate: { itemsPerPage: pageSize, currentPage: page };" class="col-lg-3 col-md-6 col-sm-6 col-12 d-flex">
+          <div class="team-member gift-card cursor">
+            <figure (click)="!x.btn_status? onSelectDiscount(x): ''">
+              <img width="100%" height="100%" appImgLazyLoad [ImagelazyLoad]="imgBaseUrl+x.image" alt="offer">
+            </figure>
+            <div class="gift-card-values">
+              <h4 *ngIf="x.heading" class="text-uppercase">{{x.heading}}</h4>
+              <p *ngIf="x.sub_heading" class="blog-description">{{x.sub_heading}}</p>
+              <button *ngIf="x.btn_status" class="primary-btn d-flex justify-content-center align-items-center w-100" (click)="onSelectDiscount(x);">{{x.btn_text}}</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-12 navigation-ngx">
+          <div>
+            <pagination-controls (pageChange)="page=$event; commonService.pageScrollTop();" autoHide="true" responsive="true" maxSize="5" previousLabel="" nextLabel=""></pagination-controls>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="!commonService.discount_page?.discount_list?.length" class="row">
+        <div class="col-12">
+          <div class="live_order_id">
+            <h5 align="center">No offers found</h5>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</section>

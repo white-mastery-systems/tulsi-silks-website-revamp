@@ -1,0 +1,208 @@
+<section *ngIf="pageLoader">
+  <app-loading-spinner></app-loading-spinner>
+</section>
+
+<section class="over-all smooth-fadein" *ngIf="!pageLoader">
+  <!-- breadcrumb -->
+  <section class="head-breadcrumb">
+    <div class="{{template_setting?.body_type}}">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="head-breadcrumb-inner border-btm d-flex justify-content-between">
+            <div>
+              <h2>Rate your recent purchase</h2>
+              <p>Your review makes a difference</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- # breadcrumb #-->
+
+  <section class="common-site-section">
+    <div class="{{template_setting?.body_type}}">
+      <div>
+        <h5>#{{orderDetails?.order_number}}</h5>
+      </div>
+      <div class="row gray-card primary-card p-3" *ngFor="let x of orderDetails.item_list; let i=index;">
+        <div class="col-lg-9 col-md-12">
+          <div class="live-order">
+            <div class="d-flex flex-row">
+              <div class="mr-2">
+                <img width="100%" height="100%" appImgLazyLoad [ImagelazyLoad]="imgBaseUrl+x.image" alt="product">
+              </div>
+              <div class="live-order-card">
+                <h5>{{x.name}}</h5>
+                <ng-container *ngIf="x.variant_status">
+                  <small class="summary-addon" *ngFor="let y of x.variant_types; let j=index;">
+                    <strong>{{y.name}}</strong>
+                    <span>: {{y.value}}</span>
+                  </small>
+                </ng-container>
+                <small class="summary-addon" *ngIf="x.addon_status && x.selected_addon">
+                  <strong>Addon: </strong>
+                  <span>{{x.selected_addon?.name}}<ng-container *ngIf="x.customization_status"> - </ng-container></span>
+                  <span *ngIf="x.customization_status" class="cursor" (click)=" commonService.onViewModel(x.customized_model);">
+                    {{x.customized_model?.name}}
+                  </span>
+                </small>
+                <small class="summary-addon">
+                  {{x.quantity}} {{template_setting?.display_unit? x.unit: ''}}
+                </small>
+                <small class="summary-addon">
+                  {{ x.final_price | currency:orderDetails.currency_type?.country_code:'symbol':cc.format }}
+                </small>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-3 col-md-12 d-flex align-items-center justify-content-center">
+          <div class="profile_address-btn">
+            <button class="primary-btn d-flex justify-content-center align-items-center" *ngIf="!x.review_details" (click)="x.submit=true; getProductDetails(i, reviewModal);" type="button" [disabled]="x.submit">
+              REVIEW PRODUCT
+              <div class="box" *ngIf="x.submit">
+                <div class="spinner"></div>
+              </div>
+            </button>
+            <div *ngIf="x.review_details" (click)="getReviewDetails(x, reviewModal);" class="cursor rating-preview">
+              <div *ngFor="let y of x.rating;" class="rating-preview-inner">
+                <img width="100%" height="100%" [ngClass]="y.selected? 'active-rating': ''" src="assets/images/icons/star.svg" alt="rating">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</section>
+
+<!-- review modal -->
+<div bsModal #reviewModal="bs-modal" class="modal fade" [config]="{backdrop: 'static'}" tabindex="-1" role="dialog" aria-labelledby="dialog-addr">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h6 class="modal-title">Rating & Reviews</h6>
+      </div>
+      <form autocomplete="off" (ngSubmit)="onupdate(reviewModal);" ngNativeValidate>
+        <div class="modal-body forgot-model-input">
+          <div class="row">
+            <div class="col-lg-12">
+              <div class="gray-card primary-card p-3 live-order">
+                <div class="d-flex flex-row">
+                  <div class="mr-2">
+                    <img width="100%" height="100%" [src]="imgBaseUrl+selected_product?.image" alt="product">
+                  </div>
+                  <div class="live-order-card">
+                    <h5>{{selected_product?.name}}</h5>
+                    <ng-container *ngIf="selected_product?.variant_status">
+                      <small class="summary-addon" *ngFor="let y of selected_product?.variant_types; let j=index;">
+                        <strong>{{y.name}}</strong>
+                        <span>: {{y.value}}</span>
+                      </small>
+                    </ng-container>
+                    <small class="summary-addon" *ngIf="selected_product?.addon_status && selected_product?.selected_addon">
+                      <strong>Addon: </strong>
+                      <span>{{selected_product.selected_addon?.name}}<ng-container *ngIf="selected_product.customization_status"> - </ng-container></span>
+                      <span *ngIf="selected_product.customization_status" class="cursor" (click)=" commonService.onViewModel(selected_product.customized_model);">
+                        {{selected_product.customized_model?.name}}
+                      </span>
+                    </small>
+                    <small class="summary-addon">
+                      {{selected_product?.quantity}} {{template_setting?.display_unit? selected_product?.unit: ''}}
+                    </small>
+                    <small class="summary-addon">
+                      {{ selected_product?.final_price | currency:orderDetails.currency_type?.country_code:'symbol':cc.format }}
+                    </small>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-12">
+              <div class="product-rating-wrapper gray-card primary-card p-3">
+                <div class="rate-prod-icon-wrapper mb-3">
+                  <h6 *ngIf="reviewForm.store_id">Rate this product</h6>
+                  <div class="rate-prod-icon-inner-wrapper">
+                    <div class="rating-form mb-3">
+                      <ng-container *ngIf="reviewForm.store_id">
+                        <div class="rate-prod-star">
+                          <input type="radio" name="rating" [ngClass]="(reviewForm.rating>=1)? 'active-rating': ''" [value]="1" [(ngModel)]="reviewForm.rating" class="rating-star">
+                        </div>
+                        <div class="rate-prod-star">
+                          <input type="radio" name="rating" [ngClass]="(reviewForm.rating>=2)? 'active-rating': ''" [value]="2" [(ngModel)]="reviewForm.rating" class="rating-star">
+                        </div>
+                        <div class="rate-prod-star">
+                          <input type="radio" name="rating" [ngClass]="(reviewForm.rating>=3)? 'active-rating': ''" [value]="3" [(ngModel)]="reviewForm.rating" class="rating-star">
+                        </div>
+                        <div class="rate-prod-star">
+                          <input type="radio" name="rating" [ngClass]="(reviewForm.rating>=4)? 'active-rating': ''" [value]="4" [(ngModel)]="reviewForm.rating" class="rating-star">
+                        </div>
+                        <div class="rate-prod-star">
+                          <input type="radio" name="rating" [ngClass]="(reviewForm.rating>=5)? 'active-rating': ''" [value]="5" [(ngModel)]="reviewForm.rating" class="rating-star">
+                        </div>
+                      </ng-container>
+                      <div *ngIf="!reviewForm.store_id" class="rating-preview">
+                        <div *ngFor="let y of selected_product.rating;" class="rating-preview-inner">
+                          <img width="100%" height="100%" [ngClass]="y.selected? 'active-rating': ''" src="assets/images/icons/star.svg" alt="rating">
+                        </div>
+                      </div>
+                      <div class="rate-prod-star ml-3">
+                        <span *ngIf="reviewForm.rating==1" class="rating-hint">Very Bad</span>
+                        <span *ngIf="reviewForm.rating==2" class="rating-hint">Bad</span>
+                        <span *ngIf="reviewForm.rating==3" class="rating-hint">Good</span>
+                        <span *ngIf="reviewForm.rating==4" class="rating-hint">Very Good</span>
+                        <span *ngIf="reviewForm.rating==5" class="rating-hint">Excellent</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <ng-container *ngIf="reviewForm.store_id">
+                  <div class="rate-title-wrapper mb-3">
+                    <h6>Title</h6>
+                    <input class="w-100" type="text" name="title" [(ngModel)]="reviewForm.title" #title="ngModel" required>
+                  </div>
+                  <div class="rate-description-wrapper mb-3">
+                    <h6>Description:</h6>
+                    <textarea class="w-100" name="description" [(ngModel)]="reviewForm.description" #description="ngModel" required></textarea>
+                  </div>
+                </ng-container>
+                <ng-container *ngIf="!reviewForm.store_id">
+                  <div class="rate-description-wrapper mb-3">
+                    <h6>Title</h6>
+                    <p>{{reviewForm.title}}</p>
+                  </div>
+                  <div class="rate-description-wrapper">
+                    <h6>Description</h6>
+                    <p [innerHtml]="reviewForm.description"></p>
+                  </div>
+                </ng-container>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer" style="display: block;">
+          <div *ngIf="reviewForm?.error_msg" class="col-12 px-0 danger-alert">
+            <div class="alert-msg d-flex align-items-center justify-content-center p-2">
+              <span class="material-icons"></span>
+              <p class="m-0">{{reviewForm.error_msg}}</p>
+            </div>
+          </div>
+          <div *ngIf="reviewForm.store_id" class="col-12 px-0 d-flex justify-content-end">
+            <button type="button" class="secondary-btn mr-2" (click)="reviewModal.hide();">CANCEL</button>
+            <button class="primary-btn d-flex justify-content-center align-items-center" type="submit" [disabled]="reviewForm.submit">
+              SUBMIT
+              <div class="box" *ngIf="reviewForm.submit">
+                <div class="spinner"></div>
+              </div>
+            </button>
+          </div>
+          <div *ngIf="!reviewForm.store_id" class="col-12 px-0 d-flex justify-content-end">
+            <button type="button" class="primary-btn" (click)="reviewModal.hide();">CLOSE</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<app-customization></app-customization>

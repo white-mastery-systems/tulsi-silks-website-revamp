@@ -1,0 +1,135 @@
+<section class="over-all smooth-fadein">
+
+  <!-- breadcrumb -->
+  <section class="head-breadcrumb">
+    <div class="{{template_setting?.body_type}}">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="head-breadcrumb-inner border-btm d-flex justify-content-between">
+            <div>
+              <h2>Search</h2>
+              <p>Search products on our site</p>
+            </div>
+            <div *ngIf="template_setting?.display_goback && commonService?.desktop_device" class="d-flex align-items-center justify-content-end">
+              <span (click)="commonService.goBack();">GO BACK</span>
+            </div>
+          </div>
+        </div>
+
+        <div *ngIf="template_setting?.breadcrumb" class="col-md-12">
+          <div class="breadcrumb-navigation mt-3">
+            <ul class="collapsed">
+              <li><a routerLink="/">Home</a></li>
+              <li><span class="active-page">Search</span></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!--# breadcrumb #-->
+
+  <section class="common-site-section">
+    <div class="{{template_setting?.body_type}}">
+      <div class="row">
+        <div class="col-12">
+          <div class="search-box-component">
+            <div class="search-content">
+              <div class="inner">
+                <div class="{{template_setting?.body_type}}">
+                  <form autocomplete="off" (ngSubmit)="onSubmit();" ngNativeValidate>
+                    <input type="text" placeholder="Search all products" (input)="afterSearchEvent=false;" name="name" [(ngModel)]="searchForm.name">
+                    <ng-container *ngIf="commonService.search_category_list.length">
+                      <span>//</span>
+                      <select name="category" [(ngModel)]="searchForm.category_id" (change)="afterSearchEvent=false;">
+                        <option value="" selected hidden>Select Category</option>
+                        <option *ngFor="let x of commonService.search_category_list | orderAsc: 'rank';" [ngValue]="x._id">{{x.name}}</option>
+                      </select>
+                    </ng-container>
+                    <button class="primary-btn" type="submit" [disabled]="searchForm?.name?.length<3">SEARCH</button>
+                  </form>
+                  <ng-container *ngIf="commonService.application_setting?.search_keywords?.length">
+                    <h5>Popular Search Terms</h5>
+                    <ul>
+                      <li *ngFor="let x of commonService.application_setting.search_keywords;">
+                        <a (click)="searchForm.name=x; onSubmit();">{{x}}</a>
+                      </li>
+                    </ul>
+                  </ng-container>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="afterSearchEvent" class="{{template_setting?.body_type}}">
+
+      <div class="row">
+        <div class="col-12">
+          <div class="product-search">
+            <h4 class="border-btm pb-2">Product List</h4>
+          </div>
+        </div>
+      </div>
+
+      <ng-container *ngIf="!searchLoader">
+        <ng-container *ngIf="product_list?.length">
+          <div class="row" *ngFor="let x of product_list | orderDesc:'rank'; let i=index;">
+            <a class="col-md-12 txt-none" style="text-decoration: none;" (click)="onSelectProduct(x);" routerLink="{{ x.seo_status ? '/product/'+x.seo_details.page_url : '/product/'+x._id }}">
+              <div class="search-list">
+                <div class="row">
+                  <div class="col-6">
+                    <div class="search-list-desc p-15">
+                      <h5>{{x.name}}</h5>
+                      <p class="overflow-dots-text overflow-dots" [innerHtml]="x.description"></p>
+                    </div>
+                  </div>
+                  <div class="col-6">
+                    <div class="search-list-img h-100 p-15 d-flex justify-content-end align-items-center">
+                      <figure class="pos-relative">
+                        <!-- label -->
+                        <div class="product_labellist label_{{commonService.application_setting?.tag_position}}">
+                          <span class="span_label" *ngIf="commonService.store_properties?.auto_tags?.sold_out && x.stock<=0">
+                            {{commonService.store_properties?.auto_tags?.sold_out}}
+                          </span>
+                        </div>
+                        <img width="100%" height="100%" appLqimgLoad appDeferLoad [ImagelazyLoad]="imgBaseUrl+x.image_list[0]?.image" alt="product-search">
+                      </figure>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </a>
+          </div>
+        </ng-container>
+        <div *ngIf="!product_list?.length" align="center">
+
+
+          <div class="col-12">
+            <div class="no-items d-flex align-items-center justify-content-center">
+              <img width="100%" height="100%" imgBroken src="assets/images/no_items_found.svg" alt="not-found">
+            </div>
+          </div>
+          <div class="col-md-12" align="center">
+            <div class="no-items-letter">
+              <p>No products to show</p>
+            </div>
+          </div>
+
+
+          <!-- <p class="m-0 pt-5 pb-5">No products to show</p> -->
+        </div>
+      </ng-container>
+
+      <div *ngIf="searchLoader" class="row">
+        <div class="col-12" align="center">
+          <p class="m-0 pt-5 pb-5">Searching...</p>
+        </div>
+      </div>
+
+    </div>
+
+  </section>
+</section>

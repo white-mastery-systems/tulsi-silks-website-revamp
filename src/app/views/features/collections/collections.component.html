@@ -1,0 +1,85 @@
+<section class="over-all smooth-fadein">
+
+	<!-- breadcrumb -->
+	<section class="head-breadcrumb">
+		<div class="{{template_setting?.body_type}}">
+			<div class="row">
+				<div class="col-md-12">
+					<div class="breadcrumb-navigation my-1">
+						<ul class="collapsed">
+							<li>
+								<a routerLink="/">Home</a>
+							</li>
+							<li>
+								<a class="active-page">Brands</a>
+							</li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+  </section>
+  <!--# breadcrumb #-->
+  
+	<section>
+		<div class="{{template_setting?.body_type}}">
+			<div *ngIf="!commonService.collection_list?.length" class="row pt-5">
+				<div class="col-md-12">
+					<div class="live_order_id">
+						<h5 align="center">No brands found</h5>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<section *ngIf="commonService.collection_list?.length" class="brand-sec common-site-section">
+		<div class="{{template_setting?.body_type}}">
+			<div class="brands-wrapper">
+				<div class="row w-100 m-0">
+					<div class="col-md-12 d-flex justify-content-center">
+						<div class="form-group has-search mb-4" align="center">
+							<span class="material-icons form-control-feedback">search</span>
+							<input type="text" class="form-control" name="search" [(ngModel)]="searchField" placeholder="Search for brands">
+						</div>
+					</div>
+
+					<div class="col-md-12 px-0">
+						<!--Brand Heading-->
+						<div class="brands-az">
+							<span *ngFor="let x of commonService.collection_list | orderAsc: 'rank'; let i=index;" class="az-container">
+								<a class="az-scroll" [ngClass]="(selectedIndex===i)? 'is-active': ''" (click)="selectedIndex=i; scroll(i+1);">{{x.name}}</a>
+							</span>
+						</div>
+						<!--#Brand Heading-->
+
+						<!-- Brand Content-->
+						<div class="brands-content">
+							<ng-container *ngFor="let x of commonService.collection_list | nestedSearch:'option_list':'name':searchField | orderAsc: 'rank'; let i=index;">
+								<div *ngIf="!x.notFound" id=heading-{{i+1}} class="brands-group">
+									<h2 class="brands-groupkey">{{x.name}}</h2>
+									<div class="brands-name">
+										<p *ngFor="let y of x.option_list | orderSearch:'name':searchField; let j=index;">
+											<a (click)="commonService.onPageRedirect(y);">{{y.name}}</a>
+										</p>
+									</div>
+								</div>
+								<!-- not found -->
+								<div *ngIf="x.notFound" class="row search-no-results">
+									<div class="col-md-12" align="center">
+										<div class="no-items-letter">
+											<p>No results found for "{{searchField}}"</p>
+										</div>
+									</div>
+								</div>
+							</ng-container>
+						</div>
+						<!--#Brand Content-->
+					</div>
+
+				</div>
+			</div>
+		</div>
+	</section>
+
+</section>

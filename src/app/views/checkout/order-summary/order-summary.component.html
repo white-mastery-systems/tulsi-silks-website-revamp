@@ -1,0 +1,326 @@
+<section *ngIf="pageLoader">
+  <app-loading-spinner></app-loading-spinner>
+</section>
+
+<section class="over-all smooth-fadein" *ngIf="!pageLoader">
+
+  <!-- breadcrumb -->
+  <section class="head-breadcrumb">
+    <div class="{{template_setting?.body_type}}">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="head-breadcrumb-inner border-btm d-flex justify-content-between">
+            <div>
+              <h2>Order Confirmation</h2>
+            </div>
+            <div *ngIf="template_setting?.display_goback && commonService?.desktop_device"
+              class="d-flex align-items-center justify-content-end">
+              <span routerLink="/">GO BACK</span>
+            </div>
+          </div>
+        </div>
+
+        <div *ngIf="template_setting?.breadcrumb" class="col-md-12">
+          <div class="breadcrumb-navigation mt-3">
+            <ul class="collapsed">
+              <li><a routerLink="/">Home</a></li>
+              <li><a class="active-page">Order Confirmation</a></li>
+            </ul>
+          </div>
+        </div>
+
+        <div clas="col-md-12">
+          <div class="order-confirmed mt-4 mb-4">
+            <ul *ngIf="params?.type=='product'">
+              Your order was placed successfully!
+              <li *ngIf="order_details?.order_type!='pickup'">- Thank you for shopping with us, your order will be confirmed shortly.</li>
+              <li *ngIf="order_details?.order_type=='pickup'">- Thank you for placing an order with us, your order will be confirmed shortly.</li>
+              <li>- An automated payment receipt has been sent to your registered email.</li>
+              <li>- You can track your order under <strong class="cursor" routerLink="/account/my-orders/order-list/live">Live Orders</strong> in My Account.</li>
+            </ul>
+            <ul *ngIf="params?.type=='giftcard'">
+              Your order was placed successfully!
+              <li>- Thank you for shopping with us, your gift card has been sent to <strong>{{order_details?.to_email}}.</strong></li>
+              <li>- An automated payment receipt has been sent to your registered email.</li>
+              <li>- You can find your gift card under <strong class="cursor" routerLink="/account/my-orders/coupon-list">Gift Coupons</strong> in My Account.</li>
+            </ul>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+  <!--# breadcrumb #-->
+
+  <!-- for product -->
+  <section *ngIf="params?.type=='product'" class="common-site-section myaccount pt-0">
+    <div class="{{template_setting?.body_type}}">
+      <div clas="row">
+        <div class="col-md-12 p-0">
+          <h2>Order Summary</h2>
+          <p>#{{order_details?.order_number}}</p>
+        </div>
+      </div>
+
+      <div class="gray-card primary-card p-3">
+        <div class="row">
+          <div class="col-lg-3 col-md-12">
+            <div class="live_order_card_inner">
+              <h6>{{ (order_details?.order_type=='pickup')? 'Pickup': 'Shipping' }} Address</h6>
+              <p>{{order_details?.shipping_address?.address}}</p>
+              <a *ngIf="order_details?.shipping_address?.location_url" [href]="order_details.shipping_address.location_url" target="_blank">
+                <u>Get Directions</u>
+              </a>
+            </div>
+          </div>
+          <div class="col-lg-3 col-md-12">
+            <div class="live_order_card_inner">
+              <h6>Payment Method</h6>
+              <p>{{ (order_details?.payment_details?.name)? order_details.payment_details.name: 'NA' }}</p>
+            </div>
+          </div>
+          <div class="col-lg-6 col-md-12">
+            <div class="row">
+              <div class="col-12 live_order_card_inner">
+                <h6>Order Summary</h6>
+              </div>
+              <div class="col-6 live_order_card_inner">
+                <p>Item Subtotal</p>
+              </div>
+              <div class="col-6 live_order_card_inner">
+                <p class="pull-right">
+                  {{ order_details.sub_total | currency:order_details?.currency_type?.country_code:'symbol':cc.format }}
+                </p>
+              </div>
+              <ng-container *ngIf="order_details.gift_wrapper>0">
+                <div class="col-6 live_order_card_inner">
+                  <p>Gift Wrapping</p>
+                </div>
+                <div class="col-6 live_order_card_inner">
+                  <p class="pull-right">
+                    {{ order_details.gift_wrapper | currency:order_details?.currency_type?.country_code:'symbol':cc.format }}
+                  </p>
+                </div>
+              </ng-container>
+              <ng-container *ngIf="order_details.packaging_charges>0">
+                <div class="col-6 live_order_card_inner">
+                  <p>Packaging Charges</p>
+                </div>
+                <div class="col-6 live_order_card_inner">
+                  <p class="pull-right">
+                    {{ order_details.packaging_charges | currency:order_details?.currency_type?.country_code:'symbol':cc.format }}
+                  </p>
+                </div>
+              </ng-container>
+              <ng-container *ngIf="order_details.order_type=='delivery'">
+                <div class="col-6 live_order_card_inner">
+                  <p>Shipping and Handling</p>
+                </div>
+                <div class="col-6 live_order_card_inner">
+                  <p *ngIf="order_details.shipping_cost>0" class="pull-right">
+                    {{ order_details.shipping_cost | currency:order_details?.currency_type?.country_code:'symbol':cc.format }}
+                  </p>
+                  <p *ngIf="order_details.shipping_cost==0" class="pull-right">FREE</p>
+                </div>
+              </ng-container>
+              <ng-container *ngIf="order_details.cod_charges>0">
+                <div class="col-6 live_order_card_inner">
+                  <p>COD Charges</p>
+                </div>
+                <div class="col-6 live_order_card_inner">
+                  <p class="pull-right">
+                    {{ order_details.cod_charges | currency:order_details?.currency_type?.country_code:'symbol':cc.format }}
+                  </p>
+                </div>
+              </ng-container>
+              <ng-container *ngIf="order_details.discount_amount>0">
+                <div class="col-6 live_order_card_inner">
+                  <p>Discount</p>
+                </div>
+                <div class="col-6 live_order_card_inner">
+                  <p class="pull-right">
+                    {{ order_details.discount_amount | currency:order_details?.currency_type?.country_code:'symbol':cc.format }}
+                  </p>
+                </div>
+              </ng-container>
+              <div class="col-6 live_order_card_inner">
+                <p>Grand Total</p>
+              </div>
+              <div class="col-6 live_order_card_inner">
+                <p class="pull-right">
+                  {{ order_details.final_price | currency:order_details?.currency_type?.country_code:'symbol':cc.format }}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="gray-card primary-card p-3">
+        <div class="row">
+          <div class="col-lg-3 col-md-12">
+            <div class="live_order_card_inner">
+              <h6>Order On</h6>
+              <p>{{order_details.created_on | date: "dd MMM yyyy"}}</p>
+            </div>
+          </div>
+          <div class="col-lg-3 col-md-12">
+            <div class="live_order_card_inner">
+              <h6>Order Value</h6>
+              <p>
+                {{ order_details.final_price | currency:order_details?.currency_type?.country_code:'symbol':cc.format }}
+              </p>
+            </div>
+          </div>
+          <div class="col-lg-3 col-md-12">
+            <div class="live_order_card_inner">
+              <h6>{{ (order_details?.order_type=='pickup')? 'Pickup From': 'Ship To' }}</h6>
+              <p>{{ order_details.shipping_address?.name }}</p>
+            </div>
+          </div>
+          <div class="col-lg-3 col-md-12">
+            <div *ngIf="order_details.shipping_method?.delivery_method" class="live_order_card_inner">
+              <h6>{{order_details?.order_type | titlecase}} Time</h6>
+              <p>
+                {{ order_details.shipping_method?.delivery_date }}<br>{{ order_details.shipping_method?.delivery_time }}
+              </p>
+            </div>
+            <div *ngIf="!order_details.shipping_method?.delivery_method" class="live_order_card_inner">
+              <h6>Carrier</h6>
+              <p>{{ (order_details?.shipping_method?.name)? order_details.shipping_method.name: 'NA' }}</p>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-12">
+            <div class="status_head">
+              <div class="col-md-12 p-0">
+                <!-- status -->
+                <h5>Status</h5>
+                <p>Placed On {{order_details.created_on | date: "dd MMM yyyy"}}</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-lg-12">
+            <div class="row">
+              <!-- item list -->
+              <div class="col-md-12 p-0">
+                <div class="pr-3 pl-3">
+                  <div *ngFor="let x of order_details.item_list;" class="live-order border-top border-btm pt-2 pb-2 mb-2">
+                    <div class="d-flex flex-row">
+                      <div class="mr-2">
+                        <img width="100%" height="100%" appImgLazyLoad [ImagelazyLoad]="imgBaseUrl+x.image" alt="product">
+                      </div>
+                      <div class="live-order-card">
+                        <h5>{{x.name}}</h5>
+                        <ng-container *ngIf="x.variant_status">
+                          <small class="summary-addon" *ngFor="let y of x.variant_types; let j=index;">
+                            <strong>{{y.name}}</strong>
+                            <span>: {{y.value}}</span>
+                          </small>
+                        </ng-container>
+                        <small class="summary-addon" *ngIf="x.addon_status && x.selected_addon">
+                          <strong>Addon: </strong>
+                          <span>{{x.selected_addon?.name}}<ng-container *ngIf="x.customization_status"> - </ng-container></span>
+                          <span *ngIf="x.customization_status" class="cursor" (click)=" commonService.onViewModel(x.customized_model);">
+                            {{x.customized_model?.name}}
+                          </span>
+                        </small>
+                        <small class="summary-addon">{{x.quantity}} {{template_setting?.display_unit? x.unit: ''}}</small>
+                        <small class="summary-addon">
+                          {{ x.final_price | currency:order_details?.currency_type?.country_code:'symbol':cc.format }}
+                        </small>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- #item list -->
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- for gift card -->
+  <section *ngIf="params?.type=='giftcard'" class="common-site-section myaccount pt-0">
+    <div class="{{template_setting?.body_type}}">
+      <div clas="row">
+        <div class="col-md-12 p-0">
+          <h2>Order Summary</h2>
+          <p>#{{order_details?.order_number}}</p>
+        </div>
+      </div>
+
+      <div class="gray-card primary-card p-3">
+        <div class="row">
+          <div class="col-lg-3 col-md-6">
+            <div class="live_order_card_inner">
+              <h6>Order On</h6>
+              <p>{{order_details?.created_on | date: "dd MMM yyyy"}}</p>
+            </div>
+          </div>
+          <div class="col-lg-3 col-md-6">
+            <div class="live_order_card_inner">
+              <h6>Coupon Value</h6>
+              <p>
+                {{ order_details?.price | currency:order_details?.currency_type?.country_code:'symbol':cc.format }}
+              </p>
+            </div>
+          </div>
+          <div class="col-lg-3 col-md-6">
+            <div class="live_order_card_inner">
+              <h6>Payment Method</h6>
+              <p>{{order_details?.payment_details?.name}}</p>
+            </div>
+          </div>
+          <div class="col-lg-3 col-md-6">
+            <div class="live_order_card_inner">
+              <h6>Valid Till</h6>
+              <p>{{order_details?.expiry_on | date: "dd MMM yyyy"}}</p>
+            </div>
+          </div>
+        </div>
+        <br>
+        <div class="row">
+          <div class="col-lg-3 col-md-6">
+            <div class="live_order_card_inner">
+              <h6>From</h6>
+              <p>{{order_details?.from_name}}</p>
+            </div>
+          </div>
+          <div class="col-lg-3 col-md-6">
+            <div class="live_order_card_inner">
+              <h6>To</h6>
+              <p>{{order_details?.to_name}} ({{order_details?.to_email}})</p>
+            </div>
+          </div>
+          <div class="col-lg-3 col-md-6">
+            <div class="live_order_card_inner">
+              <h6>Message</h6>
+              <p>{{order_details?.message}}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- for donation -->
+  <section *ngIf="params?.type=='donation'" class="common-site-section">
+    <div class="{{template_setting?.body_type}}">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="d-flex align-items-center justify-content-center flex-column">
+            <h2>Thank You for Your Contribution</h2>
+            <button class="primary-btn mt-5" type="button" routerLink="/">CONTINUE SHOPPING</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</section>

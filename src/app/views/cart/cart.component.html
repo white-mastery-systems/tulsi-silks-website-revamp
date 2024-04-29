@@ -1,0 +1,317 @@
+<section *ngIf="pageLoader">
+  <app-loading-spinner></app-loading-spinner>
+</section>
+
+<section class="over-all smooth-fadein" *ngIf="!pageLoader">
+
+  <!-- breadcrumb -->
+  <section class="head-breadcrumb">
+    <div class="{{template_setting?.body_type}}">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="head-breadcrumb-inner border-btm d-flex justify-content-between">
+            <div>
+              <h2>Shopping Bag</h2>
+              <p>Shipping and taxes calculated at checkout</p>
+            </div>
+            <div *ngIf="template_setting?.display_goback && commonService?.desktop_device" class="d-flex align-items-center justify-content-end">
+              <span (click)="commonService.goBack();">GO BACK</span>
+            </div>
+          </div>
+        </div>
+
+        <div *ngIf="template_setting?.breadcrumb" class="col-md-12">
+          <div class="breadcrumb-navigation mt-3">
+            <ul class="collapsed">
+              <li><a routerLink="/">Home</a></li>
+              <li><span class="active-page">Shopping Bag</span></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!--# breadcrumb #-->
+
+  <section class="common-site-section shopping-cart">
+    <div *ngIf="list?.length" class="{{template_setting?.body_type}}">
+      <div class="row mobile-cart-flex-clm-rvs">
+        <div [ngClass]="(commonService.store_properties.pickup_locations?.length)? 'col-lg-8': 'col-lg-12'">
+          <!-- for desktop -->
+          <div *ngIf="commonService?.screen_width>=992">
+            <table class="table">
+              <thead class="wishlist-head">
+                <tr>
+                  <td colspan="2"><h6>PRODUCT</h6></td>
+                  <td><h6>QUANTITY</h6></td>
+                  <td><h6>PRICE</h6></td>
+                  <td></td>
+                </tr>
+              </thead>
+
+              <tbody>
+                <tr *ngFor="let x of list; let i=index;">
+                  <td>
+                    <figure class="cursor" routerLink="{{ x.seo_status ? '/product/'+x.seo_details.page_url : '/product/'+x.product_id }}">
+                      <img width="100%" height="100%" appImgLazyLoad [ImagelazyLoad]="imgBaseUrl+x.image" alt="Image">
+                    </figure>
+                  </td>
+                  <td>
+                    <h4 class="cursor" routerLink="{{ x.seo_status ? '/product/'+x.seo_details.page_url : '/product/'+x.product_id }}">
+                      {{x.name}}</h4>
+                    <ng-container *ngIf="x.variant_status">
+                      <small *ngFor="let y of x.variant_types; let j=index;">
+                        <strong>{{y.name}}</strong>
+                        <span>: {{y.value}}</span>
+                      </small>
+                    </ng-container>
+                    <small *ngIf="x.addon_status && x.selected_addon">
+                      <strong>Addon: </strong>
+                      <span>{{x.selected_addon?.name}}<ng-container *ngIf="x.customization_status"> - </ng-container></span>
+                      <span *ngIf="x.customization_status" class="cursor" (click)=" commonService.onViewModel(x.customized_model);">
+                        {{x.customized_model?.name}}
+                      </span>
+                    </small>
+                    <p class="error-msg" *ngIf="unique_product_list?.length && x.unavailable">
+                      <ng-container *ngIf="x.available_qty>0">Only {{ x.available_qty }} {{ x.unit }} available in stock</ng-container>
+                      <ng-container *ngIf="x.available_qty==0">SOLD OUT</ng-container>
+                    </p>
+                  </td>
+                  <td class="pro-quantity">
+                    <div class="d-flex justify-content-start align-items-center">
+                      <!-- Quantity Selector -->
+                      <div *ngIf="template_setting?.enable_product_inc && x.additional_qty==0" class="pro-qty d-flex justify-content-center align-items-center height-100">
+                        <button (click)="decProductQuantity(i);">
+                          <i class="material-icons">remove</i>
+                        </button>
+                        <span class="btn-width">{{ x.quantity }}</span>
+                        <button [ngClass]="x.stock>x.quantity? '': 'qty-btn-disabled'" (click)="x.stock>x.quantity? incProductQuantity(i): '';">
+                          <i class="material-icons">add</i>
+                        </button>
+                      </div>
+                      <!-- Quantity Selector End-->
+                      <span *ngIf="!template_setting?.enable_product_inc || x.additional_qty>0" class="ml-2">{{ x.quantity }}</span>
+                      <span *ngIf="template_setting?.display_unit" class="ml-2">{{ x.unit }}</span>
+                    </div>
+                  </td>
+                  <td>
+                    <span class="cursor" routerLink="{{ x.seo_status ? '/product/'+x.seo_details.page_url : '/product/'+x.product_id }}">
+                      {{ x.temp_final_price | currency:cc.currency?.country_code:'symbol':cc.format }}
+                    </span>
+                  </td>
+                  <td class="text-center">
+                    <a (click)="removeFromCart(i);">
+                      <i class="material-icons delete-icon">delete</i>
+                    </a>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <!-- # for desktop # -->
+        </div>
+        <div [ngClass]="(commonService.store_properties.pickup_locations?.length)? 'col-lg-4': 'offset-lg-6 col-lg-6'">
+          <div *ngIf="commonService.store_properties.pickup_locations?.length" class="cart-shipping-select-wrapper">
+            <!-- order type -->
+            <div class="d-flex shipping-select">
+              <label [ngClass]="commonService.application_setting.disable_delivery? 'display-none': ''">
+                <input type="radio" class="shipping-input-element d-none" name="order_type" value="delivery" [(ngModel)]="orderType">
+                <div class="card d-flex flex-column justify-content-center align-items-center">
+                  <i class="material-icons">local_shipping</i>
+                  <p class="m-0">Delivery</p>
+                </div>
+              </label>
+              <label>
+                <input type="radio" class="shipping-input-element d-none" name="order_type" value="pickup" (click)="pickupAddrIndex=0;" [(ngModel)]="orderType">
+                <div class="card d-flex flex-column justify-content-center align-items-center">
+                  <i class="material-icons">store</i>
+                  <p class="m-0">Store pickup</p>
+                </div>
+              </label>
+            </div>
+            <!-- pickup addresses -->
+            <div *ngIf="orderType=='pickup'" class="cart-pickup-address">
+              <div *ngIf="commonService.store_properties.pickup_locations.length>1" class="pickup-hint">
+                <p>Please choose a nearest pickup location:</p>
+              </div>
+              <div class="cart-pickup-address-inner">
+                <label *ngFor="let loc of commonService.store_properties.pickup_locations | orderAsc: 'rank'; let l=index;" class="store-label w-100" [ngClass]="(pickupAddrIndex===l)? 'checked-bg': ''">
+                  <input type="radio" class="option-input radio" name="pickup_loc" (click)="pickupAddrIndex=l;" [checked]="pickupAddrIndex===l"/>
+                  <span>
+                    <span class="title">{{loc.name}}</span>
+                    {{loc.address}}
+                    <a *ngIf="loc.location_url" [href]="loc.location_url" target="_blank" class="more-info">More information</a>
+                  </span>
+                </label>
+              </div>
+            </div>
+          </div>
+          <!-- checkout section -->
+          <div class="p-0">
+            <div class="cart-page-total product-order-details gray-card primary-card p-3 mt-1 mb-3">
+              <div class="row border-btm">
+                <div class="col-6">
+                  <div class="product-order-type border-none pb-3">
+                    <h4>BAG TOTAL
+                      <span class="total-items">({{cartQty}} {{ cartQty>1 ? 'Items' : 'Item' }})</span>
+                    </h4>
+                  </div>
+                </div>
+                <div class="col-6 d-flex justify-content-end">
+                  <div class="product-order-type border-none pb-3">
+                    <h4 class="total-items">{{ tempCartTotal | currency:cc.currency?.country_code:'symbol':cc.format }}</h4>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-12 pt-3">
+                  <button class="secondary-btn w-100 mt-1 mb-1" type="button" routerLink="/">Continue Shopping</button>
+                  <ng-container *ngIf="commonService.store_properties.pickup_locations?.length || !commonService.application_setting.disable_delivery">
+                    <!-- alert some items are not available -->
+                    <div class="danger-alert" *ngIf="unique_product_list?.length && cart_product_unavailable_alert;">
+                      <div class="alert-msg d-flex align-items-center justify-content-center p-2">
+                        <span class="material-icons"></span>
+                        <p class="m-0">Some items are not available</p>
+                      </div>
+                    </div>
+                    <!-- alert minimum cart value -->
+                    <div class="danger-alert" *ngIf="commonService.application_setting.min_checkout_value > cartTotal">
+                      <div class="alert-msg d-flex align-items-center justify-content-center p-2">
+                        <span class="material-icons"></span>
+                        <p class="m-0">
+                          Minimum checkout value is {{ tempMinCheckoutValue | currency:cc.currency?.country_code:'symbol':cc.format }}
+                        </p>
+                      </div>
+                    </div>
+                    <!-- alert too much items -->
+                    <div class="danger-alert" *ngIf="commonService.application_setting.max_shipping_weight > 0 && cartWeight > commonService.application_setting.max_shipping_weight">
+                      <div class="alert-msg d-flex align-items-center justify-content-center p-2">
+                        <span class="material-icons"></span>
+                        <p class="m-0">Too much items in your cart</p>
+                      </div>
+                    </div>
+                    <!-- if max shipping wgt restriction exist -->
+                    <ng-container *ngIf="commonService.application_setting.max_shipping_weight > 0 && commonService.application_setting.max_shipping_weight >= cartWeight && cartTotal >= commonService.application_setting.min_checkout_value">
+                      <button class="primary-btn d-flex justify-content-center align-items-center w-100 mt-1 mb-1" [disabled]="btnLoader" (click)="onCheckout();" type="button">
+                        CHECKOUT
+                        <div class="box" *ngIf="btnLoader">
+                          <div class="spinner"></div>
+                        </div>
+                        <em></em>
+                      </button>
+                    </ng-container>
+                    <!-- if max shipping wgt restriction not exist -->
+                    <ng-container *ngIf="commonService.application_setting.max_shipping_weight===0 && cartTotal >= commonService.application_setting.min_checkout_value">
+                      <button class="primary-btn d-flex justify-content-center align-items-center w-100 mt-1 mb-1" [disabled]="btnLoader" (click)="onCheckout();" type="button">
+                        CHECKOUT
+                        <div class="box" *ngIf="btnLoader">
+                          <div class="spinner"></div>
+                        </div>
+                        <em></em>
+                      </button>
+                    </ng-container>
+                  </ng-container>
+                  <ng-container *ngIf="!commonService.store_properties.pickup_locations?.length && commonService.application_setting.disable_delivery && commonService.ys_features.indexOf('whatsapp_chat')!=-1 && commonService.application_setting.chat_status && commonService.application_setting.chat_config?.type=='whatsapp'">
+                    <a href="https://api.whatsapp.com/send?phone={{commonService.application_setting.chat_config.mobile}}&text={{commonService.application_setting.chat_config.message}}" class="w-100" target="_blank">
+                      <button class="primary-btn w-100" type="button">ENQUIRE NOW</button>
+                    </a>
+                  </ng-container>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- for mobile -->
+        <div *ngIf="commonService?.screen_width<992" class="mobile-cart">
+          <div class="gray-card primary-card p-3">
+            <div class="row">
+              <div class="col-md-12">
+                <h6 class="m-0">PRODUCT</h6>
+              </div>
+
+              <div *ngFor="let x of list; let i=index;" class="col-md-12">
+                <div class="product border-top border-btm pt-3 pb-3 mt-3 mb-3">
+
+                  <div class="product-img">
+                    <figure class="cursor" routerLink="{{ x.seo_status ? '/product/'+x.seo_details.page_url : '/product/'+x.product_id }}">
+                      <img width="100%" height="100%" appImgLazyLoad [ImagelazyLoad]="imgBaseUrl+x.image" alt="Image">
+                    </figure>
+                  </div>
+
+                  <div class="d-flex flex-column w-100">
+                    <div class="product-name mt-2 mb-2">
+                      <h4 class="cursor" routerLink="{{ x.seo_status ? '/product/'+x.seo_details.page_url : '/product/'+x.product_id }}">{{x.name}}</h4>
+                      <ng-container *ngIf="x.variant_status">
+                        <small *ngFor="let y of x.variant_types; let j=index;">
+                          <strong>{{y.name}}</strong>
+                          <span>: {{y.value}}</span>
+                        </small>
+                      </ng-container>
+                      <small *ngIf="x.addon_status && x.selected_addon">
+                        <strong>Addon: </strong>
+                        <span>{{x.selected_addon?.name}}<ng-container *ngIf="x.customization_status"> - </ng-container></span>
+                        <span *ngIf="x.customization_status" class="cursor" (click)=" commonService.onViewModel(x.customized_model);">
+                          {{x.customized_model?.name}}
+                        </span>
+                      </small>
+                      <p class="error-msg" *ngIf="unique_product_list?.length && x.unavailable">
+                        <ng-container *ngIf="x.available_qty>0">Only {{ x.available_qty }} {{ x.unit }} available in stock</ng-container>
+                        <ng-container *ngIf="x.available_qty==0">SOLD OUT</ng-container>
+                      </p>
+                    </div>
+
+                    <div class="mt-2 mb-2">
+                      <div class="d-flex justify-content-start align-items-center">
+                        <!-- Quantity Selector -->
+                        <div *ngIf="template_setting?.enable_product_inc" class="pro-qty d-flex  justify-content-center align-items-center height-100">
+                          <button (click)="decProductQuantity(i);">
+                            <i class="material-icons">remove</i>
+                          </button>
+                          <span class="btn-width">{{ x.quantity }}</span>
+                          <button [ngClass]="x.stock>x.quantity? '': 'qty-btn-disabled'" (click)="x.stock>x.quantity? incProductQuantity(i): '';">
+                            <i class="material-icons">add</i>
+                          </button>
+                        </div>
+                        <!-- Quantity Selector End-->
+                        <span *ngIf="!template_setting?.enable_product_inc" class="ml-2">{{ x.quantity }}</span>
+                        <span *ngIf="template_setting?.display_unit" class="ml-2">{{ x.unit }}</span>
+                      </div>
+                    </div>
+
+                    <div class="mt-2 mb-2">
+                      <span class="cursor" routerLink="{{ x.seo_status ? '/product/'+x.seo_details.page_url : '/product/'+x.product_id }}">
+                        {{ x.temp_final_price | currency:cc.currency?.country_code:'symbol':cc.format }}
+                      </span>
+                    </div>
+
+                    <div class="d-flex justify-content-end mt-2 mb-2" (click)="removeFromCart(i);">
+                      <i class="material-icons delete-icon">delete</i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- # for mobile # -->
+      </div>
+    </div>
+    <!-- items not found -->
+    <div *ngIf="!list?.length" class="{{template_setting?.body_type}}">
+      <div class="row">
+        <div class="col-12">
+          <div class="no-items d-flex align-items-center justify-content-center">
+            <img width="100%" height="100%" imgBroken src="assets/images/no_items_found.svg" alt="not-found">
+          </div>
+        </div>
+        <div class="col-12" align="center">
+          <div class="no-items-letter">
+            <p>No items to show</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</section>
+
+<app-customization></app-customization>

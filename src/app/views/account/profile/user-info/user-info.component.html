@@ -1,0 +1,212 @@
+<section *ngIf="pageLoader">
+  <app-loading-spinner></app-loading-spinner>
+</section>
+
+<section class="over-all smooth-fadein" *ngIf="!pageLoader">
+
+  <!-- breadcrumb -->
+  <section class="head-breadcrumb">
+    <div class="{{template_setting?.body_type}}">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="head-breadcrumb-inner border-btm d-flex justify-content-between">
+            <div>
+              <h2>Profile Info</h2>
+              <p>Edit your personal details</p>
+            </div>
+            <div *ngIf="template_setting?.display_goback && commonService?.desktop_device" class="d-flex align-items-center justify-content-end">
+              <span (click)="commonService.goBack();">GO BACK</span>
+            </div>
+          </div>
+        </div>
+
+        <div *ngIf="template_setting?.breadcrumb" class="col-md-12">
+          <div class="breadcrumb-navigation mt-3">
+            <ul class="collapsed">
+              <li><a routerLink="/">Home</a></li>
+              <li><a routerLink="/account">My Account</a></li>
+              <li><a routerLink="/account/profile">My Profile</a></li>
+              <li><span class="active-page">Profile Info</span></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!--# breadcrumb #-->
+
+  <section class="common-site-section">
+    <div class="{{template_setting?.body_type}}">
+      <!-- email -->
+      <div class="row">
+        <div class="col-md-12 mb-3">
+          <h5>Email</h5>
+          <div class="gray-card primary-card p-3">
+            <div class="profile_card_inner">
+              <h6>{{customer_details.email}}</h6>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- name -->
+      <div class="row">
+        <div class="col-md-12 mb-3">
+          <h5>Name</h5>
+          <div class="gray-card primary-card profile-detail-card p-3">
+            <form autocomplete="off" (ngSubmit)="onUpdateName({ name: customer_details.name });" ngNativeValidate>
+              <div class="row">
+                <div class="col-md-6 d-flex align-items-center">
+                  <h6 class="m-0" *ngIf="!customer_details?.name_change">{{customer_details.name}}</h6>
+                  <input *ngIf="customer_details?.name_change" type="text" name="name" [(ngModel)]="customer_details.name" #name="ngModel" required>
+                </div>
+                <div class="col-md-6 d-flex align-items-center justify-content-end">
+                  <button class="primary-btn" *ngIf="!customer_details?.name_change" type="button" (click)="customer_details.name_change=true;">CHANGE</button>
+                  <button class="primary-btn d-flex justify-content-center align-items-center" [disabled]="customer_details?.name_update" *ngIf="customer_details?.name_change" type="submit">
+                    SAVE
+                    <div class="box" *ngIf="customer_details?.name_update">
+                      <div class="spinner"></div>
+                    </div>
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- mobile -->
+      <div class="row">
+        <div class="col-md-12 mb-3">
+          <h5>Mobile No</h5>
+          <div class="gray-card primary-card profile-detail-card p-3">
+            <form autocomplete="off" (ngSubmit)="onUpdateMobile({ dial_code: customer_details.dial_code, mobile: customer_details.mobile });" ngNativeValidate>
+              <div class="row">
+                <div class="col-md-6 d-flex align-items-center">
+                  <h6 class="m-0" *ngIf="!customer_details?.mobile_change">
+                    {{ (customer_details?.dial_code && customer_details?.mobile)? customer_details?.dial_code+' '+customer_details.mobile: 'Not Available' }}
+                  </h6>
+                  <div *ngIf="customer_details?.mobile_change" class="input-group modal-phone-no">
+                    <div class="input-group-prepend">
+                      <select name="dial_code" [(ngModel)]="customer_details.dial_code" #dial_code="ngModel" (change)="onDialCodeChange(customer_details.dial_code);" required class="form-control h-auto">
+                        <option *ngFor="let x of commonService.country_list | orderAsc: 'dial_code';" [ngValue]="x.dial_code">{{x.dial_code}}</option>
+                      </select>
+                    </div>
+                    <input *ngIf="!mobile_pattern" type="tel" class="form-control border-radius-0" name="mobile" [(ngModel)]="customer_details.mobile" #mobile="ngModel" appNumberOnly required>
+                    <input *ngIf="mobile_pattern" type="tel" class="form-control border-radius-0" name="mobile" [(ngModel)]="customer_details.mobile" #mobile="ngModel" [pattern]="mobile_pattern"
+                    maxlength="{{mobileno_length}}" title="Please fill {{mobileno_length}} digit mobile number" appNumberOnly required>
+                  </div>
+                </div>
+                <div class="col-md-6 d-flex align-items-center justify-content-end">
+                  <button class="primary-btn" *ngIf="!customer_details?.mobile_change" type="button" (click)="onEditMobile();">
+                    {{ (customer_details?.mobile)? 'CHANGE': 'ADD' }}
+                  </button>
+                  <button class="primary-btn d-flex justify-content-center align-items-center" [disabled]="customer_details?.mobile_update" *ngIf="customer_details?.mobile_change" type="submit">
+                    SAVE
+                    <div class="box" *ngIf="customer_details?.mobile_update">
+                      <div class="spinner"></div>
+                    </div>
+                  </button>
+                </div>
+                <div class="col-md-12" *ngIf="customer_details.errorMsg">
+                  <div class="danger-alert">
+                    <div class="alert-msg d-flex align-items-center justify-content-center p-2">
+                      <span class="material-icons"></span>
+                      <p class="m-0">{{customer_details.errorMsg}}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- password -->
+      <div *ngIf="customer_details?.password" class="row">
+        <div class="col-md-12 mb-3">
+          <h5>Password</h5>
+          <div class="gray-card primary-card profile-detail-card p-3">
+            <div class="row">
+              <div class="col-md-6 d-flex align-items-center">
+                <h6 class="m-0">******</h6>
+              </div>
+              <div class="col-md-6 d-flex align-items-center justify-content-end">
+                <button class="primary-btn" type="button" (click)="pwdForm={}; changePwdModal.show();">CHANGE</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+</section>
+
+<!-- change pwd modal -->
+<div bsModal #changePwdModal="bs-modal" class="modal fade modal-position1" [config]="{backdrop: 'static'}" tabindex="-1" role="dialog" aria-labelledby="dialog-waiter">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h6 class="modal-title" id="defaultModalLabel">Change Password</h6>
+      </div>
+      <form autocomplete="off" (ngSubmit)="onChangePwd(changePwdModal);" ngNativeValidate>
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-md-12">
+              <div class="gray-card primary-card p-3">
+                <p>Current Password</p>
+                <input class="w-100" type="password" name="current_pwd" [(ngModel)]="pwdForm.current_pwd" #current_pwd="ngModel" required
+                />
+              </div>
+            </div>
+            <div class="col-md-12">
+              <div class="gray-card primary-card p-3">
+                <p>New Password</p>
+                <div class="input-group icon-input-group">
+                  <input class="form-control" [type]="pwdForm.input_txt? 'text': 'password'" name="new_pwd" [(ngModel)]="pwdForm.new_pwd" #new_pwd="ngModel"
+                    pattern=".{6,}" title="Six or more characters" required />
+                  <div class="input-group-append icon-append">
+                    <span class="input-group-text">
+                      <i class="material-icons" *ngIf="!pwdForm.input_txt" (click)="pwdForm.input_txt = !pwdForm.input_txt" aria-hidden="true">visibility</i>
+                      <i class="material-icons" *ngIf="pwdForm.input_txt" (click)="pwdForm.input_txt = !pwdForm.input_txt" aria-hidden="true">visibility_off</i>
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-12">
+              <div class="gray-card primary-card p-3">
+                <p>Confirm New Password</p>
+                <div class="input-group icon-input-group">
+                  <input class="form-control" type="password" name="confirm_new_pwd" [(ngModel)]="pwdForm.confirm_new_pwd" #confirm_new_pwd="ngModel"
+                    required />
+                  <div class="input-group-append icon-append">
+                    <span class="input-group-text">
+                      <i *ngIf="pwdForm.confirm_new_pwd && pwdForm.new_pwd==pwdForm.confirm_new_pwd" class="material-icons verified" aria-hidden="true">check_circle_outline</i>
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="danger-alert" *ngIf="pwdForm.errorMsg">
+            <div class="alert-msg d-flex align-items-center justify-content-center p-2">
+              <span class="material-icons"></span>
+              <p class="m-0">{{pwdForm.errorMsg}}</p>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="secondary-btn" (click)="changePwdModal.hide();">CLOSE</button>
+          <button class="primary-btn d-flex justify-content-center align-items-center" type="submit" [disabled]="pwdForm.new_pwd!=pwdForm.confirm_new_pwd || pwdForm.submit">
+            SUBMIT
+            <div class="box" *ngIf="pwdForm.submit">
+              <div class="spinner"></div>
+            </div>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

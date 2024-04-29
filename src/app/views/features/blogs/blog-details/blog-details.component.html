@@ -1,0 +1,64 @@
+<section *ngIf="pageLoader">
+  <app-loading-spinner></app-loading-spinner>
+</section>
+
+<section class="over-all smooth-fadein" *ngIf="!pageLoader">
+
+  <!-- SEO h1 tag -->
+  <h1 *ngIf="blog_details?.seo_status" [hidden]="true">{{blog_details?.seo_details?.h1_tag}}</h1>
+  <!-- #SEO h1 tag -->
+
+  <!-- breadcrumb -->
+  <section class="head-breadcrumb">
+    <div class="{{template_setting?.body_type}}">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="head-breadcrumb-inner border-btm d-flex justify-content-between">
+            <div>
+              <h2>Blogs</h2>
+              <p>Stories that inspire</p>
+            </div>
+            <div *ngIf="template_setting?.display_goback && commonService?.desktop_device" class="d-flex align-items-center justify-content-end">
+              <span (click)="commonService.goBack();">GO BACK</span>
+            </div>
+          </div>
+        </div>
+
+        <div *ngIf="template_setting?.breadcrumb" class="col-md-12">
+          <div class="breadcrumb-navigation mt-3">
+            <ul class="collapsed">
+              <li><a routerLink="/">Home</a></li>
+              <li *ngIf="commonService?.previous_route=='/blogs'"><a routerLink="/blogs">Blogs</a></li>
+              <li><span class="active-page">{{blog_details?.name}}</span></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!--# breadcrumb #-->
+
+  <section class="common-site-section">
+    <div class="{{template_setting?.body_type}}">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="blog-post blog-details">
+            <figure class="blog-image d-flex align-items-center justify-content-center">
+              <img width="100%" height="100%" appImgLazyLoad [ImagelazyLoad]="imgBaseUrl+blog_details.image" alt="{{(blog_details.img_alt)? blog_details.img_alt: 'blog-image'}}">
+            </figure>
+            <div class="blog-content d-flex flex-column">
+              <small class="post-info">{{blog_details.created_on | date: "dd MMMM yyyy"}} | {{blog_details.author}}</small>
+              <p class="blog-title">{{blog_details.name}}</p>
+              <div class="ql-container">
+                <div class="ql-editor">
+                  <p [innerHtml]="blog_details.description"></p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</section>

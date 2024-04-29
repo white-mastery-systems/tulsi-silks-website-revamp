@@ -1,0 +1,385 @@
+<section *ngIf="pageLoader">
+  <app-loading-spinner></app-loading-spinner>
+</section>
+
+<!-- Before login -->
+<section class="over-all smooth-fadein" *ngIf="!commonService?.customer_token && !pageLoader">
+  <section class="common-site-section account">
+    <div class="{{template_setting?.body_type}}">
+      <div class="row">
+        <div class="col-md-12 d-flex justify-content-center smooth-fadein">
+          <div class="account-card primary-card p-5 mb-3">
+            <!-- Social Login -->
+            <div class="d-flex flex-column align-items-center">
+              <h4 align="center">{{ (formType=='signup')? 'Sign up': 'Sign in' }}</h4>
+              <ng-container *ngIf="commonService.ys_features.indexOf('social_login')!=-1">
+                <ng-container *ngIf="commonService.application_setting.facebook_id || commonService.application_setting.google_id">
+                  <p>with your social network</p>
+                  <div class="social-login">
+                    <!-- facebook -->
+                    <div *ngIf="commonService.application_setting.facebook_id" class="social-login-icon" (click)="socialSignIn('facebook');">
+                      <a>
+                        <img width="100%" height="100%" src="assets/images/icons/facebook.svg" alt="facebook">
+                        <span>FACEBOOK</span>
+                      </a>
+                    </div>
+                    <!-- google -->
+                    <div *ngIf="commonService.application_setting.google_id" class="social-login-icon" (click)="socialSignIn('google');">
+                      <a>
+                        <img width="100%" height="100%" src="assets/images/icons/google.svg" alt="google">
+                        <span>GOOGLE</span>
+                      </a>
+                    </div>
+                  </div>
+                  <div class="socaial-or-sec pt-3">
+                    <h2><span>Or</span></h2>
+                  </div>
+                </ng-container>
+              </ng-container>
+            </div>
+
+            <!-- Register -->
+            <form *ngIf="formType=='signup'" autocomplete="off" (ngSubmit)="onRegister();" ngNativeValidate>
+              <div class="border-btm pb-3">
+                <div class="row">
+                  <div class="form-group col-12">
+                    <label for="name">Name</label>
+                    <input type="text" name="name" id="name" [(ngModel)]="registerForm.name" #name="ngModel"
+                      (input)="registerForm.errorMsg=null;" required />
+                  </div>
+                  <div class="form-group col-12">
+                    <label for="email">E-mail</label>
+                    <input type="email" name="email" id="email" [(ngModel)]="registerForm.email" #email="ngModel" (input)="registerForm.errorMsg=null;"
+                    pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" title="Please enter a valid Email ID" appLowercase required />
+                  </div>
+                  <div class="col-sm-6">
+                    <div class="input-group icon-input-group mb-3">
+                      <label for="password">Password</label>
+                      <input class="form-control" [type]="registerForm.input_txt? 'text': 'password'" name="password"
+                        id="password" [(ngModel)]="registerForm.password" #password="ngModel" pattern=".{6,}"
+                        title="Six or more characters" (input)="registerForm.errorMsg=null;" required />
+                      <div class="input-group-append icon-append">
+                        <span class="input-group-text">
+                          <i class="material-icons" *ngIf="!registerForm.input_txt"
+                            (click)="registerForm.input_txt = !registerForm.input_txt" aria-hidden="true">visibility</i>
+                          <i class="material-icons" *ngIf="registerForm.input_txt"
+                            (click)="registerForm.input_txt = !registerForm.input_txt"
+                            aria-hidden="true">visibility_off</i>
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-sm-6">
+                    <div class="input-group icon-input-group mb-3">
+                      <label for="confirm_pwd">Re-Type Password</label>
+                      <input class="form-control" type="password" name="confirm_pwd" id="confirm_pwd"
+                        [(ngModel)]="registerForm.confirm_pwd" #confirm_pwd="ngModel"
+                        (input)="registerForm.errorMsg=null;" required />
+                      <div class="input-group-append icon-append">
+                        <span class="input-group-text">
+                          <i *ngIf="registerForm.confirm_pwd && registerForm.password==registerForm.confirm_pwd"
+                            class="material-icons verified" aria-hidden="true">check_circle</i>
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-md-12">
+                    <div class="forgot_register-sec mt-3 mb-3">
+                      <div class="row">
+                        <div class="col-md-12">
+                          <div class="reset-password mb-3">
+                            <span>Already a member?</span>
+                            <a class="register-link" (click)="formType='signin'; scrollTop();"> Sign in</a>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- alert -->
+                  <div class="col-md-12 smooth-fadein" *ngIf="registerForm.errorMsg">
+                    <div class="danger-alert">
+                      <div class="alert-msg d-flex align-items-center justify-content-center p-2">
+                        <span class="material-icons"></span>
+                        <p class="m-0">{{registerForm.errorMsg}}</p>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- # alert #-->
+                  <div class="form-group col-12">
+                    <button class="primary-btn d-flex justify-content-center align-items-center w-100" type="submit" 
+                      [disabled]="registerForm.confirm_pwd && registerForm.password!=registerForm.confirm_pwd || registerForm.submit">
+                      SIGN UP
+                      <div class="box" *ngIf="registerForm.submit">
+                        <div class="spinner"></div>
+                      </div>
+                      <em></em>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </form>
+
+            <!-- Login -->
+            <form *ngIf="formType=='signin'" autocomplete="off" (ngSubmit)="onLogin();" ngNativeValidate>
+              <div class="border-btm pb-3">
+                <div class="row">
+                  <div class="form-group col-md-12">
+                    <label for="email">E-mail</label>
+                    <input type="email" name="email" id="email" [(ngModel)]="loginForm.email" #email="ngModel" (input)="loginForm.errorMsg=null;"
+                    pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" title="Please enter a valid Email ID" appLowercase required />
+                  </div>
+                  <div class="col-md-12">
+                    <div class="input-group icon-input-group mb-3">
+                      <label for="password">Password</label>
+                      <input class="form-control" [type]="loginForm.input_txt? 'text': 'password'" name="password"
+                        id="password" [(ngModel)]="loginForm.password" #password="ngModel"
+                        (input)="loginForm.errorMsg=null;" required />
+                      <div class="input-group-append icon-append">
+                        <span class="input-group-text">
+                          <i class="material-icons" *ngIf="!loginForm.input_txt"
+                            (click)="loginForm.input_txt = !loginForm.input_txt" aria-hidden="true">visibility</i>
+                          <i class="material-icons" *ngIf="loginForm.input_txt"
+                            (click)="loginForm.input_txt = !loginForm.input_txt" aria-hidden="true">visibility_off</i>
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-md-12">
+                    <div class="forgot_register-sec mt-3 mb-3">
+                      <div class="row">
+                        <div class="col-md-6">
+                          <div class="reset-password mb-3">
+                            <a (click)="forgotForm={}; forgotModal.show();">Reset password?</a>
+                          </div>
+                        </div>
+                        <div class="col-md-6">
+                          <div class="switch-register mb-3">
+                            <span>New here?</span>
+                            <a class="register-link" (click)="formType='signup'; scrollTop();"> Sign up</a>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- alert -->
+                  <div class="col-md-12" *ngIf="loginForm.errorMsg">
+                    <div class="danger-alert">
+                      <div class="alert-msg d-flex align-items-center justify-content-center p-2">
+                        <span class="material-icons"></span>
+                        <p class="m-0">{{loginForm.errorMsg}}</p>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- #alert# -->
+                  <div class="form-group col-12">
+                    <button class="primary-btn d-flex justify-content-center align-items-center w-100" type="submit" [disabled]="loginForm.submit">
+                      SIGN IN
+                      <div class="box" *ngIf="loginForm.submit">
+                        <div class="spinner"></div>
+                      </div>
+                      <em></em>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</section>
+
+<!-- After login -->
+<section class="over-all smooth-fadein" *ngIf="commonService?.customer_token && !pageLoader">
+  <!-- breadcrumb -->
+  <section class="head-breadcrumb">
+    <div class="{{template_setting?.body_type}}">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="head-breadcrumb-inner border-btm d-flex justify-content-between">
+            <div>
+              <h2>My Account</h2>
+              <p>Manage your info and orders here</p>
+            </div>
+            <div *ngIf="template_setting?.display_goback && commonService?.desktop_device"
+              class="d-flex align-items-center justify-content-end">
+              <span (click)="commonService.goBack();">GO BACK</span>
+            </div>
+          </div>
+        </div>
+
+        <div *ngIf="template_setting?.breadcrumb" class="col-md-12">
+          <div class="breadcrumb-navigation mt-3">
+            <ul class="collapsed">
+              <li><a routerLink="/">Home</a></li>
+              <li><span class="active-page">My Account</span></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- # breadcrumb #-->
+  <section class="common-site-section myaccount">
+    <div class="{{template_setting?.body_type}}">
+      <div class="row">
+        <!-- orders -->
+        <div class="col-md-6 mb-2 mt-2 d-flex">
+          <div class="col-md-12 d-sm-flex myaccount__card primary-card" routerLink="/account/my-orders">
+            <div class="myaccount-icon d-flex justify-content-center align-items-center xs-pd-l-20">
+              <i class="material-icons">view_list</i>
+            </div>
+            <div class="myaccount__body pr-2 m_flex m_text_center">
+              <div class="my_acc_card_head">
+                <h4 class="mb-3">My Orders</h4>
+                <p class="text-muted">Track, return or buy products again</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- appointment -->
+        <div *ngIf="commonService.ys_features.indexOf('appointment_scheduler')!=-1" class="col-md-6 mb-2 mt-2 d-flex">
+          <div class="col-md-12 d-sm-flex myaccount__card primary-card" routerLink="/account/my-appointments">
+            <div class="myaccount-icon d-flex justify-content-center align-items-center xs-pd-l-20">
+              <i class="material-icons">event</i>
+            </div>
+            <div class="myaccount__body pr-2 m_flex m_text_center">
+              <div class="my_acc_card_head">
+                <h4 class="mb-3">My Appointments</h4>
+                <p class="text-muted">Check your booked appointments</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- feedback -->
+        <ng-container *ngIf="commonService.ys_features.indexOf('appointment_scheduler')==-1">
+          <div *ngIf="commonService.ys_features.indexOf('customer_feedback')!=-1 && commonService.application_setting?.feedback" class="col-md-6 mb-2 mt-2 d-flex">
+            <div class="col-md-12 d-sm-flex myaccount__card primary-card" routerLink="/account/feedback">
+              <div class="myaccount-icon d-flex justify-content-center align-items-center xs-pd-l-20">
+                <i class="material-icons">sentiment_satisfied_alt</i>
+              </div>
+              <div class="myaccount__body pr-2 m_flex m_text_center">
+                <div class="my_acc_card_head">
+                  <h4 class="mb-3">Give Feedback</h4>
+                  <p class="text-muted">Rate the quality of our products and services</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </ng-container>
+
+        <!-- profile -->
+        <div class="col-md-6 mb-2 mt-2 d-flex">
+          <div class="col-md-12 d-sm-flex myaccount__card primary-card" routerLink="/account/profile">
+            <div class="myaccount-icon d-flex justify-content-center align-items-center xs-pd-l-20">
+              <i class="material-icons">folder_shared</i>
+            </div>
+            <div class="myaccount__body pr-2 m_flex m_text_center">
+              <div class="my_acc_card_head">
+                <h4 class="mb-3">My Profile</h4>
+                <p class="text-muted">Edit you personal info and addresses</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- wishlist -->
+        <div class="col-md-6 mb-2 mt-2 d-flex">
+          <div class="col-md-12 d-sm-flex myaccount__card primary-card" routerLink="/wishlist">
+            <div class="myaccount-icon d-flex justify-content-center align-items-center xs-pd-l-20">
+              <i class="material-icons">favorite</i>
+            </div>
+            <div class="myaccount__body pr-2 m_flex m_text_center">
+              <div class="my_acc_card_head">
+                <h4 class="mb-3">My Wishlist</h4>
+                <p class="text-muted">Keep track of all your favourite products</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- feedback -->
+        <div *ngIf="commonService.ys_features.indexOf('appointment_scheduler')!=-1 && commonService.ys_features.indexOf('customer_feedback')!=-1 && commonService.application_setting?.feedback" class="col-md-6 mb-2 mt-2 d-flex">
+          <div class="col-md-12 d-sm-flex myaccount__card primary-card" routerLink="/account/feedback">
+            <div class="myaccount-icon d-flex justify-content-center align-items-center xs-pd-l-20">
+              <i class="material-icons">sentiment_satisfied_alt</i>
+            </div>
+            <div class="myaccount__body pr-2 m_flex m_text_center">
+              <div class="my_acc_card_head">
+                <h4 class="mb-3">Give Feedback</h4>
+                <p class="text-muted">Rate the quality of our products and services</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row mt-5">
+        <div class="col-md-12">
+          <div class="acoount_logout">
+            <button (click)="logoutModal.show();" class="primary-btn">LOGOUT</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</section>
+
+<!-- Forgot Password Modal -->
+<div bsModal #forgotModal="bs-modal" class="modal fade modal-position1" tabindex="-1" role="dialog"
+  aria-labelledby="dialog-waiter">
+  <div class="modal-dialog modal-md" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h6 class="modal-title m-0">Account Recovery</h6>
+      </div>
+      <form autocomplete="off" (ngSubmit)="onForgot();" ngNativeValidate>
+        <div class="modal-body forgot-model-input">
+          <div>
+            <div class="gray-card primary-card p-3 m-0">
+              <input class="w-100" type="email" name="email" placeholder="Email" [(ngModel)]="forgotForm.email" #email="ngModel" (input)="forgotForm.alert_msg=null;"
+              pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" title="Please enter a valid Email ID" appLowercase required />
+            </div>
+          </div>
+          <div class="mt-2 mb-2">
+            <p class="m-0">A link to reset your password will be sent to this email address</p>
+          </div>
+          <div *ngIf="forgotForm.alert_msg" [ngClass]="forgotForm.req_status ? 'success-alert' : 'danger-alert'">
+            <div class="alert-msg d-flex align-items-center justify-content-center p-2">
+              <span class="material-icons"></span>
+              <p class="m-0">{{ forgotForm.alert_msg }}</p>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="secondary-btn" (click)="forgotModal.hide();">CLOSE</button>
+          <button type="submit" class="primary-btn d-flex justify-content-center align-items-center" [disabled]="forgotForm.submit">
+            SUBMIT
+            <div class="box" *ngIf="forgotForm.submit">
+              <div class="spinner"></div>
+            </div>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- logout modal -->
+<div bsModal #logoutModal="bs-modal" class="modal fade modal-position1 logout-modal" tabindex="-1" role="dialog"
+  aria-labelledby="dialog-waiter">
+  <div class="modal-dialog modal-md" role="document">
+    <div class="modal-content">
+      <div class="modal-body">
+        <h6 class="m-0">Are you sure, you want to logout?</h6>
+      </div>
+      <div class="modal-footer">
+        <button class="secondary-btn" type="button" (click)="logoutModal.hide();">NO</button>
+        <button class="primary-btn" type="button" (click)="onLogout(logoutModal);">YES</button>
+      </div>
+    </div>
+  </div>
+</div>

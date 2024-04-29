@@ -1,0 +1,46 @@
+.slot-select {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+}
+
+.slot-selct-card {
+  box-shadow: none;
+  border: 2px solid transparent;
+  border-radius: 4px;
+  background-color: #1f1b24;
+  height: 100%;
+  padding: 20px 10px;
+  font-size: .9em;
+  text-align: center;
+  margin: 5px;
+  cursor: pointer;
+  h6 {
+    color: #fff;
+  }
+}
+
+.slot-inpt-elemt:checked+.slot-selct-card {
+  background-color: #0caa4e;
+  transition: border .3s;
+  color: #fff;
+}
+
+.slot-inpt-elemt:disabled+.slot-selct-card {
+  border: 1px solid #d4d4d4;
+  color: #000;
+  background-color: transparent;
+  cursor: not-allowed;
+  h6 {
+    color: #d4d4d4;
+  }
+}
+
+@media only screen and (max-width: 576px) {
+  .slot-select {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+  }
+  button {
+    width: 100%;
+  }
+}

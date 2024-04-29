@@ -1,0 +1,143 @@
+<a [hidden]="true" id="openCustomizationDetailsModal" (click)="openCustomDetails(); customizationDetailsModal.show();"></a>
+<div bsModal #customizationDetailsModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="dialog-model">
+  <div class="modal-dialog modal-lg modal-dialog-scrollable" role="document">
+    <div class="modal-content">
+      <div class="modal-header d-flex align-items-center">
+        <div>
+          <h5 class="modal-title">
+            <strong>{{commonService.selected_model?.name}}</strong>
+          </h5>
+          <p class="m-0">These are the details of the customization</p>
+        </div>
+        <div (click)="customizationDetailsModal.hide();" class="d-flex">
+          <i class="material-icons">close</i>
+        </div>
+      </div>
+
+      <div class="modal-body slim-scroll">
+        <!-- custom list -->
+        <div *ngIf="commonService.customView;" class="row">
+          <ng-container *ngFor="let x of commonService.selected_model?.custom_list; let i=index;">
+            <div class="col-md-6 d-flex" *ngFor="let y of x.value; let j=index;">
+              <div class="gray-card primary-card d-flex align-items-center w-100 p-3">
+                <div class="d-flex flex-row">
+                  <div class="modal-img">
+                    <img width="100%" height="100%" imgBroken *ngIf="y.image" [src]="imgBaseUrl+y.image" alt="model">
+                    <img width="100%" height="100%" imgBroken *ngIf="!y.image" class="addon-icon opacity6" src="assets/images/addon.svg" alt="model">
+                  </div>
+                  <div class="d-flex flex-column justify-content-center">
+                    <h6>{{x.name}}</h6>
+                    <p class="m-0">{{y.name}}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </ng-container>
+        </div>
+        <!-- measurement list -->
+        <div *ngIf="commonService.measurementView;" class="row">
+          <ng-container *ngFor="let x of commonService.selected_model?.mm_sets; let i=index;">
+            <div class="d-flex" [ngClass]="(commonService.selected_model?.mm_sets?.length===1)? 'col-md-12': 'col-md-6'">
+              <div class="gray-card primary-card w-100 p-3 mb-3">
+                <div align="center">
+                  <h5>{{x.name}}</h5>
+                </div>
+                <div>
+                  <div class="d-flex align-items-center justify-content-center mb-3">
+                    <img width="100%" height="100%" imgBroken *ngIf="x.image" [src]="imgBaseUrl+x.image" alt="model">
+                  </div>
+                  <ng-container *ngFor="let y of x.list; let j=index;">
+                    <div class="pr-1 pl-1">
+                      <div class="row measurement-table">
+                        <div class="col-6 d-flex juustify-content-start align-items-center border">
+                          <p class="m-0">{{y.name}}:</p>
+                        </div>
+                        <div class="col-6 d-flex juustify-content-start align-items-center border">
+                          <p class="m-0">{{y.value}} {{ commonService.selected_model?.mm_unit }}</p>
+                        </div>
+                      </div>
+                    </div>
+                  </ng-container>
+                </div>
+              </div>
+            </div>
+          </ng-container>
+        </div>
+        <!-- notes list -->
+        <div *ngIf="commonService.notesView;" class="row">
+          <ng-container *ngFor="let x of commonService.selected_model?.notes_list; let i=index;">
+            <div *ngIf="x.value" class="col-md-12 d-flex">
+              <div class="gray-card primary-card d-flex align-items-center w-100 p-3">
+                <div class="d-flex flex-row">
+                  <div class="d-flex flex-column justify-content-center">
+                    <h6>{{x.name}}</h6>
+                    <p class="m-0">{{x.value}}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </ng-container>
+        </div>
+      </div>
+
+      <div class="modal-footer custom-view-mdl-ftr-btn">
+        <div class="row w-100 justify-content-end m-0">
+          <!-- custom view -->
+          <ng-container *ngIf="commonService.customView">
+            <ng-container *ngIf="commonService.selected_model?.mm_sets?.length || commonService.selected_model?.notes_list?.length">
+              <div *ngIf="commonService.selected_model?.mm_sets?.length" class="col-md-6 col-6 pr-1 pl-1">
+                <button class="primary-btn w-100" type="button" (click)="commonService.customView=false; commonService.measurementView=true; commonService.notesView=false; commonService?.scrollModalTop(0);">
+                  VIEW MEASUREMENTS
+                </button>
+              </div>
+              <div *ngIf="commonService.selected_model?.notes_list?.length" class="col-md-6 col-6 pr-1 pl-1">
+                <button class="primary-btn w-100" type="button" (click)="commonService.customView=false; commonService.measurementView=false; commonService.notesView=true; commonService?.scrollModalTop(0);">
+                  VIEW NOTES
+                </button>
+              </div>
+            </ng-container>
+            <div *ngIf="!commonService.selected_model?.mm_sets?.length && !commonService.selected_model?.notes_list?.length" class="col-md-6 col-6 pr-1 pl-1">
+              <button class="primary-btn w-100" (click)="customizationDetailsModal.hide();" type="button">CLOSE</button>
+            </div>
+          </ng-container>
+          <!-- measurement view -->
+          <ng-container *ngIf="commonService.measurementView">
+            <ng-container *ngIf="commonService.selected_model?.custom_list?.length || commonService.selected_model?.notes_list?.length">
+              <div *ngIf="commonService.selected_model?.custom_list?.length" class="col-md-6 col-6 pr-1 pl-1">
+                <button class="primary-btn w-100" type="button" (click)="commonService.customView=true; commonService.measurementView=false; commonService.notesView=false; commonService?.scrollModalTop(0);">
+                  VIEW CUSTOMIZATION
+                </button>
+              </div>
+              <div *ngIf="commonService.selected_model?.notes_list?.length" class="col-md-6 col-6 pr-1 pl-1">
+                <button class="primary-btn w-100" type="button" (click)="commonService.customView=false; commonService.measurementView=false; commonService.notesView=true; commonService?.scrollModalTop(0);">
+                  VIEW NOTES
+                </button>
+              </div>
+            </ng-container>
+            <div *ngIf="!commonService.selected_model?.custom_list?.length && !commonService.selected_model?.notes_list?.length" class="col-md-6 col-6 pr-1 pl-1">
+              <button class="primary-btn w-100" (click)="customizationDetailsModal.hide();" type="button">CLOSE</button>
+            </div>
+          </ng-container>
+          <!-- notes view -->
+          <ng-container *ngIf="commonService.notesView">
+            <ng-container *ngIf="commonService.selected_model?.custom_list?.length || commonService.selected_model?.mm_sets?.length">
+              <div *ngIf="commonService.selected_model?.custom_list?.length" class="col-md-6 col-6 pr-1 pl-1">
+                <button class="primary-btn w-100" type="button" (click)="commonService.customView=true; commonService.measurementView=false; commonService.notesView=false; commonService?.scrollModalTop(0);">
+                  VIEW CUSTOMIZATION
+                </button>
+              </div>
+              <div *ngIf="commonService.selected_model?.mm_sets?.length" class="col-md-6 col-6 pr-1 pl-1">
+                <button class="primary-btn w-100" type="button" (click)="commonService.customView=false; commonService.measurementView=true; commonService.notesView=false; commonService?.scrollModalTop(0);">
+                  VIEW MEASUREMENTS
+                </button>
+              </div>
+            </ng-container>
+            <div *ngIf="!commonService.selected_model?.custom_list?.length && !commonService.selected_model?.mm_sets?.length" class="col-md-6 col-6 pr-1 pl-1">
+              <button class="primary-btn w-100" (click)="customizationDetailsModal.hide();" type="button">CLOSE</button>
+            </div>
+          </ng-container>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

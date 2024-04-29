@@ -1,0 +1,489 @@
+<section *ngIf="pageLoader">
+  <app-loading-spinner></app-loading-spinner>
+</section>
+
+<section class="over-all smooth-fadein" *ngIf="!pageLoader">
+
+  <!-- SEO h1 tag -->
+  <h1 *ngIf="category_details?.seo_details?.h1_tag && !category_details?.hc_status" [hidden]="true">
+    {{category_details.seo_details.h1_tag}}
+  </h1>
+  <!-- #SEO h1 tag -->
+
+  <!-- catalog image -->
+  <section *ngIf="category_details?.image" class="category-banner-sec data-bg">
+    <div class="category-banner">
+      <img width="100%" height="100%" appImgLazyLoad [ImagelazyLoad]="imgBaseUrl+category_details.image" alt="category-banner">
+      <div *ngIf="!template_setting?.breadcrumb" class="category-banner-text">
+        <h4>{{category_details.name}}</h4>
+      </div>
+    </div>
+  </section>
+  <!-- #catalog image -->
+
+  <section *ngIf="!category_details?.image && !template_setting?.breadcrumb" class="category-banner-no-bg">
+    <div class="category-banner-text pt-4">
+      <h4 class="m-0">{{category_details.name}}</h4>
+    </div>
+  </section>
+
+  <!-- header content -->
+  <section class="category-banner-content mt-3" *ngIf="category_details?.hc_status">
+    <div class="{{template_setting?.body_type}}">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="category-banner-accordion">
+            <div class="custom-accordion">
+              <div *ngIf="category_details?.seo_details?.h1_tag" class="acc-head">
+                <h1>{{category_details.seo_details.h1_tag}}</h1>
+              </div>
+              <ng-container *ngIf="category_details?.header_content?.length">
+                <div class="acc-body">
+                  <div class="text" [ngClass]="!showMore? 'cate-acc-oll': ''" [innerHtml]="category_details.header_content"></div>
+                </div>
+                <div class="acc-read-more mt-3">
+                  <button class="show-more-btn acc-more" (click)="showMore=!showMore;">
+                    {{ showMore? 'Read Less': 'Read More' }}
+                  </button>
+                </div>
+              </ng-container>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- #header content -->
+
+  <!-- breadcrumb -->
+  <section *ngIf="template_setting?.breadcrumb" class="head-breadcrumb">
+    <div class="{{template_setting?.body_type}}">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="breadcrumb-navigation mt-3">
+            <ul class="collapsed">
+              <li><a routerLink="/">Home</a></li>
+              <li *ngIf="category_details?.name">
+                <span class="active-page">{{category_details.name}}</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!--# breadcrumb #-->
+
+  <!-- product list -->
+  <section *ngIf="list.length" class="common-site-section product-list">
+    <div class="{{template_setting?.body_type}}">
+      <div class="row">
+
+        <!-- filters -->
+        <div *ngIf="commonService?.screen_width>=992 && tag_list?.length" class="col-lg-3">
+          <div class="col-md-12" style="height:50px;">
+            <p *ngIf="tagSelected" (click)="clearTagFilter();" class="cursor">Clear All</p>
+          </div>
+          <aside class="sidebar color-select">
+            <div class="accordion" [ngClass]="template_setting?.p_card? 'primary-card': ''" id="accordion" role="tablist">
+              <div class="card color-card" *ngFor="let x of tag_list | orderAsc: 'rank'; let i=index;">
+                <div class="card-header">
+                  <a class="tab-label" (click)="collapseIndex=i; onCreateTagList(list, true);" [attr.aria-expanded]="collapseIndex==i" aria-controls="collapseBasic"> {{x.name}}</a> 
+                </div>
+                <div id="collapseBasic" [collapse]="collapseIndex!=i" [isAnimated]="true">
+                  <div class="product-filter card-body">
+                    <div *ngIf="x?.option_list?.length>3" class="form-group has-search mb-3">
+                      <span class="material-icons form-control-feedback">search</span>
+                      <input type="text" class="form-control" name="tag_search{{i}}" [(ngModel)]="x.tag_search" (input)="x.show_more=true;" placeholder="Search {{x.name}}">
+                    </div>
+                    <!-- limited option -->
+                    <ng-container *ngIf="!x.show_more">
+                      <div *ngFor="let y of x.option_list | orderAsc: 'name' | slice:0:3 | orderSearch: 'name':x.tag_search; let j=index;">
+                        <label *ngIf="!y.notFound" class="store-label w-100 m-0 mb-3">
+                          <div class="d-flex align-items-center">
+                            <div>
+                              <input class="option-input checkbox" type="checkbox" name="{{y.checked}}" [checked]="y.checked" (change)="y.checked? y.checked=false: y.checked=true; onTagFilter(true);">
+                            </div>
+                            <div>
+                              <p class="m-0">{{y.name}}</p>
+                            </div>
+                          </div>
+                        </label>
+                        <p *ngIf="y.notFound">No matches found</p>
+                      </div>
+                    </ng-container>
+                    <!-- full option -->
+                    <ng-container *ngIf="x.show_more">
+                      <div *ngFor="let y of x.option_list | orderAsc: 'name' | orderSearch: 'name':x.tag_search; let j=index;">
+                        <label *ngIf="!y.notFound" class="store-label w-100 m-0 mb-3">
+                          <div class="d-flex align-items-center">
+                            <div>
+                              <input class="option-input checkbox" type="checkbox" name="{{y.checked}}" [checked]="y.checked" (change)="y.checked? y.checked=false: y.checked=true; onTagFilter(true);">
+                            </div>
+                            <div>
+                              <p class="m-0">{{y.name}}</p>
+                            </div>
+                          </div>
+                        </label>
+                        <p *ngIf="y.notFound">No matches found</p>
+                      </div>
+                    </ng-container>
+                    <div *ngIf="x?.option_list?.length>3 && !x.tag_search">
+                      <a (click)="x.show_more=!x.show_more;">Show {{ x.show_more? 'Less': 'More' }}</a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- price -->  
+            <div *ngIf="template_setting?.price_range" class="row m-0 col-md-12 px-0"> 
+              <div class="form-group w-100 pt-3">
+                <p class="fs-12 mb-2">Minimum amount</p>
+                <div class="price-range" align="center">Min INR {{range_disp.min | number: '1.0-0'}}</div>    
+                <input type="number" name="min_amt" class="form-control" [(ngModel)]="rangeMin">             
+              </div>
+              <div class="form-group w-100">                
+                <p class="fs-12 mb-2">Maximum amount</p>
+                <div class="price-range" align="center">Max INR {{range_disp.max | number: '1.0-0'}}</div>        
+                <input type="number" name="max_amt" class="form-control" [(ngModel)]="rangeMax">             
+              </div>
+            </div>
+            <!-- #price -->
+          </aside>
+        </div>
+        <!-- #filters -->
+
+        <!-- products -->
+        <div [ngClass]="(commonService?.screen_width>=992 && tag_list?.length)? 'col-lg-9': 'col-lg-12'">
+          <div class="row" style="padding-right: 15px;">
+
+            <!-- screen width >= 992 -->
+            <div *ngIf="commonService?.screen_width>=992" class="col-md-12">
+              <div class="listing-bar">
+                <div class="row">
+                  <div class="col-6 d-flex flex-column justify-content-center">
+                    <div>
+                      <p *ngIf="template_setting?.display_products_count" class="m-0">
+                        Total <b>{{list.length}}</b> {{ list.length>1 ? 'products' : 'product' }}
+                      </p>
+                    </div>
+                    <!-- grid icons -->
+                    <div *ngIf="template_setting?.category_grid_options" class="category-grid-select-wrapper">
+                      <div class="d-flex grid-select">
+                        <label class="mb-0">
+                          <input type="radio" class="grid-input-element d-none" name="grid-select-opt" [(ngModel)]="gridType" value="two">
+                          <div class="card d-flex flex-row justify-content-center align-items-center">
+                            <span class="grid-select-inner-thum"></span>
+                            <span class="grid-select-inner-thum"></span>
+                          </div>
+                        </label>
+                        <label class="mb-0">
+                          <input type="radio" class="grid-input-element d-none" name="grid-select-opt" [(ngModel)]="gridType" value="three">
+                          <div class="card d-flex flex-row justify-content-center align-items-center">
+                            <span class="grid-select-inner-thum"></span>
+                            <span class="grid-select-inner-thum"></span>
+                            <span class="grid-select-inner-thum"></span>
+                          </div>
+                        </label>
+                        <label class="mb-0">
+                          <input type="radio" class="grid-input-element d-none" name="grid-select-opt" [(ngModel)]="gridType" value="four">
+                          <div class="card d-flex flex-row justify-content-center align-items-center">
+                            <span class="grid-select-inner-thum"></span>
+                            <span class="grid-select-inner-thum"></span>
+                            <span class="grid-select-inner-thum"></span>
+                            <span class="grid-select-inner-thum"></span>
+                          </div>
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-6">
+                    <span>
+                      Sort by:
+                      <select name="sort_list" [(ngModel)]="sort_value">
+                        <option *ngFor="let x of sort_list;" [ngValue]="x.value">{{x.name}}</option>
+                      </select>
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- # screen width >= 992 -->
+
+            <!-- screen width < 992 -->
+            <div *ngIf="commonService?.screen_width<992" class="col-md-12 mb-4">
+              <div class="row">
+                <div *ngIf="tag_list?.length" class="col-6 d-flex align-items-center justify-content-start">
+                  <button class="sort-btn" type="button" (click)="filterModal.show(); commonService?.scrollModalTop(500);">Filter</button>
+                </div>
+                <div class="col-6 d-flex align-items-center pr-0" [ngClass]="(tag_list?.length)? 'justify-content-end': 'justify-content-start'">
+                  <button class="sort-btn" type="button" (click)="sortModal.show();">Sort by</button>
+                </div>
+                <div *ngIf="template_setting?.display_products_count" class="d-flex align-items-center pr-0" [ngClass]="(tag_list?.length)? 'col-12 justify-content-center': 'col-6 justify-content-end'">
+                  <p class="m-0">
+                    Total <b>{{list.length}}</b> {{ list.length>1 ? 'products' : 'product' }}
+                  </p>
+                </div>
+              </div>
+            </div>
+            <!-- # screen width < 992 -->
+
+            <!-- product list -->
+            <div *ngFor="let x of list | rangeFilter:rangeMin:rangeMax | productSort: sort_value | paginate: { itemsPerPage: pageSize, currentPage: page }; let i=index;" class="cat-grid col-sm-6 col-6 pr-0 d-flex"
+            [ngClass]="{ 'col-md-6': gridType=='two', 'col-md-4': gridType=='three', 'col-md-3': gridType=='four' }" >
+              <a appMouseHover class="product-box smooth-fadein" [ngClass]="template_setting?.p_card? 'primary-card': ''"
+              (click)="onSelectProduct(x);" routerLink="{{ x.seo_status ? '/product/'+x.seo_details.page_url : '/product/'+x._id }}">
+                <div class="prod-div">
+                  <figure class="product-image">
+                    <!-- label -->
+                    <div class="product_labellist label_{{commonService.application_setting?.tag_position}}">
+                      <span class="span_label" *ngIf="commonService.store_properties?.auto_tags?.sold_out && x.stock<=0">
+                        {{commonService.store_properties?.auto_tags?.sold_out}}
+                      </span>
+                      <ng-container *ngIf="x.stock>0">
+                        <span class="span_label" *ngIf="commonService.store_properties?.auto_tags?.new_arrival && x.created_on>commonService.currDate">
+                          {{commonService.store_properties?.auto_tags?.new_arrival}}
+                        </span>
+                        <span class="span_label" *ngIf="commonService.store_properties?.auto_tags?.on_sale && x.disc_status">
+                          {{commonService.store_properties?.auto_tags?.on_sale}}
+                        </span>
+                        <span class="span_label" *ngFor="let tag of x.badge_list | orderAsc: 'rank';">{{tag.name}}</span>
+                      </ng-container>
+                    </div>
+                    <!-- image -->
+                    <img width="100%" height="100%" appImgLazyLoad [ImagelazyLoad]="imgBaseUrl+x.image_list[0].image" alt="{{(x.image_list[0].img_alt)? x.image_list[0].img_alt: 'product-img'}}">
+                    <img width="100%" height="100%" appImgLazyLoad *ngIf="commonService?.desktop_device && x.image_list.length > 1" [ImagelazyLoad]="imgBaseUrl+x.image_list[1]?.image" alt="{{(x.image_list[1].img_alt)? x.image_list[1].img_alt: 'product-img'}}" class="image-hover">
+                    <figcaption *ngIf="template_setting?.purchase_badge">
+                      <span class="swipe-btn">
+                        <span class="swipe-btn-txt">Purchase
+                          <i class="material-icons">shopping_bag</i>
+                        </span>
+                      </span>
+                    </figcaption>
+                  </figure>
+                  <div class="product-content">
+                    <h3 *ngIf="x.brand">{{x.brand}}</h3>
+                    <h4>{{x.name}}</h4>
+                    <div>
+                      <span *ngIf="x.disc_status" class="strike">{{ x.temp_selling_price | currency:cc.currency?.country_code:'symbol':cc.format }}</span>
+                      <span>{{ x.temp_discounted_price | currency:cc.currency?.country_code:'symbol':cc.format }}</span>
+                      <div *ngIf="template_setting?.purchase_txt" class="purchase-div">
+                        <a>PURCHASE</a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </a>
+            </div>
+
+            <div class="col-md-12">
+              <div class="row">
+                <div class="col-md-12 navigation-ngx">
+                  <div>
+                    <pagination-controls (pageChange)="page=$event; commonService.pageScrollTop();" autoHide="true" responsive="true" maxSize="5" previousLabel="" nextLabel=""></pagination-controls>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- ## product list ## -->
+
+          </div>
+        </div>
+        <!-- ## products ## -->
+
+      </div>
+    </div>
+  </section>
+  <!-- #product list -->
+
+  <!-- no items -->
+  <section *ngIf="!list.length" class="site-section product-list smooth-fadein">
+    <div class="{{template_setting?.secondary_body_type}}">
+      <div class="row m-0">
+        <div class="col-12">
+          <div class="no-items d-flex align-items-center justify-content-center">
+            <img width="100%" height="100%" imgBroken src="assets/images/no_items_found.svg" alt="no_items_found">
+          </div>
+        </div>
+        <div class="col-12" align="center">
+          <div class="no-items-letter">
+            <p>No items to show</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- #no items -->
+
+  <!-- footer content -->
+  <section class="category-banner-content mt-3" *ngIf="category_details?.fc_status">
+    <div class="{{template_setting?.body_type}}">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="category-banner-accordion">
+            <div class="custom-accordion fc_status">
+              <div *ngIf="category_details?.footer_content?.length" class="acc-body">
+                <div class="text" [innerHtml]="category_details.footer_content"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- #footer content -->
+    
+  <!-- seo links -->
+  <section *ngIf="commonService.footer_seo_links?.length" class="mt-3">
+    <div class="{{template_setting?.body_type}}">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="collections">
+            <ng-container *ngFor="let x of commonService.footer_seo_links | orderAsc: 'rank';">
+              <p>{{x.name}}</p>
+              <ul class="pl-0">
+                <li *ngFor="let y of x.links">
+                  <a [routerLink]="(y.link_type=='internal')? y.link: null" (click)="(y.link_type!='internal')? commonService.onPageRedirect(y): null;">
+                    {{y.name}}
+                  </a>
+                </li>
+              </ul>
+            </ng-container>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- #seo links -->
+
+  <!-- random products -->
+  <section *ngIf="randomProducts.length">
+    <div class="{{template_setting?.body_type}}">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="collection-table mt-4 mb-5">
+            <table border="1" align="center">
+              <tbody>
+                <tr width="100%" style="font-weight: bold;">
+                  <td align="center" rowspan="1" colspan="2" width="100%">{{category_details.name}} Price List</td>
+                </tr>
+                <tr>
+                  <td align="center" width="75%" style="font-weight: bold;">{{category_details.name}}</td>
+                  <td align="center" width="25%" style="font-weight: bold;">Price</td>
+                </tr>
+                <tr *ngFor="let x of randomProducts;">
+                  <td align="center" width="75%">
+                    <a (click)="onSelectProduct(x);" routerLink="{{ x.seo_status ? '/product/'+x.seo_details.page_url : '/product/'+x._id }}">
+                      {{x.name}}
+                    </a>
+                  </td>
+                  <td align="center" width="25%">
+                    {{ x.temp_discounted_price | currency:cc.currency?.country_code:'symbol':cc.format }}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- #random products -->
+
+</section>
+
+<!-- filter modal -->
+<div bsModal #filterModal="bs-modal" class="modal fade bd-example-modal-lg" [config]="{backdrop: 'static'}" tabindex="-1" role="dialog" aria-labelledby="dialog-addr">
+  <div class="modal-dialog modal-md modal-dialog-centered modal-dialog-scrollable" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h6 class="modal-title">Filters</h6>
+        <i class="material-icons" (click)="filterModal.hide();">close</i>
+      </div>
+      <div class="modal-body slim-scroll">
+        <div class="row">
+          <div class="col-md-12">
+            <div class="accordion" [ngClass]="template_setting?.p_card? 'primary-card': ''" id="accordion" role="tablist">
+              <div class="card color-card" *ngFor="let x of tag_list | orderAsc: 'rank'; let i=index;">
+                <div class="card-header">
+                  <a class="tab-label" (click)="collapseIndex=i; onCreateTagList(list, true);" [attr.aria-expanded]="collapseIndex==i" aria-controls="collapseBasic"> {{x.name}}</a> 
+                </div>
+                <div id="collapseBasic" [collapse]="collapseIndex!=i" [isAnimated]="true">
+                  <div class="product-filter card-body">
+                    <div *ngIf="x?.option_list?.length>3" class="form-group has-search mb-3">
+                      <span class="material-icons form-control-feedback">search</span>
+                      <input type="text" class="form-control" name="tag_search{{i}}" [(ngModel)]="x.tag_search" (input)="x.show_more=true;" placeholder="Search {{x.name}}">
+                    </div>
+                    <!-- limited option -->
+                    <ng-container *ngIf="!x.show_more">
+                      <div *ngFor="let y of x.option_list | orderAsc: 'name' | slice:0:3 | orderSearch: 'name':x.tag_search; let j=index;">
+                        <label *ngIf="!y.notFound" class="store-label w-100 m-0 mb-3">
+                          <div class="d-flex align-items-center">
+                            <div>
+                              <input class="option-input checkbox" type="checkbox" name="{{y.checked}}" [checked]="y.checked" (change)="y.checked? y.checked=false: y.checked=true; onTagFilter(true);">
+                            </div>
+                            <div>
+                              <p class="m-0">{{y.name}}</p>
+                            </div>
+                          </div>
+                        </label>
+                        <p *ngIf="y.notFound">No matches found</p>
+                      </div>
+                    </ng-container>
+                    <!-- full option -->
+                    <ng-container *ngIf="x.show_more">
+                      <div *ngFor="let y of x.option_list | orderAsc: 'name' | orderSearch: 'name':x.tag_search; let j=index;">
+                        <label *ngIf="!y.notFound" class="store-label w-100 m-0 mb-3">
+                          <div class="d-flex align-items-center">
+                            <div>
+                              <input class="option-input checkbox" type="checkbox" name="{{y.checked}}" [checked]="y.checked" (change)="y.checked? y.checked=false: y.checked=true; onTagFilter(true);">
+                            </div>
+                            <div>
+                              <p class="m-0">{{y.name}}</p>
+                            </div>
+                          </div>
+                        </label>
+                        <p *ngIf="y.notFound">No matches found</p>
+                      </div>
+                    </ng-container>
+                    <div *ngIf="x?.option_list?.length>3 && !x.tag_search">
+                      <a (click)="x.show_more=!x.show_more;">Show {{ x.show_more? 'Less': 'More' }}</a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button *ngIf="tagSelected" type="button" class="secondary-btn" (click)="clearTagFilter();">CLEAR ALL</button>
+        <button type="button" class="primary-btn" (click)="filterModal.hide();">APPLY</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- sort modal -->
+<div bsModal #sortModal="bs-modal" class="modal fade bd-example-modal-lg" [config]="{backdrop: 'static'}" tabindex="-1" role="dialog" aria-labelledby="dialog-addr">
+  <div class="modal-dialog modal-md modal-dialog-centered modal-dialog-scrollable" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h6 class="modal-title">Sort by</h6>
+      </div>
+      <div class="modal-body slim-scroll">
+        <div class="row">
+          <div class="col-md-12">
+            <label *ngFor="let x of sort_list;" class="store-label d-flex align-items-center m-0 mt-2 mb-4">
+              <input type="radio" class="option-input radio" name="sort_list" [(ngModel)]="sort_value" value="{{x.value}}" (change)="sortModal.hide();" />
+              <span>{{x.name}}</span>
+            </label>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="primary-btn" (click)="sortModal.hide();">CLOSE</button>
+      </div>
+    </div>
+  </div>
+</div>

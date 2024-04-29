@@ -1,0 +1,119 @@
+<section *ngIf="pageLoader">
+  <app-loading-spinner></app-loading-spinner>
+</section>
+
+<section class="over-all smooth-fadein" *ngIf="!pageLoader">
+
+  <!-- breadcrumb -->
+  <section class="head-breadcrumb">
+    <div class="{{template_setting?.body_type}}">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="head-breadcrumb-inner border-btm d-flex justify-content-between">
+            <div>
+              <h2>{{service_details?.name}}</h2>
+              <p>{{ (service_details?.description)? service_details.description: 'Book your service' }}</p>
+            </div>
+            <div *ngIf="template_setting?.display_goback && commonService?.desktop_device" class="d-flex align-items-center justify-content-end">
+              <span (click)="commonService.goBack();">GO BACK</span>
+            </div>
+          </div>
+        </div>
+
+        <div *ngIf="template_setting?.breadcrumb" class="col-md-12">
+          <div class="breadcrumb-navigation mt-3">
+            <ul class="collapsed">
+              <li><a routerLink="/">Home</a></li>
+              <li *ngIf="commonService.appointment_cat_page_attr?.name"><a routerLink="/services">{{commonService.appointment_cat_page_attr.name}}</a></li>
+              <li><a routerLink="/services/{{params.category}}">Services</a></li>
+              <li><span class="active-page">{{service_details?.name}}</span></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!--# breadcrumb #-->
+
+  <section class="common-site-section">
+    <div class="m-2">
+      <div class="{{template_setting?.body_type}}">
+        <div class="row">
+          <div class="col-md-3 col-6">
+            <div class="form-group">
+              <input type="text" placeholder="Select Date" class="form-control" name="date" autocomplete="off"
+                [(ngModel)]="service_details.selected_date" bsDatepicker [minDate]="service_details.minDate" [maxDate]="service_details.maxDate"
+                (ngModelChange)="getSlotList();" [bsConfig]="{ showWeekNumbers: false, dateInputFormat: 'DD-MM-YYYY' }" />
+            </div>
+          </div>
+        </div>
+
+        <div *ngIf="slot_list.length" class="row">
+          <div class="col-md-12">
+            <div class="slot-select mt-3">
+              <div class="slot-selt-radio" *ngFor="let x of slot_list; let i=index;">
+                <div class="slot-selt-radio-inner">
+                  <label class="h-100">
+                    <input type="radio" name="slot_option" class="slot-inpt-elemt d-none" [checked]="service_details.tempIndex===i+1"
+                    (change)="service_details.tempIndex=i+1; service_details.booking_date=x.slot_date;" [disabled]="x.disable" />
+                    <div class="slot-selct-card d-flex flex-column justify-content-center align-items-center">
+                      <h6 class="m-0">{{x.slot_date | date: "h:mm a"}}</h6>
+                    </div>
+                  </label>
+                </div>
+              </div>
+            </div>
+            <div *ngIf="service_details.booking_date" class="mt-5">
+              <button (click)="service_details.error_msg=null; service_details.submit=false; confirmModal.show();" class="primary-btn" type="button">Confirm Your Slot</button>
+            </div>
+          </div>
+        </div>
+
+        <div *ngIf="!slot_list.length" class="row">
+          <div class="col-md-12 col-6">
+            <p>Slots not available. Please choose another day</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</section>
+
+<div bsModal #confirmModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="cod-model">
+  <div class="modal-dialog modal-md" role="document">
+    <div class="modal-content">
+      <form autocomplete="off" (ngSubmit)="confirmBooking(confirmModal);" ngNativeValidate>
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-lg-12">
+              <h6>
+                You have selected <strong>{{service_details.booking_date | date: "dd MMM y"}} - {{service_details.booking_date | date: "h:mm a"}}</strong> slot for your <strong>{{service_details.name}}</strong>
+              </h6>
+            </div>
+            <div class="form-group mt-3 col-8">
+              <label for="name">Contact No</label>
+              <input type="text" name="name" [(ngModel)]="service_details.mobile" #mobile="ngModel" required />
+            </div>
+            <!-- err msg -->
+            <div *ngIf="service_details.error_msg" class="col-12 px-0 danger-alert">
+              <div class="alert-msg d-flex align-items-center justify-content-center p-2">
+                <span class="material-icons"></span>
+                <p class="m-0">{{service_details.error_msg}}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="secondary-btn" type="button" (click)="confirmModal.hide(); service_details.error_msg? ngOnInit(): '';">CLOSE</button>
+          <button class="primary-btn d-flex justify-content-center align-items-center" type="submit" [disabled]="service_details.submit">
+            CONFIRM BOOKING
+            <div class="box" *ngIf="service_details.submit">
+              <div class="spinner"></div>
+            </div>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

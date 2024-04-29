@@ -1,0 +1,33 @@
+<!-- header -->
+<header class="sticky-header" id="headroom-head">
+  <div class="top-news">
+    <p class="mb-0" [ngClass]="(commonService.application_setting?.announcebar_config?.link_status)? 'cursor': ''"
+    (click)="commonService.onPageRedirect(commonService.application_setting?.announcebar_config);" id="announceBar">{{commonService.announcementBar}}</p>
+  </div>
+  <header class="cd-main-header">
+    <div class="{{template_setting.header_type}} hover-container">
+      <div class="row">
+        <div [ngClass]="leftLogo? 'col-md-2 col-6 d-flex align-items-center': 'col-12 center-logo'">
+          <div class="cd-logo logo">
+            <a (click)="commonService.resetMegaMenu();" routerLink="/">
+              <img width="100%" height="100%" appImgLazyLoad class="logo-img" [ImagelazyLoad]="imgBaseUrl+commonService.store_logo" alt="{{commonService.store_details?.name}}">
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+</header>
+
+<!-- body -->
+<div class="page-container">
+  <div class="cd-main-content">
+    <router-outlet></router-outlet>
+  </div>
+</div>
+
+<!-- footer -->
+<app-footer></app-footer>
+
+<!-- customization -->
+<app-customization></app-customization>

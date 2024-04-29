@@ -1,0 +1,160 @@
+<section *ngIf="pageLoader">
+  <app-loading-spinner></app-loading-spinner>
+</section>
+
+<section class="over-all smooth-fadein" *ngIf="!pageLoader">
+
+  <!-- breadcrumb -->
+  <section class="head-breadcrumb">
+    <div class="{{template_setting?.body_type}}">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="head-breadcrumb-inner border-btm d-flex justify-content-between">
+            <div>
+              <h2>Choose Pickup Method</h2>
+              <p>Available pickup services</p>
+            </div>
+            <div *ngIf="template_setting?.display_goback && commonService?.desktop_device" class="d-flex align-items-center justify-content-end">
+              <span (click)="commonService.goBack();">GO BACK</span>
+            </div>
+          </div>
+        </div>
+
+        <div *ngIf="template_setting?.breadcrumb" class="col-md-12">
+          <div class="breadcrumb-navigation mt-3">
+            <ul class="collapsed">
+              <li><a routerLink="/">Home</a></li>
+              <li *ngIf="!commonService?.customer_token">
+                <a routerLink="/checkout/address-list/product">Address</a>
+              </li>
+              <li><a class="active-page">Choose Pickup Method</a></li>
+              <li><a class="opacity6">Order Details</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!--# breadcrumb #-->
+  <section class="common-site-section">
+
+    <div *ngIf="list?.length" class="{{template_setting?.body_type}}">
+
+      <!-- day list -->
+      <div class="row">
+        <div class="col-md-12">
+          <div class="gray-card primary-card p-3 m-0">
+            <div class="pr-2 pl-2">
+              <h6>Choose Day</h6>
+            </div>
+            <div class="day-slot pr-2 pl-2">
+              <ng-container *ngFor="let x of list; let i=index;">
+                <label>
+                  <input type="radio" class="card-input-element d-none" name="day" (change)="selectedDayIndex=i; buildSlotList();" [checked]="selectedDayIndex===i"
+                    [disabled]="!x.opening_hrs?.length">
+                  <div class="time-slots card d-flex flex-column justify-content-center align-items-center">
+                    <p>{{x.date | date: "dd MMM"}}</p>
+                    <p *ngIf="x.opening_hrs?.length">{{x.date | date: "EEEE" }}</p>
+                    <p *ngIf="!x.opening_hrs?.length">UNAVAILABLE</p>
+                  </div>
+                </label>
+              </ng-container>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- day list end -->
+
+      <!-- slot list -->
+      <div class="row  mt-3">
+        <div *ngIf="slot_list.length" class="col-md-12">
+          <div class="gray-card primary-card p-3 m-0">
+            <div class="pr-2 pl-2">
+              <h6>Choose Slot</h6>
+            </div>
+
+            <div class="row">
+              <div class="col-lg-8">
+                <div class="gray-card primary-card p-3 m-0">
+                  <div class="slots-row pr-2 pl-2">
+                    <ng-container *ngFor="let x of slot_list; let i=index;">
+                      <label>
+                        <input type="radio" class="card-input-element d-none" name="slot" [checked]="selectedSlotIndex===i"
+                          (change)="selectedSlotIndex=i;" [disabled]="!x.available">
+                        <div class="time-slots card d-flex flex-column justify-content-center align-items-center">
+                          <p>{{x.from | date: "hh:mm a"}} - {{x.to | date: "hh:mm a"}}</p>
+                        </div>
+                      </label>
+                    </ng-container>
+                  </div>
+                </div>
+              </div>
+
+              <!-- desktop only -->
+              <div *ngIf="commonService.desktop_device && slot_list.length" class="col-lg-4">
+                <div class="delivery-time-card gray-card primary-card p-3 m-0">
+                  <div>
+                    <h6>Date:</h6>
+                    <p>{{slot_list[selectedSlotIndex]?.from | date: "dd MMM y"}}</p>
+                    <h6>Time:</h6>
+                    <p>{{slot_list[selectedSlotIndex]?.from | date: "hh:mm a"}} - {{slot_list[selectedSlotIndex]?.to | date: "hh:mm a"}}</p>
+                    <button class="btn-confirm d-flex justify-content-center align-items-center w-100" type="button" (click)="onConfirm();" [disabled]="btnLoader">
+                      CONFIRM
+                      <div class="box" *ngIf="btnLoader">
+                        <div class="spinner"></div>
+                      </div>
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <!-- desktop only end -->
+            </div>
+          </div>
+        </div>
+        <div *ngIf="!slot_list.length" class="col-md-12">
+          <div class="mt-5">
+            <h5 align="center">Slots not available. Please choose another day.</h5>
+          </div>
+        </div>
+      </div>
+      <!-- slot list end -->
+
+      <!-- except desktop -->
+      <div *ngIf="!commonService.desktop_device && slot_list.length" class="mobile-delivery-time-card card-active">
+        <div class="{{template_setting?.body_type}}">
+          <div class="row">
+            <div class="col-6 d-flex align-items-center">
+              <div class="pt-2 pb-2">
+                <p>{{slot_list[selectedSlotIndex]?.from | date: "dd MMM"}}</p>
+                <p>{{slot_list[selectedSlotIndex].from | date: "hh:mm a"}} - {{slot_list[selectedSlotIndex].to | date: "hh:mm a"}}</p>
+              </div>
+            </div>
+            <div class="col-6 d-flex justify-content-end align-items-center">
+              <div class="pt-2 pb-2">
+                <button class="btn-confirm d-flex justify-content-center align-items-center w-100" type="button" (click)="onConfirm();" [disabled]="btnLoader">
+                  CONFIRM
+                  <div class="box" *ngIf="btnLoader">
+                    <div class="spinner"></div>
+                  </div>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- except desktop end -->
+
+    </div>
+
+    <div *ngIf="!list?.length" class="{{template_setting?.body_type}}">
+      <div class="row">
+        <div class="col-12">
+          <div class="live_order_id">
+            <h5 align="center">No records found</h5>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </section>
+</section>

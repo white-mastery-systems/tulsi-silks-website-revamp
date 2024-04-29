@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 19.2.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 450 520" style="enable-background:new 0 0 450 520;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:#E2E2E2;}
+	.st1{fill:#FFFFFF;}
+</style>
+<g id="bg">
+	<rect id="path" class="st0" width="450" height="520"/>
+</g>
+<g id="frame">
+	<path class="st1" d="M159.6,200.1v103h130.9v-103H159.6z M280,291.9H170.8v-80.7H280V291.9L280,291.9z"/>
+</g>
+<g id="mountain">
+	<polygon class="st1" points="176.7,283.2 199.2,259.6 207.6,263.2 234.2,234.9 244.7,247.4 249.3,244.6 275,283.2 	"/>
+</g>
+<g id="sun">
+	<circle class="st1" cx="202.7" cy="231.8" r="9.8"/>
+</g>
+</svg>

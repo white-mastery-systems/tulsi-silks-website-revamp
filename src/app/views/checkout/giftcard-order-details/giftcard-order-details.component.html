@@ -1,0 +1,312 @@
+<section *ngIf="pageLoader">
+  <app-loading-spinner></app-loading-spinner>
+</section>
+​
+<section class="over-all smooth-fadein" *ngIf="!pageLoader">
+  ​
+  <!-- breadcrumb -->
+  <section class="head-breadcrumb">
+    <div class="{{template_setting?.body_type}}">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="head-breadcrumb-inner border-btm d-flex justify-content-between">
+            <div>
+              <h2>Order Details</h2>
+              <p>Gift card order details</p>
+            </div>
+            <div *ngIf="template_setting?.display_goback && commonService?.desktop_device" class="d-flex align-items-center justify-content-end">
+              <span (click)="commonService.goBack();">GO BACK</span>
+            </div>
+          </div>
+        </div>
+
+        <div *ngIf="template_setting?.breadcrumb" class="col-md-12">
+          <div class="breadcrumb-navigation mt-3">
+            <ul class="collapsed">
+              <li><a routerLink="/">Home</a></li>
+              <li><a routerLink="/checkout/address-list/giftcard">{{ (commonService?.customer_token)? 'Choose Address': 'Shipping Address' }}</a></li>
+              <li><a class="active-page">Order Details</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!--# breadcrumb #-->
+  ​
+  <section class="common-site-section shopping-cart">
+    <div class="{{template_setting?.body_type}}">
+      <div class="row m-0">
+        <div class="col-lg-12">
+          <table class="table mb-5">
+            <thead class="wishlist-head">
+              <tr>
+                <td colspan="2">
+                  <h6>PRODUCT</h6>
+                </td>
+                <td>
+                  <h6>QUANTITY</h6>
+                </td>
+                <td>
+                  <h6>PRICE</h6>
+                </td>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+                  <figure class="d-flex align-items-center">
+                    <img width="100%" height="100%" appImgLazyLoad [ImagelazyLoad]="imgBaseUrl+orderForm.image" alt="Image">
+                  </figure>
+                </td>
+                <td>
+                  <h4>{{orderForm.card_name}}</h4>
+                </td>
+                <td>
+                  <div class="pl-3">
+                    <h4>1</h4>
+                  </div>
+                </td>
+                <td>
+                  <span>{{ orderForm.temp_price | currency:cc.currency?.country_code:'symbol':cc.format }}</span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="row">
+            <!-- left sec -->
+            <div class="col-lg-6">
+              <!-- Giftcard Details -->
+              <div class="product-order-details gift-card-order-details gray-card primary-card p-3 mt-1 mb-3">
+                <div class="row">
+                  <div class="col-md-12">
+                    <div class="product-order-type pb-3">
+                      <div class="row">
+                        <div class="col-md-12 d-flex align-items-center">
+                          <h4>Giftcard Details</h4>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-md-12">
+                    <div class="product-order-type-inner pt-3">
+                      <div class="row">
+                        <!-- from -->
+                        <div class="col-6 d-flex align-items-center">
+                          <h6>From:</h6>
+                        </div>
+                        <div class="col-6 d-flex align-items-center justify-content-end">
+                          <span align="right">{{orderForm?.from_name}}</span>
+                        </div>
+                        <!-- to -->
+                        <div class="col-6 d-flex align-items-center">
+                          <h6>To:</h6>
+                        </div>
+                        <div class="col-6 d-flex flex-column align-items-end justify-content-center">
+                          <span align="right" class="mb-2">{{orderForm?.to_name}}</span>
+                          <span align="right" class="mb-3">{{orderForm?.to_email}}</span>
+                        </div>
+                        <!-- message -->
+                        <div class="col-6 d-flex align-items-center">
+                          <h6 class="m-0">Message:</h6>
+                        </div>
+                        <div class="col-6 d-flex align-items-center justify-content-end">
+                          <span class="user-msg" align="right" [innerHTML]="orderForm.temp_message"></span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- #Giftcard Details#-->
+              <!-- Giftcard Billing Address -->
+              <div class="product-order-details gray-card primary-card p-3 mt-1 mb-3">
+                <div class="row">
+                  <div class="col-md-12">
+                    <div class="product-order-type pb-3">
+                      <div class="row">
+                        <div class="col-6 d-flex align-items-center">
+                          <h4>Billing Address</h4>
+                        </div>
+                        <div class="col-6 d-flex justify-content-end">
+                          <button class="primary-btn" type="button" routerLink="/checkout/address-list/giftcard">CHANGE</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-md-12">
+                    <div class="product-order-type-inner pt-3">
+                      <div class="row">
+                        <!-- name -->
+                        <div class="col-6 d-flex align-items-center">
+                          <h6>Name:</h6>
+                        </div>
+                        <div class="col-6 d-flex align-items-center justify-content-end">
+                          <span align="right">{{orderForm?.billing_address?.name}}</span>
+                        </div>
+                        <!-- phone -->
+                        <div class="col-6 d-flex align-items-center">
+                          <h6>Phone:</h6>
+                        </div>
+                        <div class="col-6  d-flex align-items-center justify-content-end">
+                          <span align="right">{{orderForm?.billing_address?.dial_code}} {{orderForm?.billing_address?.mobile}}</span>
+                        </div>
+                        <!-- address -->
+                        <div class="col-6 d-flex align-items-center">
+                          <h6 class="m-0">Address:</h6>
+                        </div>
+                        <div class="col-6  d-flex align-items-center justify-content-end">
+                          <span align="right">{{orderForm?.billing_address?.address}}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- #Giftcard Billing Address#-->
+            </div>
+            <!-- right-sec -->
+            <div class="col-lg-6">
+              <!-- Amount Payable -->
+              <div class="product-order-details gray-card primary-card p-3 mt-1 mb-3">
+                <div class="row">
+                  <div class="col-md-12">
+                    <div class="product-order-type pb-3">
+                      <div class="row">
+                        <!-- Amount Payable -->
+                        <div class="col-6 d-flex align-items-center">
+                          <h4>Amount Payable</h4>
+                        </div>
+                        <div class="col-6 d-flex justify-content-end">
+                          <h4>{{ orderForm.temp_price | currency:cc.currency?.country_code:'symbol':cc.format }}</h4>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="product-order-type-inner pt-3">
+                      <div class="row">
+                        <div class="col-md-12">
+                          <!-- payment type btn -->
+                          <ng-container *ngFor="let x of commonService.payment_methods | orderAsc: 'rank'; let i=index;">
+                            <ng-container *ngIf="x.name!='COD' && x.name!='Gpay' && x.name!='Bank Payment'">
+                              <button *ngIf="!x.supported_currrencies?.length || x.supported_currrencies?.indexOf(commonService.selected_currency?.country_code)!=-1"
+                              type="button" (click)="onMakePayment(x);" class="primary-btn w-100 mb-1" [disabled]="orderForm.submit">{{ x.btn_name }}</button>
+                            </ng-container>
+                          </ng-container>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- #Amount Payable#-->
+            </div>
+          </div>
+        </div>
+        <!-- end col-12 -->
+      </div>
+      <!-- end row -->
+    </div>
+    <!-- end container -->
+  </section>
+</section>
+​
+<!-- loader -->
+<ng-container *ngIf="orderForm.submit">
+  <div class="payment-loder-wrapper">
+    <div class="payment-loader"></div>
+  </div>
+</ng-container>
+​
+<!-- ccavenue form -->
+<form #ccAvenueForm ngNoForm id="nonseamless" method="post" name="redirect" action="{{ccavenue_redirect}}">
+  <input type="hidden" id="encRequest" name="encRequest" [ngModel]="encRequest">
+  <input type="hidden" id="access_code" name="access_code" [ngModel]="accessCode">
+</form>
+
+<!-- razorpay form -->
+<form #razorpayForm method="POST" action="{{environment.razorpay_payment_url}}">
+  <input type="hidden" name="key_id" value="{{razorpayOptions.key}}">
+  <input type="hidden" name="order_id" value="{{razorpayOptions.razorpay_order_id}}">
+  <input type="hidden" name="name" value="{{razorpayOptions.store_name}}">
+  <input type="hidden" name="description" value="{{razorpayOptions.description}}">
+  <input type="hidden" name="prefill[name]" value="{{razorpayOptions.customer_name}}">
+  <input type="hidden" name="prefill[email]" value="{{razorpayOptions.customer_email}}">
+  <input type="hidden" name="prefill[contact]" value="{{razorpayOptions.customer_mobile}}">
+  <input type="hidden" name="notes[my_store_id]" value="{{commonService.store_id}}">
+  <input type="hidden" name="notes[my_order_id]" value="{{razorpayOptions.my_order_id}}">
+  <input type="hidden" name="notes[my_order_type]" value="{{razorpayOptions.my_order_type}}">
+  <input type="hidden" name="callback_url" value="{{environment.razorpay_redirect_url+commonService.store_id}}">
+  <input type="hidden" name="cancel_url" value="{{commonService.origin}}">
+</form>
+
+<!-- square payment -->
+<a [hidden]="true" id="openSquareModal" (click)="squareFormErrors= []; squarePaymentModal.show();"></a>
+<div bsModal #squarePaymentModal="bs-modal" class="modal fade" [config]="{backdrop: 'static'}" tabindex="-1" role="dialog" aria-labelledby="dialog-model">
+  <div class="modal-dialog modal-lg modal-dialog-scrollable modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header d-flex align-items-center">
+        <div>
+          <img width="100%" height="100%" class="square-logo" src="assets/images/payment-logos/square.svg" alt="square-logo">
+        </div>
+        <div id="closeSquareModal" (click)="squarePaymentModal.hide();" class="d-flex">
+          <i class="material-icons">close</i>
+        </div>
+      </div>
+      <div class="modal-body slim-scroll">
+        <div class="{{template_setting?.body_type}}">
+          <div class="row">
+            <div class="col-md-8 offset-md-2">
+              <div class="row mb-2">
+                <div id="square-form">
+                  <button id="sq-apple-pay" class="apple-pay-button apple-pay-button-black"></button>
+                  <button id="sq-google-pay" class="button-google-pay"></button>
+                  <div class="socaial-or-sec pt-3 pb-4">
+                    <h2><span>OR</span></h2>
+                  </div>
+                  <h6><strong>PAYMENT DETAILS</strong></h6>
+                  <div id="sq-card-number"></div>
+                  <div class="third" id="sq-expiration-date"></div>
+                  <div class="third" id="sq-cvv"></div>
+                  <div class="third" id="sq-postal-code"></div>
+                  <button class="mt-3" id="sq-creditcard" (click)="onGetCardNonce($event);">Pay with Card</button>
+                </div>
+                <div class="w-100" [ngClass]="squareFormErrors.length? 'mt-2': ''">
+                  <p *ngFor="let x of squareFormErrors;" class="sq-error">{{ x.message }}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- fatoorah payment -->
+<a [hidden]="true" id="openFatoorahModal" (click)="fatoorahPaymentModal.show();"></a>
+<div bsModal #fatoorahPaymentModal="bs-modal" class="modal fade" [config]="{backdrop: 'static'}" tabindex="-1" role="dialog" aria-labelledby="dialog-model">
+  <div class="modal-dialog modal-lg modal-dialog-scrollable modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header d-flex align-items-center">
+        <div>
+          <img width="100%" height="100%" class="fatoorah-logo" src="assets/images/payment-logos/fatoorah.svg" alt="fatoorah-logo">
+        </div>
+        <div id="closeFatoorahModal" (click)="fatoorahPaymentModal.hide();" class="d-flex">
+          <i class="material-icons">close</i>
+        </div>
+      </div>
+      <div class="modal-body slim-scroll">
+        <div class="{{template_setting?.body_type}}">
+          <div class="row border-btm" *ngFor="let x of fatoorahPaymentMethods;">
+            <div class="col-md-6 mt-2 mb-2">
+              <img width="100%" height="100%" class="w-px-100" [src]="x.ImageUrl" alt="Image">
+            </div>
+            <div class="col-md-6 mt-2 mb-2">
+              <button type="button" (click)="confirmFatoorah(x.PaymentMethodId);" class="primary-btn w-100" [disabled]="orderForm.submit">{{ x.PaymentMethodEn }}</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

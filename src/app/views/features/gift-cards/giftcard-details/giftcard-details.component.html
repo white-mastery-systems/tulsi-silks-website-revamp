@@ -1,0 +1,91 @@
+<section *ngIf="pageLoader">
+  <app-loading-spinner></app-loading-spinner>
+</section>
+
+<section class="over-all smooth-fadein" *ngIf="!pageLoader">
+
+  <!-- breadcrumb -->
+  <section class="head-breadcrumb">
+    <div class="{{template_setting?.body_type}}">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="head-breadcrumb-inner border-btm d-flex justify-content-between">
+            <div>
+              <h2>{{card_details?.name}}</h2>
+              <p>{{ (card_details?.description)? card_details.description: 'Celebrate every occasion' }}</p>
+            </div>
+            <div *ngIf="template_setting?.display_goback && commonService?.desktop_device" class="d-flex align-items-center justify-content-end">
+              <span (click)="commonService.goBack();">GO BACK</span>
+            </div>
+          </div>
+        </div>
+
+        <div *ngIf="template_setting?.breadcrumb" class="col-md-12">
+          <div class="breadcrumb-navigation mt-3">
+            <ul class="collapsed">
+              <li><a routerLink="/">Home</a></li>
+              <li><a routerLink="/gift-cards">Gift Cards</a></li>
+              <li><span class="active-page">{{card_details?.name}}</span></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!--# breadcrumb #-->
+
+  <section class="common-site-section">
+    <div class="m-2">
+      <div class="{{template_setting?.body_type}}">
+        <div class="row">
+          <div class="col-lg-6 offset-lg-3">
+            <div class="form-box">
+              <form autocomplete="off" (ngSubmit)="onSubmit();" ngNativeValidate>
+                <ng-container *ngIf="card_details?.price_type=='flexible';">
+                  <div class="primary-card p-3 mb-3">
+                    <p for="custom_price">
+                      Custom Price<br>
+                      ({{ card_details.min_price | currency:cc.currency?.country_code:'symbol':cc.format }} - {{ card_details.max_price | currency:cc.currency?.country_code:'symbol':cc.format }})
+                    </p>
+                    <input class="w-100" type="number" name="custom_price" id="custom_price" [(ngModel)]="cardForm.custom_price" #custom_price="ngModel" min="{{card_details.min_price}}"
+                    max="{{card_details.max_price}}" required />
+                  </div>
+                </ng-container>
+                <ng-container *ngIf="card_details?.price_type=='fixed';">
+                  <div class="primary-card p-3 mb-3">
+                    <p for="custom_price">Price ({{commonService.selected_currency?.country_code}})</p>
+                    <input class="w-100" type="text" name="custom_price" id="custom_price" [(ngModel)]="cardForm.custom_price" #custom_price="ngModel" readonly />
+                  </div>
+                </ng-container>
+                <div class="primary-card p-3 mb-3">
+                  <p for="from_name">From Name</p>
+                  <input class="w-100" type="text" name="from_name" id="from_name" [(ngModel)]="cardForm.from_name" #from_name="ngModel" required />
+                </div>
+                <div class="primary-card p-3 mb-3">
+                  <p for="to_name">To Name</p>
+                  <input class="w-100" type="text" name="to_name" id="to_name" [(ngModel)]="cardForm.to_name" #to_name="ngModel" required />
+                </div>
+                <div class="primary-card p-3 mb-3">
+                  <p for="to_email">To Email</p>
+                  <input class="w-100" type="email" name="to_email" id="to_email" [(ngModel)]="cardForm.to_email" #to_email="ngModel"
+                  pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" title="Please enter a valid Email ID" appLowercase required />
+                </div>
+                <div class="primary-card p-3 mb-3">
+                  <p for="message">Message</p>
+                  <textarea class="margin-0" name="message" id="message" [(ngModel)]="cardForm.message" #message="ngModel" required></textarea>
+                </div>
+                <button class="primary-btn d-flex justify-content-center align-items-center w-100" type="submit" [disabled]="cardForm.submit">
+                  BUY NOW
+                  <div class="box" *ngIf="cardForm.submit">
+                    <div class="spinner"></div>
+                  </div>
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</section>

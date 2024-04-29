@@ -1,0 +1,28 @@
+<section *ngIf="pageLoader">
+  <app-loading-spinner></app-loading-spinner>
+</section>
+
+<section *ngIf="!pageLoader" class="over-all smooth-fadein">
+  <section class="common-site-section">
+    <div class="{{template_setting?.body_type}}">
+      <div class="row">
+        <div class="col-lg-12">
+          <div class="contact_contents ptb10">
+            <h3>{{ policy_details?.title }}</h3>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-lg-12">
+          <div class="policy policy-ul-li">
+            <div class="ql-container">
+              <div class="ql-editor">
+                <div [innerHtml]="policy_details?.content"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</section>

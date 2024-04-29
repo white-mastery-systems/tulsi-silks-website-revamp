@@ -1,0 +1,176 @@
+@import 'variables';
+
+// QUANTITY SELECTOR
+td.pro-quantity .pro-qty {
+  margin: unset;
+}
+.pro-qty {
+  width: 120px;
+  border: 1px solid $primary-border;
+  padding: 5px !important; 
+  display: block;
+  letter-spacing: 2px;
+  font-size: 1.125rem;
+  font-weight: 400;
+  padding: 5px 0;
+  span {
+    margin: 0 5px;
+  }
+}
+
+.pro-qty button {
+  line-height: 0;
+  padding: 2px;  
+  background: #ffffff;
+  border: none;
+  transition: box-shadow 0.2s ease-in-out; 
+
+  i {
+    color: $primary-btn-txt !important;
+    font-size: 0.875rem;
+    background: $primary-btn-bg;
+    padding: 5px;
+    font-weight: bold;
+  }
+  
+}
+
+.pro-qty .qty-btn-disabled {
+  opacity: 0.5;
+}
+
+.btn-width {
+  width: 60px;
+  text-align: center;
+  user-select: none;
+  border: none;
+  outline: 0;
+}
+// QUANTITY SELECTOR END
+
+
+// Inner Account page card icons
+.myaccount__card {
+  .myaccount-icon {
+    i {
+      color: $primary-text !important;
+    }
+  }
+}
+
+// notify badge
+.gray-card {
+  .notify-badge {
+    position: absolute;
+    top: 5px;
+    background:$primary-btn-bg;
+    text-align: center;
+    color: $primary-btn-txt !important;
+    padding: 5px 15px;
+    font-size: 0.875rem;
+  }
+}
+
+// Cart delete btn
+.delete-icon {
+  background: $primary-btn-bg;
+  padding: 5px;
+  border-radius: 50%;
+  color:$primary-btn-txt !important;
+}
+
+input[type="checkbox"]{float:left; margin-right:10px; border:2px solid $check_radio_bdr_color; appearance:none; -webkit-appearance:none; -moz-appearance:none;}
+input[type="checkbox"]:checked{ -webkit-box-shadow:inset 0px 0px 0px 0px #fff;-moz-box-shadow:inset 0px 0px 0px 0px #fff; box-shadow:inset 0px 0px 0px 0px #fff;}
+input[type="radio"]{float:left; margin-right:10px; border:2px solid $check_radio_bdr_color; appearance:none; -webkit-appearance:none; -moz-appearance:none; border-radius: 50%;}
+input[type="radio"]:checked{ -webkit-box-shadow:inset 0px 0px 0px 0px #fff;-moz-box-shadow:inset 0px 0px 0px 0px #fff; box-shadow:inset 0px 0px 0px 0px #fff;}
+
+/*check box*/
+@keyframes click-wave {
+    0% {
+        height: 21px;
+        width: 21px;
+        opacity: 0.35;
+        position: relative;
+    }
+    100% {
+        height: 200px;
+        width: 200px;
+        margin-left: -80px;
+        margin-top: -80px;
+        opacity: 0;
+    }
+  }
+.store-label {
+    width:auto;
+    margin-right: 1rem;
+    .option-input {
+        &.radio {
+            border-radius: 50% !important;
+            &:after {
+                border-radius: 50% !important;  
+            }
+        }
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        -ms-appearance: none;
+        -o-appearance: none;
+        appearance: none;
+        position: relative;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        height: 18px;
+        width: 18px;
+        transition: all 0.15s ease-out 0s;
+        color: #fff;
+        cursor: pointer;
+        display: inline-block;
+        margin-right: 0.5rem;
+        outline: none;
+        position: relative;
+        z-index: 50;
+        -webkit-box-shadow: inset 0px 0px 0px 4px #fff;
+        -moz-box-shadow: inset 0px 0px 0px 4px #fff;
+        box-shadow: inset 0px 0px 0px 4px #fff;
+        &:checked {
+            background: $check_radio_color;
+            border-color:$check_radio_color !important;
+            &:before {
+                height: 21px;
+                width: 21px;
+                position: absolute;
+                content: '';
+                display: inline-block;
+                font-size: 0.75rem;
+                text-align: center;
+                line-height: 21px;
+            }
+            &:after {
+                // -webkit-animation: click-wave 0.25s;
+                // -moz-animation: click-wave 0.25s;
+                // animation: click-wave 0.25s;
+                background: $check_radio_color;
+                color: $check_color;
+                font-family: 'Material Icons';
+                content: 'done';
+                font-size: 14px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 100;
+                width: 100%;
+                height: 100%;
+                background-repeat: no-repeat;
+                background-position: center;
+                transition-delay: 0.2s !important;
+                transition: all 0.25s cubic-bezier(0, 1.05, 0.72, 1.07);
+            }
+        }
+        &:focus{
+            border-color: #ccc;
+        }
+        &:disabled + img{
+          opacity: .5;
+        }
+    }
+}

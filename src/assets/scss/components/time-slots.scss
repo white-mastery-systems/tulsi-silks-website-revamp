@@ -1,0 +1,165 @@
+.day-slot, .slots-row {
+  flex-wrap: wrap;
+}
+.day-slot {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+}
+.slots {
+  display: inline-block;
+  padding: 10px 15px;
+  font-size: 1em;
+  text-align: center;
+  margin: 5px;
+  border-radius: 5px;
+}
+.slots i, .time-slots i {
+  visibility: hidden;
+  display: none;
+}
+.slots p {
+  margin-bottom: 0;
+}
+i {
+  font-size: 15px;
+  color: rgb(12, 170, 78);
+  float: right;
+  margin-top: -15px;
+  margin-right: -20px;
+  background: white;
+  border-radius: 50%;
+  visibility: visible;
+  display: block !important;
+}
+.slots-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-gap: 5px;
+}
+.time-slots {
+  padding: 10px 8px;
+  font-size: .9em;
+  text-align: center;
+  margin: 5px;
+  border-radius: 5px;
+}
+.time-slots p {
+  margin-bottom: 0;
+}
+.delivery-time-card {
+  padding: 10px 20px;
+}
+.mobile-delivery-time-card {
+  z-index: 9999;
+  width: 100%;
+  background-color: #000000;
+  color: #fff;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  transform: translateX(0);
+  visibility: hidden;
+  -webkit-transition: visibility 0s 0s;
+  transition: visibility 0s 0s;
+}
+.card-active{
+  visibility: visible;
+  transition: visibility .5s 0s;
+}
+.mobile-delivery-time-card p {
+  margin-bottom: 0;
+  color:#ffffff !important;
+  font-size: 12px;
+}
+.btn-confirm{
+  background: rgb(12, 170, 78);
+  height: 52px;
+  padding: 0 30px;
+  color: #fff;
+}
+@media only screen and (max-width: 768px) {
+  .slots-row {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media only screen and (max-width: 991px) {
+  .day-slot{
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+@media only screen and (max-width: 576px) {
+  .day-slot{
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+label {
+  width: 100%;
+  font-size: 1rem;
+  // margin: 0;
+}
+.card-input-element+.card {
+  -webkit-box-shadow: none;
+  box-shadow: none;
+  border: 2px solid transparent;
+  border-radius: 4px;
+  color: #fff;
+  background-color: #1f1b24;
+  height: 100%;
+}
+.card-input-element+.card p{
+  color:#ffffff !important;
+}
+.card-input-element:disabled+.card p{
+  color:#cacaca !important;
+}
+.card-input-element+.card:hover {
+  cursor: pointer;
+}
+.card-input-element:checked+.card {
+  background-color: rgb(12, 170, 78);
+  -webkit-transition: border .3s;
+  -o-transition: border .3s;
+  transition: border .3s;
+  color:#fff;
+}
+.card-input-element:disabled+.card{
+  border: 1px solid #d4d4d4;
+  color: #000;
+  background-color: transparent;
+}
+.card-input-element:checked+.card::after {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  background: rgb(12, 170, 78);
+  border-radius: 50%;
+  width: 26px;
+  height: 26px;
+}
+@-webkit-keyframes fadeInCheckbox {
+  from {
+    opacity: 0;
+    -webkit-transform: rotateZ(-20deg);
+  }
+  to {
+    opacity: 1;
+    -webkit-transform: rotateZ(0deg);
+  }
+}
+@keyframes fadeInCheckbox {
+  from {
+    opacity: 0;
+    transform: rotateZ(-20deg);
+  }
+  to {
+    opacity: 1;
+    transform: rotateZ(0deg);
+  }
+}
+.card-input-element:checked+.card::after {
+  content: url(../../images/icons/tick.svg) !important;
+}

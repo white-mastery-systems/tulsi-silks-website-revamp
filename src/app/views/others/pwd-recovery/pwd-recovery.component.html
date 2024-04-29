@@ -1,0 +1,80 @@
+<section *ngIf="pageLoader">
+  <app-loading-spinner></app-loading-spinner>
+</section>
+
+<section class="over-all smooth-fadein" *ngIf="!pageLoader">
+
+  <!-- if valid url -->
+  <section *ngIf="recoveryStatus">
+    <div class="{{template_setting?.body_type}}">
+      <div class="row">
+
+        <div class="col-md-8 offset-md-2">
+
+          <div class="gray-card primary-card p-3">
+            <form class="account__recover__form" autocomplete="off" (ngSubmit)="onPwdUpdate();" ngNativeValidate>
+              <div class="mb-5" align="center">
+                <h4>Account Recovery</h4>
+              </div>
+
+              <div class="input-group icon-input-group mb-3">
+                <label class="formlabel">New Password</label>
+                <input class="form-control" placeholder="Enter New Password" [type]="pwdForm.input_txt? 'text': 'password'" name="new_pwd"
+                  [(ngModel)]="pwdForm.new_pwd" #new_pwd="ngModel" pattern=".{6,}" title="Six or more characters" required />
+                <div class="input-group-append icon-append">
+                  <span class="input-group-text">
+                    <i class="material-icons" *ngIf="!pwdForm.input_txt" (click)="pwdForm.input_txt = !pwdForm.input_txt" aria-hidden="true">visibility</i>
+                    <i class="material-icons" *ngIf="pwdForm.input_txt" (click)="pwdForm.input_txt = !pwdForm.input_txt" aria-hidden="true">visibility_off</i>
+                  </span>
+                </div>
+              </div>
+
+              <div class="input-group icon-input-group mb-3">
+                <label class="formlabel">Confirm New Password</label>
+                <input class="form-control" placeholder="Re-type New Password" type="password" name="confirm_pwd" [(ngModel)]="pwdForm.confirm_pwd"
+                  #confirm_pwd="ngModel" required />
+                <div class="input-group-append icon-append">
+                  <span class="input-group-text">
+                    <i *ngIf="pwdForm.confirm_pwd && pwdForm.new_pwd==pwdForm.confirm_pwd" class="material-icons verified" aria-hidden="true">check_circle</i>
+                  </span>
+                </div>
+              </div>
+
+              <!-- response message -->
+              <div *ngIf="responseMsg" [ngClass]="responseStatus ? 'success-alert' : 'danger-alert'">
+                <div class="alert-msg d-flex align-items-center justify-content-center p-2">
+                  <span class="material-icons"></span>
+                  <p class="m-0">{{ responseMsg }}</p>
+                </div>
+              </div>
+              <!-- response message -->
+              <div>
+                <button class="primary-btn d-flex justify-content-center align-items-center w-100" type="submit" [disabled]="pwdForm.new_pwd!=pwdForm.confirm_pwd || pwdForm.submit">
+                  SUBMIT
+                  <div class="box" *ngIf="pwdForm.submit">
+                    <div class="spinner"></div>
+                  </div>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- if invalid url -->
+  <section *ngIf="!recoveryStatus" class="d-flex align-items-center justify-content-center">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="danger-alert">
+          <div class="alert-msg d-flex align-items-center justify-content-center p-2">
+            <span class="material-icons"></span>
+            <p class="m-0">{{ recoveryMsg }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</section>

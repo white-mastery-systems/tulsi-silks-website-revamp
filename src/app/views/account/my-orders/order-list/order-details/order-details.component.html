@@ -1,0 +1,404 @@
+<section *ngIf="pageLoader">
+  <app-loading-spinner></app-loading-spinner>
+</section>
+
+<section class="over-all smooth-fadein" *ngIf="!pageLoader">
+
+  <!-- breadcrumb -->
+  <section class="head-breadcrumb">
+    <div class="{{template_setting?.body_type}}">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="head-breadcrumb-inner border-btm d-flex justify-content-between">
+            <div>
+              <h2>Orders Details</h2>
+              <p>#{{details?.order_number}}</p>
+            </div>
+            <div *ngIf="template_setting?.display_goback && commonService?.desktop_device" class="d-flex align-items-center justify-content-end">
+              <span (click)="commonService.goBack();">GO BACK</span>
+            </div>
+          </div>
+        </div>
+
+        <div *ngIf="template_setting?.breadcrumb" class="col-md-12">
+          <div class="breadcrumb-navigation mt-3">
+            <ul class="collapsed">
+              <li><a routerLink="/">Home</a></li>
+              <li><a routerLink="/account">My Account</a></li>
+              <li><a routerLink="/account/my-orders">My Orders</a></li>
+              <li>
+                <a routerLink="/account/my-orders/order-list/{{params?.type}}">{{ (params?.type=='live')? 'Live': (params?.type=='completed')? 'Completed': (params?.type=='cancelled')? 'Cancelled': '' }} Orders</a>
+              </li>
+              <li><span class="active-page">Order Details</span></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!--# breadcrumb #-->
+
+  <section class="common-site-section myaccount">
+    <div class="{{template_setting?.body_type}}">
+
+      <div class="gray-card primary-card p-3">
+        <div class="row">
+          <div class="col-lg-3 col-md-12">
+            <div class="live_order_card_inner">
+              <h6>{{ (details?.order_type=='pickup')? 'Pickup': 'Shipping' }} Address</h6>
+              <p>{{details?.shipping_address?.address}}</p>
+              <a *ngIf="details?.shipping_address?.location_url" [href]="details.shipping_address.location_url" target="_blank">
+                <u>Get Directions</u>
+              </a>
+            </div>
+          </div>
+          <div class="col-lg-3 col-md-12">
+            <div class="live_order_card_inner">
+              <h6>Payment Method</h6>
+              <p>{{ (details?.payment_details?.name)? details.payment_details.name: 'NA' }}</p>
+            </div>
+          </div>
+          <div class="col-lg-6 col-md-12">
+            <div class="row">
+              <div class="col-12 live_order_card_inner">
+                <h6>Order Summary</h6>
+              </div>
+              <div class="col-6 live_order_card_inner">
+                <p>Item Subtotal</p>
+              </div>
+              <div class="col-6 live_order_card_inner">
+                <p class="pull-right">
+                  {{ details.sub_total | currency:details.currency_type?.country_code:'symbol':cc.format }}
+                </p>
+              </div>
+              <ng-container *ngIf="details.gift_wrapper>0">
+                <div class="col-6 live_order_card_inner">
+                  <p>Gift Wrapping</p>
+                </div>
+                <div class="col-6 live_order_card_inner">
+                  <p class="pull-right">
+                    {{ details.gift_wrapper | currency:details.currency_type?.country_code:'symbol':cc.format }}
+                  </p>
+                </div>
+              </ng-container>
+              <ng-container *ngIf="details.packaging_charges>0">
+                <div class="col-6 live_order_card_inner">
+                  <p>Packaging Charges</p>
+                </div>
+                <div class="col-6 live_order_card_inner">
+                  <p class="pull-right">
+                    {{ details.packaging_charges | currency:details.currency_type?.country_code:'symbol':cc.format }}
+                  </p>
+                </div>
+              </ng-container>
+              <ng-container *ngIf="details.order_type=='delivery'">
+                <div class="col-6 live_order_card_inner">
+                  <p>Shipping and Handling</p>
+                </div>
+                <div class="col-6 live_order_card_inner">
+                  <p *ngIf="details.shipping_cost>0" class="pull-right">
+                    {{ details.shipping_cost | currency:details.currency_type?.country_code:'symbol':cc.format }}
+                  </p>
+                  <p *ngIf="details.shipping_cost==0" class="pull-right">FREE</p>
+                </div>
+              </ng-container>
+              <ng-container *ngIf="details.cod_charges>0">
+                <div class="col-6 live_order_card_inner">
+                  <p>COD Charges</p>
+                </div>
+                <div class="col-6 live_order_card_inner">
+                  <p class="pull-right">
+                    {{ details.cod_charges | currency:details.currency_type?.country_code:'symbol':cc.format }}
+                  </p>
+                </div>
+              </ng-container>
+              <ng-container *ngIf="details.discount_amount>0">
+                <div class="col-6 live_order_card_inner">
+                  <p>Discount</p>
+                </div>
+                <div class="col-6 live_order_card_inner">
+                  <p class="pull-right">
+                    {{ details.discount_amount | currency:details.currency_type?.country_code:'symbol':cc.format }}
+                  </p>
+                </div>
+              </ng-container>
+              <div class="col-6 live_order_card_inner">
+                <p>Grand Total</p>
+              </div>
+              <div class="col-6 live_order_card_inner">
+                <p class="pull-right">
+                  {{ details.final_price | currency:details.currency_type?.country_code:'symbol':cc.format }}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="gray-card primary-card p-3">
+        <div class="row">
+          <div class="col-lg-3 col-md-12">
+            <div class="live_order_card_inner">
+              <h6>Order On</h6>
+              <p>{{details.created_on | date: "dd MMM yyyy"}}</p>
+            </div>
+          </div>
+          <div class="col-lg-3 col-md-12">
+            <div class="live_order_card_inner">
+              <h6>Order Value</h6>
+              <p>
+                {{ details.final_price | currency:details.currency_type?.country_code:'symbol':cc.format }}
+              </p>
+            </div>
+          </div>
+          <div class="col-lg-3 col-md-12">
+            <div class="live_order_card_inner">
+              <h6>{{ (details?.order_type=='pickup')? 'Pickup From': 'Ship To' }}</h6>
+              <p>{{ details.shipping_address?.name }}</p>
+            </div>
+          </div>
+          <div class="col-lg-3 col-md-12">
+            <div *ngIf="details.shipping_method?.delivery_method" class="live_order_card_inner">
+              <h6>{{details?.order_type | titlecase}} Time</h6>
+              <p>{{ details.shipping_method?.delivery_date }}
+                <br>{{ details.shipping_method?.delivery_time }}</p>
+            </div>
+            <div *ngIf="!details.shipping_method?.delivery_method" class="live_order_card_inner">
+              <h6>Carrier</h6>
+              <p>{{ (details?.shipping_method?.name)? details.shipping_method.name: 'NA' }}</p>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-12">
+            <div class="status_head">
+              <div class="col-md-12 p-0 live_order_card_inner">
+                <h6>Status</h6>
+                <!-- live -->
+                <ng-container *ngIf="params?.type=='live'">
+                  <p *ngIf="details.order_status=='placed'">Placed On {{details.created_on | date: "dd MMM yyyy"}}</p>
+                  <p *ngIf="details.order_status=='confirmed'">Confirmed On {{details.confirmed_on | date: "dd MMM yyyy"}}</p>
+                  <p *ngIf="details.order_status=='dispatched'">{{ (details.order_type=='pickup')? 'Ready On': 'Dispatched On' }} {{details.dispatched_on | date: "dd MMM yyyy"}}</p>
+                </ng-container>
+                <!-- completed -->
+                <ng-container *ngIf="params?.type=='completed'">
+                  <p>Delivered On {{details.delivered_on | date: "dd MMM yyyy"}}</p>
+                </ng-container>
+                <!-- cancelled -->
+                <ng-container *ngIf="params?.type=='cancelled'">
+                  <p>Cancelled On {{details.cancelled_on | date: "dd MMM yyyy"}}</p>
+                </ng-container>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-lg-8 col-md-12">
+            <div class="row">
+              <!-- item list -->
+              <div class="col-md-12 p-0">
+                <div class="pr-3 pl-3">
+                  <div *ngFor="let x of details.item_list;" class="live-order border-top border-btm pt-2 pb-2 mb-2">
+                    <p class="status-div pt-1" *ngIf="x.item_status && params.vendor_id">
+                      <span *ngIf="x.item_status=='c_requested'">
+                        Cancellation Requested
+                        <i (click)="itemInfo=x; cancelInfoModal.show();" class="material-icons pl-2">info</i>
+                      </span>
+                      <span *ngIf="x.item_status=='c_confirmed'">
+                        Cancelled
+                        <i (click)="itemInfo=x; cancelInfoModal.show();" class="material-icons pl-2">info</i>
+                      </span>
+                      <span *ngIf="x.item_status=='c_declined'">
+                        Cancellation Request Declined
+                        <i (click)="itemInfo=x; cancelInfoModal.show();" class="material-icons pl-2">info</i>
+                      </span>
+                    </p>
+                    <div class="d-flex flex-row">
+                      <div class="mr-2">
+                        <img width="100%" height="100%" appImgLazyLoad [ImagelazyLoad]="imgBaseUrl+x.image" alt="product">
+                      </div>
+                      <div class="live-order-card">
+                        <h5>{{x.name}}</h5>
+                        <ng-container *ngIf="x.variant_status">
+                          <small class="summary-addon" *ngFor="let y of x.variant_types; let j=index;">
+                            <strong>{{y.name}}</strong>
+                            <span>: {{y.value}}</span>
+                          </small>
+                        </ng-container>
+                        <small class="summary-addon" *ngIf="x.addon_status && x.selected_addon">
+                          <strong>Addon: </strong>
+                          <span>{{x.selected_addon?.name}}<ng-container *ngIf="x.customization_status"> - </ng-container></span>
+                          <span *ngIf="x.customization_status" class="cursor" (click)=" commonService.onViewModel(x.customized_model);">
+                            {{x.customized_model?.name}}
+                          </span>
+                        </small>
+                        <small class="summary-addon">{{x.quantity}} {{template_setting?.display_unit? x.unit: ''}}</small>
+                        <small class="summary-addon">
+                          {{ x.final_price | currency:details.currency_type?.country_code:'symbol':cc.format }}
+                        </small>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- #item list -->
+            </div>
+
+          </div>
+          <div class="col-lg-4 col-md-12">
+            <div class="w-100">
+              <div *ngIf="details.shipping_method?.tracking_link && details.order_status=='dispatched'" class="live_orders-btn">
+                <a [href]="details.shipping_method?.tracking_link" target="_blank">
+                  <button class="primary-btn w-100" type="button">TRACK ORDER</button>
+                </a>
+              </div>
+              <div class="live_orders-btn">
+                <button class="primary-btn w-100" type="button" (click)="onViewInvoice();">VIEW INVOICE</button>
+              </div>
+              <div *ngIf="!params.vendor_id && params?.type=='live' && commonService.application_setting?.cancel_order_email" class="live_orders-btn">
+                <a href="mailto:{{commonService.application_setting.cancel_order_email}}?Subject=Request for order cancellation - Order ID: {{details?.order_number}}">
+                  <button class="primary-btn w-100" type="button">CANCEL</button>
+                </a>
+              </div>
+              <div *ngIf="params.vendor_id && params?.type=='live' && cancellationExist" class="live_orders-btn">
+                <button class="primary-btn w-100" (click)="cancelForm={ title: '' }; cancelOrderModal.show();" type="button">CANCEL</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+</section>
+
+<!-- cancellation modal -->
+<div bsModal #cancelOrderModal="bs-modal" class="modal fade" [config]="{backdrop: 'static'}" tabindex="-1" role="dialog" aria-labelledby="dialog-addr">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h6 class="modal-title">{{details?.order_number}}</h6>
+      </div>
+      <form autocomplete="off" (ngSubmit)="cancelOrder(cancelOrderModal);" ngNativeValidate>
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-md-12 p-0">
+              <div class="pr-3 pl-3">
+                <ng-container *ngFor="let x of details.item_list; let i=index;">
+                  <div *ngIf="!x.item_status" class="live-order border-top border-btm pt-2 pb-2 mb-2">
+                    <div class="d-flex flex-row">
+                      <label class="store-label d-flex align-items-center justify-content-center mt-3 mb-3">
+                        <input type="checkbox" class="option-input checkbox" name="select_item{{i+1}}" (change)="cancelForm.error_msg='';" [(ngModel)]="x.item_checked" />
+                      </label>
+                      <div class="mr-2">
+                        <img width="100%" height="100%" appImgLazyLoad [ImagelazyLoad]="imgBaseUrl+x.image" alt="product">
+                      </div>
+                      <div class="live-order-card">
+                        <h5>{{x.name}}</h5>
+                        <ng-container *ngIf="x.variant_status">
+                          <small class="summary-addon" *ngFor="let y of x.variant_types; let j=index;">
+                            <strong>{{y.name}}</strong>
+                            <span>: {{y.value}}</span>
+                          </small>
+                        </ng-container>
+                        <small class="summary-addon" *ngIf="x.addon_status && x.selected_addon">
+                          <strong>Addon: </strong>
+                          <span>{{x.selected_addon?.name}}<ng-container *ngIf="x.customization_status"> - </ng-container></span>
+                          <span *ngIf="x.customization_status" class="cursor" (click)=" commonService.onViewModel(x.customized_model);">
+                            {{x.customized_model?.name}}
+                          </span>
+                        </small>
+                        <small class="summary-addon">{{x.quantity}} {{template_setting?.display_unit? x.unit: ''}}</small>
+                        <small class="summary-addon">
+                          {{ x.final_price | currency:details.currency_type?.country_code:'symbol':cc.format }}
+                        </small>
+                      </div>
+                    </div>
+                  </div>
+                </ng-container>
+              </div>
+            </div>
+            <div class="col-md-12 mt-3">
+              <p>Cancellation Reason</p>
+            </div>
+            <div class="col-md-6">
+              <select class="w-100" name="title" [(ngModel)]="cancelForm.title" required>
+                <option value="">-- Select Cancellation Reason --</option>
+                <option value="Order Created by Mistake">Order Created by Mistake</option>
+                <option value="Item(s) Would Not Arrive on Time">Item(s) Would Not Arrive on Time</option>
+                <option value="Shipping Cost Too High">Shipping Cost Too High</option>
+                <option value="Item Price Too High">Item Price Too High</option>
+                <option value="Found Cheaper Somewhere Else">Found Cheaper Somewhere Else</option>
+                <option value="Need to Change Shipping Address">Need to Change Shipping Address</option>
+                <option value="Need to Change Payment Method">Need to Change Payment Method</option>
+                <option value="Others">Others</option>
+              </select>
+            </div>
+            <div class="col-md-12 mt-3">
+              <textarea class="w-100" name="description" [(ngModel)]="cancelForm.description" [required]="cancelForm.title=='Others'"></textarea>
+            </div>
+            <div *ngIf="cancelForm?.error_msg" class="col-md-12 danger-alert">
+              <div class="alert-msg d-flex align-items-center justify-content-center p-2">
+                <span class="material-icons"></span>
+                <p class="m-0">{{cancelForm.error_msg}}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer" style="display: block;">
+          <div class="col-12 px-0 d-flex justify-content-end">
+            <button type="button" class="secondary-btn mr-2" (click)="cancelOrderModal.hide();">CLOSE</button>
+            <button class="primary-btn d-flex justify-content-center align-items-center" type="submit" [disabled]="cancelForm.submit">
+              SUBMIT
+              <div class="box" *ngIf="cancelForm.submit">
+                <div class="spinner"></div>
+              </div>
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- cancellation info modal -->
+<div bsModal #cancelInfoModal="bs-modal" class="modal fade" [config]="{backdrop: 'static'}" tabindex="-1" role="dialog" aria-labelledby="dialog-addr">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h6 class="modal-title">{{itemInfo.name}}</h6>
+      </div>
+      <div class="modal-body" id="cancelinfo_modal">
+        <div class="row">
+          <div class="col-md-12">
+            <ng-container *ngIf="itemInfo?.cancel_info?.title">
+              <h6 class="mt-2">Reason</h6>
+              <p class="pl-2">{{itemInfo.cancel_info.title}}</p>
+            </ng-container>
+            <ng-container *ngIf="itemInfo?.cancel_info?.description">
+              <h6>Description</h6>
+              <p class="pl-2">{{itemInfo.cancel_info.description}}</p>
+            </ng-container>
+            <hr class="my-3">
+            <p *ngIf="itemInfo?.cancel_info?.request_on">
+              <b>Requested on:</b> {{itemInfo.cancel_info.request_on | date: "dd MMM y hh:mm a"}}
+            </p>
+            <p *ngIf="itemInfo?.cancel_info?.cancelled_on">
+              <b>Cancelled on:</b> {{itemInfo.cancel_info.cancelled_on | date: "dd MMM y hh:mm a"}}
+            </p>
+            <p *ngIf="itemInfo?.cancel_info?.declined_on && !itemInfo?.cancel_info?.cancelled_on">
+              <b>Declined on:</b> {{itemInfo.cancel_info.declined_on | date: "dd MMM y hh:mm a"}}
+            </p>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer" style="display: block;">
+        <div class="col-12 px-0 d-flex justify-content-end">
+          <button type="button" class="secondary-btn mr-2" (click)="cancelInfoModal.hide();">CLOSE</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<app-customization></app-customization>

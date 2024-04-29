@@ -1,0 +1,185 @@
+<section *ngIf="pageLoader">
+  <app-loading-spinner></app-loading-spinner>
+</section>
+
+<section *ngIf="!pageLoader" class="over-all smooth-fadein">
+  <section class="common-site-section product-size">
+    <div class="product-size-wrapper">
+      <div class="product-size-inner-wrapper">
+        <div class="row">
+          <div class="col-md-12">
+            <div class="prod-size-info-con">
+              <h3>{{assist_details.heading}}</h3>
+              <p *ngIf="assist_details.sub_heading">{{assist_details.sub_heading}}</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="prod-size-steps-wrapper" *ngIf="assist_list[assistIndex]">
+          <div class="row">
+            <div class="col-md-12">
+              <div class="prod-size-inner-steps">
+                <div class="inner-step-count-name">
+                  <div class="inner-step-count">
+                    <span class="step-count">{{assistIndex+1}}/{{assist_list.length}}</span>
+                    {{ assist_list[assistIndex]?.heading }}
+                  </div>
+                  <p class="step-hint" *ngIf="assist_list[assistIndex]?.sub_heading">{{
+                    assist_list[assistIndex]?.sub_heading }}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="row mt-3">
+            <!-- parent img not exist -->
+            <ng-container *ngIf="!assist_list[assistIndex].image">
+              <div *ngFor="let x of assist_list[assistIndex].filtered_option_list; let i=index;" class="col-md-4 col-6 d-flex mb-4">
+                <div class="size-selt-radio w-100">
+                  <div class="size-selt-radio-inner h-100">
+                    <label [ngClass]="(assist_list[assistIndex]?.type=='either_or')? 'h-100': ''">
+                      <!-- Radio -->
+                      <input *ngIf="assist_list[assistIndex]?.type=='either_or'" type="radio" name="option" class="size-inpt-elemt d-none" value="{{x._id}}"
+                      [checked]="assist_list[assistIndex].selected_option==x._id"
+                      (change)="assist_list[assistIndex].selected_option=x._id; getRadioNextList(x._id);" />
+                        <!-- Check box -->
+                      <input *ngIf="assist_list[assistIndex]?.type!='either_or'" type="checkbox" name="option" class="size-inpt-elemt d-none"
+                      [(ngModel)]="x.aistyle_option_checked" (change)="getCheckboxNextList();" />
+                      <!-- content -->
+                      <div class="size-selct-card d-flex flex-column justify-content-center align-items-center" [ngClass]="(assist_list[assistIndex]?.type=='either_or')? 'h-100': ''">
+                        <img width="100%" height="100%" class="size-selct-img" imgBroken *ngIf="x.image" [src]="imgBaseUrl+x.image" alt="size-img">
+                        <img width="100%" height="100%" class="size-selct-img opacity6" imgBroken *ngIf="!x.image" src="assets/images/addon.svg" alt="size-img">
+                        <h6>{{x.heading}}</h6>
+                        <p *ngIf="x.sub_heading">{{x.sub_heading}}</p>
+                      </div>
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </ng-container>
+
+            <!-- parent img exist -->
+            <ng-container *ngIf="assist_list[assistIndex].image">
+              <div class="col-md-2">
+                <div class="size-modal-img d-flex justify-content-center align-items-center">
+                  <img width="100%" height="100%" imgBroken *ngIf="assist_list[assistIndex].image" [src]="imgBaseUrl+assist_list[assistIndex].image" alt="size-img">
+                </div>
+              </div>
+              <div class="col-md-10">
+                <div class="row">
+                  <div class="col-md-12 p-0">
+                    <div class="size-slot">
+                      <div *ngFor="let x of assist_list[assistIndex].filtered_option_list; let i=index;" class="size-selt-radio">
+                        <div class="size-selt-radio-inner">
+                          <label>
+                            <!-- Radio -->
+                            <input *ngIf="assist_list[assistIndex]?.type=='either_or'" type="radio" name="option" class="size-inpt-elemt d-none" value="{{x._id}}"
+                            [checked]="assist_list[assistIndex].selected_option==x._id"
+                            (change)="assist_list[assistIndex].selected_option=x._id; getRadioNextList(x._id);" />
+                              <!-- Check box -->
+                            <input *ngIf="assist_list[assistIndex]?.type!='either_or'" type="checkbox" name="option" class="size-inpt-elemt d-none"
+                            [(ngModel)]="x.aistyle_option_checked" (change)="getCheckboxNextList();" />
+                            <!-- content -->
+                            <div class="size-selct-card d-flex flex-column justify-content-center align-items-center">
+                              <h6>{{x.heading}}</h6>
+                              <p *ngIf="x.sub_heading">{{x.sub_heading}}</p>
+                            </div>
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </ng-container>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-12 mt-4">
+            <div class="proceed-sec d-flex justify-content-between w-100 m-0">
+              <!-- left btn -->
+              <button *ngIf="assistIndex==0" click="commonService.goBack();" class="primary-btn">CLOSE</button>
+              <button *ngIf="assistIndex>0" (click)="assistIndex=assistIndex-1; commonService?.pageScrollTop();"
+                class="primary-btn">PREVIOUS</button>
+              <!-- right btn -->
+              <button *ngIf="assist_list[assistIndex+1]?.filtered_option_list?.length" (click)="onNext();"
+                class="primary-btn">NEXT</button>
+              <button *ngIf="!assist_list[assistIndex+1]?.filtered_option_list?.length"
+                (click)="measurement_list=[]; onSave();" class="primary-btn">SAVE</button>
+            </div>
+          </div>
+          <div *ngIf="!assist_list[assistIndex+1]?.filtered_option_list?.length" class="col-md-12 mt-4">
+            <p align="center" (click)="measurement_list=[]; onViewMeasurement(mmDetailsModal);"><b>Review my Measurements</b></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</section>
+
+<!-- Selected Customization Details Modal -->
+<div bsModal #mmDetailsModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="dialog-waiter">
+  <div class="modal-dialog modal-lg modal-dialog-scrollable" role="document">
+    <div class="modal-content">
+      <div class="modal-header d-flex align-items-center">
+        <div>
+          <h5 class="modal-title">
+            <strong>Size details</strong>
+          </h5>
+          <p class="m-0">These are the size details of your customization</p>
+        </div>
+        <div class="d-flex">
+          <i class="material-icons" (click)="mmDetailsModal.hide();">close</i>
+        </div>
+      </div>
+
+      <div class="modal-body slim-scroll">
+        <div class="row">
+          <ng-container *ngFor="let x of measurement_list; let i=index;">
+            <div class="col-md-6 d-flex">
+              <div class="gray-card primary-card w-100 p-3 mb-3">
+                <div align="center">
+                  <h5>{{x.name}}</h5>
+                </div>
+                <div>
+                  <div class="d-flex align-items-center justify-content-center mb-3">
+                    <img width="100%" height="100%" imgBroken *ngIf="x.image" [src]="imgBaseUrl+x.image" alt="measurement_img">
+                  </div>
+                  <ng-container *ngFor="let y of x.list; let j=index;">
+                    <div class="pr-1 pl-1">
+                      <div class="row measurement-table">
+                        <div class="col-6 d-flex juustify-content-start align-items-center border">
+                          <p class="m-0">{{y.name}}:</p>
+                        </div>
+                        <div class="col-6 d-flex juustify-content-start align-items-center border">
+                          <div class="pro-qty d-flex justify-content-center align-items-center height-100">
+                            <button (click)="decQty(i, j);">
+                              <i class="material-icons">remove</i>
+                            </button>
+                            <span class="btn-width">{{ y.value }}</span>
+                            <button [ngClass]="y.value>1? '': 'qty-btn-disabled'"
+                              (click)="y.value>1? incQty(i, j): '';">
+                              <i class="material-icons">add</i>
+                            </button>
+                          </div>
+                          <span class="ml-2">{{ assist_details?.unit }}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </ng-container>
+                </div>
+              </div>
+            </div>
+          </ng-container>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="secondary-btn" type="button" (click)="mmDetailsModal.hide();">CLOSE</button>
+        <button class="primary-btn" type="button" (click)="onSaveWithUpdatedMm();">SAVE</button>
+      </div>
+    </div>
+  </div>
+</div>

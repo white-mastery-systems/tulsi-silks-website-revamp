@@ -1,0 +1,82 @@
+<section class="over-all smooth-fadein">
+
+  <!-- breadcrumb -->
+  <section class="head-breadcrumb">
+    <div class="{{template_setting?.body_type}}">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="head-breadcrumb-inner border-btm d-flex justify-content-between">
+            <div>
+              <h2>My Profile</h2>
+              <p>Edit you personal info and addresses</p>
+            </div>
+            <div *ngIf="template_setting?.display_goback && commonService?.desktop_device" class="d-flex align-items-center justify-content-end">
+              <span (click)="commonService.goBack();">GO BACK</span>
+            </div>
+          </div>
+        </div>
+
+        <div *ngIf="template_setting?.breadcrumb" class="col-md-12">
+          <div class="breadcrumb-navigation mt-3">
+            <ul class="collapsed">
+              <li><a routerLink="/">Home</a></li>
+              <li><a routerLink="/account">My Account</a></li>
+              <li><span class="active-page">My Profile</span></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!--# breadcrumb #-->
+
+  <section class="common-site-section myaccount">
+    <div class="{{template_setting?.body_type}}">
+      <div class="row">
+
+        <div class="col-md-6 mb-2 mt-2">
+          <div class="d-sm-flex myaccount__card primary-card" routerLink="/account/profile/info">
+            <div class="myaccount-icon d-flex justify-content-center align-items-center xs-pd-l-20">
+              <i class="material-icons">info</i>
+            </div>
+            <div class="myaccount__body m_flex m_text_center">
+              <div class="my_acc_card_head">
+                <h4 class="mb-3">Profile Info</h4>
+                <p class="text-muted">View and edit your personal details</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-6 mb-2 mt-2">
+          <div class="d-sm-flex myaccount__card primary-card" routerLink="/account/profile/address">
+            <div class="myaccount-icon d-flex justify-content-center align-items-center xs-pd-l-20">
+              <i class="material-icons">location_on</i>
+            </div>
+            <div class="myaccount__body pr-2 m_flex m_text_center">
+              <div class="my_acc_card_head">
+                <h4 class="mb-3">Addresses</h4>
+                <p class="text-muted">Add and edit delivery locations</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-6 mb-2 mt-2" *ngIf="commonService.store_details.additional_features?.custom_model">
+          <div class="d-sm-flex myaccount__card primary-card" routerLink="/account/profile/models">
+            <div class="myaccount-icon d-flex justify-content-center align-items-center xs-pd-l-20">
+              <i class="material-icons">format_shapes</i>
+            </div>
+            <div class="myaccount__body m_flex m_text_center">
+              <div class="my_acc_card_head">
+                <h4 class="mb-3">Custom Model</h4>
+                <p class="text-muted">View and edit your personalized addons</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+</section>

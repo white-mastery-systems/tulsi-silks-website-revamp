@@ -1,0 +1,175 @@
+<footer>
+  <div class="footer">
+    <div class="inner">
+      <div class="row">
+        <!-- logo -->
+        <div class="col-lg-3 col-md-6">
+          <div class="d-flex flex-column">
+            <div>
+              <img routerLink="/" width="100%" height="100%" appImgLazyLoad class="logo footer_logo cursor" [ImagelazyLoad]="imgBaseUrl+commonService.store_logo" alt="{{commonService.store_details?.name}}" draggable="false">
+            </div>
+            <div *ngIf="commonService.ys_features.indexOf('newsletter')!=-1 && commonService.application_setting?.newsletter_status && !commonService.application_setting?.newsletter_config?.open_onload" class="zindex-0">
+              <button type="button" (click)="subscribeForm={}; subscribeModal.show();" class="secondary-btn w-100">SUBSCRIBE</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- address -->
+        <div class="col-lg-3 col-md-6">
+          <h6 *ngIf="commonService.footer_config.address_config?.title" class="footer-title" [innerHtml]="commonService.footer_config.address_config.title"></h6>
+          <p *ngIf="commonService.footer_config.address_config?.content" [innerHtml]="commonService.footer_config.address_config.content"></p>
+        </div>
+
+        <!-- contact -->
+        <div class="col-lg-3 col-md-6">
+          <h6 *ngIf="commonService.footer_config.contact_config?.title" class="footer-title" [innerHtml]="commonService.footer_config.contact_config.title"></h6>
+          <p *ngIf="commonService.footer_config.contact_config?.content" [innerHtml]="commonService.footer_config.contact_config.content"></p>
+        </div>
+
+        <!-- social media -->
+        <div class="col-lg-3 col-md-4">
+          <h6 *ngIf="commonService.footer_config.social_media_title" class="footer-title" [innerHtml]="commonService.footer_config.social_media_title"></h6>
+          <ul class="footer-menu footer-social" [style.filter]="(commonService.footer=='dark') ? 'invert(100%) sepia(100%) saturate(1%) hue-rotate(130deg) brightness(109%) contrast(101%)': 'invert(0%) sepia(83%) saturate(7500%) hue-rotate(67deg) brightness(93%) contrast(114%)'">
+            <li *ngFor="let x of commonService.footer_config.social_media_links;">
+              <a [href]="x.url" target="_blank">
+                <img width="100%" height="100%" appImgIntersection ImagelazyLoad="assets/images/icons/social-media/{{x.type}}.svg" draggable="false" alt="{{x.type}}">
+              </a>
+            </li>
+          </ul>
+        </div>
+        <hr class="hr_line">
+
+        <!-- payment methods -->
+        <div *ngIf="commonService.footer_config.payment_methods?.length" class="col-lg-12 col-md-12 col-sm-12">
+          <div class="payment_method d-flex align-items-center justify-content-end pull-right">
+            <div *ngFor="let x of commonService.footer_config.payment_methods;" class="payment_card_logo">
+              <img width="100%" height="100%" appImgIntersection ImagelazyLoad="assets/images/icons/payments/{{x}}.svg" draggable="false" alt="{{x}}">
+            </div>
+          </div>
+        </div>
+
+        <!-- copyrights -->
+        <div class="col-lg-6 col-md-6 col-sm-12">
+          <div class="footer-copyright">
+            <small class="d-flex justify-content-md-start justify-content-sm-center">© {{currentYear}} {{commonService.store_details?.name}}. All rights reserved.</small>
+          </div>
+        </div>
+
+        <!-- footer links -->
+        <div *ngIf="commonService.footer_config.other_links?.length" class="col-lg-6 col-md-6 col-sm-12">
+          <div class="terms">
+            <small *ngFor="let x of commonService.footer_config.other_links;">
+              <a (click)="linkNavigate(x);">{{x.name}}</a>
+            </small>
+          </div>
+        </div>
+
+        <!-- band -->
+        <div *ngIf="commonService.store_details.additional_features?.band_status" class="col-md-12">
+          <div class="yourstore-band mt-3">
+            <div class="yourstore-inner">
+              <div class="yourstore-inner-div">
+                <a href="https://yourstore.io" class="yourstore-text" target="_blank">
+                  <img appImgIntersection ImagelazyLoad="assets/images/ys-logos/band-icon.svg" draggable="false" class="yourstore-logo band-txt" alt="Yourstore ecommerce platform" width="25" height="20">
+                  <span class="band-txt">powered by yourstore</span>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- band -->
+  <!-- <div class="yourstore-band p-3" *ngIf="commonService.store_details.additional_features?.band_status">
+    <div class="yourstore-inner">
+      <div class="d-flex justify-content-md-start justify-content-sm-center align-items-center col-md-4 px-0">
+        <a href="https://yourstore.io" class="yourstore-text d-flex align-items-center" target="_blank">
+        <span class="px-0 float-left band-txt">Powered by</span>
+        <span class="px-0 float-right">
+          <img width="100%" height="100%" appImgIntersection ImagelazyLoad="assets/images/ys-logos/band-logo-{{commonService.footer}}.svg" draggable="false" class="yourstore-logo band-txt" alt="Yourstore">
+        </span>
+        </a>
+      </div>
+    </div>
+  </div> -->
+</footer>
+
+<!-- scroll to top -->
+<ng-container *ngIf="commonService.ys_features.indexOf('whatsapp_chat')!=-1 || commonService.ys_features.indexOf('messenger')!=-1">
+  <a *ngIf="!commonService.application_setting.chat_status || commonService.application_setting.chat_status && commonService.application_setting.chat_config?.only_on_home && router.url!='/'" (click)="commonService.pageScrollTop();" id="scrollup">
+    <div class="h-100 d-flex align-items-center justify-content-center">
+      <i class="material-icons" aria-hidden="true">keyboard_arrow_up</i>
+    </div>
+  </a>
+</ng-container>
+<a *ngIf="commonService.ys_features.indexOf('whatsapp_chat')==-1 && commonService.ys_features.indexOf('messenger')==-1" (click)="commonService.pageScrollTop();" id="scrollup">
+  <div class="h-100 d-flex align-items-center justify-content-center">
+    <i class="material-icons" aria-hidden="true">keyboard_arrow_up</i>
+  </div>
+</a>
+
+<!-- whatsapp chat -->
+<ng-container *ngIf="commonService.wowjsLoaded && commonService.ys_features.indexOf('whatsapp_chat')!=-1 && commonService.application_setting.chat_status && commonService.application_setting.chat_config?.type=='whatsapp'">
+  <div *ngIf="router.url=='/' || !commonService.application_setting.chat_config?.only_on_home" class="whatsapp-chat">
+    <a href="https://api.whatsapp.com/send?phone={{commonService.application_setting.chat_config.mobile}}&text={{commonService.application_setting.chat_config.message}}" target="_blank">
+      <img width="100%" height="100%" src="assets/images/icons/whatsapp.svg" draggable="false" alt="whatsapp">
+    </a>
+  </div>
+</ng-container>
+
+<!-- newsletter subscription -->
+<a [hidden]="true" id="openSubscribeModal" (click)="subscribeForm={}; subscribeModal.show();"></a>
+<div bsModal #subscribeModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="subscribe-model">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content home-news-letter">
+      <div class="modal-header d-flex align-items-center justify-content-end">
+        <div (click)="subscribeModal.hide();">
+          <i class="material-icons">close</i>
+        </div>
+      </div>
+      <!-- before submit -->
+      <div *ngIf="!subscribeForm.alert_msg && commonService.application_setting.newsletter_config" class="modal-body">
+        <div class="widget newsletter d-flex flex-column align-items-center justify-content-center newsletter-body" align="center">
+          <h4 class="widget-title">{{ commonService.application_setting.newsletter_config.heading }}</h4>
+          <figure *ngIf="commonService.application_setting.newsletter_config.image" class="w-100">
+            <img width="100%" height="100%" class="w-100" appImgLazyLoad [ImagelazyLoad]="imgBaseUrl+commonService.application_setting.newsletter_config.image" alt="subscribe-banner">
+          </figure>
+          <p [innerHtml]="commonService.application_setting?.newsletter_config.sub_heading"></p>
+          <form *ngIf="commonService.application_setting.newsletter_config.subscription_status" autocomplete="off" (ngSubmit)="onSubscribe(subscribeModal);" ngNativeValidate class="w-100">
+            <div>
+              <input class="w-100" type="email" name="email" placeholder="Please type your e-mail" [(ngModel)]="subscribeForm.email" #email="ngModel"
+              pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" title="Please enter a valid Email ID" appLowercase required />
+              <div class="mtb-10">
+                <button class="primary-btn d-flex justify-content-center align-items-center" type="submit" [disabled]="subscribeForm.submit">
+                    {{ commonService.application_setting.newsletter_config.btn_text }}
+                  <div class="box" *ngIf="subscribeForm.submit">
+                    <div class="spinner"></div>
+                  </div>
+                </button>
+              </div>
+            </div>
+          </form>
+          <div *ngIf="!commonService.application_setting.newsletter_config.subscription_status">
+            <button (click)="subscribeModal.hide(); linkNavigate(commonService.application_setting.newsletter_config);" class="primary-btn d-flex justify-content-center align-items-center" type="button">
+              {{ commonService.application_setting.newsletter_config.btn_text }}
+            </button>
+          </div>
+        </div>
+      </div>
+      <!-- after submit -->
+      <div *ngIf="subscribeForm.alert_msg" class="modal-body">
+        <div class="mt-3 mb-4 news-letter-sec subscribe-alert" align="center">
+          <div [ngClass]="(subscribeForm?.status)? 'success-alert': 'danger-alert'">
+            <div class="alert-msg d-flex align-items-center justify-content-center p-2">
+              <span class="material-icons"></span>
+              <p class="m-0">{{subscribeForm.alert_msg}}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- #newsletter subscription -->

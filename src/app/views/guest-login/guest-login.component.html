@@ -1,0 +1,105 @@
+<section class="over-all smooth-fadein">
+
+  <section class="common-site-section account">
+    <div class="{{template_setting?.body_type}}">
+      <div class="row">
+        <div class="col-md-12 d-flex justify-content-center smooth-fadein">
+          <div class="account-card primary-card mb-3">
+            <div class="d-flex flex-column align-items-center">
+              <div class="guest-checkout-head text-left w-100 mt-3 mb-0">
+                <h6>Register to Checkout</h6>
+                <p>Why create an account?</p>
+              </div>
+
+              <div class="guest-login">
+                <div>
+                  <div class="guest-instructions">
+                    <div class="guest-inner">
+                      <div class="d-flex align-items-center">
+                        <i class="material-icons">verified</i>
+                        <span>Track order status</span>
+                      </div>
+                    </div>
+                    <div class="guest-inner">
+                      <div class="d-flex align-items-center">
+                        <i class="material-icons">verified</i>
+                        <span>Track order history</span>
+                      </div>
+                    </div>
+                    <div class="guest-inner">
+                      <div class="d-flex align-items-center">
+                        <i class="material-icons">verified</i>
+                        <span>Save address</span>
+                      </div>
+                    </div>
+                    <div class="guest-inner">
+                      <div class="d-flex align-items-center">
+                        <i class="material-icons">verified</i>
+                        <span>Checkout faster</span>
+                      </div>
+                    </div>
+                    <!-- <div class="guest-inner">
+                      <div class="d-flex align-items-center">
+                        <i class="material-icons">verified</i>
+                        <span>Use coupon code</span>
+                      </div>
+                    </div> -->
+                  </div>
+                </div>
+              </div>
+              <div class="w-100 mt-3 mb-4">
+                <button class="primary-btn w-100" (click)="onAccountPage('signup');">SIGN UP</button>
+              </div>
+              <div class="forgot_register-sec">
+                <div class="reset-password mb-3">
+                  <span>Already registered?
+                    <a class="register-link" (click)="onAccountPage('signin');"> Sign in</a>
+                  </span>
+                </div>
+              </div>
+
+              <div class="socaial-or-sec pt-3 pb-3">
+                <h2>
+                  <span>Or</span>
+                </h2>
+              </div>
+            </div>
+
+            <form autocomplete="off" (ngSubmit)="onLogin();" ngNativeValidate>
+              <div class="border-btm pb-3">
+                <div class="row">
+                  <div class="col-md-12">
+                    <div class="guest-checkout-head text-left w-100 mb-3">
+                      <h6>Checkout as a Guest</h6>
+                    </div>
+                  </div>
+                  <div class="form-group col-md-12">
+                    <input placeholder="Enter your email address" type="email" name="guest_email" [(ngModel)]="guestForm.email" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
+                    title="Please enter a valid Email ID" (input)="guestForm.errorMsg=null;" appLowercase required />
+                  </div>
+                  <div class="col-md-12" *ngIf="guestForm.errorMsg">
+                    <div class="danger-alert">
+                      <div class="alert-msg d-flex align-items-center justify-content-center p-2">
+                        <span class="material-icons"></span>
+                        <p class="m-0">{{guestForm.errorMsg}}</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="form-group col-12">
+                    <button class="primary-btn d-flex justify-content-center align-items-center w-100" type="submit" [disabled]="guestForm.submit">
+                      CONTINUE
+                      <div class="box" *ngIf="guestForm.submit">
+                        <div class="spinner"></div>
+                      </div>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</section>

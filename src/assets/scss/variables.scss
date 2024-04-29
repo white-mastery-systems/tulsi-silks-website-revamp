@@ -1,0 +1,100 @@
+$primary-theme-color: #1f1b24;
+$secondary-theme-color: #e2e2e2;
+
+$primary-text-color: #ffffff;
+$secondary-text-color: #000000;
+
+// font
+$primary-font: 'Montaga', sans-serif;
+$secondary-font: 'Montaga', sans-serif;
+
+// accent colors for tesimonials on hover, tab borders, announcement bar and txt, item-badge for shopping and wishlist
+$accent: $primary-theme-color;
+$accent-txt: $primary-text-color;
+
+// site wide gray card background color no need to change please dont change this color (eg: my account page cards after login)
+$card-bg: rgba(0, 0, 0, 0.02);
+
+// site wide border & text color
+$primary-border: #eee;
+$primary-text: #313131;
+
+// input borders & placeholder color
+$input-border: rgba(0,0,0,0.1);
+$input-focus-border: #000000;
+$input-placeholder: rgba(0,0,0,0.3);
+
+// error message
+$error-bg: #f3d7d7;
+$error-txt: red;
+
+// success message
+$sucess-bg: #afe2af;
+$sucess-txt: #0cad0c;
+
+// Announcement bar
+$announce-bg: $primary-theme-color;
+$announce-text: $primary-text-color;
+$primary-link: #0f7aa1;
+
+$highlighted-bg: #ffffff; // multi-highlighted section bg
+
+// header 
+$header: #fff;
+$header-txt: #000000;
+$header-icons: #000000;
+$header-border: #eee;
+$header-highlighted-text: rgb(0, 0, 0);
+$header-gradient: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgb(0, 0, 0) 100%); // only for type-7 header
+
+// mega menu dropdown list background and colors
+$mega-menu-bg: #fff;
+$mega-menu-text: #000;
+
+// cart badge
+$item-badge-bg: $primary-theme-color;
+$item-badge-txt: $primary-text-color;
+
+// footer
+$footer-bg:rgba(0,0,0,0.02);
+$footer-txt:#000;
+$footer-border:rgba(0, 0, 0, 0.1);
+
+// footer band
+$footer-band:#f6f6f6;
+$footer-band-inner:#efefef;
+$footer-band-txt:#000000;
+
+// btn
+$btn-border: none;
+$btn-radius: 0px;
+
+// primary btn
+$primary-btn-bg: $primary-theme-color;
+$primary-btn-hvr-bg: rgba(255, 255, 255, 0.2);
+$primary-btn-txt: $primary-text-color;
+$primary-btn-hvr-txt: $primary-text-color;
+
+// secondary btn
+$secondary-btn-bg: $secondary-theme-color;
+$secondary-btn-hvr-bg: rgba(255, 255, 255, 0.2);
+$secondary-btn-txt: $secondary-text-color;
+$secondary-btn-hvr-txt: $secondary-text-color;
+
+// radio and check box
+$check_radio_bdr_color: #ccc;
+$check_radio_color: $primary-theme-color;
+$check_color: $primary-text-color;
+
+// primary-shadow
+@mixin primary-shadow {
+  box-shadow: 0px 0px 25px 0px rgba(0, 0, 0, 0.05);
+}
+// secondary-shadow
+@mixin secondary-shadow {
+  box-shadow: 0 5px 16px 1px rgba(0, 0, 0, 0.13), 0 1px 4px 0 rgba(0, 0, 0, 0.09);
+}
+
+// announcebar
+$announcement-bar-mh: 30px;
+$mobile-announcement-bar-mh: 40px;

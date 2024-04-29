@@ -1,0 +1,115 @@
+import { Component, OnInit, Renderer2 } from '@angular/core';
+import { DomSanitizer } from '@angular/platform-browser';
+import { Router, ActivatedRoute, Params } from '@angular/router';
+import { environment } from '../../../../../environments/environment';
+import { StoreApiService } from '../../../../services/store-api.service';
+import { CommonService } from '../../../../services/common.service';
+import { DynamicAssetLoaderService } from '../../../../services/dynamic-asset-loader.service';
+import { Subscription } from 'rxjs';
+
+@Component({
+  selector: 'app-blog-details',
+  templateUrl: './blog-details.component.html',
+  styleUrls: ['./blog-details.component.scss']
+})
+
+export class BlogDetailsComponent implements OnInit {
+
+  blog_details: any = {};
+  pageLoader: boolean;
+  imgBaseUrl: string = environment.img_baseurl;
+  template_setting: any = environment.template_setting;
+  storeSubscription: Subscription;
+  bcList: any = [];
+
+  constructor(
+    private router: Router, private storeApi: StoreApiService, private activeRoute: ActivatedRoute,
+    public commonService: CommonService, private sanitizer: DomSanitizer,
+    private renderer: Renderer2, private assetService: DynamicAssetLoaderService
+  ) {
+    this.storeSubscription = this.commonService.storeDataListener.subscribe(() => {
+      this.getData();
+    });
+  }
+
+  ngOnInit(): void {
+    if (this.commonService.storeDataLoaded) this.getData();
+    else this.pageLoader = true;
+  }
+
+  getData(): void {
+    this.activeRoute.params.subscribe((params: Params) => {
+      this.pageLoader = true;
+      this.storeApi.BLOG_DETAILS(params['blog_id']).subscribe(result => {
+        if(result.status) {
+          this.blog_details = result.data;
+          this.updateMetaData();
+        }
+        else {
+          console.log("response", result);
+          this.router.navigate(["/"]);
+        }
+        setTimeout(() => { this.pageLoader = false; }, 500);
+      });
+    });
+  }
+
+  updateMetaData() {
+    this.blog_details.description = this.sanitizer.bypassSecurityTrustHtml(this.blog_details.description);
+    if(this.blog_details.seo_status) {
+      let seoImage = this.imgBaseUrl+this.blog_details.image;
+      this.commonService.setSiteMetaData(this.blog_details.seo_details, seoImage);
+    }
+    else this.commonService.getStoreSeoDetails();
+    // schema
+    let blogSchema: any = {
+      '@context': 'https://schema.org',
+      '@type': 'Blog',
+      publisher: {
+        '@type': 'Organization',
+        name: this.commonService.store_details?.name,
+        url: this.commonService.origin,
+        logo: {
+          '@type': 'ImageObject',
+          url:
+            environment.img_baseurl +
+            'uploads/' +
+            this.commonService.store_id +
+            '/logo.png?v=' +
+            localStorage.getItem('random_num'),
+          width: 200,
+          height: 100,
+        },
+      },
+    };
+    blogSchema.name = this.blog_details.name;
+    blogSchema.url = this.commonService.origin+this.router.url.split('?')[0];
+    blogSchema.description = this.stripHtml(this.blog_details.original_desc);
+    this.commonService.createJsonLD('blog-jsonld', blogSchema);
+    // breadcrumb
+    this.bcList = [
+      { name: 'Home', position: 1, link: '/' },
+      { name: 'Blogs', position: 2, link: '/blogs' },
+      {
+        name: this.blog_details.name,
+        position: 3,
+        link: this.router.url.split('?')[0],
+      },
+    ];
+    this.commonService.breadCrumbList(this.bcList);
+  }
+
+  stripHtml(html) {
+    if (html) {
+      let tmp = this.renderer.createElement('DIV');
+      tmp.innerHTML = html;
+      return tmp.textContent.slice(0, 320) || tmp.innerText.slice(0, 320) || '';
+    } else return '';
+  }
+
+  ngOnDestroy() {
+    this.storeSubscription.unsubscribe();
+    this.commonService.removeElement('blog-jsonld');
+  }
+
+}
