@@ -56,6 +56,12 @@ export class CategoryComponent implements OnInit {
     ]
   };
 
+  categoryFAQSchema: any = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": []
+  };
+
   constructor(
     @Inject(PLATFORM_ID) private platformId: Object, private router: Router, private activeRoute: ActivatedRoute,
     private storeApi: StoreApiService, public cc: CurrencyConversionService, public commonService: CommonService
@@ -137,6 +143,7 @@ export class CategoryComponent implements OnInit {
           this.collapseIndex = this.commonService.category_page_attr.collapse_index;
           this.category_details = this.commonService.category_page_attr.category_details;
           this.randomProducts = this.commonService.category_page_attr.random_products;
+          if(this.category_details.faqs?.length) this.buildFAQSchema();
           // seo
           this.updateMetaData();
           this.parent_list = this.commonService.category_page_attr.parent_list;
@@ -157,6 +164,7 @@ export class CategoryComponent implements OnInit {
             if(result.status)
             {
               this.category_details = result.category_details;
+              if(this.category_details.faqs?.length) this.buildFAQSchema();
               // seo
               this.updateMetaData();
               // filter products
@@ -194,6 +202,17 @@ export class CategoryComponent implements OnInit {
       // JSON-LD
       this.commonService.createJsonLD("category-jsonld", this.categorySchema);
     });
+  }
+
+  buildFAQSchema() {
+    this.category_details.faqs.forEach(el => {
+      this.categoryFAQSchema.mainEntity.push({
+        "@type": "Question",
+        "name": el.ques,
+        "acceptedAnswer": { "@type": "Answer", "text": el.answer }
+      });
+    });
+    this.commonService.createJsonLD("category-faq-jsonld", this.categoryFAQSchema);
   }
 
   getProductTags() {
@@ -379,6 +398,7 @@ export class CategoryComponent implements OnInit {
   ngOnDestroy() {
     this.subscription.unsubscribe();
     this.commonService.removeElement('category-jsonld');
+    this.commonService.removeElement('category-faq-jsonld');
   }
 
 }

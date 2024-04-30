@@ -1,5 +1,6 @@
 import { Component, OnInit, Renderer2 } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
+import { DatePipe } from '@angular/common';
 import { Router, ActivatedRoute, Params } from '@angular/router';
 import { environment } from '../../../../../environments/environment';
 import { StoreApiService } from '../../../../services/store-api.service';
@@ -24,7 +25,7 @@ export class BlogDetailsComponent implements OnInit {
 
   constructor(
     private router: Router, private storeApi: StoreApiService, private activeRoute: ActivatedRoute,
-    public commonService: CommonService, private sanitizer: DomSanitizer,
+    public commonService: CommonService, private sanitizer: DomSanitizer, private datePipe: DatePipe,
     private renderer: Renderer2, private assetService: DynamicAssetLoaderService
   ) {
     this.storeSubscription = this.commonService.storeDataListener.subscribe(() => {
@@ -62,29 +63,32 @@ export class BlogDetailsComponent implements OnInit {
     }
     else this.commonService.getStoreSeoDetails();
     // schema
-    let blogSchema: any = {
-      '@context': 'https://schema.org',
-      '@type': 'Blog',
-      publisher: {
-        '@type': 'Organization',
-        name: this.commonService.store_details?.name,
-        url: this.commonService.origin,
-        logo: {
-          '@type': 'ImageObject',
-          url:
-            environment.img_baseurl +
-            'uploads/' +
-            this.commonService.store_id +
-            '/logo.png?v=' +
-            localStorage.getItem('random_num'),
-          width: 200,
-          height: 100,
-        },
+    if(!this.blog_details.updatedAt) this.blog_details.updatedAt = new Date();
+    let blogSchema = {
+      "@context": "https://schema.org",
+      "@type": "BlogPosting",
+      "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": this.commonService.origin+this.router.url.split('?')[0]
       },
+      "headline": this.blog_details.name,
+      "image": this.imgBaseUrl+this.blog_details.image,  
+      "author": {
+        "@type": "Organization",
+        "name": this.commonService.store_details?.name,
+        "url": this.commonService.origin,
+      },  
+      "publisher": {
+        "@type": "Organization",
+        "name": this.commonService.store_details?.name,
+        "logo": {
+          "@type": "ImageObject",
+          "url": environment.img_baseurl+'uploads/'+this.commonService.store_id+'/logo.png?v='+localStorage.getItem('random_num')
+        }
+      },
+      "datePublished": this.datePipe.transform(new Date(this.blog_details.created_on), 'yyyy-MM-ddTHH:mmZ'),
+      "dateModified": this.datePipe.transform(new Date(this.blog_details.updatedAt), 'yyyy-MM-ddTHH:mmZ')
     };
-    blogSchema.name = this.blog_details.name;
-    blogSchema.url = this.commonService.origin+this.router.url.split('?')[0];
-    blogSchema.description = this.stripHtml(this.blog_details.original_desc);
     this.commonService.createJsonLD('blog-jsonld', blogSchema);
     // breadcrumb
     this.bcList = [
