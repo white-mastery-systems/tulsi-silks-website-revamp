@@ -51,6 +51,10 @@ export class StoreApiService {
   BLOG_LIST(skip, limit) { return this.http.get<any>(environment.ws_url+'/store_details/blogs/v1?store_id='+this.store_id+'&skip='+skip+'&limit='+limit); }
   BLOG_DETAILS(x) { return this.http.get<any>(environment.ws_url+'/store_details/blogs/v1?store_id='+this.store_id+'&id='+x); }
 
+  // web story
+  WEBSTORY_LIST(skip, limit) { return this.http.get<any>(environment.ws_url+'/store_details/web_stories?store_id='+this.store_id+'&skip='+skip+'&limit='+limit); }
+  WEBSTORY_DETAILS(x) { return this.http.get<any>(environment.ws_url+'/store_details/web_stories?store_id='+this.store_id+'&id='+x); }
+
   STORE_ORDER_DETAILS(x) { return this.http.get<any>(environment.ws_url+'/store_details/order_details?store_id='+this.store_id+'&id='+x); }
 
   APPOINTMENT_LIST(x) { return this.http.post<any>(environment.ws_url+'/store_details/appointments', x); }

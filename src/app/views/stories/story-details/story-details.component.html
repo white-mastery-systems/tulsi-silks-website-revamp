@@ -1,0 +1,29 @@
+<section *ngIf="pageLoader">
+  <app-loading-spinner></app-loading-spinner>
+</section>
+
+<section class="over-all smooth-fadein" *ngIf="!pageLoader">
+  <div style="height: 100vh;">
+    <amp-story publisher-logo-src="https://www.bdcode.in/assets/images/Logo/bdcode_logo_black.svg"
+      poster-portrait-src="https://www.bdcode.in/assets/images/Logo/bdcode_logo_black.svg" publisher="Bdcode" title="Diadem" standalone>
+      <ng-container *ngFor="let x of list; let i=index;">
+        <amp-story-page class="cover" auto-advance-after="" id="page{{i+1}}">
+          <amp-story-grid-layer template="fill">
+            <amp-img tabindex="0" height="1024" width="768" class="image" layout="responsive" [attr.src]="imgBaseUrl+x.image" [alt]="x.name"></amp-img>
+          </amp-story-grid-layer>
+          <amp-story-grid-layer class="align-end" template="vertical">
+            <div class="inner-align-end tech-show">
+              <h1 class="phone-heading" *ngIf="x.name">{{x.name}}</h1>
+              <p class="summary" [ngClass]="(i == (8)) ? 'last-des' : '' ">{{x.description}}</p>
+            </div>
+          </amp-story-grid-layer>
+          <amp-story-page-outlink *ngIf="x.btn_status" cta-image="none" cta-accent-element="background" cta-accent-color="#000" theme="custom" layout="nodisplay">
+            <a role="link" target="_top" [href]="x.link" id="btn_link_next" rel="nofollow">
+              <p class="cta_link-next">{{x.btn_name}}</p>
+            </a>
+          </amp-story-page-outlink>
+        </amp-story-page>
+      </ng-container>
+    </amp-story>
+  </div>
+</section>

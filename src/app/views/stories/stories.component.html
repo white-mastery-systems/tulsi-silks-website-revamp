@@ -1,0 +1,26 @@
+<section class="common-site-section mt-5">
+  <div class="grey-bg mt-5">
+    <section id="minimal-statistics">
+      <div class="container">
+        <div class="overall">
+          <div class="row">
+            <div class="col-xl-4 col-sm-6 col-12 primary-card" *ngFor="let x of list; let i = index;">
+              <a [routerLink]="'/web-story/'+x._id">
+                <div class="card">
+                  <img [src]="imgBaseUrl+x.image" height="380px" />
+                </div>
+                <div class="content col-9">
+                  <a>
+                    <p>
+                      {{x.name}}
+                    </p>
+                  </a>
+                </div>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</section>

@@ -15,7 +15,7 @@ const mainRoutes: Routes = [
   { path: 'guest-login', loadChildren: () => import('./views/guest-login/guest-login.module').then(m => m.GuestLoginModule), canActivate: [GuestGuard] },
   { path: 'wishlist', loadChildren: () => import('./views/wish-list/wish-list.module').then(m => m.WishListModule) },
   { path: 'cart', loadChildren: () => import('./views/cart/cart.module').then(m => m.CartModule) },
-
+  { path: 'web-story', loadChildren: () => import('./views/stories/stories.module').then(m => m.StoriesModule) },
   { path: 'category', loadChildren: () => import('./views/category/category.module').then(m => m.CategoryModule) },
   { path: 'recommended-products', loadChildren: () => import('./views/category/category.module').then(m => m.CategoryModule) },
   { path: 'on-sale', loadChildren: () => import('./views/category/category.module').then(m => m.CategoryModule) },
@@ -52,6 +52,7 @@ const mainRoutes: Routes = [
 const routes: Routes = [
   { path: '', redirectTo: '/', pathMatch: 'full' },
 
+  { path: 'web-story/:story_id', loadChildren: () => import('./views/stories/story-details/story-details.module').then(m => m.StoryDetailsModule) },
   { path: '', component: MainHeaderComponent, children: mainRoutes },
   { path: 'checkout', loadChildren: () => import('./views/checkout/checkout.module').then(m => m.CheckoutModule) },
   { path: 'others', loadChildren: () => import('./views/others/others.module').then(m => m.OthersModule) },
