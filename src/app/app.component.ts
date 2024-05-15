@@ -536,7 +536,7 @@ export class AppComponent {
 
   setBodyMarginTop(timer: number) {
     setTimeout(() => {
-      let mastHeight = this.document.getElementById("headroom-head").offsetHeight;
+      let mastHeight = this.document.getElementById("headroom-head")?.offsetHeight;
       this.document.body.style.marginTop = mastHeight+'px';
     }, timer);
   }

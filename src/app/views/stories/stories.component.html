@@ -1,26 +1,75 @@
-<section class="common-site-section mt-5">
-  <div class="grey-bg mt-5">
-    <section id="minimal-statistics">
-      <div class="container">
-        <div class="overall">
-          <div class="row">
-            <div class="col-xl-4 col-sm-6 col-12 primary-card" *ngFor="let x of list; let i = index;">
-              <a [routerLink]="'/web-story/'+x._id">
-                <div class="card">
-                  <img [src]="imgBaseUrl+x.image" height="380px" />
-                </div>
-                <div class="content col-9">
-                  <a>
-                    <p>
-                      {{x.name}}
-                    </p>
-                  </a>
-                </div>
-              </a>
+<section *ngIf="pageLoader">
+  <app-loading-spinner></app-loading-spinner>
+</section>
+
+<section class="over-all smooth-fadein" *ngIf="!pageLoader">
+
+  <!-- breadcrumb -->
+  <section class="head-breadcrumb">
+    <div class="{{template_setting?.body_type}}">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="head-breadcrumb-inner border-btm d-flex justify-content-between">
+            <div>
+              <h2>Web Stories</h2>
+              <p>Stories that inspire</p>
+            </div>
+            <div *ngIf="template_setting?.display_goback && commonService?.desktop_device" class="d-flex align-items-center justify-content-end">
+              <span (click)="commonService.goBack();">GO BACK</span>
             </div>
           </div>
         </div>
+
+        <div *ngIf="template_setting?.breadcrumb" class="col-md-12">
+          <div class="breadcrumb-navigation mt-3">
+            <ul class="collapsed">
+              <li><a routerLink="/">Home</a></li>
+              <li><span class="active-page">Web Stories</span></li>
+            </ul>
+          </div>
+        </div>
       </div>
-    </section>
-  </div>
+    </div>
+  </section>
+  <!--# breadcrumb #-->
+
+  <section class="common-site-section">
+    <div class="{{template_setting?.body_type}}">
+        <div *ngIf="list?.length" class="grey-bg">
+          <div class="grey-bg">
+            <div class="row">
+              <div class="col-xl-4 col-sm-6 col-12 mb-4 px-3" *ngFor="let x of list; let i = index;">
+                <div class="primary-card d-flex p-4">
+                <a routerLink="{{ x.seo_status ? '/web-stories/'+x.seo_details.page_url : '/web-stories/'+x._id }}">
+                  <div class="card">
+                    <img appSmallImg [ImagelazyLoad]="imgBaseUrl+x.image" alt="{{(x.img_alt)? x.img_alt: 'web-story-image'}}" height="380px" />
+                  </div>
+                  <div class="content col-9 px-0">
+                    <a>
+                      <p>
+                        {{x.name}}
+                      </p>
+                    </a>
+                  </div>
+                </a>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="col-md-12 navigation-ngx">
+            <ng-container *ngFor="let td of tempList | paginate: { itemsPerPage: pageSize, currentPage: page };"></ng-container>
+            <pagination-controls (pageChange)="page=$event; commonService.pageScrollTop(); getList();" autoHide="true" responsive="true" maxSize="5" previousLabel="" nextLabel=""></pagination-controls>
+          </div>
+        </div>
+
+      <div *ngIf="!list?.length" class="row">
+        <div class="col-12">
+          <div class="live_order_id">
+            <h5 align="center">No web stories found</h5>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
 </section>

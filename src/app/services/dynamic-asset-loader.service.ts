@@ -20,7 +20,9 @@ export const CssStore: Scripts[] = [
   { name: 'script-js', type: 'js', src: 'assets/js/script.js' },
   { name: 'swiper-js', type: 'js', src: 'assets/js/swiper.min.js' },
   { name: 'foloosipay', type: 'js', src: 'assets/js/foloosi.js' },
-  { name: 'plyr-js', type: 'js', src: 'assets/js/plyr.min.js' }
+  { name: 'plyr-js', type: 'js', src: 'assets/js/plyr.min.js' },
+  { name: 'web-story-js1', type: 'js', src: 'https://cdn.ampproject.org/v0.js' },
+  { name: 'web-story-js2', type: 'js', src: 'https://cdn.ampproject.org/v0/amp-story-1.0.js' }
 ];
 
 @Injectable({

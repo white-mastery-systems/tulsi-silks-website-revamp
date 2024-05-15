@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { StoreApiService } from 'src/app/services/store-api.service';
-import { environment } from 'src/environments/environment';
+import { environment } from '../../../environments/environment';
+import { StoreApiService } from '../../services/store-api.service';
+import { CommonService } from '../../services/common.service';
 
 @Component({
   selector: 'app-stories',
@@ -10,15 +11,33 @@ import { environment } from 'src/environments/environment';
 
 export class StoriesComponent implements OnInit {
 
-  list: any = [];
+  page: number = 1; pageSize: number = 12;
+  pageLoader: boolean; list: any = [];
   imgBaseUrl: string = environment.img_baseurl;
-  constructor(private api: StoreApiService) {}
+  template_setting: any = environment.template_setting;
+  tempList: any = [];
+  bcList: any = [
+    { name: "Home", position: 1, link: "/" },
+    { name: "Web Stories", position: 2, link: "/web-stories" }
+  ];
+
+  constructor(private storeApi: StoreApiService, public commonService: CommonService) {}
 
   ngOnInit(): void {
-    this.api.WEBSTORY_LIST(0, 10).subscribe((result) => {
-      if(result.status) this.list = result.list;
+    this.pageLoader = true; this.tempList = [];
+    let skip = (this.page-1)*this.pageSize;
+    this.storeApi.WEBSTORY_LIST(skip, this.pageSize).subscribe(result => {
+      if(result.status) {
+        this.list = result.list;
+        for(let i=0; i<result.count; i++) {
+          this.tempList.push("");
+        }
+      }
       else console.log("response", result);
+      setTimeout(() => { this.pageLoader = false; }, 500);
     });
+    // schema
+    this.commonService.breadCrumbList(this.bcList);
   }
 
 }

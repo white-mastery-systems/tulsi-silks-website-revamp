@@ -5,7 +5,6 @@ import { Router, ActivatedRoute, Params } from '@angular/router';
 import { environment } from '../../../../../environments/environment';
 import { StoreApiService } from '../../../../services/store-api.service';
 import { CommonService } from '../../../../services/common.service';
-import { DynamicAssetLoaderService } from '../../../../services/dynamic-asset-loader.service';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -25,8 +24,7 @@ export class BlogDetailsComponent implements OnInit {
 
   constructor(
     private router: Router, private storeApi: StoreApiService, private activeRoute: ActivatedRoute,
-    public commonService: CommonService, private sanitizer: DomSanitizer, private datePipe: DatePipe,
-    private renderer: Renderer2, private assetService: DynamicAssetLoaderService
+    public commonService: CommonService, private sanitizer: DomSanitizer, private datePipe: DatePipe, private renderer: Renderer2
   ) {
     this.storeSubscription = this.commonService.storeDataListener.subscribe(() => {
       this.getData();
