@@ -2,12 +2,12 @@
   <app-loading-spinner></app-loading-spinner>
 </section>
 
-<section class="over-all smooth-fadein" *ngIf="!pageLoader">
+<div class="over-all smooth-fadein" *ngIf="!pageLoader">
   <div class="full-height">
     <amp-story [publisher-logo-src]="imgBaseUrl+commonService.store_logo" [poster-portrait-src]="imgBaseUrl+commonService.store_logo"
       [publisher]="commonService.store_details?.name" [title]="commonService.store_details?.name" standalone>
       <ng-container *ngFor="let x of list; let i=index;">
-        <amp-story-page class="cover" auto-advance-after="" id="page{{i+1}}">
+        <amp-story-page class="cover" auto-advance-after="5s" id="page{{i+1}}">
           <amp-story-grid-layer template="fill">
             <amp-img tabindex="0" height="1024" width="768" class="image" layout="responsive"
               [attr.src]="imgBaseUrl+x.image" [alt]="x.name"></amp-img>
@@ -28,4 +28,4 @@
       </ng-container>
     </amp-story>
   </div>
-</section>
+</div>

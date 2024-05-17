@@ -59,7 +59,7 @@
           
           <div class="col-md-12 navigation-ngx">
             <ng-container *ngFor="let td of tempList | paginate: { itemsPerPage: pageSize, currentPage: page };"></ng-container>
-            <pagination-controls (pageChange)="page=$event; commonService.pageScrollTop(); getList();" autoHide="true" responsive="true" maxSize="5" previousLabel="" nextLabel=""></pagination-controls>
+            <pagination-controls (pageChange)="page=$event; commonService.pageScrollTop(); ngOnInit();" autoHide="true" responsive="true" maxSize="5" previousLabel="" nextLabel=""></pagination-controls>
           </div>
         </div>
 

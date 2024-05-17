@@ -99,6 +99,22 @@ export class BlogDetailsComponent implements OnInit {
       },
     ];
     this.commonService.breadCrumbList(this.bcList);
+    // faq
+    if(this.blog_details.faqs?.length) {
+      let faqSchema = {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": []
+      };
+      this.blog_details.faqs.forEach(el => {
+        faqSchema.mainEntity.push({
+          "@type": "Question",
+          "name": el.ques,
+          "acceptedAnswer": { "@type": "Answer", "text": el.answer }
+        });
+      });
+      this.commonService.createJsonLD("blog-faq-jsonld", faqSchema);
+    }
   }
 
   stripHtml(html) {
