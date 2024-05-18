@@ -138,7 +138,7 @@ export class CommonService {
       if(sessionStorage.getItem('guest_email')) this.guest_email = this.decryptData(sessionStorage.getItem("guest_email"));
       if(sessionStorage.getItem('guest_token')) this.guest_token = sessionStorage.getItem("guest_token");
       if(sessionStorage.getItem('sid')) this.session_id = sessionStorage.getItem("sid");
-      if(this.ys_features.indexOf('ip_based_4_currency')!=-1 || this.ys_features.indexOf('ip_based_10_currency')!=-1 || this.ys_features.indexOf('ip_based_25_plus_currency')!=-1) {
+      if(this.ys_features?.indexOf('ip_based_4_currency')!=-1 || this.ys_features.indexOf('ip_based_10_currency')!=-1 || this.ys_features.indexOf('ip_based_25_plus_currency')!=-1) {
         this.ipBasedCurrency = true;
       }
     }

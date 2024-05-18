@@ -7,6 +7,7 @@ import { SharedModule } from '../../shared/shared.module';
 import { CategoryComponent } from './category.component';
 import { RangeFilterPipe } from './pipes/range-filter.pipe';
 import { ProductSortPipe } from './pipes/product-sort.pipe';
+import { AccordionModule } from 'ngx-bootstrap/accordion';
 
 @NgModule({
   declarations: [CategoryComponent, RangeFilterPipe, ProductSortPipe],
@@ -14,7 +15,8 @@ import { ProductSortPipe } from './pipes/product-sort.pipe';
     SharedModule,
     CategoryRoutingModule,
     NgxPaginationModule,
-    CollapseModule.forRoot()
+    CollapseModule.forRoot(),
+    AccordionModule.forRoot()
   ]
 })
 
