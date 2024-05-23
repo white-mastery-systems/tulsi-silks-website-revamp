@@ -143,7 +143,7 @@ export class CategoryComponent implements OnInit {
           this.collapseIndex = this.commonService.category_page_attr.collapse_index;
           this.category_details = this.commonService.category_page_attr.category_details;
           this.randomProducts = this.commonService.category_page_attr.random_products;
-          if(this.category_details.faqs?.length) this.buildFAQSchema();
+          if(this.category_details?.faqs?.length) this.buildFAQSchema();
           // seo
           this.updateMetaData();
           this.parent_list = this.commonService.category_page_attr.parent_list;
@@ -164,7 +164,7 @@ export class CategoryComponent implements OnInit {
             if(result.status)
             {
               this.category_details = result.category_details;
-              if(this.category_details.faqs?.length) this.buildFAQSchema();
+              if(this.category_details?.faqs?.length) this.buildFAQSchema();
               // seo
               this.updateMetaData();
               // filter products

@@ -170,7 +170,8 @@ export class CommonService {
         bcSchema['itemListElement'].push({
           '@type': 'ListItem',
           position: el.position,
-          item: { '@id': this.origin + el.link, name: el.name },
+          name: el.name,
+          item: this.origin + el.link
         });
       });
       this.createJsonLD('bc-jsonld', bcSchema);

@@ -144,6 +144,8 @@ export class ProductComponent implements OnInit {
         this.createJsonLd();
         this.findCurrency();
         this.addMeta();
+        // bc schema
+        this.bcSchema();
         // custom model
         if(isPlatformBrowser(this.platformId) && sessionStorage.getItem("sizing_modal")) {
           this.customized_model = this.commonService.decryptData(sessionStorage.getItem("sizing_modal"));
@@ -197,6 +199,8 @@ export class ProductComponent implements OnInit {
             this.exist_in_wishlist = this.wishService.checkProductExist(this.productDetails._id);
             this.createJsonLd();
             this.findCurrency();
+            // schema
+            this.bcSchema();
             // fb tracking
             if(isPlatformBrowser(this.platformId) && environment.facebook_pixel) {
               fbq('track', 'ViewContent', {
@@ -271,8 +275,11 @@ export class ProductComponent implements OnInit {
           }
         });
       }
-      // schema
-      this.bcList = [{ name: 'Home', position: 1, link: '/' }];
+    });
+  }
+
+  bcSchema(){
+    this.bcList = [{ name: 'Home', position: 1, link: '/' }];
       if (this.category_details?.name) {
         this.bcList.push({ name: this.category_details.name, position: 2 });
         if (this.category_details.route)
@@ -281,14 +288,13 @@ export class ProductComponent implements OnInit {
           this.bcList[1].link = this.category_details.seo_status
             ? '/category/' + this.category_details.seo_details.page_url
             : '/category/' + this.category_details._id;
-      }
-      this.bcList.push({
-        name: this.productDetails.name,
-        position: this.bcList.length + 1,
-        link: this.router.url.split('?')[0],
-      });
-      this.commonService.breadCrumbList(this.bcList);
+    }
+    this.bcList.push({
+      name: this.productDetails.name,
+      position: this.bcList.length + 1,
+      link: this.router.url.split('?')[0],
     });
+    this.commonService.breadCrumbList(this.bcList);
   }
 
   relatedProducts() {
@@ -405,7 +411,7 @@ export class ProductComponent implements OnInit {
 
   // photoswipe
   initializePhotoSwipe() {
-    if(isPlatformBrowser(this.platformId) && !this.psInitiated && this.productDetails?.image_list[0]?.image) {
+    if(isPlatformBrowser(this.platformId) && !this.psInitiated && this.productDetails?.image_list?.length && this.productDetails?.image_list[0]?.image) {
       this.psInitiated = true;
       this.assetLoader.load('jquery', 'photoswipe', 'default-skin').then(data => {
         this.psCssLoaded = true;

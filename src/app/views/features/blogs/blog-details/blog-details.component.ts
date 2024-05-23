@@ -100,7 +100,7 @@ export class BlogDetailsComponent implements OnInit {
     ];
     this.commonService.breadCrumbList(this.bcList);
     // faq
-    if(this.blog_details.faqs?.length) {
+    if(this.blog_details?.faqs?.length) {
       let faqSchema = {
         "@context": "https://schema.org",
         "@type": "FAQPage",
@@ -128,6 +128,7 @@ export class BlogDetailsComponent implements OnInit {
   ngOnDestroy() {
     this.storeSubscription.unsubscribe();
     this.commonService.removeElement('blog-jsonld');
+    this.commonService.removeElement('blog-faq-jsonld');
   }
 
 }
