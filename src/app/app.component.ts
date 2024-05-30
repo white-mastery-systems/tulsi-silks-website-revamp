@@ -373,7 +373,7 @@ export class AppComponent {
           this.commonService.removeElement('bc-jsonld');
           // SEO
           let routeName = this.location.path();
-          if(routeName.indexOf("/category/")==-1 && routeName.indexOf("/product/")==-1 && routeName.indexOf("/blogs")==-1 && routeName.indexOf("/account")==-1 && routeName.indexOf("/wishlist")==-1) {
+          if(routeName.indexOf("/category/")==-1 && routeName.indexOf("/product/")==-1 && routeName.indexOf("/blogs")==-1 && routeName.indexOf("/account")==-1 && routeName.indexOf("/wishlist")==-1 && routeName.indexOf("/contact-us")==-1) {
             this.commonService.getStoreSeoDetails();
           }
           if(this.router.url!='/') this.setBodyMarginTop(100);

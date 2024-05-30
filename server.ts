@@ -69,6 +69,15 @@ export function app(): express.Express {
   server.use('/blogs/trending-saree-blouse-designs-for-designer-sarees-and-how-to-make-them', function(req, res) {
     res.redirect('/blogs/20-saree-blouse-neck-designs-front-and-back');
   });
+  server.use('/home', function(req, res) {
+    res.redirect('/');
+  });
+  server.use('/product/beige-and-black-tussar-printed-saree-t588564-shipping-10-to-15-days-t588564', function(req, res) {
+    res.redirect('/product/beige-and-black-tussar-printed-saree-t588564-t588564');
+  });
+  server.use('/product/beige-and-yellow-tussar-printed-saree-t588562-shipping-10-to-15-days-t588562', function(req, res) {
+    res.redirect('/product/beige-and-yellow-tussar-printed-saree-t588562-t588562');
+  });
 
   // Example Express Rest API endpoints
   // server.get('/api/**', (req, res) => { });

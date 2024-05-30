@@ -73,7 +73,7 @@ export class CategoryComponent implements OnInit {
 
   ngOnInit(): void {
     this.activeRoute.params.subscribe((params: Params) => {
-      this.showMore = false; this.params = params; this.tag_list = [];
+      this.showMore = false; this.params = params; this.tag_list = []; this.randomProducts = [];
       if(this.router.url=='/recommended-products' || this.router.url=='/all-products' || this.router.url=='/new-arrivals' || this.router.url=='/on-sale'|| this.router.url=='/featured-products') {
         this.params = { category_id: this.router.url };
         if(this.commonService.category_page_attr.category_id == this.router.url) {

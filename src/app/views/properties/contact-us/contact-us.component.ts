@@ -36,6 +36,13 @@ export class ContactUsComponent implements OnInit {
         }
       });
     }
+    let seoDetails = {
+      h1_tag: "Contact Tulsi Silks",
+      page_title: "Contact -Tulsi Silks | Best Sarees for Wedding",
+      meta_desc: "Elegance meets tradition at Tulsi Silks. Contact us for inquiries, collaborations, or shop online. Let's weave stories together",
+      meta_keywords: []
+    };
+    this.commonService.setSiteMetaData(seoDetails, null);
     // schema
     let bcList = [
       { name: "Home", position: 1, link: "/" },
