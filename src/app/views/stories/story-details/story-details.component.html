@@ -12,6 +12,12 @@
             <amp-img tabindex="0" height="1024" width="768" class="image" layout="responsive"
               [attr.src]="imgBaseUrl+x.image" [alt]="x.name"></amp-img>
           </amp-story-grid-layer>
+          <amp-story-grid-layer class="align-center" template="vertical">
+            <div class="custom-logo">
+              <amp-img height="10" width="10" layout="responsive" src="assets/images/logo.png" alt="logo">
+            </amp-img>                
+            </div>
+          </amp-story-grid-layer>
           <amp-story-grid-layer class="align-end" template="vertical">
             <div class="inner-align-end tech-show">
               <h1 *ngIf="x.name" class="phone-heading">{{x.name}}</h1>
