@@ -1148,8 +1148,12 @@ p.error-msg {
     text-align: center;
   }
   p * {
-    color: $primary-text !important;
+    color: $primary-text !important;   
   }
+}
+.category-banner-accordion .fc_status p a{
+  color: #2196f3 !important;
+  text-decoration: underline;
 }
 
 @media only screen and (max-width: 576px) {
