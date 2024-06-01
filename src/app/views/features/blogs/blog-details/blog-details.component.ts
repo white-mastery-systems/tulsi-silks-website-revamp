@@ -69,7 +69,7 @@ export class BlogDetailsComponent implements OnInit {
         "@type": "WebPage",
         "@id": this.commonService.origin+this.router.url.split('?')[0]
       },
-      "headline": this.blog_details.name,
+      "headline": this.blog_details.seo_details?.page_title,
       "image": this.imgBaseUrl+this.blog_details.image,  
       "author": {
         "@type": "Organization",
