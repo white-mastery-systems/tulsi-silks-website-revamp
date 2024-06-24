@@ -47,7 +47,7 @@ export class WishListComponent implements OnInit {
     }
     // seo
     let seoDetails = {
-      h1_tag: "List of my favourites",
+      h1_tag: "Wishlist | Tulsi Silks",
       page_title: "Tulsi Silks - My Wishlist",
       meta_desc: "Create a list of your favourite products so you can shop it later.",
       meta_keywords: []

@@ -56,7 +56,7 @@ export class AccountComponent implements OnInit {
         else setTimeout(() => { this.pageLoader = false; }, 500);
       }
       let seoDetails = {
-        h1_tag: "Tulsi Silks - My Account Information",
+        h1_tag: "My Account | Tulsi Silks",
         page_title: "Tulsi Silks - My Account",
         meta_desc: "Manage your account, check orders, and view your order history with Tulsi Silks.",
         meta_keywords: []

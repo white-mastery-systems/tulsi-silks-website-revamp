@@ -126,6 +126,39 @@ export class CategoryComponent implements OnInit {
               categoryName = "Featured Products"; filterType = "featured";
             }
             this.category_details = { name: categoryName, route: this.router.url };
+            // seo details
+            let metaInfo = {
+              "all": {
+                h1_tag: "All Products - "+this.commonService.store_details?.name,
+                page_title: "All Products - Extensive Collection for Every Need | "+this.commonService.store_details?.name,
+                meta_desc: "Browse our extensive collection of products at "+this.commonService.store_details?.name+", catering to a wide range of needs. You can find everything you're looking for here. Start exploring now.",
+                meta_keywords: []
+              },
+              "new_arrivals": {
+                h1_tag: "New Arrivals from Tulsi Silks",
+                page_title: "New Arrivals - Latest Products and Trends | "+this.commonService.store_details?.name,
+                meta_desc: "Discover the latest arrivals and stay up-to-date with the newest products and trends at "+this.commonService.store_details?.name+". Browse our collection and find something exciting for yourself.",
+                meta_keywords: []
+              },
+              "discount": {
+                h1_tag: "On Sale - "+this.commonService.store_details?.name,
+                page_title: "On Sale - Great Deals and Discounts | "+this.commonService.store_details?.name,
+                meta_desc: "Explore the on-sale items at "+this.commonService.store_details?.name+" and enjoy great deals and discounts. Find high-quality products at affordable prices and make the most of your shopping experience.",
+                meta_keywords: []
+              },
+              "featured": {
+                h1_tag: "Featured Products - "+this.commonService.store_details?.name,
+                page_title: "Featured Products - Handpicked Selection of Must-Haves | "+this.commonService.store_details?.name,
+                meta_desc: "Check out our handpicked selection of featured products at "+this.commonService.store_details?.name+". Discover the trending and highly recommended must-haves from "+this.commonService.store_details?.name+".",
+                meta_keywords: []
+              }
+            };
+            if(metaInfo[filterType]) {
+              this.category_details.seo_status = true;
+              this.category_details.seo_details = metaInfo[filterType];
+            }
+            // seo
+            this.updateMetaData();
             this.storeApi.FILTERED_PRODUCT_LIST({ type: filterType }).subscribe(result => {
               setTimeout(() => { this.pageLoader = false; }, 500);
               if(result.status) this.filterProducts(result.list);
