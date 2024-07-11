@@ -78,6 +78,12 @@ export function app(): express.Express {
   server.use('/product/beige-and-yellow-tussar-printed-saree-t588562-shipping-10-to-15-days-t588562', function(req, res) {
     res.redirect('/product/beige-and-yellow-tussar-printed-saree-t588562-t588562');
   });
+  server.use('/category/5d3aba773880672656301ac6', function(req, res) {
+    res.redirect('/category/view-all-six-yards');
+  });
+  server.use('/category/5d38185edf972007f663040e', function(req, res) {
+    res.redirect('/category/traditional');
+  });
 
   // Example Express Rest API endpoints
   // server.get('/api/**', (req, res) => { });
