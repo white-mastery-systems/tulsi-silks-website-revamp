@@ -23,6 +23,12 @@ export class AccountComponent implements OnInit {
     { name: "Home", position: 1, link: "/" },
     { name: "My Account", position: 2, link: "/account" }
   ];
+  seoDetails: any = {
+    h1_tag: "My Account | Tulsi Silks",
+    page_title: "Tulsi Silks - My Account",
+    meta_desc: "Manage your account, check orders, and view your order history with Tulsi Silks.",
+    meta_keywords: []
+  };
 
   constructor(
     @Inject(PLATFORM_ID) private platformId: Object, private http: HttpClient, private router: Router,
@@ -55,13 +61,7 @@ export class AccountComponent implements OnInit {
         }
         else setTimeout(() => { this.pageLoader = false; }, 500);
       }
-      let seoDetails = {
-        h1_tag: "My Account | Tulsi Silks",
-        page_title: "Tulsi Silks - My Account",
-        meta_desc: "Manage your account, check orders, and view your order history with Tulsi Silks.",
-        meta_keywords: []
-      };
-      this.commonService.setSiteMetaData(seoDetails, null);
+      this.commonService.setSiteMetaData(this.seoDetails, null);
       // schema
       this.commonService.breadCrumbList(this.bcList);
     });

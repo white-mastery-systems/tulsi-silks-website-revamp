@@ -22,6 +22,12 @@ export class WishListComponent implements OnInit {
     { name: "Home", position: 1, link: "/" },
     { name: "My Wishlist", position: 2, link: "/wishlist" }
   ];
+  seoDetails: any = {
+    h1_tag: "Wishlist | Tulsi Silks",
+    page_title: "Tulsi Silks - My Wishlist",
+    meta_desc: "Create a list of your favourite products so you can shop it later.",
+    meta_keywords: []
+  };
 
   constructor(
     private wishService: WishlistService, public cc: CurrencyConversionService,
@@ -46,13 +52,7 @@ export class WishListComponent implements OnInit {
       });
     }
     // seo
-    let seoDetails = {
-      h1_tag: "Wishlist | Tulsi Silks",
-      page_title: "Tulsi Silks - My Wishlist",
-      meta_desc: "Create a list of your favourite products so you can shop it later.",
-      meta_keywords: []
-    };
-    this.commonService.setSiteMetaData(seoDetails, null);
+    this.commonService.setSiteMetaData(this.seoDetails, null);
     // schema
     this.commonService.breadCrumbList(this.bcList);
   }

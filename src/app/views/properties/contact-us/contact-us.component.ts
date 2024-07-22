@@ -15,6 +15,12 @@ export class ContactUsComponent implements OnInit {
   contactForm: any = {}; pageLoader: boolean;
   alert_msg: string; success_alert: boolean;
   template_setting: any = environment.template_setting;
+  seoDetails: any = {
+    h1_tag: "Contact Tulsi Silks",
+    page_title: "Contact -Tulsi Silks | Best Sarees for Wedding",
+    meta_desc: "Elegance meets tradition at Tulsi Silks. Contact us for inquiries, collaborations, or shop online. Let's weave stories together",
+    meta_keywords: []
+  };
 
   constructor(private sanitizer: DomSanitizer, private storeApi: StoreApiService, public commonService: CommonService) { }
 
@@ -36,13 +42,7 @@ export class ContactUsComponent implements OnInit {
         }
       });
     }
-    let seoDetails = {
-      h1_tag: "Contact Tulsi Silks",
-      page_title: "Contact -Tulsi Silks | Best Sarees for Wedding",
-      meta_desc: "Elegance meets tradition at Tulsi Silks. Contact us for inquiries, collaborations, or shop online. Let's weave stories together",
-      meta_keywords: []
-    };
-    this.commonService.setSiteMetaData(seoDetails, null);
+    this.commonService.setSiteMetaData(this.seoDetails, null);
     // schema
     let bcList = [
       { name: "Home", position: 1, link: "/" },

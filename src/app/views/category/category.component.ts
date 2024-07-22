@@ -136,7 +136,7 @@ export class CategoryComponent implements OnInit {
               },
               "new_arrivals": {
                 h1_tag: "New Arrivals from Tulsi Silks",
-                page_title: "New Arrivals - Latest Products and Trends | "+this.commonService.store_details?.name,
+                page_title: "Shop the Latest New Arrivals Collections from Tulsi Silks",
                 meta_desc: "Discover the latest arrivals and stay up-to-date with the newest products and trends at "+this.commonService.store_details?.name+". Browse our collection and find something exciting for yourself.",
                 meta_keywords: []
               },

@@ -106,6 +106,7 @@ export class HomeComponent implements OnInit {
       "@id": "",
       "url": "https://tulsisilks.co.in/",
       "telephone": "04424991086",
+      "priceRange": "$$$",
       "address": {
         "@type": "PostalAddress",
         "streetAddress": "68, Luz Church Rd, Kapali Thottam, Mylapore,",
@@ -134,7 +135,9 @@ export class HomeComponent implements OnInit {
       "sameAs": [
         "https://www.facebook.com/TulsiSilks/",
         "https://www.instagram.com/tulsisilks/",
-        "https://twitter.com/tulsisilks"
+        "https://twitter.com/tulsisilks",
+        "https://www.youtube.com/channel/UCQSUU3UkKL2ZFixxSoJdqoA",
+        "https://tulsisilks.co.in/"
       ] 
     };
     this.commonService.createJsonLD("business-jsonld", businessSchema);

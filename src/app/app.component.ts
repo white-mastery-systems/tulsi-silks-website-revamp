@@ -81,7 +81,7 @@ export class AppComponent {
     private swiperService: SwiperService, private location: Location, private connectionService: ConnectionService,
     private assetLoader: DynamicAssetLoaderService
 	) {
-    this.randomNum = localStorage.setItem("random_num", "654TRTYR654")
+    // this.randomNum = localStorage.setItem("random_num", "654TRTYR654")
     // device type
     if(this.deviceService.isDesktop()) {
       this.commonService.desktop_device = true;
@@ -126,11 +126,11 @@ export class AppComponent {
       if(bgElem && bgElem.style.display != "none") bgElem.style.display = "none";
     }
     if(this.commonService.store_id) {
-      this.randomNum = localStorage.getItem("random_num");
-      if(!this.randomNum) {
+      // this.randomNum = localStorage.getItem("random_num");
+      // if(!this.randomNum) {
         let cd = new Date(new Date().toLocaleString("en-US", {timeZone: "Asia/Kolkata"}));
         this.randomNum = cd.getFullYear()+''+cd.getMonth()+''+cd.getDate()+''+cd.getHours()+''+cd.getMinutes();
-      }
+      // }
       // site images
       this.commonService.favicon = "uploads/"+this.commonService.store_id+"/favicon.png?v="+this.randomNum;
       this.commonService.store_logo = "uploads/"+this.commonService.store_id+"/logo.png?v="+this.randomNum;
