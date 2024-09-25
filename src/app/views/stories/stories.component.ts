@@ -20,6 +20,12 @@ export class StoriesComponent implements OnInit {
     { name: "Home", position: 1, link: "/" },
     { name: "Web Stories", position: 2, link: "/web-stories" }
   ];
+  seoDetails: any = {
+    h1_tag: "Webstory Achieve | Tulsi Silks",
+    page_title: "Tulsi Silks - Webstory Achieve",
+    meta_desc: "Explore the elegance of Tulsa Silks with our curated web stories. Discover exquisite silk sarees, stunning designs, and timeless fashion for every occasion.",
+    meta_keywords: []
+  };
 
   constructor(private storeApi: StoreApiService, public commonService: CommonService) {}
 
@@ -36,6 +42,7 @@ export class StoriesComponent implements OnInit {
       else console.log("response", result);
       setTimeout(() => { this.pageLoader = false; }, 500);
     });
+    this.commonService.setSiteMetaData(this.seoDetails, null);
     // schema
     this.commonService.breadCrumbList(this.bcList);
   }

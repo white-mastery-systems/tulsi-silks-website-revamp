@@ -39,6 +39,34 @@ export class StoryDetailsComponent {
             this.commonService.setSiteMetaData(storyData.seo_details, seoImage);
           }
           else this.commonService.getStoreSeoDetails();
+          // schema
+          let localBSchema = {
+            "@context": "https://schema.org",
+            "@type": "NewsArticle",
+            "mainEntityOfPage": {
+              "@type": "WebPage",
+              "@id": "https://tulsisilks.co.in/web-stories/"+storyData.seo_details?.page_url
+            },
+            "headline": storyData.name,
+            "description": storyData.seo_details?.meta_desc,
+            "image": "https://yourstore.io/api/"+storyData.image,  
+            "author": {
+              "@type": "Organization",
+              "name": "Tulsi Silks",
+              "url": "https://tulsisilks.co.in/"
+            },  
+            "publisher": {
+              "@type": "Organization",
+              "name": "Tulsi Silks",
+              "logo": {
+                "@type": "ImageObject",
+                "url": "https://yourstore.io/api/uploads/5d30013a5c83a702392c4c8b/logo.png?v=2024761038"
+              }
+            },
+            "datePublished": storyData.createdAt,
+            "dateModified": storyData.updatedAt
+          };
+          this.commonService.createJsonLD("ws-jsonld", localBSchema);
         }
         else {
           console.log("response", result);
@@ -55,6 +83,7 @@ export class StoryDetailsComponent {
     this.commonService.announcementBar = "";
     this.commonService.currency_types = [];
     this.wishService.wish_list = [];
+    this.commonService.removeElement('ws-jsonld');
   }
 
 }
