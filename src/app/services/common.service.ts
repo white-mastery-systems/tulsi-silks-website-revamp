@@ -43,6 +43,7 @@ export class CommonService {
   giftcard_config: any = {};
   announcementBar: string;
   ipBasedCurrency: boolean;
+  product_features: any;
 
   after_login_event: any;
   guest_email: string;

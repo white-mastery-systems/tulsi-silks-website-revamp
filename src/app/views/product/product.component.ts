@@ -375,16 +375,15 @@ export class ProductComponent implements OnInit {
 
   getProductFeatures() {
     return new Promise((resolve, reject) => {
-      if(sessionStorage.getItem('pf')) {
-        let pdFeatures = this.commonService.decryptData(sessionStorage.getItem('pf'));
-        resolve(pdFeatures);
+      if(this.commonService.product_features) {
+        resolve(this.commonService.product_features);
       }
       else {
         this.storeApi.PRODUCT_FEATURES().subscribe(result => {
           let pdFeatures = JSON.parse(result.data);
-          pdFeatures.addon_list = pdFeatures.addon_list.sort((a, b) => 0 - (a.rank > b.rank ? -1 : 1)),
-          pdFeatures.measurement_set = pdFeatures.measurement_set.sort((a, b) => 0 - (a.rank > b.rank ? -1 : 1)),
-          sessionStorage.setItem('pf', this.commonService.encryptData(pdFeatures));
+          pdFeatures.addon_list = pdFeatures.addon_list.sort((a, b) => 0 - (a.rank > b.rank ? -1 : 1));
+          pdFeatures.measurement_set = pdFeatures.measurement_set.sort((a, b) => 0 - (a.rank > b.rank ? -1 : 1));
+          this.commonService.product_features = pdFeatures;
           resolve(pdFeatures);
         });
       }
