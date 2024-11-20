@@ -21,6 +21,46 @@ export class ContactUsComponent implements OnInit {
     meta_desc: "Elegance meets tradition at Tulsi Silks. Contact us for inquiries, collaborations, or shop online. Let's weave stories together",
     meta_keywords: []
   };
+  businessSchema: any = {
+    "@context": "https://schema.org",
+    "@type": "LocalBusiness",
+    "name": "Tulsi Silks",
+    "image": "https://yourstore.io/api/uploads/5d30013a5c83a702392c4c8b/logo.png?v=20241016221",
+    "@id": "https://tulsisilks.co.in/",
+    "url": "https://tulsisilks.co.in/",
+    "telephone": "044 24991086",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "68, Luz Church Rd, Mylapore",
+      "addressLocality": "Chennai",
+      "postalCode": "600004",
+      "addressCountry": "IN"
+    },
+    "geo": {
+      "@type": "GeoCoordinates",
+      "latitude": 13.037742798998826,
+      "longitude": 80.26028970552234
+    },
+    "openingHoursSpecification": {
+      "@type": "OpeningHoursSpecification",
+      "dayOfWeek": [
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday"
+      ],
+      "opens": "09:30",
+      "closes": "19:30"
+    },
+    "sameAs": [
+      "https://www.facebook.com/TulsiSilks/",
+      "https://twitter.com/tulsisilks",
+      "https://www.instagram.com/tulsisilks/",
+      "https://in.pinterest.com/tulsisilks0070/"
+    ] 
+  };
 
   constructor(private sanitizer: DomSanitizer, private storeApi: StoreApiService, public commonService: CommonService) { }
 
@@ -43,7 +83,9 @@ export class ContactUsComponent implements OnInit {
       });
     }
     this.commonService.setSiteMetaData(this.seoDetails, null);
-    // schema
+    // business schema
+    this.commonService.createJsonLD("business-jsonld", this.businessSchema);
+    // breadcrumb schema
     let bcList = [
       { name: "Home", position: 1, link: "/" },
       { name: "Contact Us", position: 2, link: "/contact-us" }
@@ -66,6 +108,10 @@ export class ContactUsComponent implements OnInit {
       }
       setTimeout(() => { this.alert_msg = null; }, 3000);
     });
+  }
+
+  ngOnDestroy() {
+    this.commonService.removeElement('business-jsonld');
   }
 
 }
