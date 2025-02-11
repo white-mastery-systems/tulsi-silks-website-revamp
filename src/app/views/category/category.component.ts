@@ -97,8 +97,6 @@ export class CategoryComponent implements OnInit {
         else {
           this.page = 1; this.sort_value = "latest";
           this.pageLoader = true; this.collapseIndex = 0;
-          // seo
-          this.updateMetaData();
           if(this.router.url=='/recommended-products') {
             this.category_details = { name: "Specially curated for you", route: this.router.url };
             if(isPlatformBrowser(this.platformId) && sessionStorage.getItem("ai_styles")) {
@@ -137,7 +135,7 @@ export class CategoryComponent implements OnInit {
               "new_arrivals": {
                 h1_tag: "New Arrivals from Tulsi Silks",
                 page_title: "Shop the Latest New Arrivals Collections from Tulsi Silks",
-                meta_desc: "Discover the latest arrivals and stay up-to-date with the newest products and trends at "+this.commonService.store_details?.name+". Browse our collection and find something exciting for yourself.",
+                meta_desc: "Explore the latest arrivals at Tulsi Silks and stay ahead of the trends with our newest saree collections. From exquisite sarees to timeless weaves, find the perfect blend of tradition and style. Elevate your wardrobe with premium silk craftsmanship and unmatched elegance. Shop now and experience luxury!",
                 meta_keywords: []
               },
               "discount": {
@@ -165,6 +163,8 @@ export class CategoryComponent implements OnInit {
               else console.log("response", result);
             });
           }
+          // seo
+          this.updateMetaData();
         }
       }
       else if(this.params.category_id) {
