@@ -9,40 +9,7 @@
 
   <header class="cd-main-header">
     <div class="{{template_setting.header_type}} m-header-container hover-container">
-      <div class="row m-header-row">
-        <div class="col-3 col-md-5 header-left-sec">
-          <!-- search -->
-          <div *ngIf="commonService.ys_features.indexOf('product_search')!=-1" routerLink="/search" class="btn-search header-icon-container">
-            <i [hidden]="!commonService?.window_loaded" class="{{template_setting?.mat_icon_type}} transform-90">{{template_setting?.mat_icons?.search}}</i>
-          </div>
-          <!-- wishlist -->
-          <div class="header-icon-container">
-            <a [hidden]="!commonService?.window_loaded" (click)="(commonService?.customer_token)? '': commonService.after_login_event={ redirect: '/wishlist' }" [routerLink]="(commonService?.customer_token)? '/wishlist' : '/account'">
-              <i class="{{template_setting?.mat_icon_type}}">{{template_setting?.mat_icons?.wishlist}}</i>
-              <sup *ngIf="wishService.wish_list?.length">
-                <div class="item-badge">{{ wishService.wish_list.length }}</div>
-              </sup>
-            </a>
-          </div>
-          <ng-container *ngIf="commonService?.screen_width>=991">
-            <!-- currency variation -->
-            <div class="header-icon-container" *ngIf="commonService.ys_features.indexOf('currency_variation')!=-1 && !commonService.application_setting?.hide_currency">
-              <!-- currency drop-down -->
-              <div *ngIf="!commonService.ipBasedCurrency && commonService.currency_types.length>1">
-                <a>
-                  <select class="currency-select" (change)="onCurrencyChange();" name="temp_currency" [(ngModel)]="commonService.temp_currency" [disabled]="router.url.indexOf('/gift-cards/')!=-1">
-                    <option *ngFor="let x of commonService.currency_types; let i=index;" [ngValue]="x">{{x.country_code}}</option>
-                  </select>
-                </a>
-              </div>
-              <!-- ip based -->
-              <div *ngIf="commonService.ipBasedCurrency || commonService.currency_types.length===1">
-                <a>{{commonService.temp_currency?.country_code}}</a>
-              </div>
-            </div>
-          </ng-container>
-        </div>
-
+      <div class="row m-header-row align-items-center justify-content-between">
         <div class="col-6 col-md-2 center-logo">
           <div class="cd-logo logo">
             <a (click)="commonService.resetMegaMenu();" routerLink="/">
@@ -196,6 +163,41 @@
             </a>
           </div>
         </div>
+
+        <div class="col-3 col-md-5 header-left-sec">
+          <!-- search -->
+          <div *ngIf="commonService.ys_features.indexOf('product_search')!=-1" routerLink="/search" class="btn-search header-icon-container">
+            <i [hidden]="!commonService?.window_loaded" class="{{template_setting?.mat_icon_type}} transform-90">{{template_setting?.mat_icons?.search}}</i>
+          </div>
+          <!-- wishlist -->
+          <div class="header-icon-container">
+            <a [hidden]="!commonService?.window_loaded" (click)="(commonService?.customer_token)? '': commonService.after_login_event={ redirect: '/wishlist' }" [routerLink]="(commonService?.customer_token)? '/wishlist' : '/account'">
+              <i class="{{template_setting?.mat_icon_type}}">{{template_setting?.mat_icons?.wishlist}}</i>
+              <sup *ngIf="wishService.wish_list?.length">
+                <div class="item-badge">{{ wishService.wish_list.length }}</div>
+              </sup>
+            </a>
+          </div>
+          
+          <ng-container *ngIf="commonService?.screen_width>=991">
+            <!-- currency variation -->
+            <div class="header-icon-container" *ngIf="commonService.ys_features.indexOf('currency_variation')!=-1 && !commonService.application_setting?.hide_currency">
+              <!-- currency drop-down -->
+              <div *ngIf="!commonService.ipBasedCurrency && commonService.currency_types.length>1">
+                <a>
+                  <select class="currency-select" (change)="onCurrencyChange();" name="temp_currency" [(ngModel)]="commonService.temp_currency" [disabled]="router.url.indexOf('/gift-cards/')!=-1">
+                    <option *ngFor="let x of commonService.currency_types; let i=index;" [ngValue]="x">{{x.country_code}}</option>
+                  </select>
+                </a>
+              </div>
+              <!-- ip based -->
+              <div *ngIf="commonService.ipBasedCurrency || commonService.currency_types.length===1">
+                <a>{{commonService.temp_currency?.country_code}}</a>
+              </div>
+            </div>
+          </ng-container>
+        </div>
+
       </div>
     </div>
   </header>

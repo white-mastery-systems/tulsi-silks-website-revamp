@@ -1,7 +1,7 @@
 export const environment = {
   production: false,
   header_root: 'header', // header (or) sc-header
-  header_type: 'type-1',
+  header_type: 'type-5',
   footer: 'light', // dark or light
   store_id: "5d30013a5c83a702392c4c8b",
   ws_url: 'https://yourstore.io/api',
@@ -16,7 +16,7 @@ export const environment = {
   ccavenue_redirect_url: "https://yourstore.io/api/store_details/ccavenue_payment/success/",
   ccavenue_cancel_url: "https://yourstore.io/api/store_details/ccavenue_payment/failure/",
   template_setting: {
-    header_type: "container",
+    header_type: "container-fluid",
     body_type: "container",
     primary_slider: "fs_slider", // fs_slider, slider, ''
     highlights: false,

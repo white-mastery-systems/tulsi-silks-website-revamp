@@ -10,20 +10,20 @@ body {
   text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.004);
 }
 
-html,
-.slim-scroll {
-  scrollbar-color: #000000 #ffffff;
-  scrollbar-width: thin !important;
-}
-html::-webkit-scrollbar,
-.slim-scroll::-webkit-scrollbar {
-  width: 4px;
-  height: 10px;
-  border-radius: 20px;
+html::-webkit-scrollbar-track {
+  -webkit-box-shadow: inset 0 0 6px #fff;
   background-color: transparent;
 }
+
+html::-webkit-scrollbar {
+  width: 4px;
+  height: 2px;
+  background-color: transparent;
+}
+
 html::-webkit-scrollbar-thumb {
-  background: $primary-theme-color;
+  -webkit-box-shadow: inset 0 0 6px #000;
+  background: #000;
 }
 .slim-scroll::-webkit-scrollbar-thumb {
   background: #000000;
