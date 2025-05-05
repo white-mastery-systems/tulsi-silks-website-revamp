@@ -26,20 +26,20 @@ export class HomeSwiperDirective {
     auto_play: false,
     break_points: {
       1024: { slidesPerView: 4.2, spaceBetween: 15 },
-      768: { slidesPerView: 3, spaceBetween: 0 },
-      640: { slidesPerView: 2, spaceBetween: 0 },
-      320: { slidesPerView: 1.5, spaceBetween: 0 }
+      768: { slidesPerView: 3, spaceBetween: 15 },
+      640: { slidesPerView: 2, spaceBetween: 15 },
+      320: { slidesPerView: 1.5, spaceBetween: 15 }
     }
   };
 
   featured_products: any = {
-    auto_play: true,
+    auto_play: false,
     spaceBetween: 15,
     break_points: {
-      1024: { slidesPerView: 4, spaceBetween: 15 },
-      768: { slidesPerView: 3, spaceBetween: 0 },
-      640: { slidesPerView: 2, spaceBetween: 0 },
-      320: { slidesPerView: 1.5, spaceBetween: 0 }
+      1024: { slidesPerView: 3.2, spaceBetween: 15 },
+      768: { slidesPerView: 3, spaceBetween: 15 },
+      640: { slidesPerView: 2, spaceBetween: 15 },
+      320: { slidesPerView: 1.5, spaceBetween: 15 }
     }
   };
 
@@ -54,25 +54,25 @@ export class HomeSwiperDirective {
   };
 
   testimonial: any = {
-    auto_play: true,
+    auto_play: false,
     break_points: {
-      1024: { slidesPerView: 4, spaceBetween: 0 },
-      768: { slidesPerView: 3, spaceBetween: 0 },
-      640: { slidesPerView: 2, spaceBetween: 0 },
-      320: { slidesPerView: 1, spaceBetween: 0 }
-    }
+      1024: { slidesPerView: 2.7, spaceBetween: 15 },
+      768: { slidesPerView: 3, spaceBetween: 15 },
+      640: { slidesPerView: 2, spaceBetween: 15 },
+      320: { slidesPerView: 1.2, spaceBetween: 15 }
+    },  
+    pagination: { el: '#swipe_pagination', clickable: true },
   };
   
   blogs: any = {
-    auto_play: true,
+    auto_play: false,
     break_points: {
-      1024: { slidesPerView: 4, spaceBetween: 0 },
-      768: { slidesPerView: 3, spaceBetween: 0 },
-      640: { slidesPerView: 2, spaceBetween: 0 },
-      320: { slidesPerView: 1, spaceBetween: 0 }
+      1024: { slidesPerView: 4, spaceBetween: 15 },
+      768: { slidesPerView: 3, spaceBetween: 15 },
+      640: { slidesPerView: 2, spaceBetween: 15 },
+      320: { slidesPerView: 1.5, spaceBetween: 15 }
     }
   };
-
   shop_look: any = {
     auto_play: true,
     break_points: {
@@ -82,7 +82,6 @@ export class HomeSwiperDirective {
       320: { slidesPerView: 1.5, spaceBetween: 0 }
     }
   };
-
   instagram: any = {
     auto_play: true,
     break_points: {

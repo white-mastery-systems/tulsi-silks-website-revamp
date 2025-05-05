@@ -151,6 +151,9 @@ export class HomeComponent implements OnInit {
     let blogIndex = layoutList.findIndex(obj => obj.type=='blogs');
     if(blogIndex!=-1 && this.commonService.ys_features.indexOf('blogs')!=-1) {
       let blogData = layoutList[blogIndex];
+      if(!this.commonService?.desktop_device && blogData.blogs_type=='grid') {
+        blogData.blogs_type = 'slider';
+      }
       this.storeApi.HOME_PAGE_BLOG_LIST(this.template_setting.blog_count).subscribe(result => {
         if(result.status) {
           let blogList = JSON.parse(result.list);
@@ -241,6 +244,9 @@ export class HomeComponent implements OnInit {
         }
       }
       else if(segment.type=="featured_product") {
+        if(!this.commonService?.desktop_device && segment.blogs_type=='grid') {
+          segment.blogs_type = 'slider';
+        }
         let cardCount = this.swiperService.featured_products.card_count;
         segment.product_list.forEach(obj => {
           obj.created_on = new Date(new Date(new Date(obj.created_on).setHours(23,59,59,59)).setDate(new Date(obj.created_on).getDate() + 30));
@@ -385,6 +391,7 @@ export class HomeComponent implements OnInit {
       else if(segment.featured_category_id=="new_arrivals") this.router.navigate(['/new-arrivals']);
       else if(segment.featured_category_id=="on_sale") this.router.navigate(['/on-sale']);
       else if(segment.featured_category_id=="featured_products") this.router.navigate(['/featured-products']);
+      else if(segment.featured_category_id=="best_sellers") this.router.navigate(['/best-sellers']);
       else this.getCatalogInfo(segment.featured_category_id);
     }
     else if(segment.type=="featured") this.router.navigate(['/featured-products']);

@@ -20,6 +20,7 @@ const mainRoutes: Routes = [
   { path: 'recommended-products', loadChildren: () => import('./views/category/category.module').then(m => m.CategoryModule) },
   { path: 'on-sale', loadChildren: () => import('./views/category/category.module').then(m => m.CategoryModule) },
   { path: 'featured-products', loadChildren: () => import('./views/category/category.module').then(m => m.CategoryModule) },
+  { path: 'best-sellers', loadChildren: () => import('./views/category/category.module').then(m => m.CategoryModule) },
   { path: 'all-products', loadChildren: () => import('./views/category/category.module').then(m => m.CategoryModule) },
   { path: 'new-arrivals', loadChildren: () => import('./views/category/category.module').then(m => m.CategoryModule) },
 

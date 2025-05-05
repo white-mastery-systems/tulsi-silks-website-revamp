@@ -39,7 +39,7 @@ export const environment = {
     purchase_badge: false,
     purchase_txt: true,
     p_card: true,
-    icon_type: 'icon' // 'icon' (or) 'icon-outline'
+    mat_icon_type: 'icon' // 'icon' (or) 'icon-outline'
   },
   cod_sms: {
     valid_in_seconds: 60,

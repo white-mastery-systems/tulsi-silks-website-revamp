@@ -64,8 +64,8 @@ button {
   border: $btn-border;
   color: $primary-btn-txt;
   font-weight: 400;
-  background: $primary-btn-bg;
-  text-transform: uppercase;
+  background: #000000;
+  text-transform: capitalize;
   cursor: pointer;
   border-radius: $btn-radius;
   height: 48px;

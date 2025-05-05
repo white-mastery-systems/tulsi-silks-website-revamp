@@ -74,7 +74,7 @@ export class CategoryComponent implements OnInit {
   ngOnInit(): void {
     this.activeRoute.params.subscribe((params: Params) => {
       this.showMore = false; this.params = params; this.tag_list = []; this.randomProducts = [];
-      if(this.router.url=='/recommended-products' || this.router.url=='/all-products' || this.router.url=='/new-arrivals' || this.router.url=='/on-sale'|| this.router.url=='/featured-products') {
+      if(this.router.url=='/recommended-products' || this.router.url=='/all-products' || this.router.url=='/new-arrivals' || this.router.url=='/on-sale'|| this.router.url=='/featured-products'|| this.router.url=='/best-sellers') {
         this.params = { category_id: this.router.url };
         if(this.commonService.category_page_attr.category_id == this.router.url) {
           this.page = this.commonService.category_page_attr.page;
@@ -123,6 +123,9 @@ export class CategoryComponent implements OnInit {
             else if(this.router.url == "/featured-products") {
               categoryName = "Featured Products"; filterType = "featured";
             }
+            else if(this.router.url == "/best-sellers") {
+              categoryName = "Best Sellers"; filterType = "best_sellers";
+            }
             this.category_details = { name: categoryName, route: this.router.url };
             // seo details
             let metaInfo = {
@@ -145,6 +148,12 @@ export class CategoryComponent implements OnInit {
                 meta_keywords: []
               },
               "featured": {
+                h1_tag: "Featured Products - "+this.commonService.store_details?.name,
+                page_title: "Featured Products - Handpicked Selection of Must-Haves | "+this.commonService.store_details?.name,
+                meta_desc: "Check out our handpicked selection of featured products at "+this.commonService.store_details?.name+". Discover the trending and highly recommended must-haves from "+this.commonService.store_details?.name+".",
+                meta_keywords: []
+              },
+              "best_sellers": {
                 h1_tag: "Featured Products - "+this.commonService.store_details?.name,
                 page_title: "Featured Products - Handpicked Selection of Must-Haves | "+this.commonService.store_details?.name,
                 meta_desc: "Check out our handpicked selection of featured products at "+this.commonService.store_details?.name+". Discover the trending and highly recommended must-haves from "+this.commonService.store_details?.name+".",

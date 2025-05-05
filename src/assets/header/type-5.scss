@@ -25,7 +25,27 @@ body {
     margin-top: 124px;
   }
   .dynamic-height {
-    height: calc(100vh - 124px);
+    height: calc(100vh - 220px) !important;
+  }
+  .order-0{
+    order: 0 !important;
+  }
+  .order-1{
+    order: 1 !important;
+  }
+  .order-2{
+    order: 2 !important;
+  }
+  .header-left-sec{
+    justify-content: end !important;
+  }
+  .header-right-sec{
+    justify-content: start !important;
+  }
+  .header-s-icon{
+    width: 35px;
+    height: 35px;
+    padding: 10px;
   }
 }
 // for mobile
@@ -113,7 +133,7 @@ $mobile-final-height: calc(74px + #{$mobile-announcement-bar-mh});
   
   .header-icon-container{
     display: inline-block;
-    margin-right: 30px;
+    margin-right: 15px;
     &:last-child{
       margin-right: 0;
     }
@@ -130,7 +150,7 @@ $mobile-final-height: calc(74px + #{$mobile-announcement-bar-mh});
   // }
   .header-left-sec{
     display: flex;
-    justify-content: flex-start;
+    justify-content: center;
     align-items: center;
   }
   .center-logo{
@@ -370,7 +390,7 @@ $mobile-final-height: calc(74px + #{$mobile-announcement-bar-mh});
   .cd-nav-trigger {
     position: relative;
     display: block;
-    width: 44px;
+    width: 30px;
     height: 45px;
     overflow: hidden;
     white-space: nowrap;
@@ -686,6 +706,17 @@ $mobile-final-height: calc(74px + #{$mobile-announcement-bar-mh});
     background-position: center center;
     background-size: 40px 40px;
   }
+  .header-s-icon{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 7px;
+    padding: 12px;
+    cursor: pointer;
+    background-color: #f2f2f2;
+  }
   
   @media only screen and (max-width: 991px) {
     .cd-primary-nav {
@@ -725,9 +756,11 @@ $mobile-final-height: calc(74px + #{$mobile-announcement-bar-mh});
       padding: 0 0px 0 0;
       height: auto;
       width: auto;
-      float: right;
+      // float: right;
       overflow: visible;
-  margin-right: 30px;
+      display: flex;
+      justify-content: center;
+      // margin-right: 30px;
       margin-bottom: 0;
     }
   

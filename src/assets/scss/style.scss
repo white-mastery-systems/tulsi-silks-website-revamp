@@ -56,7 +56,7 @@ article, aside, footer, header, nav, section { width: 100%; float: left; positio
 
 /* TITLES */
 .titles{ width: 100%; float: left; margin-bottom: 40px; padding: 0 15%;  text-align: center;}
-.titles h2{font-size: 36px !important; margin-top: 0; margin-bottom: 15px;font-weight: 400; letter-spacing: 0.025em; line-height: 1.25em;}
+.titles h2{font-size: 36px; margin-top: 0; margin-bottom: 15px;font-weight: 400; letter-spacing: 0.025em; line-height: 1.25em;color: #000000;}
 .titles p{ font-size:1rem;font-weight:400;letter-spacing: 0.5px; opacity: 0.5;line-height: 1.3;}
 .titles span{ width: 40px; height: 1px; display: inline-block; background: #ccc;}
 
@@ -211,18 +211,18 @@ article, aside, footer, header, nav, section { width: 100%; float: left; positio
 .product-box .product-image .image-hover{position: absolute; left: 0; top: 0; opacity: 0;}
 .product-box .product-image figcaption{width: 100%; position: absolute; left: 0; bottom: 0; text-align: center;}
 .product-box .product-image figcaption a{ height: 30px; line-height: 32px; padding: 0 8px; background: #fff; display: inline-block;}
-.product-box .product-content{ width: 100%; float: left; text-align: center;}
-.product-box .product-content h4{ width:100%; float:left; font-size:1rem; font-weight:400;}
+.product-box .product-content{ width: 100%; float: left; text-align: left;margin-top: 5px;}
+.product-box .product-content h4{ width:100%; float:left; font-size:1rem; font-weight:400;opacity: 1;}
 /* .product-box .product-content small{ width:100%; float:left; font-size:12px; opacity: 0.5; margin-bottom: 10px;} */
 .product-box .product-content div{ width: 100%; height: 18px; float: left; line-height: 18px; overflow: hidden;}
-.product-box .product-content span{ width:100%; float:left; font-size:1rem; font-weight:400;}
+.product-box .product-content span{ width:100%; float:left; font-size:1rem; font-weight:500;}
 .product-box .product-content .purchase-div a{ font-weight: 400; font-size: 0.678rem; display: inline-block; position: relative;}
 .product-box .product-content .purchase-div a:hover{ text-decoration: none; }
 .product-box .product-content .purchase-div a:before { content: ''; display: block; position: absolute; left: 0; bottom: 0; height: 2px; width: 0; transition: width 0s ease, background .25s ease;}
 .product-box .product-content .purchase-div a:after { content: ''; display: block; position: absolute; right: 0; bottom: 0; height: 2px; width: 0; background: #1f1b24; transition: width .25s ease;}
 .product-box .product-content .purchase-div a:hover:before { width: 100%; background: #1f1b24; transition: width .25s ease;}
 .product-box .product-content .purchase-div a:hover:after { width: 100%; background: transparent; transition: all 0s ease;}
-.product-box:hover .product-content span{ margin-top: -100%;}
+// .product-box:hover .product-content span{ margin-top: -100%;}
 .product-box:hover .product-image .image-hover{opacity: 1;}
 
 /* ACCOUNT */
@@ -324,10 +324,10 @@ article, aside, footer, header, nav, section { width: 100%; float: left; positio
 .news .news-box{ width: 100%; float: left; position: relative;}
 .news .news-box figure{width: 100%; float: left; margin: 0;}
 .news .news-box figure img{width: 100%; float: left; margin-bottom: 20px;}
-.news .news-box figure figcaption{ width: 100%; float: left;}
+.news .news-box figure figcaption{ width: 100%; float: left;margin-top: 5px;}
 .news .news-box figure figcaption small{ width:100%; float:left; font-size:0.875rem; opacity: 0.5; margin-bottom: 10px;}
 .news .news-box figure figcaption h3{ width:100%; float:left; font-size:1.05rem; font-weight:400;}
-.news .news-box figure figcaption h3 a{float: left;}
+.news .news-box figure figcaption h3 a{float: left;color: #000;}
 
 /* CONTACT FORM */
 .contact{width: 100%;}
@@ -344,12 +344,12 @@ article, aside, footer, header, nav, section { width: 100%; float: left; positio
 .footer p{ line-height: 24px; opacity: 0.85; }
 .footer small{ opacity: 0.85;}
 .footer .sub-footer{ width: 100%; height: 70px; line-height: 70px; margin-bottom: -50px; margin-top: 30px; float: left; border-top: 1px solid rgba(255,255,255,0.1);}
-.footer .footer-title{ font-size: 0.75rem; font-weight: 400; letter-spacing: 0.5px; margin-top: 17px; margin-bottom: 20px;}
+.footer .footer-title{ font-size: 0.75rem; font-weight: 400; letter-spacing: 0.5px; margin-top: 17px; margin-bottom: 10px;}
 .footer .footer-menu{ float: left; line-height: 22px; margin: 0; padding:0;	}
 .footer .footer-menu.full li{width: 50%; margin: 0;}
 .footer .footer-menu li{float: left; margin-right: 25px; list-style: none;}
 .footer .footer-menu li:last-child{margin-right: 0;}
-.footer .footer-menu li a{float: left; opacity: 0.6;}
+.footer .footer-menu li a{float: left;}
 .footer .footer-menu li a:hover{text-decoration: none; opacity: 1;}
 .footer .copyright{display:inline-block; line-height: 22px; opacity: 0.8;}
 .footer ul{ float: left;}
@@ -391,7 +391,10 @@ article, aside, footer, header, nav, section { width: 100%; float: left; positio
 	.search-box .inner form select{display: none;}
 	.search-box .inner form button[type="submit"]{width: 25%;}
 	.grid-categories .grids .grid-item{width:100%;}
-	.news .news-box{margin-bottom: 30px;}
+	.news .news-box{margin-bottom: 0px;height: 280px;}
+  .news .news-box figure figcaption h3{
+    font-size: 1rem !important;
+  }
 	.inner-hero{background-size: auto 200%;}
 	.inner-hero h4{font-size: 2.5rem;}
 	.shopping-cart .table td:first-child{display: none;}
@@ -400,10 +403,11 @@ article, aside, footer, header, nav, section { width: 100%; float: left; positio
 	.tabs .nav-tabs li a span{padding: 15px 10px;}
 	.product-detail .product-info .tab-content{padding: 0;}
 	.product-detail .product-image ul{width: 60px;}
-	.footer{padding: 50px 30px;}
+	.footer{padding: 50px 15px;}
 	.footer .footer-menu{ display:flex;width:100%;justify-content: center;}
-    .footer .inner{text-align: center;}
+    .footer .inner{text-align: left;}
     .footer .logo{float: none;}
     .yourstore-band .yourstore-inner{text-align: center;}
 	.footer .terms small a{margin:0!important;padding: 5px;}	
+  .footer .footer-title{font-size: 0.875rem !important;}
 }
