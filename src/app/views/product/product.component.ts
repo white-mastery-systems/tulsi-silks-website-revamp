@@ -852,7 +852,7 @@ export class ProductComponent implements OnInit {
           this.cartService.updateCartList([x]);
           if(sessionStorage.getItem("checkout_address")) {
             let guestAddress = this.commonService.decryptData(sessionStorage.getItem("checkout_address"));
-            checkoutDetails.shipping_address = guestAddress;
+            checkoutDetails.shipping_address = guestAddress.shipping;
             sessionStorage.setItem("checkout_details", this.commonService.encryptData(checkoutDetails));
             // pincode verification
             if(this.commonService.ys_features.indexOf('pincode_service')!=-1 && this.commonService.store_properties.pincodes.length && this.commonService.store_properties.pincodes.indexOf(checkoutDetails.shipping_address.pincode)==-1) {

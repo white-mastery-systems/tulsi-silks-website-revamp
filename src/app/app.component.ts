@@ -106,6 +106,14 @@ export class AppComponent {
       fromEvent(document, 'touchmove').subscribe(() => this.onInteract());
       fromEvent(document, 'scroll').subscribe(() => this.onInteract());
       fromEvent(document, 'click').subscribe(() => this.onInteract());
+      // check guest address
+      if(sessionStorage.getItem("checkout_address")) {
+        let checkoutAddress = this.commonService.decryptData(sessionStorage.getItem("checkout_address"));
+        if(!checkoutAddress?.shipping?.country) {
+          sessionStorage.removeItem("checkout_address");
+          window.location.reload();
+        }
+      }
     }
   }
 

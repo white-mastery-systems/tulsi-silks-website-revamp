@@ -16,10 +16,12 @@ export class AddressListComponent implements OnInit {
 
   pageLoader: boolean; btnLoader: boolean;
   list: any = []; params: any;
-  state_list: any = []; guestForm: any = {};
-  addressForm: any = {}; checkout_details: any = {};
+  state_list: any = []; b_state_list: any = [];
+  guestForm: any = {}; addressForm: any = {}; checkout_details: any = {};
   template_setting: any = environment.template_setting;
   country_details: any; address_fields: any = []; mobile_pattern: any;
+  b_country_details: any; b_address_fields: any = []; b_mobile_pattern: any;
+  billingForm: any = {}; billingAddr: string = 'same';
 
   constructor(@Inject(PLATFORM_ID) private platformId: Object,
     private activeRoute: ActivatedRoute, private api: ApiService, private router: Router,
@@ -55,11 +57,16 @@ export class AddressListComponent implements OnInit {
         if(!this.checkout_details.item_list) this.router.navigate(["/"]);
         // address details
         if(sessionStorage.getItem("checkout_address")) {
-          this.addressForm = this.commonService.decryptData(sessionStorage.getItem("checkout_address"));
+          let checkoutAddress = this.commonService.decryptData(sessionStorage.getItem("checkout_address"));
+          this.addressForm = checkoutAddress.shipping;
+          this.billingForm = checkoutAddress.billing;
+          this.billingAddr = checkoutAddress.type;
         }
         else {
           this.addressForm.type = 'home';
           this.addressForm.country = this.commonService.store_details.country;
+          this.billingForm.type = 'home';
+          this.billingForm.country = this.commonService.store_details.country;
         }
       }
       else this.router.navigate(["/"]);
@@ -68,9 +75,13 @@ export class AddressListComponent implements OnInit {
         // update address form
         if(isPlatformBrowser(this.platformId) && sessionStorage.getItem("guest_email") && sessionStorage.getItem("checkout_details")) {
           this.onCountryChange(this.addressForm.country);
+          this.onBillingCountryChange(this.billingForm.country);
           if(sessionStorage.getItem("checkout_address")) {
             this.address_fields.forEach(element => {
               element.value = this.addressForm[element.keyword];
+            });
+            this.b_address_fields.forEach(element => {
+              element.value = this.billingForm[element.keyword];
             });
           }
         }
@@ -128,16 +139,35 @@ export class AddressListComponent implements OnInit {
     this.address_fields.forEach(element => {
       if(element.value) this.addressForm[element.keyword] = element.value;
     });
+    this.b_address_fields.forEach(element => {
+      if(element.value) this.billingForm[element.keyword] = element.value;
+    });
     if(this.commonService.ys_features.indexOf('pincode_service')!=-1 && this.commonService.store_properties.pincodes.length && this.commonService.store_properties.pincodes.indexOf(this.addressForm.pincode)==-1) {
       this.addressForm.error_msg = "Service not available for this pincode.";
     }
     else if(isPlatformBrowser(this.platformId)) {
       this.btnLoader = true;
-      this.api.GUEST_USER_UPDATE({ address_list: [this.addressForm] }).subscribe(result => {
+      this.addressForm.shipping_address = true;
+      if(this.billingAddr=='same') this.addressForm.billing_address = true;
+      let addressList = [this.addressForm];
+      if(this.billingAddr!='same') {
+        this.billingForm.billing_address = true;
+        addressList.push(this.billingForm);
+      }
+      this.api.GUEST_USER_UPDATE({ address_list: addressList }).subscribe(result => {
         this.btnLoader = false;
         if(result.status) {
-          if(this.checkout_details.order_type!='pickup') this.checkout_details.shipping_address = result.data.address_list[0];
-          sessionStorage.setItem("checkout_address", this.commonService.encryptData(result.data.address_list[0]));
+          let sAddr = result.data.address_list[0];
+          let bAddr = result.data.address_list[0];
+          let sInd = result.data.address_list.findIndex(el => el.shipping_address);
+          if(sInd!=-1) sAddr = result.data.address_list[sInd];
+          let bInd = result.data.address_list.findIndex(el => el.billing_address);
+          if(bInd!=-1) bAddr = result.data.address_list[bInd];
+          if(this.checkout_details.order_type!='pickup') {
+            this.checkout_details.shipping_address = sAddr;
+          }
+          let checkoutAddress = { shipping: sAddr, billing: bAddr, type: this.billingAddr };
+          sessionStorage.setItem("checkout_address", this.commonService.encryptData(checkoutAddress));
           sessionStorage.setItem("checkout_details", this.commonService.encryptData(this.checkout_details));
           // pickup
           if(this.checkout_details.order_type=='pickup') {
@@ -186,9 +216,17 @@ export class AddressListComponent implements OnInit {
       this.api.GUEST_LOGIN({ store_id: this.commonService.store_id, email: this.guestForm.email, cart_list: cart_list }).subscribe(result => {
         this.guestForm.submit = false;
         if(result.status) {
+          // shipping address
           this.addressForm = { type: 'home', country: this.commonService.store_details.country };
           this.onCountryChange(this.addressForm.country);
           this.address_fields.forEach(elem => {
+            delete elem.value;
+          });
+          // billing address
+          this.billingAddr = 'same';
+          this.billingForm = { type: 'home', country: this.commonService.store_details.country };
+          this.onBillingCountryChange(this.billingForm.country);
+          this.b_address_fields.forEach(elem => {
             delete elem.value;
           });
           sessionStorage.removeItem("checkout_address");
@@ -258,11 +296,24 @@ export class AddressListComponent implements OnInit {
     delete this.country_details; delete this.mobile_pattern;
     let index = this.commonService.country_list.findIndex(object => object.name==x);
     if(index!=-1) {
-      this.country_details = this.commonService.country_list[index];
+      this.country_details = JSON.parse(JSON.stringify(this.commonService.country_list[index]));
       this.state_list = this.country_details.states;
       this.addressForm.dial_code = this.country_details.dial_code;
       this.address_fields = this.country_details.address_fields;
       if(this.country_details.mobileno_length) this.mobile_pattern = ".{"+this.country_details.mobileno_length+","+this.country_details.mobileno_length+"}";
+    }
+  }
+
+  onBillingCountryChange(x) {
+    this.b_state_list = []; this.b_address_fields = [];
+    delete this.b_country_details; delete this.b_mobile_pattern;
+    let index = this.commonService.country_list.findIndex(object => object.name==x);
+    if(index!=-1) {
+      this.b_country_details = JSON.parse(JSON.stringify(this.commonService.country_list[index]));
+      this.b_state_list = this.b_country_details.states;
+      this.billingForm.dial_code = this.b_country_details.dial_code;
+      this.b_address_fields = this.b_country_details.address_fields;
+      if(this.b_country_details.mobileno_length) this.b_mobile_pattern = ".{"+this.b_country_details.mobileno_length+","+this.b_country_details.mobileno_length+"}";
     }
   }
 

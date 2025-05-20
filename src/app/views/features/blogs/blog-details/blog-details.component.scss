@@ -1,0 +1,53 @@
+$primary-theme-color: #1f1b24;
+
+.swiper-container {
+  .swiper-button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 40px;
+    height: 40px;
+    transition: background 0.15s ease-in-out, opacity 0.15s ease-in-out, transform 0.2s ease-in-out,
+      color 0.2s ease-in-out, -webkit-transform 0.2s ease-in-out;
+    box-shadow: 0 2px 10px rgba(54, 54, 54, 0.15);
+    border: none;
+    border-radius: 50%;
+    background: #fff;
+  }
+
+  .swiper-button-next {
+    &:after {
+      content: "\e409";
+      font-family: "Material Icons";
+      color: $primary-theme-color !important;
+      font-size: 24px;
+    }
+  }
+
+  .swiper-button-prev {
+    &:after {
+      content: "\e408";
+      font-family: "Material Icons";
+      color: $primary-theme-color !important;
+      font-size: 24px;
+    }
+  }
+}
+
+.add-to-cart {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  a{
+    font-weight: 400;
+    font-size: .875rem;
+    display: inline-block;
+    position: relative;
+  }
+}
+
+.product-box:hover .product-content span { margin-top: 0%; }
+.product-box .product-content .add-to-cart a:before { content: ''; display: block; position: absolute; left: 0; bottom: 0%; height: 2px; width: 0; transition: width 0s ease, background .25s ease; }
+.product-box .product-content .add-to-cart a:after { content: ''; display: block; position: absolute; right: 0; bottom: 0%; height: 2px; width: 0; background: #1f1b24; transition: width .25s ease; }
+.product-box .product-content .add-to-cart a:hover:before { width: 100%; background: #1f1b24; transition: width .25s ease; }
+.product-box .product-content .add-to-cart a:hover:after { width: 100%; background: transparent; transition: all 0s ease; }

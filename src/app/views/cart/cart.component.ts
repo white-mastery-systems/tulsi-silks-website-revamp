@@ -200,12 +200,12 @@ export class CartComponent implements OnInit {
                 if(sessionStorage.getItem("checkout_address")) {
                   let guestAddress = this.commonService.decryptData(sessionStorage.getItem("checkout_address"));
                   if(checkoutDetails.order_type=='pickup') {
-                    checkoutDetails.billing_address = guestAddress;
+                    checkoutDetails.billing_address = guestAddress.billing;
                     sessionStorage.setItem("checkout_details", this.commonService.encryptData(checkoutDetails));
                     this.router.navigate(["/checkout/pickup-methods"]);
                   }
                   else {
-                    checkoutDetails.shipping_address = guestAddress;
+                    checkoutDetails.shipping_address = guestAddress.shipping;
                     sessionStorage.setItem("checkout_details", this.commonService.encryptData(checkoutDetails));
                     // pincode verification
                     if(this.commonService.ys_features.indexOf('pincode_service')!=-1 && this.commonService.store_properties.pincodes.length && this.commonService.store_properties.pincodes.indexOf(checkoutDetails.shipping_address.pincode)==-1) {

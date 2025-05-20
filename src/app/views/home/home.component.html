@@ -43,39 +43,10 @@
           <!-- mobile -->
           <ng-container *ngIf="commonService.screen_width <= maxWidth">
             <img width="100%" height="100%" appImgLazyLoad class="img--fitscreen" [ImagelazyLoad]="imgBaseUrl+x.mobile_img" alt="{{(x.img_alt)? x.img_alt: 'slider'}}">
-            <div *ngIf="x?.content_status || x?.btn_status" class="home-slider-text d-flex" [ngClass]="{
-              'align-items-start': x?.position=='t_l' || x?.position=='t_c' || x?.position=='t_r',
-              'align-items-center': x?.position=='m_l' || x?.position=='m_c' || x?.position=='m_r',
-              'align-items-end': x?.position=='b_l' || x?.position=='b_c' || x?.position=='b_r',
-              'justify-content-start text-left': x?.position=='t_l' || x?.position=='m_l' || x?.position=='b_l',
-              'justify-content-center': x?.position=='t_c' || x?.position=='m_c' || x?.position=='b_c',
-              'justify-content-end text-right': x?.position=='t_r' || x?.position=='m_r' || x?.position=='b_r'
-            }">
-              <div class="mr-2 ml-2 mt-2 mb-2" [ngClass]="(x?.position=='m_l' || x?.position=='m_c' || x?.position=='m_r')? 'mt--10': ''">
-                <h1 *ngIf="x?.content_status && x?.content_details?.heading" [ngClass]="(x?.content_details?.text_color=='dark')? 'text-dark': 'text-light'">{{x.content_details.heading}}</h1>
-                <p *ngIf="x?.content_status && x?.content_details?.sub_heading" [ngClass]="(x?.content_details?.text_color=='dark')? 'text-dark': 'text-light'" [innerHTML]="x.content_details.sub_heading"></p>
-                <button *ngIf="x?.btn_status && x?.btn_text" (click)="commonService.onPageRedirect(x);" class="primary-btn">{{x.btn_text}}</button>
-              </div>
-            </div>
           </ng-container>
           <!-- desktop -->
           <ng-container *ngIf="commonService.screen_width > maxWidth">
             <img width="100%" height="100%" appImgLazyLoad class="img--fitscreen" [ImagelazyLoad]="imgBaseUrl+x.desktop_img" alt="{{(x.img_alt)? x.img_alt: 'slider'}}">
-            <div *ngIf="x?.content_status || x?.btn_status" class="home-slider-text d-flex" [ngClass]="{
-              'align-items-start': x?.position=='t_l' || x?.position=='t_c' || x?.position=='t_r',
-              'align-items-center': x?.position=='m_l' || x?.position=='m_c' || x?.position=='m_r',
-              'align-items-end': x?.position=='b_l' || x?.position=='b_c' || x?.position=='b_r',
-              'justify-content-start': x?.position=='t_l' || x?.position=='m_l' || x?.position=='b_l',
-              'justify-content-center': x?.position=='t_c' || x?.position=='m_c' || x?.position=='b_c',
-              'justify-content-end': x?.position=='t_r' || x?.position=='m_r' || x?.position=='b_r',
-              'text-left': x?.position!='t_c' && x?.position!='m_c' && x?.position!='b_c'
-            }">
-              <div class="mr-8 ml-8 mt-5 mb-5">
-                <h1 *ngIf="x?.content_status && x?.content_details?.heading" [ngClass]="(x?.content_details?.text_color=='dark')? 'text-dark': 'text-light'">{{x.content_details.heading}}</h1>
-                <p *ngIf="x?.content_status && x?.content_details?.sub_heading" [ngClass]="(x?.content_details?.text_color=='dark')? 'text-dark': 'text-light'" [innerHTML]="x.content_details.sub_heading"></p>
-                <button *ngIf="x?.btn_status && x?.btn_text" (click)="commonService.onPageRedirect(x);" class="primary-btn">{{x.btn_text}}</button>
-              </div>
-            </div>
           </ng-container>
         </div>
       </div>
@@ -147,7 +118,7 @@
     <!-- #Main Slider -->
 
     <!-- Section Grid -->
-    <section *ngIf="segment.type=='section' && segment.image_list?.length" class="grid-categories grid-sec-margin primary-section wow fadeInUp">
+    <section *ngIf="segment.type=='section' && segment.image_list?.length && segment.section_grid_type=='grid_7'" class="grid-categories grid-sec-margin primary-section wow fadeInUp">
       <div class="{{template_setting?.body_type}}">
         <div class="row">
           <div *ngIf="segment?.heading" class="col-12">
