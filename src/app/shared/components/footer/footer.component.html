@@ -138,7 +138,7 @@
       <div class="yourstore-inner-div">
         <a href="https://yourstore.io" class="yourstore-text" target="_blank">
           <img appImgIntersection ImagelazyLoad="assets/images/ys-logos/band-icon.svg" draggable="false" class="yourstore-logo band-txt" alt="Yourstore ecommerce platform" width="25" height="20">
-          <span class="band-txt">powered by yourstore</span>
+          <span class="band-txt">Powered by yourstore</span>
         </a>
       </div>
     </div>
@@ -179,37 +179,47 @@
 <div bsModal #subscribeModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="subscribe-model">
   <div class="modal-dialog modal-lg modal-dialog-centered">
     <div class="modal-content home-news-letter">
-      <div class="modal-header d-flex align-items-center justify-content-end">
-        <div (click)="subscribeModal.hide();">
-          <i class="material-icons">close</i>
+      <div class="modal-header d-flex align-items-center justify-content-end ">
+        <div class="close" (click)="subscribeModal.hide();">
+          <img src="assets/images/x.png">
+          <!-- <i class="material-icons">close</i> -->
         </div>
       </div>
       <!-- before submit -->
       <div *ngIf="!subscribeForm.alert_msg && commonService.application_setting.newsletter_config" class="modal-body">
-        <div class="widget newsletter d-flex flex-column align-items-center justify-content-center newsletter-body" align="center">
-          <h4 class="widget-title">{{ commonService.application_setting.newsletter_config.heading }}</h4>
-          <figure *ngIf="commonService.application_setting.newsletter_config.image" class="w-100">
-            <img width="100%" height="100%" class="w-100" appImgLazyLoad [ImagelazyLoad]="imgBaseUrl+commonService.application_setting.newsletter_config.image" alt="subscribe-banner">
-          </figure>
-          <p [innerHtml]="commonService.application_setting?.newsletter_config.sub_heading"></p>
-          <form *ngIf="commonService.application_setting.newsletter_config.subscription_status" autocomplete="off" (ngSubmit)="onSubscribe(subscribeModal);" ngNativeValidate class="w-100">
-            <div>
-              <input class="w-100" type="email" name="email" placeholder="Please type your e-mail" [(ngModel)]="subscribeForm.email" #email="ngModel"
-              pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" title="Please enter a valid Email ID" appLowercase required />
-              <div class="mtb-10">
-                <button class="primary-btn d-flex justify-content-center align-items-center" type="submit" [disabled]="subscribeForm.submit">
-                    {{ commonService.application_setting.newsletter_config.btn_text }}
-                  <div class="box" *ngIf="subscribeForm.submit">
-                    <div class="spinner"></div>
+        <div class="row justify-content-center align-items-center">
+          <div class="col-md-5 newsletter-image">
+            <img src="assets/images/newsletter.png" class="img">
+          </div>
+          <div class="col-md-7">
+            <div class="widget newsletter d-flex flex-column align-items-center justify-content-center newsletter-body" align="center">
+              <!-- <h4 class="widget-title">{{ commonService.application_setting.newsletter_config.heading }}</h4> -->
+               <img src="assets/images/logo.png" class="logo">
+               <h2 class="title">Join the Tulsi Family</h2>
+              <figure *ngIf="commonService.application_setting.newsletter_config.image" class="w-100">
+                <img width="100%" height="100%" class="w-100" appImgLazyLoad [ImagelazyLoad]="imgBaseUrl+commonService.application_setting.newsletter_config.image" alt="subscribe-banner">
+              </figure>
+              <p class="mb-4" [innerHtml]="commonService.application_setting?.newsletter_config.sub_heading"></p>
+              <form *ngIf="commonService.application_setting.newsletter_config.subscription_status" autocomplete="off" (ngSubmit)="onSubscribe(subscribeModal);" ngNativeValidate class="w-100">
+                <div>
+                  <input class="w-100" type="email" name="email" placeholder="Please type your e-mail" [(ngModel)]="subscribeForm.email" #email="ngModel"
+                  pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" title="Please enter a valid Email ID" appLowercase required />
+                  <div class="mtb-10">
+                    <button class="primary-btn d-flex justify-content-center align-items-center mt-3" type="submit" [disabled]="subscribeForm.submit">
+                        {{ commonService.application_setting.newsletter_config.btn_text }}
+                      <div class="box" *ngIf="subscribeForm.submit">
+                        <div class="spinner"></div>
+                      </div>
+                    </button>
                   </div>
+                </div>
+              </form>
+              <div *ngIf="!commonService.application_setting.newsletter_config.subscription_status">
+                <button (click)="subscribeModal.hide(); linkNavigate(commonService.application_setting.newsletter_config);" class="primary-btn d-flex justify-content-center align-items-center" type="button">
+                  {{ commonService.application_setting.newsletter_config.btn_text }}
                 </button>
               </div>
             </div>
-          </form>
-          <div *ngIf="!commonService.application_setting.newsletter_config.subscription_status">
-            <button (click)="subscribeModal.hide(); linkNavigate(commonService.application_setting.newsletter_config);" class="primary-btn d-flex justify-content-center align-items-center" type="button">
-              {{ commonService.application_setting.newsletter_config.btn_text }}
-            </button>
           </div>
         </div>
       </div>

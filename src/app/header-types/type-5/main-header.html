@@ -41,8 +41,13 @@
 
               <!-- menu list -->
               <li *ngFor="let menu of commonService.menu_list | orderAsc: 'rank'; let i=index;" [ngClass]="{ 'has-children mega-menu slim-scroll': menu?.sec_count, 'pos-relative': menu?.sec_count<=2 }">
-                <a (mouseenter)="(!menu?.sec_count && commonService.desktop_device)? commonService.resetMegaMenu(): ''" (click)="(!menu?.sec_count)? commonService.onPageRedirect(menu): ''">{{menu.name}}</a>
-                <ul class="cd-secondary-nav cd-secondary-nav is-hidden slim-scroll" [ngClass]="{
+                <!-- <a (mouseenter)="(!menu?.sec_count && commonService.desktop_device)? commonService.resetMegaMenu(): ''" (click)="(!menu?.sec_count)? commonService.onPageRedirect(menu): ''">{{menu.name}}</a> -->
+                 <a (mouseenter)="(!menu?.sec_count && commonService.desktop_device)? commonService.resetMegaMenu(): ''" (click)="(!menu?.sec_count)? commonService.onPageRedirect(menu) : toggleMenu(menu.name)">
+                    {{menu.name}}
+                    <lucide-icon *ngIf="menu?.sec_count" [name]="openMenus[menu.name] ? 'ChevronUp' : 'ChevronDown'" size="16" class="ml-0"></lucide-icon>
+                  </a>
+                <ul *ngIf="openMenus[menu.name]" class="cd-secondary-nav cd-secondary-nav slim-scroll" 
+                  [ngClass]="{
                     'menu-layout-one': menu?.sec_count<=1,
                     'menu-layout-two': menu?.sec_count==2,
                     'menu-layout-three': menu?.sec_count==3,

@@ -18,7 +18,7 @@ body {
   margin-top: $final-height;
 }
 .dynamic-height {
-  height: calc(100vh - #{$final-height});
+  height: calc(100vh - 280px) !important;
 }
 @media only screen and (max-width: 992px) {
   body {
@@ -61,7 +61,7 @@ $mobile-final-height: calc(74px + #{$mobile-announcement-bar-mh});
 // ---------------------HEADER START-------------
 .logo-img {
   width: auto;
-  height: 60px;
+  height: 50px;
   object-fit: contain;
   }
   
@@ -112,6 +112,7 @@ $mobile-final-height: calc(74px + #{$mobile-announcement-bar-mh});
     border: none;
     width: 60px;
     padding: 0;
+    font-size: 16px;
     transition: none !important;
     background-color: transparent !important;
     color: $header-txt;
@@ -817,7 +818,7 @@ $mobile-final-height: calc(74px + #{$mobile-announcement-bar-mh});
       height: auto;
       line-height: 1;
       font-weight: 400;
-      font-size: 0.875rem;
+      font-size: 18px;
       letter-spacing: 1px;
       padding: 0;
       // color: #1f1b24;
@@ -954,7 +955,7 @@ $mobile-final-height: calc(74px + #{$mobile-announcement-bar-mh});
   
     .cd-primary-nav .cd-secondary-nav > li {
       /* change the height according to your needs - you can even set height: auto */
-      height: 340px;
+      // height: 340px;
       /* here you set the number of columns - use width percentage */
       width: 22%;
       float: left;
@@ -962,7 +963,7 @@ $mobile-final-height: calc(74px + #{$mobile-announcement-bar-mh});
       // border-right: 1px solid #e2e3df;
       overflow: hidden;
       overflow-x: hidden;
-      overflow-y: auto;
+      // overflow-y: auto;
       -webkit-overflow-scrolling: touch;
     }
   
@@ -974,7 +975,7 @@ $mobile-final-height: calc(74px + #{$mobile-announcement-bar-mh});
   
     .cd-primary-nav .cd-secondary-nav > li > a {
       /* secondary nav title */
-      // color: #000;
+      color: #D99550 !important;
       font-weight: 400;
       font-size: 1rem;
       line-height: 1;
@@ -1148,7 +1149,7 @@ $mobile-final-height: calc(74px + #{$mobile-announcement-bar-mh});
     .has-children > a::after,
     .go-back a::before,
     .go-back a::after {
-      background: #c9cbc4;
+      background: #3d3d3d99;
     }
   
     .has-children > a:hover::before,
@@ -1455,13 +1456,13 @@ $mobile-final-height: calc(74px + #{$mobile-announcement-bar-mh});
     .menu-layout-five {
       min-width: 960px !important;
       padding: 30px !important;
-      height:400px!important;
-      overflow-y: auto!important;
+      // height:400px!important;
+      // overflow-y: auto!important;
     }
     .menu-layout-five > li {
       width: 18.5% !important;
       margin-right:1.5%!important;
-      height: 380px!important;
+      // height: 380px!important;
     }
   }
 

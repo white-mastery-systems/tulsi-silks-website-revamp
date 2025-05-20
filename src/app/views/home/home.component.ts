@@ -10,6 +10,7 @@ import { SwiperService } from '../../services/swiper.service';
 import { CurrencyConversionService } from '../../services/currency-conversion.service';
 import { DynamicAssetLoaderService } from '../../services/dynamic-asset-loader.service';
 declare const Plyr: any;
+declare const Swiper;
 
 @Component({
   selector: 'app-home',
@@ -23,7 +24,10 @@ export class HomeComponent implements OnInit {
   imgBaseUrl: string = environment.img_baseurl;
   template_setting = environment.template_setting;
   plyrLoaded: boolean; subscription: Subscription;
-  storeSubscription: Subscription;
+  storeSubscription: Subscription; pageLoader: boolean;
+  currType: string;  
+  activeIndex = 0;
+  totalSlides = 0;
 
   homeSchema: any = {
     "@context": "https://schema.org",
@@ -54,13 +58,38 @@ export class HomeComponent implements OnInit {
     this.storeSubscription = this.commonService.storeDetailsReceived.subscribe(() => {
       this.loadHomeContent();
     });
+    
   }
 
   ngOnInit(): void {
     this.setSliderHeight();
     // JSON-LD
     this.commonService.createJsonLD("home-jsonld", this.homeSchema);
+    if(!this.commonService.contact_page_info) {
+      this.pageLoader = true;
+      this.storeApi.CONTACT_PAGE_INFO().subscribe(result => {
+        setTimeout(() => { this.pageLoader = false; }, 500);
+        if(result.status) {
+          this.commonService.contact_page_info = result.data;
+          if(this.commonService.contact_page_info.map_url) {
+            this.commonService.contact_page_info.map_url = this.sanitizer.bypassSecurityTrustResourceUrl(this.commonService.contact_page_info.map_url);
+          }
+        }
+        else {
+          console.log("response", result);
+          this.commonService.contact_page_info = {};
+        }
+      });
+    }
+    
   }
+
+  onSwiperInit(swiper: any) {
+  this.totalSlides = swiper.slides.length;
+  swiper.on('slideChange', () => {
+    this.activeIndex = swiper.activeIndex;
+  });
+}
 
   ngAfterContentInit() {
     if(this.commonService.storeLoaded) this.loadHomeContent();
@@ -73,6 +102,21 @@ export class HomeComponent implements OnInit {
       this.storeApi.LAYOUT_LIST().subscribe(result => {
         if(result.status) {
           let layoutList = JSON.parse(result.list).sort((a, b) => 0 - (a.rank > b.rank ? -1 : 1));
+          layoutList.push({
+            type: 'instagram',
+            image_list: [
+              { permalink: 'https://instagram.com/p/abc123', media_url: 'assets/images/insta1.png' },
+              { permalink: 'https://instagram.com/p/def456', media_url: 'assets/images/insta2.png' },
+              { permalink: 'https://instagram.com/p/def456', media_url: 'assets/images/insta3.png' },
+              { permalink: 'https://instagram.com/p/def456', media_url: 'assets/images/insta1.png' },
+              { permalink: 'https://instagram.com/p/def456', media_url: 'assets/images/insta2.png' },
+              { permalink: 'https://instagram.com/p/def456', media_url: 'assets/images/insta3.png' },
+            ],
+            heading: "Connect With Us",
+            sub_heading: "See how our silks shine in real life",
+            blogs_type: "slider",
+            rank: layoutList.length+1
+          })
           this.updateLayoutList(layoutList);
           this.findCurrency();
           setTimeout(() => { this.initializeSwiper(layoutList); }, 100);
@@ -247,6 +291,11 @@ export class HomeComponent implements OnInit {
         if(!this.commonService?.desktop_device && segment.blogs_type=='grid') {
           segment.blogs_type = 'slider';
         }
+        if(!segment.slider_type && segment.blogs_type=='slider') {
+          if(!this.currType) this.currType = 'two';
+          segment.slider_type = (this.currType==='one')? 'two': 'one';
+          this.currType = segment.slider_type;
+        }
         let cardCount = this.swiperService.featured_products.card_count;
         segment.product_list.forEach(obj => {
           obj.created_on = new Date(new Date(new Date(obj.created_on).setHours(23,59,59,59)).setDate(new Date(obj.created_on).getDate() + 30));
@@ -300,6 +349,9 @@ export class HomeComponent implements OnInit {
       else if(segment.type=="multiple_featured_product") {
         let cardCount = this.swiperService.multi_tab_featured_products.card_count;
         for(let tab of segment.multitab_list) {
+          tab.blogs_type = 'slider';
+          tab.activeIndex = 0;
+          if(this.commonService?.desktop_device) tab.blogs_type = 'grid';
           tab.product_list.forEach(obj => {
             obj.created_on = new Date(new Date(new Date(obj.created_on).setHours(23,59,59,59)).setDate(new Date(obj.created_on).getDate() + 30));
             if(obj.badge_list?.length) obj.badge_list = this.commonService.buildTags(obj.badge_list);

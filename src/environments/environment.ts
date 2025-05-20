@@ -37,7 +37,7 @@ export const environment = {
     price_range: false,
     category_grid_options: false,
     purchase_badge: false,
-    purchase_txt: true,
+    purchase_txt: false,
     p_card: true,
     mat_icon_type: 'icon' // 'icon' (or) 'icon-outline'
   },
