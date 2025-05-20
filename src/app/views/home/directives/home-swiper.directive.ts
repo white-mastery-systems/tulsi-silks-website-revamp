@@ -68,7 +68,7 @@ export class HomeSwiperDirective {
     auto_play: false,
     break_points: {
       1024: { slidesPerView: 4, spaceBetween: 15 },
-      768: { slidesPerView: 3, spaceBetween: 15 },
+      768: { slidesPerView: 2, spaceBetween: 15 },
       640: { slidesPerView: 2, spaceBetween: 15 },
       320: { slidesPerView: 1.5, spaceBetween: 15 }
     }

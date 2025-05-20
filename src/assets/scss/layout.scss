@@ -374,6 +374,110 @@
   }
 }
 
+.instagram_sec{
+  margin-bottom: 70px !important;
+  .custom-title{
+    padding-left: 40px;
+  }
+  .padding-left{
+    padding-left: 7.5px;
+  }
+  .blog-slider-btn{
+    padding-right: 40px;
+    button{
+      color:#D99550 !important;
+      border-bottom: 1px solid #d99550 !important;
+    }
+  }
+  figure{
+    margin-bottom: 0px;
+  }
+  .titles{
+    text-align: left;
+    margin-bottom: 30px;
+    h2{
+      margin-bottom: 5px;
+    }
+    .outline-btn{
+      color: #D99550;
+    }
+  }
+  .news-box{
+    padding: 0 7.5px;
+    width: 100%;
+  }
+}
+
+
+.testimonial-sec {
+  .custom-title{
+    padding: 60px 0 60px 40px;
+  }
+  .testimonial-container {
+    // padding-left: 40px;
+    .swiper-slide {
+      padding: 15px 15px;
+    }
+    .testimonial {
+      transition: 0.25s ease-in-out;      
+      background-color: #fff;
+      .testimonial-profile{
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        .double-codes {
+          img {            
+            width: 50px;
+            border-radius: 0%;
+            position: absolute;
+            right: 0;
+            top: 0;
+          }
+        }
+      }     
+      .testimonial-profile {
+        img {
+          width: 60px;
+          border-radius: 50%;
+          // margin-bottom: 20px;
+          // border: 1px dashed gray !important;
+          // padding: 6px;
+        }
+        p {          
+          margin-bottom: 5px;
+          font-size: 18px;
+        }
+        span {
+          opacity: 0.5;
+        }
+      }
+      &:hover {
+        cursor: pointer;
+        // background: $accent;
+        // color: #fff;
+
+        .testimonial-desc {
+          .double-codes {
+            svg {
+              fill: #ffffff;
+            }
+          }
+        }
+        // .testimonial-profile {
+        //   img {
+        //     border: 1px solid #fff !important;
+        //   }
+        // }
+      }
+    }
+  }
+  .swiper-button-prev, .swiper-container-rtl .swiper-button-next {
+    left: 93%;
+    right: auto;
+  }  
+}
+
 .parent-testi{
     .grid-img{
       figure{
@@ -411,20 +515,7 @@
     .swiper-button-next {
       top: 28%;
     }
-  }
-  .home-section .feature-sec-margin .featured-sections {
-    padding-left: 15px;
-  }
-  .titles{
-    margin-bottom: 18px !important;
-    padding: 0 0 0 15px !important;
-    h2{
-      font-size: 24px;
-    }
-    p{
-      font-size: 16px !important;
-    }
-  } 
+  }    
   .home-section .padding-left-value {
     padding-left: 15px;
   }
@@ -464,6 +555,25 @@
     left: 15;
     top:24%;
   }  
+  .titles{
+    h2{
+      font-size: 28px;
+    }
+    p{
+      font-size: 16px !important;
+    }
+  }
+  .grid-categories{
+    .page-width{
+      padding: 0 30px;
+    }
+  }
+  .testimonial-sec .custom-title{
+    padding: 20px 0 0px 15px !important;
+  } 
+  .instagram_sec .custom-title{
+    padding-left: 15px;
+  }
    
 }
 
@@ -499,17 +609,9 @@
   // .featured_product_list{
   //   display: block;
   // }
-  .product-silder-btn{
-    padding-left: 15px;
-    margin-bottom: 20px;
-  }
-  .px-max{
-    padding-left: 15px !important;
-    padding-right: 15px !important;
-  }
+  
   .tabs .nav-tabs{
     margin-bottom: 15px !important;
-    margin-left: 15px;
     li{
       a{
         span{
@@ -749,74 +851,6 @@ span{
   }
 }
 
-.testimonial-sec {
-  .custom-title{
-    padding: 60px 0 60px 40px;
-  }
-  .testimonial-container {
-    // padding-left: 40px;
-    .swiper-slide {
-      padding: 15px 15px;
-    }
-    .testimonial {
-      transition: 0.25s ease-in-out;      
-      background-color: #fff;
-      .testimonial-profile{
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        position: relative;
-        .double-codes {
-          img {            
-            width: 50px;
-            border-radius: 0%;
-            position: absolute;
-            right: 0;
-            top: 0;
-          }
-        }
-      }     
-      .testimonial-profile {
-        img {
-          width: 60px;
-          border-radius: 50%;
-          // margin-bottom: 20px;
-          // border: 1px dashed gray !important;
-          // padding: 6px;
-        }
-        p {          
-          margin-bottom: 5px;
-          font-size: 18px;
-        }
-        span {
-          opacity: 0.5;
-        }
-      }
-      &:hover {
-        cursor: pointer;
-        // background: $accent;
-        // color: #fff;
-
-        .testimonial-desc {
-          .double-codes {
-            svg {
-              fill: #ffffff;
-            }
-          }
-        }
-        // .testimonial-profile {
-        //   img {
-        //     border: 1px solid #fff !important;
-        //   }
-        // }
-      }
-    }
-  }
-  .swiper-button-prev, .swiper-container-rtl .swiper-button-next {
-    left: 93%;
-    right: auto;
-  }  
-}
 
 .active-bg {
   background: $primary-theme-color;
@@ -1583,6 +1617,28 @@ span{
   .terms {
     text-align: center !important;
   }
+  .tabs .nav-tabs{
+    margin-left: 15px;
+  }
+  .grid-categories .page-width{
+    padding: 0 15px !important;
+  }
+  .news{
+    .swiper-container{
+      padding: 0 15px;
+    }
+  }
+  .home-section .feature-sec-margin .featured-sections {
+    padding-left: 15px;
+  }
+  .product-silder-btn{
+    padding-left: 15px;
+    margin-bottom: 20px;
+  } 
+   .px-max{
+    padding-left: 15px !important;
+    padding-right: 15px !important;
+  }
   .yourstore-inner {
     padding: 0 0px !important;
   }
@@ -1613,6 +1669,16 @@ span{
     top:17%;
   }
   }
+  .titles{
+    margin-bottom: 18px !important;
+    padding: 0 0 0 15px !important;
+    h2{
+      font-size: 24px;
+    }
+    p{
+      font-size: 16px !important;
+    }
+  } 
 }
 
 //   ------------------FOOTER END-----------------
@@ -1926,39 +1992,6 @@ span{
     h2{
       margin-bottom: 5px;
     }
-  }
-}
-.instagram_sec{
-  margin-bottom: 70px !important;
-  .custom-title{
-    padding-left: 40px;
-  }
-  .padding-left{
-    padding-left: 7.5px;
-  }
-  .blog-slider-btn{
-    padding-right: 40px;
-    button{
-      color:#D99550 !important;
-      border-bottom: 1px solid #d99550 !important;
-    }
-  }
-  figure{
-    margin-bottom: 0px;
-  }
-  .titles{
-    text-align: left;
-    margin-bottom: 30px;
-    h2{
-      margin-bottom: 5px;
-    }
-    .outline-btn{
-      color: #D99550;
-    }
-  }
-  .news-box{
-    padding: 0 7.5px;
-    width: 100%;
   }
 }
 .full-width{

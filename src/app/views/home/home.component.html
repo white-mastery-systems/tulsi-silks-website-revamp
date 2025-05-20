@@ -403,7 +403,7 @@
                       </div>
                     </div> -->
                   </div>
-                  <ng-container *ngIf="commonService?.desktop_device && segment.product_list?.length>1 && segment.slider_type=='one'">
+                  <ng-container *ngIf="commonService?.screen_width>=991 && segment.product_list?.length>1 && segment.slider_type=='one'">
                     <div id="swipe_next_{{i+1}}" class="swiper-button swiper-button-next">
                       <lucide-icon name="chevron-right" [size]="20" stroke="1" color="white"></lucide-icon>
                     </div>

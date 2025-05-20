@@ -10,7 +10,7 @@
   <header class="cd-main-header">
     <div class="{{template_setting.header_type}} m-header-container hover-container">
       <div class="row m-header-row align-items-center justify-content-between">
-        <div class="col-6 col-md-2 center-logo order-1">
+        <div class="col-xl-2 col-4 center-logo order-1">
           <div class="cd-logo logo">
             <a (click)="commonService.resetMegaMenu();" routerLink="/">
               <img width="100%" height="100%" appImgLazyLoad class="logo-img" [ImagelazyLoad]="imgBaseUrl+commonService.store_logo" alt="{{commonService.store_details?.name}}">
@@ -18,7 +18,7 @@
           </div>
         </div>
 
-        <div class="col-3 col-md-7 header-right-sec order-0">
+        <div class="col-xl-7 col-4 header-right-sec order-0">
 
           <!-- navbar -->
           <nav class="cd-nav">
@@ -118,7 +118,7 @@
           </ul>        
         </div>
 
-        <div class="col-3 col-md-3 header-left-sec order-2">
+        <div class="col-xl-3 col-4 header-left-sec order-2">
           <ng-container *ngIf="commonService?.screen_width>=991">
             <!-- currency variation -->
             <div class="header-icon-container" *ngIf="commonService.ys_features.indexOf('currency_variation')!=-1 && !commonService.application_setting?.hide_currency">
