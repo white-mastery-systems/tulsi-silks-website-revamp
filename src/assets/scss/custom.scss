@@ -1708,10 +1708,9 @@ accordion-group.panel.panel-open {
 
 .product-detail{
   .max-width-full{
-    
+    padding-left: 60px;
     .title{
         h4{
-          padding-left: 40px;
           padding-bottom: 10px;
         }
       }
@@ -1747,7 +1746,23 @@ accordion-group.panel.panel-open {
     }
   }  
 }
+
+.product-page{
+  .similar-product{
+    margin-bottom: 80px;
+  }
+  .max-width-full{
+      margin-bottom: 80px;
+  }
+}
+
 .related-products {
+  .custom-title{
+    margin-bottom: 20px;
+    h2{
+      margin-bottom: 0;
+    }
+  }
   figure {
     margin-bottom: 1rem !important;
   }

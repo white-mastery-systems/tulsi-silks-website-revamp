@@ -178,9 +178,13 @@
         }
       }
     }
+  } 
+  .padding-left-value{
+    padding-left: 40px;
   }
+}
 
-  .custom-title{
+ .custom-title{
     text-align: left;
     padding: 0 0 0px 0px;
     margin-bottom: 30px;
@@ -191,10 +195,6 @@
       margin-bottom: 0;
     }
   }
-  .padding-left-value{
-    padding-left: 40px;
-  }
-}
 
 .multi-tab-featured{
   .custom-title{
@@ -373,6 +373,20 @@
     }
   }
 }
+
+  .outline-btn{
+    background-color: transparent !important;
+    border-bottom: 1px solid #000 !important;
+    color: #000 !important;
+    padding: 0 !important;
+    text-transform: capitalize !important;
+    margin-bottom: 30px;
+    font-size: 20px !important;
+    height: auto !important;
+  }
+  .w-auto{
+    width: auto;
+  }
 
 .instagram_sec{
   margin-bottom: 70px !important;
