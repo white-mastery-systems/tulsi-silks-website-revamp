@@ -49,6 +49,7 @@ export class StoreApiService {
   COLLECTIONS() { return this.http.get<any>(environment.ws_url+'/store_details/collections?store_id='+this.store_id); }
   
   BLOG_LIST(skip, limit) { return this.http.get<any>(environment.ws_url+'/store_details/blogs/v1?store_id='+this.store_id+'&skip='+skip+'&limit='+limit); }
+  RANDOM_BLOG_LIST(x) { return this.http.post<any>(environment.ws_url+'/store_details/blogs?store_id='+this.store_id, x); }
   BLOG_DETAILS(x) { return this.http.get<any>(environment.ws_url+'/store_details/blogs/v1?store_id='+this.store_id+'&id='+x); }
 
   // web story

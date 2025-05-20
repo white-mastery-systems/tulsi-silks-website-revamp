@@ -404,7 +404,7 @@
                    <img src="assets/images/package-check 1.svg">
                   </div>
                   <div class="title">Order Placed</div>
-                  <div class="date">May 12</div>
+                  <div class="date">{{ commonService.currDate | date: 'MMM d' }}</div>
                 </div>
 
                 <div class="step">
@@ -413,7 +413,7 @@
                     <img src="assets/images/truck 1.svg">
                   </div>
                   <div class="title">Shipping</div>
-                  <div class="date">May 12 – May 15</div>
+                  <div class="date">{{ shippingDuration.ship_start | date: 'MMM d' }} - {{ shippingDuration.ship_end | date: 'MMM d' }}</div>
                 </div>
 
                 <div class="step">
@@ -422,7 +422,7 @@
                     <img src="assets/images/map-pin-house 1.svg">
                   </div>
                   <div class="title">Delivered</div>
-                  <div class="date">May 16 – May 17</div>
+                  <div class="date">{{ shippingDuration.delivery_start | date: 'MMM d' }} - {{ shippingDuration.delivery_end | date: 'MMM d' }}</div>
                 </div>
               </div>
               <!-- #timeline -->
@@ -605,6 +605,39 @@
           </div>
         </div>
         <!-- #related products -->
+
+        <!-- blogs -->
+        <div *ngIf="blogList?.length" class="row">         
+          <div class="col-12 px-0 d-flex justify-content-between align-items-end">
+            <div class="titles custom-title w-auto pl-0" >
+              <h2>Articles</h2>
+              <p>Stories woven in silk and tradition</p>
+            </div>            
+            <div class="blog-slider-btn">
+              <button class="primary-btn outline-btn" routerLink="/blogs" type="button">
+                View All
+              </button>
+            </div>
+          </div>
+          <div class="row d-flex flex-wrap align-items-stretch">
+            <div *ngFor="let x of blogList;" class="col-12 col-md-4">
+              <div class="news-box">
+                <figure>
+                  <a routerLink="{{ x.seo_status ? '/blogs/'+x.seo_details.page_url : '/blogs/'+x._id }}">
+                    <img loading="lazy" width="100%" height="100%" appLqimgLoad appDeferLoad [ImagelazyLoad]="imgBaseUrl+x.image" alt="{{(x.img_alt)? x.img_alt: 'Image'}}">
+                  </a>
+                  <figcaption>
+                    <small>{{x.created_on | date: "MMM dd, yyyy"}}</small>
+                    <h3>
+                      <a routerLink="{{ x.seo_status ? '/blogs/'+x.seo_details.page_url : '/blogs/'+x._id }}">{{x.name}}</a>
+                    </h3>
+                  </figcaption>
+                </figure>
+              </div>
+            </div> 
+          </div>
+        </div>
+        <!-- #blogs -->
     </div>
   </section>
 

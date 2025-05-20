@@ -39,6 +39,7 @@ export class ProductComponent implements OnInit {
   category_details: any; psCssLoaded: boolean;
   bcList: any = []; enqForm: any = {};
   rpLoaded: boolean; psInitiated: boolean;
+  blogList: any = []; recentlyViewedList: any = [];
   
   existing_model_list: any = [];
   addonForm: any = {}; customized_model: any;
@@ -53,6 +54,12 @@ export class ProductComponent implements OnInit {
   related_products: any = []; reviews: any = []; avg_review: any;
   page: number; pageSize: number = 10; review_sort: string;
   prodFeatures: any = {};
+  shippingDuration: any = {
+    ship_start: new Date(new Date().setDate(new Date().getDate() + 1)),
+    ship_end: new Date(new Date().setDate(new Date().getDate() + 5)),
+    delivery_start: new Date(new Date().setDate(new Date().getDate() + 6)),
+    delivery_end: new Date(new Date().setDate(new Date().getDate() + 7))
+  };
 
   homeSchema: any = {
     "@context": "https://schema.org",
@@ -276,9 +283,40 @@ export class ProductComponent implements OnInit {
         });
       }
     });
+    // random blogs
+    this.storeApi.RANDOM_BLOG_LIST({ limit: 3 }).subscribe(result => {
+      if(result.status) this.blogList = result.list;
+      else console.log("response", result);
+    });
+    // recently viewed
+    this.recentlyViewedList = [];
+    if(localStorage.getItem('vps')) {
+      let rvList = JSON.parse(localStorage.getItem('vps'));
+      if(rvList.length) {
+        let rmProds = [];
+        this.findCurrency();
+        let getIds = rvList.map((el) => el._id);
+        this.storeApi.PRODUCT_LIST({ ids: getIds }).subscribe((result) => {
+          if(result.status) {
+            for(let element of rvList)
+            {
+              let pData = result.list.find(el => el._id==element._id && el.stock);
+              if(pData) this.recentlyViewedList.push(pData);
+              else rmProds.push(element._id);
+            }
+            if(rmProds.length) {
+              let validProds = rvList.filter(el => rmProds.indexOf(el._id)==-1);
+              localStorage.setItem('vps', JSON.stringify(validProds));
+            }
+            this.findCurrency();
+          }
+          else console.log("response", result);
+        });
+      }
+    }
   }
 
-  bcSchema(){
+  bcSchema() {
     this.bcList = [{ name: 'Home', position: 1, link: '/' }];
       if (this.category_details?.name) {
         this.bcList.push({ name: this.category_details.name, position: 2 });
@@ -530,6 +568,16 @@ export class ProductComponent implements OnInit {
     for(let product of this.related_products) {
       product.temp_selling_price = this.cc.CALC(product.selling_price);
       product.temp_discounted_price = this.cc.CALC(product.discounted_price);
+    }
+    if(this.recentlyViewedList.length) {
+      for (let product of this.recentlyViewedList) {
+        product.temp_selling_price = this.cc.CALC(product.selling_price);
+        product.temp_discounted_price = this.cc.CALC(product.discounted_price);
+        if(product.selling_price > product.discounted_price) {
+          let discAmount = product.selling_price - product.discounted_price;
+          product.disc_percentage = Math.round((discAmount/product.selling_price)*100);
+        }
+      }
     }
   }
 
