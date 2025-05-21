@@ -1,6 +1,7 @@
 import { Directive, ElementRef, Inject, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { DynamicAssetLoaderService } from '../../../services/dynamic-asset-loader.service';
+import { delay } from 'rxjs';
 declare const Swiper: any;
 ​
 @Directive({

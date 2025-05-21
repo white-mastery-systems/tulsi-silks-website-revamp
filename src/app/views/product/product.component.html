@@ -45,7 +45,7 @@
   <section *ngIf="template_setting?.breadcrumb" class="head-breadcrumb">
     <div class="{{template_setting?.body_type}}">
       <div class="row">
-        <div class="col-md-12">
+        <div class="col-md-12 d-flex align-items-center justify-content-between">
           <div class="breadcrumb-navigation mt-3">
             <ul class="collapsed">
               <li><a routerLink="/">Home</a></li>
@@ -58,6 +58,27 @@
               <li><span class="active-page">{{productDetails?.name}}</span></li>
             </ul>
           </div>
+          <div class="product-details d-flex align-items-center justify-content-end pb-3" *ngIf="commonService?.screen_width<=767">
+              <!-- wishlist -->
+            <div class="add-wishlist">
+              <a class="d-flex align-items-center" *ngIf="!exist_in_wishlist;" (click)="modifyWishList('add', productDetails); exist_in_wishlist=true;">
+                <i class="material-icons image">favorite_border</i>
+              </a>
+              <a class="d-flex align-items-center add-wishlist-i" *ngIf="exist_in_wishlist;" (click)="modifyWishList('remove', productDetails);  exist_in_wishlist=false;">
+                <i class="material-icons liked smooth-fadein image">favorite</i>
+              </a>
+            </div>
+            <!-- #wishlist# -->
+
+            <!-- share -->
+            <div *ngIf="template_setting?.social_share && productDetails?.seo_status" class="add-wishlist">
+              <a (click)="socialShare();" class="d-flex align-items-center">
+                <img src="assets/images/share.svg" alt="share" class="image">
+                <!-- <i class="material-icons">download</i> -->
+              </a>
+            </div>
+            <!-- #share#-->
+          </div>
         </div>
       </div>
     </div>
@@ -68,7 +89,7 @@
   <h1 *ngIf="productDetails?.seo_status" [hidden]="true">{{productDetails?.seo_details?.h1_tag}}</h1>
   <!-- #SEO h1 tag -->
 
-  <section class="common-site-section product-detail">
+  <section class="common-site-section product-detail pb-0">
     <div class="{{template_setting?.body_type}}">
       <div class="row">
 
@@ -142,7 +163,7 @@
 
         <div class="col-lg-6 col-md-6 col-sm-12 col-12">
           <div class="product-details">
-            <div class="d-flex justify-content-end align-items-center pb-3">
+            <div class="d-flex justify-content-end align-items-center pb-3" *ngIf="commonService?.screen_width>=768">
               <!-- wishlist -->
             <div class="add-wishlist">
               <a class="d-flex align-items-center" *ngIf="!exist_in_wishlist;" (click)="modifyWishList('add', productDetails); exist_in_wishlist=true;">
@@ -257,7 +278,7 @@
               <h5>Customization (Optional)</h5>
               <p>Personalize your saree to match your style</p>
               <div class="d-flex justify-content-start align-items-center select-btn">
-                <button class="primary-btn">Falls+ ₹100</button>
+                <button class="primary-btn Falls-btn">Falls+ ₹100</button>
                 <button class="primary-btn">Falls & Blouse Stitching + ₹1,100</button>
               </div>
             </div>
@@ -543,14 +564,14 @@
     </div>
 
     <!-- related products -->
-    <div *ngIf="related_products?.length>swiperService.related_products?.card_count" class="container-fluid max-width-full similar-product">
-      <div class="row related-products">
-        <div class="col-md-12 px-0 titles custom-title">
-          <h2>Related Products</h2>
-        </div>
-        <div class="col-md-12 px-0">
-          <div class="related-products">
-            <div class="swiper-container multi-slider product-slider padding--left" [ngClass]="commonService.desktop_device? 'desktop_related_prod_slider': 'related_prod_slider'" appRelatedProducts>
+     <div class="max-width-full">
+      <div *ngIf="related_products?.length>swiperService.related_products?.card_count" class="container-fluid similar-product mt-5 w-full">
+        <div class="row related-products">
+          <div class="col-md-12 px-0 titles custom-title">
+            <h2>Related Products</h2>
+          </div>
+          <div class="col-md-12 px-0">
+            <div class="swiper-container multi-slider" [ngClass]="commonService.desktop_device? 'desktop_related_prod_slider': 'related_prod_slider'" appRelatedProducts>
               <div class="swiper-wrapper">
                 <div *ngFor="let x of related_products; let i=index;" class="swiper-slide p-0">
                   <a appMouseHover class="product-box p-0" [ngClass]="template_setting?.p_card? '': ''"
@@ -599,8 +620,16 @@
                   </a>
                 </div>
               </div>
-              <div id="related_prod_next" class="swiper-button swiper-button-next"></div>
-              <div id="related_prod_prev" class="swiper-button swiper-button-prev"></div>
+              <ng-container *ngIf="commonService?.desktop_device">
+                <div id="related_prod_next" class="swiper-button swiper-button-next">
+                  <lucide-icon name="chevron-right" [size]="20" stroke="1" color="black"></lucide-icon>
+                </div>
+                <div id="related_prod_prev" class="swiper-button swiper-button-prev">
+                  <lucide-icon name="chevron-left" [size]="20" stroke="1" color="black"></lucide-icon>
+                </div>
+              </ng-container>
+              <!-- <div id="related_prod_next" class="swiper-button swiper-button-next"></div>
+              <div id="related_prod_prev" class="swiper-button swiper-button-prev"></div> -->
             </div>
           </div>
         </div>
@@ -609,99 +638,112 @@
     <!-- #related products -->
 
     <!-- blogs -->
-    <div *ngIf="blogList?.length" class="container-fluid news">
-      <div class="row">         
-        <div class="col-12 px-0 d-flex justify-content-between align-items-end">
-          <div class="titles custom-title w-auto pl-0" >
-            <h2>Articles</h2>
-            <p>Stories woven in silk and tradition</p>
-          </div>            
-          <div class="blog-slider-btn">
-            <button class="primary-btn outline-btn" routerLink="/blogs" type="button">
-              View All
-            </button>
-          </div>
-        </div>
-        <div class="row d-flex flex-wrap align-items-stretch">
-          <div *ngFor="let x of blogList;" class="col-12 col-md-4">
-            <div class="news-box">
-              <figure>
-                <a routerLink="{{ x.seo_status ? '/blogs/'+x.seo_details.page_url : '/blogs/'+x._id }}">
-                  <img loading="lazy" width="100%" height="100%" appLqimgLoad appDeferLoad [ImagelazyLoad]="imgBaseUrl+x.image" alt="{{(x.img_alt)? x.img_alt: 'Image'}}">
-                </a>
-                <figcaption>
-                  <small>{{x.created_on | date: "MMM dd, yyyy"}}</small>
-                  <h3>
-                    <a routerLink="{{ x.seo_status ? '/blogs/'+x.seo_details.page_url : '/blogs/'+x._id }}">{{x.name}}</a>
-                  </h3>
-                </figcaption>
-              </figure>
+    <div>
+      <div *ngIf="blogList?.length" class="container-fluid news similar-product">
+        <div class="row">         
+          <div class="col-12 px-0 d-flex justify-content-between align-items-end">
+            <div class="titles custom-title w-auto pl-0" >
+              <h2 class="text-black">Articles</h2>
+              <p>Stories woven in silk and tradition</p>
+            </div>            
+            <div class="blog-slider-btn">
+              <button class="primary-btn outline-btn" routerLink="/blogs" type="button">
+                View All
+              </button>
             </div>
-          </div> 
+          </div>
+          <div class="row d-flex flex-wrap align-items-stretch">
+            <div *ngFor="let x of blogList;" class="col-12 col-md-4 padding-reduce">
+              <div class="news-box">
+                <figure>
+                  <a routerLink="{{ x.seo_status ? '/blogs/'+x.seo_details.page_url : '/blogs/'+x._id }}">
+                    <img loading="lazy" width="100%" height="100%" appLqimgLoad appDeferLoad [ImagelazyLoad]="imgBaseUrl+x.image" alt="{{(x.img_alt)? x.img_alt: 'Image'}}">
+                  </a>
+                  <figcaption>
+                    <small>{{x.created_on | date: "MMM dd, yyyy"}}</small>
+                    <h3>
+                      <a routerLink="{{ x.seo_status ? '/blogs/'+x.seo_details.page_url : '/blogs/'+x._id }}">{{x.name}}</a>
+                    </h3>
+                  </figcaption>
+                </figure>
+              </div>
+            </div> 
+            
+          </div>
         </div>
       </div>
     </div>
     <!-- #blogs -->
 
     <!-- recently viewed products -->
-    <div *ngIf="recentlyViewedList?.length>swiperService.related_products?.card_count" class="mt-5 container-fluid max-width-full similar-product">
-      <div class="row related-products">
-        <div class="col-md-12 px-0 titles custom-title">
-          <h2>You may also like</h2>
-        </div>
-        <div class="col-md-12 px-0">
-          <div class="related-products">
-            <div class="swiper-container multi-slider product-slider padding--left" [ngClass]="commonService.desktop_device? 'desktop_related_prod_slider': 'related_prod_slider'" appRelatedProducts>
-              <div class="swiper-wrapper">
-                <div *ngFor="let x of recentlyViewedList; let i=index;" class="swiper-slide p-0">
-                  <a appMouseHover class="product-box p-0" [ngClass]="template_setting?.p_card? '': ''"
-                  (click)="commonService.selected_product=x;" routerLink="{{ x.seo_status ? '/product/'+x.seo_details.page_url : '/product/'+x._id }}">
-                    <div class="prod-div">
-                      <figure class="product-image">
-                        <!-- label -->
-                        <div class="product_labellist label_{{commonService.application_setting?.tag_position}}">
-                          <span class="span_label" *ngIf="commonService.store_properties?.auto_tags?.sold_out && x.stock<=0">
-                            {{commonService.store_properties?.auto_tags?.sold_out}}
-                          </span>
-                          <ng-container *ngIf="x.stock>0">
-                            <span class="span_label" *ngIf="commonService.store_properties?.auto_tags?.new_arrival && x.created_on>commonService.currDate">
-                              {{commonService.store_properties?.auto_tags?.new_arrival}}
+     <div class="max-width-full">
+      <div *ngIf="recentlyViewedList?.length>swiperService.related_products?.card_count" class="container-fluid recently-viewed similar-product w-full">
+        <div class="row related-products">
+          <div class="col-md-12 px-0 titles custom-title">
+            <h2>You may also like</h2>
+          </div>
+          <div class="col-md-12 px-0">
+            <div class="related-products">
+              <div class="swiper-container multi-slider product-slider padding--left" [ngClass]="commonService.desktop_device? 'desktop_related_prod_slider': 'related_prod_slider2'" appRelatedProducts>
+                <div class="swiper-wrapper">
+                  <div *ngFor="let x of recentlyViewedList; let i=index;" class="swiper-slide p-0">
+                    <a appMouseHover class="product-box p-0" [ngClass]="template_setting?.p_card? '': ''"
+                    (click)="commonService.selected_product=x;" routerLink="{{ x.seo_status ? '/product/'+x.seo_details.page_url : '/product/'+x._id }}">
+                      <div class="prod-div">
+                        <figure class="product-image">
+                          <!-- label -->
+                          <div class="product_labellist label_{{commonService.application_setting?.tag_position}}">
+                            <span class="span_label" *ngIf="commonService.store_properties?.auto_tags?.sold_out && x.stock<=0">
+                              {{commonService.store_properties?.auto_tags?.sold_out}}
                             </span>
-                            <span class="span_label" *ngIf="commonService.store_properties?.auto_tags?.on_sale && x.disc_status">
-                              {{commonService.store_properties?.auto_tags?.on_sale}}
+                            <ng-container *ngIf="x.stock>0">
+                              <span class="span_label" *ngIf="commonService.store_properties?.auto_tags?.new_arrival && x.created_on>commonService.currDate">
+                                {{commonService.store_properties?.auto_tags?.new_arrival}}
+                              </span>
+                              <span class="span_label" *ngIf="commonService.store_properties?.auto_tags?.on_sale && x.disc_status">
+                                {{commonService.store_properties?.auto_tags?.on_sale}}
+                              </span>
+                              <span class="span_label" *ngFor="let tag of x.badge_list | orderAsc: 'rank';">{{tag.name}}</span>
+                            </ng-container>
+                          </div>
+                          <!-- image -->
+                          <img width="100%" height="100%" appLqimgLoad appDeferLoad [ImagelazyLoad]="imgBaseUrl+x.image_list[0].image" alt="{{(x.image_list[0].img_alt)? x.image_list[0].img_alt: 'product-img'}}">
+                          <img width="100%" height="100%" appLqimgLoad appDeferLoad *ngIf="commonService?.desktop_device && x.image_list.length > 1" [ImagelazyLoad]="imgBaseUrl+x.image_list[1]?.image"
+                          alt="{{(x.image_list[1].img_alt)? x.image_list[1].img_alt: 'product-img'}}" class="image-hover">
+                          <figcaption *ngIf="template_setting?.purchase_badge">
+                            <span class="swipe-btn">
+                              <span class="swipe-btn-txt">Purchase
+                                <i class="material-icons">shopping_bag</i>
+                              </span>
                             </span>
-                            <span class="span_label" *ngFor="let tag of x.badge_list | orderAsc: 'rank';">{{tag.name}}</span>
-                          </ng-container>
-                        </div>
-                        <!-- image -->
-                        <img width="100%" height="100%" appLqimgLoad appDeferLoad [ImagelazyLoad]="imgBaseUrl+x.image_list[0].image" alt="{{(x.image_list[0].img_alt)? x.image_list[0].img_alt: 'product-img'}}">
-                        <img width="100%" height="100%" appLqimgLoad appDeferLoad *ngIf="commonService?.desktop_device && x.image_list.length > 1" [ImagelazyLoad]="imgBaseUrl+x.image_list[1]?.image"
-                        alt="{{(x.image_list[1].img_alt)? x.image_list[1].img_alt: 'product-img'}}" class="image-hover">
-                        <figcaption *ngIf="template_setting?.purchase_badge">
-                          <span class="swipe-btn">
-                            <span class="swipe-btn-txt">Purchase
-                              <i class="material-icons">shopping_bag</i>
-                            </span>
-                          </span>
-                        </figcaption>
-                      </figure>
-                      <div class="product-content">
-                        <h3 *ngIf="x.brand">{{x.brand}}</h3>
-                        <h4>{{x.name}}</h4>
-                        <div>
-                          <span *ngIf="x.disc_status" class="strike">{{ x.temp_selling_price | currency:cc.currency?.country_code:'symbol':cc.format }}</span>
-                          <span>{{ x.temp_discounted_price | currency:cc.currency?.country_code:'symbol':cc.format }}</span>
-                          <!-- <div *ngIf="template_setting?.purchase_txt" class="purchase-div">
-                            <a>PURCHASE</a>
-                          </div> -->
+                          </figcaption>
+                        </figure>
+                        <div class="product-content">
+                          <h3 *ngIf="x.brand">{{x.brand}}</h3>
+                          <h4>{{x.name}}</h4>
+                          <div>
+                            <span *ngIf="x.disc_status" class="strike">{{ x.temp_selling_price | currency:cc.currency?.country_code:'symbol':cc.format }}</span>
+                            <span>{{ x.temp_discounted_price | currency:cc.currency?.country_code:'symbol':cc.format }}</span>
+                            <!-- <div *ngIf="template_setting?.purchase_txt" class="purchase-div">
+                              <a>PURCHASE</a>
+                            </div> -->
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </a>
+                    </a>
+                  </div>
                 </div>
+                <ng-container *ngIf="commonService?.desktop_device">
+                  <div id="related_prod_next" class="swiper-button swiper-button-next">
+                    <lucide-icon name="chevron-right" [size]="20" stroke="1" color="black"></lucide-icon>
+                  </div>
+                  <div id="related_prod_prev" class="swiper-button swiper-button-prev">
+                    <lucide-icon name="chevron-left" [size]="20" stroke="1" color="black"></lucide-icon>
+                  </div>
+                </ng-container>
+                <!-- <div id="related_prod_next" class="swiper-button swiper-button-next"></div>
+                <div id="related_prod_prev" class="swiper-button swiper-button-prev"></div> -->
               </div>
-              <div id="related_prod_next" class="swiper-button swiper-button-next"></div>
-              <div id="related_prod_prev" class="swiper-button swiper-button-prev"></div>
             </div>
           </div>
         </div>

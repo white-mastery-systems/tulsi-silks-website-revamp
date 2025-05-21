@@ -44,6 +44,48 @@
     justify-content: center;
     width: 100%;
   }
+  .product-details {
+    .product-discription{
+      padding-top: 30px;
+      .product-name{
+        font-size: 24px !important;
+        letter-spacing: unset !important;
+        padding-bottom: 18px !important;
+      }
+      .product-price p .product-price{
+        font-size: 1rem !important;
+      }
+      .custom-border-bottom{
+        margin-bottom: 16px !important;
+      }
+    }
+  }
+  .product-detail{
+  .max-width-full{
+    padding-left: 0px !important; 
+    margin-bottom: 0px !important;
+    .similar-product {
+      margin-top: 30px !important;
+      margin-bottom: 30px !important;
+    }
+    .related-products{
+      .swiper-container{
+        padding: 0 15px;
+      }
+    }     
+  }
+  .recently-viewed{
+    padding-top: 50px;
+  }
+  .news{
+    .row{
+      padding: 0 15px;
+      .padding-reduce{
+        padding: 0;
+      }
+    }
+  }
+}
 }
 
 
@@ -712,6 +754,40 @@ span{
    font-size: 1rem !important;
 }
 }
+ .right-side{
+    flex-direction: column !important;
+  }
+.custom-height {
+    height: auto !important;
+    overflow-y: hidden !important;
+    .sm_roduct_nav.nav{
+      display: block;
+      white-space: nowrap;
+      overflow-y: hidden;
+      margin-top: 15px;
+      overflow-x: scroll; 
+    }
+  }
+  .new-addons{
+    .select-btn{
+      display: block !important;
+      .Falls-btn{
+        margin-bottom: 10px;
+      }
+      button{
+        width: 100%;
+      }
+    }
+  }
+  .timeline{
+    padding: 20px 5px !important;
+    .title{
+      font-size: 12px;
+    }
+    .date{
+      font-size: 12px !important;
+    }
+  }  
 }
 
 @media only screen and (max-width: 576px) {
@@ -762,8 +838,8 @@ span{
   }
 
   .highlighted-text-width {
-    padding-left: 30px;
-    padding-right: 90px;
+    padding-left: 70px;
+    padding-right: 20px;
   }
 
   .flex-row-reverse {
@@ -809,7 +885,7 @@ span{
 }
 .single-highlighted-sec {
   background-color: #F2F2F2;
-  padding: 60px 0px;  
+  padding: 80px 0px;  
   button {
     margin-top: 1rem !important;
   }
@@ -1631,6 +1707,7 @@ span{
   .terms {
     text-align: center !important;
   }
+  
   .tabs .nav-tabs{
     margin-left: 15px;
   }
@@ -1693,6 +1770,9 @@ span{
       font-size: 16px !important;
     }
   } 
+  .breadcrumb-navigation li span{
+    font-size: 12px !important;
+  }
 }
 
 //   ------------------FOOTER END-----------------
@@ -1776,7 +1856,13 @@ span{
   }
   .masonry-grid8 {
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  }  
+  }   
+}
+
+@media screen and (min-width: 768px){
+    .w-full{
+      max-width: 100%;
+    }
 }
 
 @media screen and (min-width: 992px) and (max-width: 1024px) {

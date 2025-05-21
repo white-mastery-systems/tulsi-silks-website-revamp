@@ -321,7 +321,7 @@
       <!-- {{segment.slider_type}} -->
       <div class="container-fluid">
         <!-- Slider -->
-        <div class="row featured_product_list" *ngIf="segment.blogs_type!='grid'" [ngClass]="(segment.slider_type=='one')? 'align-items-center': ''">
+        <div class="row featured_product_list" *ngIf="segment.blogs_type!='grid'" [ngClass]="(segment.slider_type=='one')? 'align-items-center slider_type_one': ''">
             <div *ngIf="segment.heading && segment.slider_type=='one'" class="col-md-3 px-0 d-flex flex-column justify-content-center align-items-start">
               <div class="titles custom-title w-auto" [ngClass]="segment.blogs_type=='grid'? 'pl-0': ''">
                 <h2>{{segment.heading}}</h2>
@@ -630,7 +630,7 @@
 
     <!-- Highlighted Section -->
     <section *ngIf="segment.type=='highlighted_section' && segment.image_list?.length" class="primary-section highlight-sec-margin single-highlighted-sec highlighted-sec" [ngClass]="(i>1)? 'wow fadeInUp': null">
-      <div class="page-width">
+      <div class="container">
         <div class="row" (click)="(segment.image_list[0]?.btn_status)? '': commonService.onPageRedirect(segment.image_list[0]);" [ngClass]="(segment.image_list[0].position=='right')? 'flex-row-reverse': ''">
           <div class="col-md-6 d-flex flex-column align-items-start justify-content-center px-0">
             <div class="landing-highlighted w-100">
@@ -707,7 +707,7 @@
 
     <!-- Secondary Banner -->
     <section *ngIf="segment.type=='secondary' && segment.image_list?.length" class="primary-section" [ngClass]="(i>1)? 'wow fadeInUp': null">
-      <div class="page-width">
+      <div class="container">
         <div class="row grey-background">            
             <div class="col-xl-6 col-12">
               <div class="welcome-content h-100">
@@ -1070,7 +1070,7 @@
 </section>
 
 <section class="primary-section location">
-  <div class="page-width">
+  <div class="container">
     <div class="row">
       <div class="col-12 px-0 d-flex justify-content-center align-items-center">
         <div class="titles">

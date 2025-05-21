@@ -1590,6 +1590,7 @@ a.video-thum {
   }
   accordion-group .panel .panel-heading .panel-title .accordion-toggle button{
     padding: 0 !important;
+    color: #000000 !important;
   }
   accordion-group.panel.panel-open .panel-heading .panel-title .accordion-toggle:after{
     content: "expand_less";
@@ -1708,7 +1709,7 @@ accordion-group.panel.panel-open {
 
 .product-detail{
   .max-width-full{
-    padding-left: 60px;
+    padding-left: 40px;
     .title{
         h4{
           padding-bottom: 10px;
@@ -1761,6 +1762,7 @@ accordion-group.panel.panel-open {
     margin-bottom: 20px;
     h2{
       margin-bottom: 0;
+      color: #000000;
     }
   }
   figure {

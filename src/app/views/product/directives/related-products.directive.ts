@@ -71,6 +71,37 @@ export class RelatedProductsDirective {
         }
         break;
       }
+      if(classList[i].includes("related_prod_slider2")) {
+        let swipeElement = classList[i];
+        // swiper config
+        let swipeConfig: any = {
+          speed: 500,
+          breakpoints: this.swiperInfo.break_points,
+          navigation: {
+            nextEl: '#related_prod_next',
+            prevEl: '#related_prod_prev'
+          }
+        }
+        let autoPlay = this.swiperInfo.auto_play;
+        if(autoPlay) {
+          swipeConfig.autoplay = {
+            delay: 3000,
+            disableOnInteraction: false
+          }
+        }
+        // initialize swiper
+        let swipeInit = new Swiper('.'+swipeElement, swipeConfig);
+        // hover event
+        if(autoPlay && swipeElement.includes("desktop")) {
+          swipeInit.el.addEventListener("mouseover", () => {  
+            swipeInit.autoplay.stop();
+          });
+          swipeInit.el.addEventListener("mouseout", () => {   
+            swipeInit.autoplay.start();
+          });
+        }
+        break;
+      }
     }
   }
 
