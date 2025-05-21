@@ -150,6 +150,7 @@ export class ProductComponent implements OnInit {
         this.exist_in_wishlist = this.wishService.checkProductExist(this.productDetails._id);
         this.createJsonLd();
         this.findCurrency();
+        this.loadBlogAndProducts();
         this.addMeta();
         // bc schema
         this.bcSchema();
@@ -206,6 +207,7 @@ export class ProductComponent implements OnInit {
             this.exist_in_wishlist = this.wishService.checkProductExist(this.productDetails._id);
             this.createJsonLd();
             this.findCurrency();
+            this.loadBlogAndProducts();
             // schema
             this.bcSchema();
             // fb tracking
@@ -227,6 +229,25 @@ export class ProductComponent implements OnInit {
               this.commonService.setSiteMetaData(this.productDetails.seo_details, seoImage);
             }
             else this.commonService.getStoreSeoDetails();
+            // add recently viewed prod localstorage
+            let viewedProds = [];
+            if(localStorage.getItem('vps')) viewedProds = JSON.parse(localStorage.getItem('vps'));
+            let cpData: any = {
+              _id: this.productDetails._id,
+              name: this.productDetails.name,
+              image_list: [this.productDetails.image_list[0]],
+              seo_status: this.productDetails.seo_status,
+              seo_details: this.productDetails.seo_details,
+              disc_status: this.productDetails.disc_status,
+              selling_price: this.productDetails.selling_price,
+              discounted_price: this.productDetails.discounted_price,
+              stock: this.productDetails.stock,
+              created_on: this.productDetails.created_on,
+              badge_list: []
+            };
+            if(this.productDetails.brand) cpData.brand = this.productDetails.brand;
+            if(viewedProds.findIndex(el => el._id==cpData._id) == -1) viewedProds.unshift(cpData);
+            localStorage.setItem('vps', JSON.stringify(viewedProds));
             // update stock
             if(this.productDetails.hold_till) {
               let balanceStock = this.productDetails.stock;
@@ -283,7 +304,11 @@ export class ProductComponent implements OnInit {
         });
       }
     });
+  }
+
+  loadBlogAndProducts() {
     // random blogs
+    this.blogList = [];
     this.storeApi.RANDOM_BLOG_LIST({ limit: 3 }).subscribe(result => {
       if(result.status) this.blogList = result.list;
       else console.log("response", result);
@@ -292,6 +317,8 @@ export class ProductComponent implements OnInit {
     this.recentlyViewedList = [];
     if(localStorage.getItem('vps')) {
       let rvList = JSON.parse(localStorage.getItem('vps'));
+      let pInd = rvList.findIndex(el => el._id==this.productDetails._id);
+      if(pInd!=-1) rvList.splice(pInd, 1);
       if(rvList.length) {
         let rmProds = [];
         this.findCurrency();
