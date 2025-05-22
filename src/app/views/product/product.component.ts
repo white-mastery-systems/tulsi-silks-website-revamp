@@ -515,12 +515,17 @@ export class ProductComponent implements OnInit {
     }
   }
 
-  chooseAddonNew(x) {
+  chooseAddonNew(x, existingListModal, createNewModal, mmOptionsModal) {
     if(x._id===this.productDetails.selected_addon?._id) {
       this.productDetails.selected_addon = null;
     }
     else {
       this.productDetails.selected_addon = x;
+      if(this.productDetails?.selected_addon?.custom_list?.length || this.productDetails?.selected_addon?.updated_mm_list?.length || this.productDetails?.selected_addon?.notes_list?.length) {
+        if(!this.customized_model) {
+          this.onSelectAddon(x, existingListModal, createNewModal, mmOptionsModal, 0);
+        }
+      }
     }
     this.onChangeAddon();
   }
@@ -1278,7 +1283,7 @@ export class ProductComponent implements OnInit {
             this.productDetails.buynow_alert = "";
             this.calcAddonPrice();
             modalName.hide();
-            if(customDetailsModal) this.openCustomDetailsModal(customDetailsModal);
+            // if(customDetailsModal) this.openCustomDetailsModal(customDetailsModal);
           }
           else {
             this.addonForm.alert_msg = result.message;
@@ -1312,7 +1317,7 @@ export class ProductComponent implements OnInit {
     this.calcAddonPrice();
     this.productDetails.added_to_cart = false;
     this.productDetails.customization_alert = false;
-    if(modalName) setTimeout(() => { this.openCustomDetailsModal(modalName); }, 500);
+    // if(modalName) setTimeout(() => { this.openCustomDetailsModal(modalName); }, 500);
   }
 
   validateForm() {

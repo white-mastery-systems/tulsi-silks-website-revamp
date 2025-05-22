@@ -278,38 +278,34 @@
               </div>
               <h5>Customization (Optional)</h5>
               <p>Personalize your saree to match your style</p>
-              <div class="d-flex justify-content-start align-items-center select-btn">
+              <!-- selected addon -->
+              <p *ngIf="productDetails?.selected_addon" class="gray opacity1 poss-rel">
+                Selected Add-On:
+                <strong class="cursor prod-link-mdl">{{productDetails?.selected_addon?.name}}</strong>
+                <span class="cstm-slct-close ml-2 d-inline-block">
+                  <span (click)="productDetails.selected_addon=null; onChangeAddon();" class="d-flex">
+                    <i class="material-icons">cancel</i>
+                  </span>
+                </span>
+              </p>
+              <!-- selected custom model -->
+               <p *ngIf="customized_model" class="poss-rel">
+                Your custom design:
+                <strong class="cursor prod-link-mdl" (click)="openCustomDetailsModal(selectedCustomizationDetailsModal);">{{customized_model?.name}}</strong>
+                <span class="cstm-slct-close ml-2 d-inline-block">
+                  <span (click)="productDetails.selected_addon=null; onChangeAddon();" class="d-flex">
+                    <i class="material-icons">cancel</i>
+                  </span>
+                </span>
+              </p>
+              <div *ngIf="!productDetails?.selected_addon" class="d-flex justify-content-start align-items-center select-btn">
                 <ng-container *ngFor="let x of productDetails.addon_list">
-                  <button (click)="chooseAddonNew(x);" [ngClass]="(x._id===productDetails.selected_addon?._id)? 'addon_selected': null" class="primary-btn">
+                  <button (click)="chooseAddonNew(x, existingListModal, createNewModal, mmOptionsModal);" class="primary-btn">
                     {{x.name}}
                     <ng-container *ngIf="x.price">
                       + {{ x.temp_price | currency:cc.currency?.country_code:'symbol':cc.format }}
                     </ng-container>
                   </button>
-                </ng-container>
-              </div>
-              <!-- addon details -->
-              <div class="pb-2" *ngIf="productDetails?.selected_addon">
-                <ng-container *ngIf="productDetails?.selected_addon?.custom_list?.length || productDetails?.selected_addon?.updated_mm_list?.length || productDetails?.selected_addon?.notes_list?.length">
-                  <div *ngIf="!customized_model" class="customize-btn-sec">
-                    <button type="button" class="primary-btn w-100 d-inline-flex justify-content-center align-items-center" [disabled]="productDetails?.custom_loader"
-                    (click)="onSelectAddon(productDetails.selected_addon, existingListModal, createNewModal, mmOptionsModal, 0);">
-                      CUSTOMIZE YOUR ADDON
-                      <div class="box" *ngIf="productDetails?.custom_loader">
-                        <div class="spinner"></div>
-                      </div>
-                    </button>
-                  </div>
-                  <div *ngIf="customized_model">
-                    <p class="poss-rel">Your customization is:
-                      <strong class="cursor prod-link-mdl" (click)="openCustomDetailsModal(selectedCustomizationDetailsModal);">{{customized_model?.name}}</strong>
-                      <span class="cstm-slct-close ml-2 d-inline-block">
-                        <span (click)="onChangeAddon();" class="d-flex">
-                          <i class="material-icons">cancel</i>
-                        </span>
-                      </span>
-                    </p>
-                  </div>
                 </ng-container>
               </div>
             </div>
