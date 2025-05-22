@@ -189,6 +189,10 @@ export class HomeSwiperDirective {
     }
     if(configData.loop) swipeConfig.loop = true;
     if(configData.auto_play) swipeConfig.autoplay = { delay: 3000, disableOnInteraction: false };
+    if(swipeElement.includes("insta")) {
+      swipeConfig.speed = 3000;
+      if(configData.auto_play) swipeConfig.autoplay = { delay: 0, disableOnInteraction: false };
+    }
     let swipeInit = new Swiper('.'+swipeElement, swipeConfig);
     if(configData.auto_play && swipeElement.includes("desktop")) this.autoPlayEvt(swipeInit);
   }

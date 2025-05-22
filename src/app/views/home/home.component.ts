@@ -116,7 +116,25 @@ export class HomeComponent implements OnInit {
             sub_heading: "See how our silks shine in real life",
             blogs_type: "slider",
             rank: layoutList.length+1
-          })
+          });
+          let occasionList = layoutList.filter(el => el.heading=='occasion');
+          layoutList = layoutList.filter(el => el.heading!='occasion' && el.type!='multiple_featured_product');
+          if(occasionList.length) {
+            layoutList.push({
+              "active_status": true,
+              "_id": occasionList[0]._id,
+              "rank": occasionList[0].rank,
+              "type": "multiple_featured_section",
+              "name": "Our Occasion",
+              "heading": "Shop by Occasion",
+              "sub_heading": "From everyday to occasion wear",
+              "store_id": occasionList[0].store_id,
+              "image_list": [],
+              "created_on": occasionList[0].created_on,
+              "updated_on": occasionList[0].updated_on,
+              "multitab_list": occasionList
+            });
+          }
           this.updateLayoutList(layoutList);
           this.findCurrency();
           setTimeout(() => { this.initializeSwiper(layoutList); }, 100);
