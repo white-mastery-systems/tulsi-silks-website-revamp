@@ -246,7 +246,10 @@ export class ProductComponent implements OnInit {
               badge_list: []
             };
             if(this.productDetails.brand) cpData.brand = this.productDetails.brand;
-            if(viewedProds.findIndex(el => el._id==cpData._id) == -1) viewedProds.unshift(cpData);
+            if(viewedProds.findIndex(el => el._id==cpData._id) == -1) {
+              viewedProds.unshift(cpData);
+              viewedProds = viewedProds.slice(0, 20);
+            }
             localStorage.setItem('vps', JSON.stringify(viewedProds));
             // update stock
             if(this.productDetails.hold_till) {
@@ -317,8 +320,8 @@ export class ProductComponent implements OnInit {
     this.recentlyViewedList = [];
     if(localStorage.getItem('vps')) {
       let rvList = JSON.parse(localStorage.getItem('vps'));
-      let pInd = rvList.findIndex(el => el._id==this.productDetails._id);
-      if(pInd!=-1) rvList.splice(pInd, 1);
+      // let pInd = rvList.findIndex(el => el._id==this.productDetails._id);
+      // if(pInd!=-1) rvList.splice(pInd, 1);
       if(rvList.length) {
         let rmProds = [];
         this.findCurrency();
@@ -327,7 +330,7 @@ export class ProductComponent implements OnInit {
           if(result.status) {
             for(let element of rvList)
             {
-              let pData = result.list.find(el => el._id==element._id && el.stock);
+              let pData = result.list.find(el => el._id==element._id && el.stock && el._id!=this.productDetails._id);
               if(pData) this.recentlyViewedList.push(pData);
               else rmProds.push(element._id);
             }

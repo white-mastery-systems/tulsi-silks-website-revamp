@@ -178,23 +178,26 @@ export class HomeSwiperDirective {
   }
 
   initializeSwiper(swipeElement: any, configData: any) {
-    // swiper config
-    let swipeConfig: any = {
-      speed: 500,
-      breakpoints: configData.break_points,
-      navigation: {
-        nextEl: '#swipe_next_'+swipeElement.split("_")[1],
-        prevEl: '#swipe_prev_'+swipeElement.split("_")[1]
+    if(this.loadedElements.indexOf(swipeElement) == -1) {
+      this.loadedElements.push(swipeElement);
+      // swiper config
+      let swipeConfig: any = {
+        speed: 500,
+        breakpoints: configData.break_points,
+        navigation: {
+          nextEl: '#swipe_next_'+swipeElement.split("_")[1],
+          prevEl: '#swipe_prev_'+swipeElement.split("_")[1]
+        }
       }
-    }
-    if(configData.loop) swipeConfig.loop = true;
-    if(configData.auto_play) swipeConfig.autoplay = { delay: 3000, disableOnInteraction: false };
-    if(swipeElement.includes("insta")) {
+      if(configData.loop) swipeConfig.loop = true;
+      if(configData.auto_play) swipeConfig.autoplay = { delay: 3000, disableOnInteraction: false };
+      if(swipeElement.includes("insta")) {
       swipeConfig.speed = 3000;
       if(configData.auto_play) swipeConfig.autoplay = { delay: 0, disableOnInteraction: false };
     }
-    let swipeInit = new Swiper('.'+swipeElement, swipeConfig);
-    if(configData.auto_play && swipeElement.includes("desktop")) this.autoPlayEvt(swipeInit);
+      let swipeInit = new Swiper('.'+swipeElement, swipeConfig);
+      if(configData.auto_play && swipeElement.includes("desktop")) this.autoPlayEvt(swipeInit);
+    }
   }
 
   autoPlayEvt(swipeInit) {
@@ -209,5 +212,5 @@ export class HomeSwiperDirective {
   ngOnDestroy() {
     if(isPlatformBrowser(this.platformId) && this.observer) this.observer.disconnect();
   }
-​
+
 }
