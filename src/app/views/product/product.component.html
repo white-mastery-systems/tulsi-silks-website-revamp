@@ -273,25 +273,34 @@
 
             <!-- selected addon -->
             <ng-container *ngIf="productDetails?.selected_addon">
-              <p class="gray opacity1 poss-rel">
-                Selected Add-On:
-                <strong class="cursor prod-link-mdl">{{productDetails?.selected_addon?.name}}</strong>
-                <span class="cstm-slct-close ml-2 d-inline-block">
-                  <span (click)="productDetails.selected_addon=null; onChangeAddon();" class="d-flex">
-                    <i class="material-icons">cancel</i>
-                  </span>
-                </span>
-              </p>
+              <div class="gray opacity1 poss-rel d-flex align-items-center">
+                Selected Add-Ons:
+                <div class="selected-option d-flex align-items-center">
+                  <div class="cursor prod-link-mdl">
+                    {{productDetails.selected_addon.name}}
+                    <ng-container *ngIf="productDetails.selected_addon.price">
+                      + {{ productDetails.selected_addon.temp_price | currency:cc.currency?.country_code:'symbol':cc.format }}
+                    </ng-container>
+                  </div>
+                  <div class="ml-2 d-inline-block">
+                    <span (click)="clearAddon();" class="d-flex">
+                      <lucide-icon name="x-circle" [size]="18" stroke="1" color="black"></lucide-icon>
+                    </span>
+                  </div>
+                </div>
+              </div>
               <!-- selected custom model -->
-               <p *ngIf="customized_model" class="poss-rel">
+               <div *ngIf="customized_model" class="gray poss-rel d-flex align-items-center">
                 Your custom design:
-                <strong class="cursor prod-link-mdl" (click)="openCustomDetailsModal(selectedCustomizationDetailsModal);">{{customized_model?.name}}</strong>
-                <span class="cstm-slct-close ml-2 d-inline-block">
-                  <span (click)="productDetails.selected_addon=null; onChangeAddon();" class="d-flex">
-                    <i class="material-icons">cancel</i>
-                  </span>
-                </span>
-              </p>
+                <div class="selected-option d-flex align-items-center">
+                  <div class="cursor prod-link-mdl" (click)="openCustomDetailsModal(selectedCustomizationDetailsModal);">{{customized_model?.name}}</div>
+                  <div class="ml-2 d-inline-block">
+                    <span (click)="clearAddon();" class="d-flex">
+                      <lucide-icon name="x-circle" [size]="18" stroke="1" color="black"></lucide-icon>
+                    </span>
+                  </div>
+                </div>
+              </div>
             </ng-container>
 
             <!-- product customization -->
@@ -561,14 +570,14 @@
     </div>
 
     <!-- related products -->
-     <div class="max-width-full">
+    <div class="max-width-full">
       <div *ngIf="related_products?.length>swiperService.related_products?.card_count" class="container-fluid similar-product mt-5 w-full">
         <div class="row related-products">
           <div class="col-md-12 px-0 titles custom-title">
             <h2>Related Products</h2>
           </div>
           <div class="col-md-12 px-0">
-            <div class="swiper-container multi-slider" [ngClass]="commonService.desktop_device? 'desktop_related_prod_slider': 'related_prod_slider'" appRelatedProducts>
+            <div class="swiper-container multi-slider" [ngClass]="commonService.desktop_device? 'desktop_related_prod_slider1': 'related_prod_slider1'" appRelatedProducts>
               <div class="swiper-wrapper">
                 <div *ngFor="let x of related_products; let i=index;" class="swiper-slide p-0">
                   <a appMouseHover class="product-box p-0" [ngClass]="template_setting?.p_card? '': ''"
@@ -618,10 +627,10 @@
                 </div>
               </div>
               <ng-container *ngIf="commonService?.desktop_device">
-                <div id="related_prod_next" class="swiper-button swiper-button-next">
+                <div id="related_prod_next1" class="swiper-button swiper-button-next">
                   <lucide-icon name="chevron-right" [size]="20" stroke="1" color="black"></lucide-icon>
                 </div>
-                <div id="related_prod_prev" class="swiper-button swiper-button-prev">
+                <div id="related_prod_prev1" class="swiper-button swiper-button-prev">
                   <lucide-icon name="chevron-left" [size]="20" stroke="1" color="black"></lucide-icon>
                 </div>
               </ng-container>
@@ -635,64 +644,62 @@
     <!-- #related products -->
 
     <!-- blogs -->
-    <div>
-      <div *ngIf="blogList?.length" class="container-fluid news similar-product">
-        <div class="row">         
-          <div class="col-12 px-0 d-flex justify-content-between align-items-end">
-            <div class="titles custom-title w-auto pl-0" >
-              <h2 class="text-black">Articles</h2>
-              <p>Stories woven in silk and tradition</p>
-            </div>            
-            <div class="blog-slider-btn">
-              <button class="primary-btn outline-btn" routerLink="/blogs" type="button">
-                View All
-              </button>
+    <div *ngIf="blogList?.length" class="container-fluid news similar-product">
+      <div class="row">         
+        <div class="col-12 px-0 d-flex justify-content-between align-items-end">
+          <div class="titles custom-title w-auto pl-0" >
+            <h2 class="text-black">Articles</h2>
+            <p>Stories woven in silk and tradition</p>
+          </div>            
+          <div class="blog-slider-btn">
+            <button class="primary-btn outline-btn" routerLink="/blogs" type="button">
+              View All
+            </button>
+          </div>
+        </div>
+        <!-- grid -->
+        <div *ngIf="commonService.desktop_device" class="row d-flex flex-wrap align-items-stretch">
+          <div *ngFor="let x of blogList;" class="col-12 col-md-4 padding-reduce">
+            <div class="news-box">
+              <figure>
+                <a routerLink="{{ x.seo_status ? '/blogs/'+x.seo_details.page_url : '/blogs/'+x._id }}">
+                  <img loading="lazy" width="100%" height="100%" appLqimgLoad appDeferLoad [ImagelazyLoad]="imgBaseUrl+x.image" alt="{{(x.img_alt)? x.img_alt: 'Image'}}">
+                </a>
+                <figcaption>
+                  <small>{{x.created_on | date: "MMM dd, yyyy"}}</small>
+                  <h3>
+                    <a routerLink="{{ x.seo_status ? '/blogs/'+x.seo_details.page_url : '/blogs/'+x._id }}">{{x.name}}</a>
+                  </h3>
+                </figcaption>
+              </figure>
             </div>
-          </div>
-          <!-- grid -->
-          <div *ngIf="commonService.desktop_device" class="row d-flex flex-wrap align-items-stretch">
-            <div *ngFor="let x of blogList;" class="col-12 col-md-4 padding-reduce">
-              <div class="news-box">
-                <figure>
-                  <a routerLink="{{ x.seo_status ? '/blogs/'+x.seo_details.page_url : '/blogs/'+x._id }}">
-                    <img loading="lazy" width="100%" height="100%" appLqimgLoad appDeferLoad [ImagelazyLoad]="imgBaseUrl+x.image" alt="{{(x.img_alt)? x.img_alt: 'Image'}}">
-                  </a>
-                  <figcaption>
-                    <small>{{x.created_on | date: "MMM dd, yyyy"}}</small>
-                    <h3>
-                      <a routerLink="{{ x.seo_status ? '/blogs/'+x.seo_details.page_url : '/blogs/'+x._id }}">{{x.name}}</a>
-                    </h3>
-                  </figcaption>
-                </figure>
-              </div>
-            </div> 
-          </div>
-          <!-- slider -->
-          <div *ngIf="!commonService.desktop_device" class="row">
-            <div class="col-12 px-0">
-              <div class="swiper-container blogslider_1" appRelatedProducts>
-                <div class="swiper-wrapper">
-                  <div *ngFor="let x of blogList; let j=index;" class="swiper-slide">
-                    <div class="news-box" routerLink="{{ x.seo_status ? '/blogs/'+x.seo_details.page_url : '/blogs/'+x._id }}">
-                      <figure>
-                        <a routerLink="{{ x.seo_status ? '/blogs/'+x.seo_details.page_url : '/blogs/'+x._id }}">
-                          <img loading="lazy" width="100%" height="100%" appLqimgLoad appDeferLoad [ImagelazyLoad]="imgBaseUrl+x.image" alt="{{(x.img_alt)? x.img_alt: 'Image'}}">
-                        </a>
-                        <figcaption>
-                          <small>{{x.created_on | date: "MMM dd, yyyy"}}</small>
-                          <h3>
-                            <a routerLink="{{ x.seo_status ? '/blogs/'+x.seo_details.page_url : '/blogs/'+x._id }}">{{x.name}}</a>
-                          </h3>
-                        </figcaption>
-                      </figure>
-                    </div>
+          </div> 
+        </div>
+        <!-- slider -->
+        <div *ngIf="!commonService.desktop_device" class="row">
+          <div class="col-12 px-0">
+            <div class="swiper-container blogslider1" appRelatedProducts>
+              <div class="swiper-wrapper">
+                <div *ngFor="let x of blogList; let j=index;" class="swiper-slide">
+                  <div class="news-box" routerLink="{{ x.seo_status ? '/blogs/'+x.seo_details.page_url : '/blogs/'+x._id }}">
+                    <figure>
+                      <a routerLink="{{ x.seo_status ? '/blogs/'+x.seo_details.page_url : '/blogs/'+x._id }}">
+                        <img loading="lazy" width="100%" height="100%" appLqimgLoad appDeferLoad [ImagelazyLoad]="imgBaseUrl+x.image" alt="{{(x.img_alt)? x.img_alt: 'Image'}}">
+                      </a>
+                      <figcaption>
+                        <small>{{x.created_on | date: "MMM dd, yyyy"}}</small>
+                        <h3>
+                          <a routerLink="{{ x.seo_status ? '/blogs/'+x.seo_details.page_url : '/blogs/'+x._id }}">{{x.name}}</a>
+                        </h3>
+                      </figcaption>
+                    </figure>
                   </div>
                 </div>
-                <!-- <ng-container *ngIf="blogList?.length>1">
-                  <div id="swipe_next_{{i+1}}" class="swiper-button swiper-button-next"></div>
-                  <div id="swipe_prev_{{i+1}}" class="swiper-button swiper-button-prev"></div>
-                </ng-container> -->
               </div>
+              <!-- <ng-container *ngIf="blogList?.length>1">
+                <div id="swipe_next_{{i+1}}" class="swiper-button swiper-button-next"></div>
+                <div id="swipe_prev_{{i+1}}" class="swiper-button swiper-button-prev"></div>
+              </ng-container> -->
             </div>
           </div>
         </div>
@@ -701,7 +708,7 @@
     <!-- #blogs -->
 
     <!-- recently viewed products -->
-     <div class="max-width-full">
+    <div class="max-width-full">
       <div *ngIf="recentlyViewedList?.length>swiperService.related_products?.card_count" class="container-fluid recently-viewed similar-product w-full">
         <div class="row related-products">
           <div class="col-md-12 px-0 titles custom-title">
@@ -709,7 +716,7 @@
           </div>
           <div class="col-md-12 px-0">
             <div class="related-products">
-              <div class="swiper-container multi-slider product-slider padding--left" [ngClass]="commonService.desktop_device? 'desktop_related_prod_slider': 'related_prod_slider2'" appRelatedProducts>
+              <div class="swiper-container multi-slider product-slider padding--left" [ngClass]="commonService.desktop_device? 'desktop_related_prod_slider2': 'related_prod_slider2'" appRelatedProducts>
                 <div class="swiper-wrapper">
                   <div *ngFor="let x of recentlyViewedList; let i=index;" class="swiper-slide p-0">
                     <a appMouseHover class="product-box p-0" [ngClass]="template_setting?.p_card? '': ''"
@@ -759,10 +766,10 @@
                   </div>
                 </div>
                 <ng-container *ngIf="commonService?.desktop_device">
-                  <div id="related_prod_next" class="swiper-button swiper-button-next">
+                  <div id="related_prod_next2" class="swiper-button swiper-button-next">
                     <lucide-icon name="chevron-right" [size]="20" stroke="1" color="black"></lucide-icon>
                   </div>
-                  <div id="related_prod_prev" class="swiper-button swiper-button-prev">
+                  <div id="related_prod_prev2" class="swiper-button swiper-button-prev">
                     <lucide-icon name="chevron-left" [size]="20" stroke="1" color="black"></lucide-icon>
                   </div>
                 </ng-container>
@@ -913,7 +920,7 @@
           </p>
         </div>
         <div class="d-flex">
-          <i class="material-icons" (click)="createNewModal.hide();">close</i>
+          <i class="material-icons" (click)="clearAddon(); createNewModal.hide();">close</i>
         </div>
       </div>
 
@@ -1043,17 +1050,17 @@
           <!-- left side -->
           <!-- custom section -->
           <ng-container *ngIf="customSection">
-            <button *ngIf="customIndex==0" (click)="createNewModal.hide();" class="primary-btn">CLOSE</button>
+            <button *ngIf="customIndex==0" (click)="clearAddon(); createNewModal.hide();" class="primary-btn">CLOSE</button>
             <button *ngIf="customIndex>0" (click)="customPrev();" class="primary-btn">PREVIOUS</button>
           </ng-container>
           <!-- measurement section -->
           <ng-container *ngIf="mmSection">
-            <button *ngIf="mmIndex==0 && !custom_list?.length" (click)="createNewModal.hide();" class="primary-btn">CLOSE</button>
+            <button *ngIf="mmIndex==0 && !custom_list?.length" (click)="clearAddon(); createNewModal.hide();" class="primary-btn">CLOSE</button>
             <button *ngIf="custom_list?.length || mmIndex>0" (click)="customPrev();" class="primary-btn">PREVIOUS</button>
           </ng-container>
           <!-- note section -->
           <ng-container *ngIf="noteSection">
-            <button *ngIf="!custom_list?.length && !measurement_sets?.length" (click)="createNewModal.hide();" class="primary-btn">CLOSE</button>
+            <button *ngIf="!custom_list?.length && !measurement_sets?.length" (click)="clearAddon(); createNewModal.hide();" class="primary-btn">CLOSE</button>
             <button *ngIf="custom_list?.length || measurement_sets?.length" (click)="customPrev();" class="primary-btn">PREVIOUS</button>
           </ng-container>
           <!-- #left side -->
@@ -1106,7 +1113,7 @@
           <p class="m-0">Select an existing model or create a new one</p>
         </div>
         <div class="d-flex">
-          <i class="material-icons" (click)="existingListModal.hide();">close</i>
+          <i class="material-icons" (click)="clearAddon(); existingListModal.hide();">close</i>
         </div>
       </div>
 
@@ -1140,7 +1147,7 @@
               <div *ngIf="!x?.custom_list?.length" class="col-lg-4 col-md-6"></div>
               <div class="col-lg-4 col-md-12">
                 <button type="button" (click)="existingListModal.hide(); onSelectModal(x, selectedCustomizationDetailsModal);" class="primary-btn w-100 mb-2">SELECT</button>
-                <button type="button" (click)="existingListModal.hide(); onViewModel(x);" class="secondary-btn w-100">VIEW</button>
+                <button type="button" (click)="existingListModal.hide(); clearAddon(); onViewModel(x);" class="secondary-btn w-100">VIEW</button>
               </div>
             </div>
           </div>
@@ -1153,7 +1160,7 @@
       </div>
 
       <div class="modal-footer">
-        <button type="button" class="secondary-btn" (click)="existingListModal.hide();">CLOSE</button>
+        <button type="button" class="secondary-btn" (click)="clearAddon(); existingListModal.hide();">CLOSE</button>
       </div>
     </div>
   </div>

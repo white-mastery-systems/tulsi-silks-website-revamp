@@ -40,15 +40,15 @@ export class RelatedProductsDirective {
   fetchSwipeElements() {
     let classList: any = this._element.nativeElement.classList;
     for(let i=0; i<classList.length; i++) {
-      if(classList[i].includes("related_prod_slider")) {
+      if(classList[i].includes("related_prod_slider1")) {
         let swipeElement = classList[i];
         // swiper config
         let swipeConfig: any = {
           speed: 500,
           breakpoints: this.swiperInfo.break_points,
           navigation: {
-            nextEl: '#related_prod_next',
-            prevEl: '#related_prod_prev'
+            nextEl: '#related_prod_next1',
+            prevEl: '#related_prod_prev1'
           }
         }
         let autoPlay = this.swiperInfo.auto_play;
@@ -69,17 +69,17 @@ export class RelatedProductsDirective {
             swipeInit.autoplay.start();
           });
         }
-        break;
+        // break;
       }
-      if(classList[i].includes("related_prod_slider2")) {
+      else if(classList[i].includes("related_prod_slider2")) {
         let swipeElement = classList[i];
         // swiper config
         let swipeConfig: any = {
           speed: 500,
           breakpoints: this.swiperInfo.break_points,
           navigation: {
-            nextEl: '#related_prod_next',
-            prevEl: '#related_prod_prev'
+            nextEl: '#related_prod_next2',
+            prevEl: '#related_prod_prev2'
           }
         }
         let autoPlay = this.swiperInfo.auto_play;
@@ -100,7 +100,38 @@ export class RelatedProductsDirective {
             swipeInit.autoplay.start();
           });
         }
-        break;
+        // break;
+      }
+      else if(classList[i].includes("blogslider1")) {
+        let swipeElement = classList[i];
+        // swiper config
+        let swipeConfig: any = {
+          speed: 500,
+          breakpoints: this.swiperInfo.break_points,
+          navigation: {
+            nextEl: '#blog_next2',
+            prevEl: '#blog_prev2'
+          }
+        }
+        let autoPlay = this.swiperInfo.auto_play;
+        if(autoPlay) {
+          swipeConfig.autoplay = {
+            delay: 3000,
+            disableOnInteraction: false
+          }
+        }
+        // initialize swiper
+        let swipeInit = new Swiper('.'+swipeElement, swipeConfig);
+        // hover event
+        if(autoPlay && swipeElement.includes("desktop")) {
+          swipeInit.el.addEventListener("mouseover", () => {  
+            swipeInit.autoplay.stop();
+          });
+          swipeInit.el.addEventListener("mouseout", () => {   
+            swipeInit.autoplay.start();
+          });
+        }
+        // break;
       }
     }
   }

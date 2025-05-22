@@ -1299,6 +1299,11 @@ export class ProductComponent implements OnInit {
     }
   }
 
+  clearAddon() {
+    this.productDetails.selected_addon = null;
+    this.onChangeAddon();
+  }
+
   openCustomDetailsModal(customDetailsModal) {
     this.commonService.customView = false;
     this.commonService.measurementView = false;
