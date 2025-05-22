@@ -271,15 +271,9 @@
               </ng-container>
             </div>
 
-            <!-- product customization -->
-            <div *ngIf="commonService.application_setting?.product_addon && productDetails?.addon_status && productDetails?.addon_list?.length && productDetails.stock >= commonService.min_qty[productDetails.unit]" class="new-addons">
-              <div class="d-flex justify-content-center align-items-center">
-                <p class="mb-0 title">Add Ons</p>
-              </div>
-              <h5>Customization (Optional)</h5>
-              <p>Personalize your saree to match your style</p>
-              <!-- selected addon -->
-              <p *ngIf="productDetails?.selected_addon" class="gray opacity1 poss-rel">
+            <!-- selected addon -->
+            <ng-container *ngIf="productDetails?.selected_addon">
+              <p class="gray opacity1 poss-rel">
                 Selected Add-On:
                 <strong class="cursor prod-link-mdl">{{productDetails?.selected_addon?.name}}</strong>
                 <span class="cstm-slct-close ml-2 d-inline-block">
@@ -298,7 +292,16 @@
                   </span>
                 </span>
               </p>
-              <div *ngIf="!productDetails?.selected_addon" class="d-flex justify-content-start align-items-center select-btn">
+            </ng-container>
+
+            <!-- product customization -->
+            <div *ngIf="!productDetails?.selected_addon && commonService.application_setting?.product_addon && productDetails?.addon_status && productDetails?.addon_list?.length && productDetails.stock >= commonService.min_qty[productDetails.unit]" class="new-addons">
+              <div class="d-flex justify-content-center align-items-center">
+                <p class="mb-0 title">Add Ons</p>
+              </div>
+              <h5>Customization (Optional)</h5>
+              <p>Personalize your saree to match your style</p>
+              <div class="d-flex justify-content-start align-items-center select-btn">
                 <ng-container *ngFor="let x of productDetails.addon_list">
                   <button (click)="chooseAddonNew(x, existingListModal, createNewModal, mmOptionsModal);" class="primary-btn">
                     {{x.name}}
