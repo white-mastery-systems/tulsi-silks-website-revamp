@@ -348,70 +348,70 @@
             </div>
             <!-- Products -->
             <div class="px-0 swipe_arrow" [ngClass]="(segment.slider_type=='one')? 'col-md-9': 'col-12'">
-                <div class="swiper-container multi-slider product-slider px-max" [ngClass]="commonService.desktop_device? 'desktopslider_'+(i+1): 'slider_'+(i+1)" appHomeSwiper>
-                  <div class="swiper-wrapper">
-                    <div *ngFor="let x of segment.product_list; let j=index;" class="swiper-slide p-0">
-                      <div appMouseHover class="product-box cursor p-0" [ngClass]="template_setting?.p_card? '': ''">
-                        <a class="prod-div" (click)="commonService.selected_product=x;" routerLink="{{ x.seo_status ? '/product/'+x.seo_details.page_url : '/product/'+x._id }}">
-                          <figure class="product-image">
-                            <!-- label -->
-                            <div class="product_labellist label_{{commonService.application_setting?.tag_position}}">
-                              <span class="span_label" *ngIf="commonService.store_properties?.auto_tags?.sold_out && x.stock<=0">
-                                {{commonService.store_properties?.auto_tags?.sold_out}}
+              <div class="swiper-container multi-slider product-slider px-max" [ngClass]="commonService.desktop_device? 'desktopslider_'+(i+1): 'slider_'+(i+1)" appHomeSwiper>
+                <div class="swiper-wrapper">
+                  <div *ngFor="let x of segment.product_list; let j=index;" class="swiper-slide p-0">
+                    <div appMouseHover class="product-box cursor p-0" [ngClass]="template_setting?.p_card? '': ''">
+                      <a class="prod-div" (click)="commonService.selected_product=x;" routerLink="{{ x.seo_status ? '/product/'+x.seo_details.page_url : '/product/'+x._id }}">
+                        <figure class="product-image">
+                          <!-- label -->
+                          <div class="product_labellist label_{{commonService.application_setting?.tag_position}}">
+                            <span class="span_label" *ngIf="commonService.store_properties?.auto_tags?.sold_out && x.stock<=0">
+                              {{commonService.store_properties?.auto_tags?.sold_out}}
+                            </span>
+                            <ng-container *ngIf="x.stock>0">
+                              <span class="span_label" *ngIf="commonService.store_properties?.auto_tags?.new_arrival && x.created_on>commonService.currDate">
+                                {{commonService.store_properties?.auto_tags?.new_arrival}}
                               </span>
-                              <ng-container *ngIf="x.stock>0">
-                                <span class="span_label" *ngIf="commonService.store_properties?.auto_tags?.new_arrival && x.created_on>commonService.currDate">
-                                  {{commonService.store_properties?.auto_tags?.new_arrival}}
-                                </span>
-                                <span class="span_label" *ngIf="commonService.store_properties?.auto_tags?.on_sale && x.disc_status">
-                                  {{commonService.store_properties?.auto_tags?.on_sale}}
-                                </span>
-                                <span class="span_label" *ngFor="let tag of x.badge_list | orderAsc: 'rank';">{{tag.name}}</span>
-                              </ng-container>
-                            </div>
-                            <!-- image -->
-                            <img loading="lazy" width="100%" height="100%" appLqimgLoad appDeferLoad [ImagelazyLoad]="imgBaseUrl+x.image_list[0].image" alt="{{(x.image_list[0].img_alt)? x.image_list[0].img_alt: 'Image'}}">
-                            <img loading="lazy" width="100%" height="100%" appLqimgLoad appDeferLoad *ngIf="commonService?.desktop_device && x.image_list.length > 1" [ImagelazyLoad]="imgBaseUrl+x.image_list[1]?.image" alt="{{(x.image_list[1].img_alt)? x.image_list[1].img_alt: 'Image'}}" class="image-hover">
-                            <figcaption *ngIf="template_setting?.purchase_badge">
-                              <span class="swipe-btn">
-                                <span class="swipe-btn-txt">Purchase
-                                  <i class="material-icons">shopping_bag</i>
-                                </span>
+                              <span class="span_label" *ngIf="commonService.store_properties?.auto_tags?.on_sale && x.disc_status">
+                                {{commonService.store_properties?.auto_tags?.on_sale}}
                               </span>
-                            </figcaption>
-                          </figure>
-                          <div class="product-content">
-                            <h3 *ngIf="x.brand">{{x.brand}}</h3>
-                            <h4>{{x.name}}</h4>
-                            <div>
-                              <span *ngIf="x.disc_status" class="strike">{{ x.temp_selling_price | currency:cc.currency?.country_code:'symbol':cc.format }}</span>
-                              <span>{{ x.temp_discounted_price | currency:cc.currency?.country_code:'symbol':cc.format }}</span>
-                              <div *ngIf="template_setting?.purchase_txt" class="purchase-div">
-                                <a>PURCHASE</a>
-                              </div>
+                              <span class="span_label" *ngFor="let tag of x.badge_list | orderAsc: 'rank';">{{tag.name}}</span>
+                            </ng-container>
+                          </div>
+                          <!-- image -->
+                          <img loading="lazy" width="100%" height="100%" appLqimgLoad appDeferLoad [ImagelazyLoad]="imgBaseUrl+x.image_list[0].image" alt="{{(x.image_list[0].img_alt)? x.image_list[0].img_alt: 'Image'}}">
+                          <img loading="lazy" width="100%" height="100%" appLqimgLoad appDeferLoad *ngIf="commonService?.desktop_device && x.image_list.length > 1" [ImagelazyLoad]="imgBaseUrl+x.image_list[1]?.image" alt="{{(x.image_list[1].img_alt)? x.image_list[1].img_alt: 'Image'}}" class="image-hover">
+                          <figcaption *ngIf="template_setting?.purchase_badge">
+                            <span class="swipe-btn">
+                              <span class="swipe-btn-txt">Purchase
+                                <i class="material-icons">shopping_bag</i>
+                              </span>
+                            </span>
+                          </figcaption>
+                        </figure>
+                        <div class="product-content">
+                          <h3 *ngIf="x.brand">{{x.brand}}</h3>
+                          <h4>{{x.name}}</h4>
+                          <div>
+                            <span *ngIf="x.disc_status" class="strike">{{ x.temp_selling_price | currency:cc.currency?.country_code:'symbol':cc.format }}</span>
+                            <span>{{ x.temp_discounted_price | currency:cc.currency?.country_code:'symbol':cc.format }}</span>
+                            <div *ngIf="template_setting?.purchase_txt" class="purchase-div">
+                              <a>PURCHASE</a>
                             </div>
                           </div>
-                        </a>
-                      </div>
+                        </div>
+                      </a>
                     </div>
-                    <!-- explore all -->
-                    <!-- <div class="swiper-slide">
-                      <div class="product-box cursor d-flex justify-content-center align-items-center" [ngClass]="template_setting?.p_card? 'primary-card p-3': ''">
-                        <button class="primary-btn" (click)="exploreAll(segment);" type="button">
-                          Explore All
-                        </button>
-                      </div>
-                    </div> -->
                   </div>
-                  <ng-container *ngIf="commonService?.screen_width>=991 && segment.product_list?.length>1 && segment.slider_type=='one'">
-                    <div id="swipe_next_{{i+1}}" class="swiper-button swiper-button-next">
-                      <lucide-icon name="chevron-right" [size]="20" stroke="1" color="white"></lucide-icon>
+                  <!-- explore all -->
+                  <!-- <div class="swiper-slide">
+                    <div class="product-box cursor d-flex justify-content-center align-items-center" [ngClass]="template_setting?.p_card? 'primary-card p-3': ''">
+                      <button class="primary-btn" (click)="exploreAll(segment);" type="button">
+                        Explore All
+                      </button>
                     </div>
-                    <div id="swipe_prev_{{i+1}}" class="swiper-button swiper-button-prev">
-                      <lucide-icon name="chevron-left" [size]="20" stroke="1" color="black"></lucide-icon>
-                    </div>
-                  </ng-container>
+                  </div> -->
                 </div>
+                <ng-container *ngIf="commonService?.screen_width>=991 && segment.product_list?.length>1 && segment.slider_type=='one'">
+                  <div id="swipe_next_{{i+1}}" class="swiper-button swiper-button-next">
+                    <lucide-icon name="chevron-right" [size]="20" stroke="1" color="white"></lucide-icon>
+                  </div>
+                  <div id="swipe_prev_{{i+1}}" class="swiper-button swiper-button-prev">
+                    <lucide-icon name="chevron-left" [size]="20" stroke="1" color="black"></lucide-icon>
+                  </div>
+                </ng-container>
+              </div>
             </div>
         </div>
         <!-- Grid -->
@@ -748,11 +748,11 @@
             </figure>
           </div>         
         </div>
-          <div class="col-xl-4 col-md-6 col-12 slider--">
+          <div class="col-xl-6 col-md-6 col-12 slider--">
             <div class="swiper-container testimonial-container swipe_arrow" [ngClass]="commonService.desktop_device? 'desktoptestimonialslider_'+(i+1): 'testimonialslider_'+(i+1) " appHomeSwiper>
               <div class="swiper-wrapper">
                 <div *ngFor="let x of segment.image_list; let j=index;" class="swiper-slide p-0">
-                  <div class="testimonial d-flex flex-column justify-content-between w-100" [ngClass]="template_setting?.p_card? '': ''">
+                  <div class="testimonial d-flex flex-column justify-content-center w-100" [ngClass]="template_setting?.p_card? '': ''">
                     <div class="testimonial-profile">
                       <div class="d-flex align-items-center">
                         <img loading="lazy" width="100%" height="100%" appLqimgLoad appDeferLoad [ImagelazyLoad]="imgBaseUrl+x.desktop_img" alt="{{(x.img_alt)? x.img_alt: 'Image'}}">
@@ -766,19 +766,18 @@
                     </div>
                     <div class="testimonial-desc" *ngIf="x?.content_details">                     
                       <p class="mt-4">{{ x.content_details.description }}</p>
-                    </div>           
+                    </div>
                   </div>
                 </div>
-              </div>
-              <div id="swipe_pagination" class="swiper-pagination"></div>   
-              <div>
+              </div> 
+              <div class="testi-arrow">
                 <div id="swipe_next_{{i+1}}" class="swiper-button swiper-button-next">
                   <lucide-icon name="chevron-right" [size]="20" stroke="1" color="white"></lucide-icon>
                 </div>
                 <div id="swipe_prev_{{i+1}}" class="swiper-button swiper-button-prev">
                   <lucide-icon name="chevron-left" [size]="20" stroke="1" color="black"></lucide-icon>
                 </div>
-               </div>      
+              </div>                   
             </div>
           </div>
       </div>
@@ -1079,7 +1078,7 @@
         </div>   
       </div>
       <div *ngIf="commonService.contact_page_info?.map_url" class="col-12 px-0 map">
-        <iframe [src]="commonService.contact_page_info.map_url" width="100%" height="450" frameborder="0" style="border:0" allowfullscreen></iframe>
+        <iframe [src]="commonService.contact_page_info.map_url" width="100%" height="350" frameborder="0" style="border:3px solid #D99550" allowfullscreen></iframe>
       </div>
     </div>
   </div>

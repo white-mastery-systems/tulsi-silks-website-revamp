@@ -477,6 +477,7 @@
     .testimonial {
       transition: 0.25s ease-in-out;      
       background-color: #fff;
+      min-height: 390px;
       .testimonial-profile{
         display: flex;
         align-items: center;
@@ -487,8 +488,8 @@
             width: 50px;
             border-radius: 0%;
             position: absolute;
-            right: 0;
-            top: 0;
+            right: 22px;
+            top: 20px;
           }
         }
       }     
@@ -502,7 +503,7 @@
         }
         p {          
           margin-bottom: 5px;
-          font-size: 18px;
+          font-size: 20px;
         }
         span {
           opacity: 0.5;
@@ -1619,7 +1620,7 @@ span{
 
   .footer_logo {
     width: auto;
-    height: 50px;
+    height: 45px;
     object-fit: contain;
     margin-top: 17px;
     padding: 2px;
@@ -2033,7 +2034,8 @@ span{
   flex-direction: column;
   .slider--{
     position: absolute;
-    left: 15%;
+    left: 5%;
+    top:30%;
   }
 }
 .quick-links{

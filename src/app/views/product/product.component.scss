@@ -92,3 +92,15 @@
 .swiper-button-next::after {
   content: none;
 }
+.gray{
+  font-size: 1rem;
+  margin-bottom: 20px;
+}
+.selected-option{
+  background-color: #F2F2F2;
+  padding: 8px 20px;
+  margin-left: 15px;
+  .prod-link-mdl{
+    font-size: 16px;
+  }
+ }
