@@ -271,15 +271,46 @@
               </ng-container>
             </div>
 
-            <div class="new-addons">
+            <!-- product customization -->
+            <div *ngIf="commonService.application_setting?.product_addon && productDetails?.addon_status && productDetails?.addon_list?.length && productDetails.stock >= commonService.min_qty[productDetails.unit]" class="new-addons">
               <div class="d-flex justify-content-center align-items-center">
                 <p class="mb-0 title">Add Ons</p>
               </div>
               <h5>Customization (Optional)</h5>
               <p>Personalize your saree to match your style</p>
               <div class="d-flex justify-content-start align-items-center select-btn">
-                <button class="primary-btn Falls-btn">Falls+ ₹100</button>
-                <button class="primary-btn">Falls & Blouse Stitching + ₹1,100</button>
+                <ng-container *ngFor="let x of productDetails.addon_list">
+                  <button (click)="chooseAddonNew(x);" [ngClass]="(x._id===productDetails.selected_addon?._id)? 'addon_selected': null" class="primary-btn">
+                    {{x.name}}
+                    <ng-container *ngIf="x.price">
+                      + {{ x.temp_price | currency:cc.currency?.country_code:'symbol':cc.format }}
+                    </ng-container>
+                  </button>
+                </ng-container>
+              </div>
+              <!-- addon details -->
+              <div class="pb-2" *ngIf="productDetails?.selected_addon">
+                <ng-container *ngIf="productDetails?.selected_addon?.custom_list?.length || productDetails?.selected_addon?.updated_mm_list?.length || productDetails?.selected_addon?.notes_list?.length">
+                  <div *ngIf="!customized_model" class="customize-btn-sec">
+                    <button type="button" class="primary-btn w-100 d-inline-flex justify-content-center align-items-center" [disabled]="productDetails?.custom_loader"
+                    (click)="onSelectAddon(productDetails.selected_addon, existingListModal, createNewModal, mmOptionsModal, 0);">
+                      CUSTOMIZE YOUR ADDON
+                      <div class="box" *ngIf="productDetails?.custom_loader">
+                        <div class="spinner"></div>
+                      </div>
+                    </button>
+                  </div>
+                  <div *ngIf="customized_model">
+                    <p class="poss-rel">Your customization is:
+                      <strong class="cursor prod-link-mdl" (click)="openCustomDetailsModal(selectedCustomizationDetailsModal);">{{customized_model?.name}}</strong>
+                      <span class="cstm-slct-close ml-2 d-inline-block">
+                        <span (click)="onChangeAddon();" class="d-flex">
+                          <i class="material-icons">cancel</i>
+                        </span>
+                      </span>
+                    </p>
+                  </div>
+                </ng-container>
               </div>
             </div>
 
@@ -321,39 +352,6 @@
             <!-- btn & addon -->
             <div class="product-add-btn">
               <ng-container *ngIf="productDetails.stock >= commonService.min_qty[productDetails.unit]">
-                <!-- addon details -->
-                <div class="pb-2" *ngIf="productDetails?.selected_addon">
-                  <p class="gray opacity1 poss-rel">Selected addon is:
-                    <strong class="cursor prod-link-mdl">{{productDetails?.selected_addon?.name}}</strong>
-                    <span class="cstm-slct-close ml-2 d-inline-block">
-                      <span (click)="productDetails.selected_addon=null; onChangeAddon();" class="d-flex">
-                        <i class="material-icons">cancel</i>
-                      </span>
-                    </span>
-                  </p>
-                  <ng-container *ngIf="productDetails?.selected_addon?.custom_list?.length || productDetails?.selected_addon?.updated_mm_list?.length || productDetails?.selected_addon?.notes_list?.length">
-                    <div *ngIf="!customized_model" class="customize-btn-sec">
-                      <button type="button" class="primary-btn w-100 d-inline-flex justify-content-center align-items-center" [disabled]="productDetails?.custom_loader"
-                      (click)="onSelectAddon(productDetails.selected_addon, existingListModal, createNewModal, mmOptionsModal, 0);">
-                        CUSTOMIZE YOUR ADDON
-                        <div class="box" *ngIf="productDetails?.custom_loader">
-                          <div class="spinner"></div>
-                        </div>
-                      </button>
-                    </div>
-                    <div *ngIf="customized_model">
-                      <p class="poss-rel">Your customization is:
-                        <strong class="cursor prod-link-mdl" (click)="openCustomDetailsModal(selectedCustomizationDetailsModal);">{{customized_model?.name}}</strong>
-                        <span class="cstm-slct-close ml-2 d-inline-block">
-                          <span (click)="onChangeAddon();" class="d-flex">
-                            <i class="material-icons">cancel</i>
-                          </span>
-                        </span>
-                      </p>
-                    </div>
-                  </ng-container>
-                </div>
-
                 <!-- buy now & add to cart -->
                 <ng-container *ngIf="!commonService.application_setting?.product_addon || !productDetails.addon_must || customized_model || productDetails?.selected_addon && !productDetails?.selected_addon?.custom_list?.length && !productDetails?.selected_addon?.updated_mm_list?.length && !productDetails?.selected_addon?.notes_list?.length">
                   <div *ngIf="productDetails.stock >= (productDetails.quantity+productDetails.additional_qty)" class="buy-add-cart-btn">
@@ -652,7 +650,8 @@
               </button>
             </div>
           </div>
-          <div class="row d-flex flex-wrap align-items-stretch">
+          <!-- grid -->
+          <div *ngIf="commonService.desktop_device" class="row d-flex flex-wrap align-items-stretch">
             <div *ngFor="let x of blogList;" class="col-12 col-md-4 padding-reduce">
               <div class="news-box">
                 <figure>
@@ -668,7 +667,34 @@
                 </figure>
               </div>
             </div> 
-            
+          </div>
+          <!-- slider -->
+          <div *ngIf="!commonService.desktop_device" class="row">
+            <div class="col-12 px-0">
+              <div class="swiper-container blogslider_1" appRelatedProducts>
+                <div class="swiper-wrapper">
+                  <div *ngFor="let x of blogList; let j=index;" class="swiper-slide">
+                    <div class="news-box" routerLink="{{ x.seo_status ? '/blogs/'+x.seo_details.page_url : '/blogs/'+x._id }}">
+                      <figure>
+                        <a routerLink="{{ x.seo_status ? '/blogs/'+x.seo_details.page_url : '/blogs/'+x._id }}">
+                          <img loading="lazy" width="100%" height="100%" appLqimgLoad appDeferLoad [ImagelazyLoad]="imgBaseUrl+x.image" alt="{{(x.img_alt)? x.img_alt: 'Image'}}">
+                        </a>
+                        <figcaption>
+                          <small>{{x.created_on | date: "MMM dd, yyyy"}}</small>
+                          <h3>
+                            <a routerLink="{{ x.seo_status ? '/blogs/'+x.seo_details.page_url : '/blogs/'+x._id }}">{{x.name}}</a>
+                          </h3>
+                        </figcaption>
+                      </figure>
+                    </div>
+                  </div>
+                </div>
+                <!-- <ng-container *ngIf="blogList?.length>1">
+                  <div id="swipe_next_{{i+1}}" class="swiper-button swiper-button-next"></div>
+                  <div id="swipe_prev_{{i+1}}" class="swiper-button swiper-button-prev"></div>
+                </ng-container> -->
+              </div>
+            </div>
           </div>
         </div>
       </div>

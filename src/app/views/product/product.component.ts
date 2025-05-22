@@ -515,6 +515,16 @@ export class ProductComponent implements OnInit {
     }
   }
 
+  chooseAddonNew(x) {
+    if(x._id===this.productDetails.selected_addon?._id) {
+      this.productDetails.selected_addon = null;
+    }
+    else {
+      this.productDetails.selected_addon = x;
+    }
+    this.onChangeAddon();
+  }
+
   chooseAddon(mmOptionsModal, addonTypesModal, addonListModal, existingListModal, createNewModal) {
     this.productDetails.temp_addon_list = this.productDetails.addon_list;
     this.productDetails.external_addon_status = this.productDetails.addon_status;
@@ -604,6 +614,11 @@ export class ProductComponent implements OnInit {
           let discAmount = product.selling_price - product.discounted_price;
           product.disc_percentage = Math.round((discAmount/product.selling_price)*100);
         }
+      }
+    }
+    if(this.productDetails.addon_list?.length) {
+      for(let addon of this.productDetails.addon_list) {
+        addon.temp_price = this.cc.CALC(addon.price);
       }
     }
   }
@@ -1390,6 +1405,7 @@ export class ProductComponent implements OnInit {
         if(this.productDetails.addon_must && !filteredAddons.length) this.productDetails.addon_must = false;
         this.buildAddonList(filteredAddons, this.prodFeatures.measurement_set).then((resp: any) => {
           this.productDetails.addon_list = resp.filter(obj => this.productDetails.stock >= obj.min_stock);
+          this.findCurrency();
           if(this.commonService.ys_features.indexOf('sizing_assistant')!=-1 && this.prodFeatures.sizing_assistant.length) this.updateAddonWithSizingAssist(this.productDetails.addon_list);
         });
       }
