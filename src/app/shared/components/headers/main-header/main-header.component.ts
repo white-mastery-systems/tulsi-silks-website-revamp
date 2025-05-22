@@ -21,7 +21,6 @@ export class MainHeaderComponent {
   
   template_setting: any = environment.template_setting;
   imgBaseUrl: string = environment.img_baseurl;
-  openMenus: { [key: string]: boolean } = {};
 
   // list: any = []; unique_product_list: any = [];
   // btnLoader: boolean; pageLoader: boolean;
@@ -42,11 +41,6 @@ export class MainHeaderComponent {
     this.cartService.findCurrency();
     localStorage.setItem("selected_currency", this.commonService.encryptData(this.commonService.temp_currency));
   }
-
-  toggleMenu(menuId: string): void {
-  this.openMenus[menuId] = !this.openMenus[menuId];
-}
-
   // updateCartList(autoCheckout) {
   //   this.list = []; this.unique_product_list = [];
   //   // run in browser side(for overcome ssr 504 Gateway Error)

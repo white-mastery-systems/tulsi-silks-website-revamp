@@ -19,6 +19,15 @@ export class RelatedProductsDirective {
       320: { slidesPerView: 1.5, spaceBetween: 15 }
     }
   };
+  private blogSwiperInfo: any = {
+    auto_play: false,
+    break_points: {
+      1024: { slidesPerView: 4.2, spaceBetween: 15 },
+      768: { slidesPerView: 3, spaceBetween: 15 },
+      640: { slidesPerView: 2, spaceBetween: 15 },
+      320: { slidesPerView: 1.5, spaceBetween: 15 }
+    }
+  };
 
   constructor(@Inject(PLATFORM_ID) private platformId: Object, private _element: ElementRef, private assetLoader: DynamicAssetLoaderService) { }
 
@@ -107,13 +116,13 @@ export class RelatedProductsDirective {
         // swiper config
         let swipeConfig: any = {
           speed: 500,
-          breakpoints: this.swiperInfo.break_points,
+          // breakpoints: this.blogSwiperInfo.break_points,
           navigation: {
             nextEl: '#blog_next2',
             prevEl: '#blog_prev2'
           }
         }
-        let autoPlay = this.swiperInfo.auto_play;
+        let autoPlay = this.blogSwiperInfo.auto_play;
         if(autoPlay) {
           swipeConfig.autoplay = {
             delay: 3000,

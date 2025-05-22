@@ -861,8 +861,8 @@ $mobile-final-height: calc(74px + #{$mobile-announcement-bar-mh});
     .cd-primary-nav .cd-nav-icons {
       /* dropdown menu style */
       position: absolute;
-      // left: -100px;
-      top: 30px;
+      left: 80px;
+      top: 48px;
       /* width: 100vw; */
       min-width: 1220px;
       // height: 400px;
@@ -1107,6 +1107,14 @@ $mobile-final-height: calc(74px + #{$mobile-announcement-bar-mh});
   
     .cd-primary-nav .cd-nav-icons .cd-nav-item::before {
       left: 25px;
+    }
+  }
+
+  @media only screen and (max-width: 1300px) {
+    .cd-primary-nav .cd-secondary-nav,
+    .cd-primary-nav .cd-nav-gallery,
+    .cd-primary-nav .cd-nav-icons {
+      left: -95px;
     }
   }
   
