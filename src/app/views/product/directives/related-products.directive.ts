@@ -10,6 +10,8 @@ declare const Swiper: any;
 export class RelatedProductsDirective {
 
   private observer: any;
+  loadedElements: any = [];
+  
   private swiperInfo: any = {
     auto_play: false,
     break_points: {
@@ -51,96 +53,102 @@ export class RelatedProductsDirective {
     for(let i=0; i<classList.length; i++) {
       if(classList[i].includes("related_prod_slider1")) {
         let swipeElement = classList[i];
-        // swiper config
-        let swipeConfig: any = {
-          speed: 500,
-          breakpoints: this.swiperInfo.break_points,
-          navigation: {
-            nextEl: '#related_prod_next1',
-            prevEl: '#related_prod_prev1'
+        if(this.loadedElements.indexOf(swipeElement) == -1) {
+          this.loadedElements.push(swipeElement);
+          // swiper config
+          let swipeConfig: any = {
+            speed: 500,
+            breakpoints: this.swiperInfo.break_points,
+            navigation: {
+              nextEl: '#related_prod_next1',
+              prevEl: '#related_prod_prev1'
+            }
+          }
+          let autoPlay = this.swiperInfo.auto_play;
+          if(autoPlay) {
+            swipeConfig.autoplay = {
+              delay: 3000,
+              disableOnInteraction: false
+            }
+          }
+          // initialize swiper
+          let swipeInit = new Swiper('.'+swipeElement, swipeConfig);
+          // hover event
+          if(autoPlay && swipeElement.includes("desktop")) {
+            swipeInit.el.addEventListener("mouseover", () => {  
+              swipeInit.autoplay.stop();
+            });
+            swipeInit.el.addEventListener("mouseout", () => {   
+              swipeInit.autoplay.start();
+            });
           }
         }
-        let autoPlay = this.swiperInfo.auto_play;
-        if(autoPlay) {
-          swipeConfig.autoplay = {
-            delay: 3000,
-            disableOnInteraction: false
-          }
-        }
-        // initialize swiper
-        let swipeInit = new Swiper('.'+swipeElement, swipeConfig);
-        // hover event
-        if(autoPlay && swipeElement.includes("desktop")) {
-          swipeInit.el.addEventListener("mouseover", () => {  
-            swipeInit.autoplay.stop();
-          });
-          swipeInit.el.addEventListener("mouseout", () => {   
-            swipeInit.autoplay.start();
-          });
-        }
-        // break;
       }
       else if(classList[i].includes("related_prod_slider2")) {
         let swipeElement = classList[i];
-        // swiper config
-        let swipeConfig: any = {
-          speed: 500,
-          breakpoints: this.swiperInfo.break_points,
-          navigation: {
-            nextEl: '#related_prod_next2',
-            prevEl: '#related_prod_prev2'
+        if(this.loadedElements.indexOf(swipeElement) == -1) {
+          this.loadedElements.push(swipeElement);
+          // swiper config
+          let swipeConfig: any = {
+            speed: 500,
+            breakpoints: this.swiperInfo.break_points,
+            navigation: {
+              nextEl: '#related_prod_next2',
+              prevEl: '#related_prod_prev2'
+            }
+          }
+          let autoPlay = this.swiperInfo.auto_play;
+          if(autoPlay) {
+            swipeConfig.autoplay = {
+              delay: 3000,
+              disableOnInteraction: false
+            }
+          }
+          // initialize swiper
+          let swipeInit = new Swiper('.'+swipeElement, swipeConfig);
+          // hover event
+          if(autoPlay && swipeElement.includes("desktop")) {
+            swipeInit.el.addEventListener("mouseover", () => {  
+              swipeInit.autoplay.stop();
+            });
+            swipeInit.el.addEventListener("mouseout", () => {   
+              swipeInit.autoplay.start();
+            });
           }
         }
-        let autoPlay = this.swiperInfo.auto_play;
-        if(autoPlay) {
-          swipeConfig.autoplay = {
-            delay: 3000,
-            disableOnInteraction: false
-          }
-        }
-        // initialize swiper
-        let swipeInit = new Swiper('.'+swipeElement, swipeConfig);
-        // hover event
-        if(autoPlay && swipeElement.includes("desktop")) {
-          swipeInit.el.addEventListener("mouseover", () => {  
-            swipeInit.autoplay.stop();
-          });
-          swipeInit.el.addEventListener("mouseout", () => {   
-            swipeInit.autoplay.start();
-          });
-        }
-        // break;
       }
       else if(classList[i].includes("blogslider1")) {
         let swipeElement = classList[i];
-        // swiper config
-        let swipeConfig: any = {
-          speed: 500,
-          // breakpoints: this.blogSwiperInfo.break_points,
-          navigation: {
-            nextEl: '#blog_next2',
-            prevEl: '#blog_prev2'
+        if(this.loadedElements.indexOf(swipeElement) == -1) {
+          this.loadedElements.push(swipeElement);
+          // swiper config
+          let swipeConfig: any = {
+            speed: 500,
+            // breakpoints: this.blogSwiperInfo.break_points,
+            navigation: {
+              nextEl: '#blog_next2',
+              prevEl: '#blog_prev2'
+            }
+          }
+          let autoPlay = this.blogSwiperInfo.auto_play;
+          if(autoPlay) {
+            swipeConfig.autoplay = {
+              delay: 3000,
+              disableOnInteraction: false
+            }
+          }
+          // initialize swiper
+          let swipeInit = new Swiper('.'+swipeElement, swipeConfig);
+          // hover event
+          if(autoPlay && swipeElement.includes("desktop")) {
+            swipeInit.el.addEventListener("mouseover", () => {  
+              swipeInit.autoplay.stop();
+            });
+            swipeInit.el.addEventListener("mouseout", () => {   
+              swipeInit.autoplay.start();
+            });
           }
         }
-        let autoPlay = this.blogSwiperInfo.auto_play;
-        if(autoPlay) {
-          swipeConfig.autoplay = {
-            delay: 3000,
-            disableOnInteraction: false
-          }
-        }
-        // initialize swiper
-        let swipeInit = new Swiper('.'+swipeElement, swipeConfig);
-        // hover event
-        if(autoPlay && swipeElement.includes("desktop")) {
-          swipeInit.el.addEventListener("mouseover", () => {  
-            swipeInit.autoplay.stop();
-          });
-          swipeInit.el.addEventListener("mouseout", () => {   
-            swipeInit.autoplay.start();
-          });
-        }
-        // break;
       }
     }
   }
