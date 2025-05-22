@@ -295,7 +295,7 @@
                 <div class="selected-option d-flex align-items-center">
                   <div class="cursor prod-link-mdl" (click)="openCustomDetailsModal(selectedCustomizationDetailsModal);">{{customized_model?.name}}</div>
                   <div class="ml-2 d-inline-block">
-                    <span (click)="clearAddon();" class="d-flex">
+                    <span (click)="customized_model=null; chooseAddonNew(productDetails.selected_addon, existingListModal, createNewModal, mmOptionsModal);" class="d-flex">
                       <lucide-icon name="x-circle" [size]="18" stroke="1" color="black"></lucide-icon>
                     </span>
                   </div>

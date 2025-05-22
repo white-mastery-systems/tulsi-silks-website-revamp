@@ -516,15 +516,10 @@ export class ProductComponent implements OnInit {
   }
 
   chooseAddonNew(x, existingListModal, createNewModal, mmOptionsModal) {
-    if(x._id===this.productDetails.selected_addon?._id) {
-      this.productDetails.selected_addon = null;
-    }
-    else {
-      this.productDetails.selected_addon = x;
-      if(this.productDetails?.selected_addon?.custom_list?.length || this.productDetails?.selected_addon?.updated_mm_list?.length || this.productDetails?.selected_addon?.notes_list?.length) {
-        if(!this.customized_model) {
-          this.onSelectAddon(x, existingListModal, createNewModal, mmOptionsModal, 0);
-        }
+    this.productDetails.selected_addon = x;
+    if(this.productDetails?.selected_addon?.custom_list?.length || this.productDetails?.selected_addon?.updated_mm_list?.length || this.productDetails?.selected_addon?.notes_list?.length) {
+      if(!this.customized_model) {
+        this.onSelectAddon(x, existingListModal, createNewModal, mmOptionsModal, 0);
       }
     }
     this.onChangeAddon();
