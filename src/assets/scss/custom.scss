@@ -2354,6 +2354,7 @@ option {
   // }
   a.active {
   position: relative;
+  color: #D99550;
 }
 
 
@@ -2362,7 +2363,7 @@ a.active::after {
   position: absolute;
   height: 2px;
   width: 100%;
-  background-color: #c57f00; /* your desired border color */
+  background-color: #D99550; /* your desired border color */
   left: 0;
 }
 

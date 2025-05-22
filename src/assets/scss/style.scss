@@ -392,7 +392,11 @@ article, aside, footer, header, nav, section { width: 100%; float: left; positio
 	.search-box .inner form select{display: none;}
 	.search-box .inner form button[type="submit"]{width: 25%;}
 	.grid-categories .grids .grid-item{width:100%;}
-	.news .news-box{margin-bottom: 0px;height: 280px;}
+	.news .news-box{
+    margin-bottom: 0px;
+    padding-right: 15px;    
+  }
+  .home-section .news .news-box{height: 280px;}
   .news .news-box figure figcaption h3{
     font-size: 1rem !important;
   }

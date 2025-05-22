@@ -257,6 +257,8 @@ $mobile-final-height: calc(74px + #{$mobile-announcement-bar-mh});
 //       color: #ffffff !important;
 //     }
 //   }
+
+
   
   .cd-main-content,
   .cd-main-header {
@@ -266,8 +268,8 @@ $mobile-final-height: calc(74px + #{$mobile-announcement-bar-mh});
   @media only screen and (max-width: 991px) {
     .cd-main-content.nav-is-visible,
     .cd-main-header.nav-is-visible {
-      -webkit-transform: translateX(-260px);
-      transform: translateX(-260px);
+      -webkit-transform: translateX(260px);
+      transform: translateX(260px);
     }
   
     .nav-on-left .cd-main-content.nav-is-visible,
@@ -745,9 +747,9 @@ $mobile-final-height: calc(74px + #{$mobile-announcement-bar-mh});
     }
     .cd-primary-nav,
     .cd-primary-nav ul{
-      right: 0 !important;
-        position: fixed;
-        left: unset;
+      left: 0 !important;
+      position: fixed;
+      left: unset;
     }
   }
   
@@ -806,6 +808,7 @@ $mobile-final-height: calc(74px + #{$mobile-announcement-bar-mh});
       float: left;
       list-style: none;
       margin-left: 20px;
+      position: relative;
       &:last-child{
         margin-right: 0 !important;
       }
@@ -861,7 +864,8 @@ $mobile-final-height: calc(74px + #{$mobile-announcement-bar-mh});
     .cd-primary-nav .cd-nav-icons {
       /* dropdown menu style */
       position: absolute;
-      left: 80px;
+      left: 0px;
+      right: 0px;
       top: 48px;
       /* width: 100vw; */
       min-width: 1220px;
@@ -1110,14 +1114,6 @@ $mobile-final-height: calc(74px + #{$mobile-announcement-bar-mh});
     }
   }
 
-  @media only screen and (max-width: 1300px) {
-    .cd-primary-nav .cd-secondary-nav,
-    .cd-primary-nav .cd-nav-gallery,
-    .cd-primary-nav .cd-nav-icons {
-      left: -95px;
-    }
-  }
-  
   .has-children > a,
   .go-back a {
     position: relative;
@@ -1377,8 +1373,8 @@ $mobile-final-height: calc(74px + #{$mobile-announcement-bar-mh});
   }
   @media only screen and (max-width: 991px) {
     .cd-overlay.is-visible {
-      -webkit-transform: translateX(-260px);
-      transform: translateX(-260px);
+      -webkit-transform: translateX(260px);
+      transform: translateX(260px);
     }
   
     .nav-on-left .cd-overlay.is-visible {

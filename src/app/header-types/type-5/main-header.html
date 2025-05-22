@@ -133,14 +133,16 @@
           </ng-container>
 
           <!-- search -->
-          <div *ngIf="commonService.ys_features.indexOf('product_search')!=-1" routerLink="/search" class="btn-search header-icon-container">
-            <img src="assets/images/search.png" alt="search-icon" class="header-s-icon">
+          <div *ngIf="commonService.ys_features.indexOf('product_search')!=-1" routerLink="/search" class="btn-search header-icon-container header-s-icon">
+            <lucide-icon name="search" [size]="20" stroke="1" color="black"></lucide-icon>
+            <!-- <img src="assets/images/search.png" alt="search-icon" class="header-s-icon"> -->
             <!-- <i [hidden]="!commonService?.window_loaded" class="{{template_setting?.mat_icon_type}} transform-90">{{template_setting?.mat_icons?.search}}</i> -->
           </div>
           <!-- wishlist -->
           <div *ngIf="commonService?.screen_width>=991" class="header-icon-container">
-            <a [hidden]="!commonService?.window_loaded" (click)="(commonService?.customer_token)? '': commonService.after_login_event={ redirect: '/wishlist' }" [routerLink]="(commonService?.customer_token)? '/wishlist' : '/account'">
-              <img src="assets/images/heart.png" alt="wishlist-icon" class="header-s-icon">
+            <a class="header-s-icon" [hidden]="!commonService?.window_loaded" (click)="(commonService?.customer_token)? '': commonService.after_login_event={ redirect: '/wishlist' }" [routerLink]="(commonService?.customer_token)? '/wishlist' : '/account'">
+              <lucide-icon name="heart" [size]="20" stroke="1" color="black"></lucide-icon>
+              <!-- <img src="assets/images/heart.png" alt="wishlist-icon" class="header-s-icon"> -->
               <!-- <i class="{{template_setting?.mat_icon_type}}">{{template_setting?.mat_icons?.wishlist}}</i> -->
               <sup *ngIf="wishService.wish_list?.length">
                 <div class="item-badge">{{ wishService.wish_list.length }}</div>
@@ -149,16 +151,18 @@
           </div>           
             <!-- my account -->
             <div *ngIf="commonService?.screen_width>=991" class="header-icon-container">
-              <a routerLink="/account">
-                <img src="assets/images/user.png" alt="user-icon" class="header-s-icon">
+              <a class="header-s-icon" routerLink="/account">
+                <lucide-icon name="user" [size]="20" stroke="1" color="black"></lucide-icon>
+                <!-- <img src="assets/images/user.png" alt="user-icon" class="header-s-icon"> -->
                 <!-- <i [hidden]="!commonService?.window_loaded" class="{{template_setting?.mat_icon_type}}">{{template_setting?.mat_icons?.account}}</i> -->
               </a>
             </div>
           <!-- cart -->
           <div *ngIf="commonService?.screen_width>=991" class="mini-cart header-icon-container">
             <div id="minicart-trigger">
-              <a [hidden]="!commonService?.window_loaded">
-                <img src="assets/images/shopping-cart.png" alt="cart-icon" class="header-s-icon">
+              <a class="header-s-icon" [hidden]="!commonService?.window_loaded">
+                <lucide-icon name="shopping-cart" [size]="20" stroke="1" color="black"></lucide-icon>
+                <!-- <img src="assets/images/shopping-cart.png" alt="cart-icon" class="header-s-icon"> -->
                 <!-- <i class="{{template_setting?.mat_icon_type}}">{{template_setting?.mat_icons?.cart}}</i> -->
                 <sup *ngIf="cartService?.cart_list?.length">
                   <div class="item-badge">{{ cartService.cart_list.length }}</div>

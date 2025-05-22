@@ -1,43 +1,4 @@
-
-.custom-grid-spacing {
-    padding-left: 7.5px;
-    padding-right: 7.5px;
-  }
-  
-  .no-left-padding {
-    padding-left: 0 !important;
-  }
-  
-  .no-right-padding {
-    padding-right: 0 !important;
-  }
-
-  .custom-grid-spacing .product-image {
-    aspect-ratio: 3 / 4; /* or adjust as needed */
-    overflow: hidden;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  
-  .custom-grid-spacing .product-image img {
-    object-fit: cover;
-    width: 100%;
-    height: 100%;
-  }
-
-  // .swiper-button-prev,
-  // .swiper-button-next {
-  //   opacity: 1 !important;
-  //   pointer-events: all !important;
-  // }
-   
-  // .swiper-button-disabled {
-  //   opacity: 0 !important; 
-  //   pointer-events: auto !important;
-  // }
-
-  .feature-grid{
+.feature-grid{
     .product-box {
       padding: 0 8px;
     }
@@ -48,7 +9,7 @@
   left: 0;
   height: 100%;
   width: 100%;
-  background: rgba(0, 0, 0, 0.3); /* black overlay with 50% opacity */
+  background: rgba(0, 0, 0, 0.3); 
   z-index: 1;
 }
 
@@ -124,7 +85,7 @@
 .swipe_arrow {
   .swiper-button-prev,
   .swiper-button-next {
-    background-color: #000; /* default state */
+    background-color: #000; 
     width: 38px;
     height: 38px;
     border-radius: 50%;
@@ -144,18 +105,9 @@
   }  
   .swiper-button-prev{
     lucide-icon{
-      filter: invert(1);
-      // margin-right: 3px;
-      // margin-top: 2px;
+      filter: invert(1);      
     }
   }
-  // .swiper-button-next{
-  //   lucide-icon{      
-  //     margin-left: 3px;
-  //     margin-top: 2px;
-  //   }
-  // }
-
   #swipe_prev_13.swiper-button-disabled{
     lucide-icon{
       filter: invert(0);
@@ -169,12 +121,11 @@
 
   .swiper-button-prev::after,
   .swiper-button-next::after {
-    color: #fff; /* Disabled/normal arrow color */
+    color: #fff; 
     font-size: 12px;
     transition: color 0.3s ease;
   }
 
-  /* ACTIVE STATE - you can toggle this class via Angular or JS */
   .swiper-button-prev.active,
   .swiper-button-next.active {
     background-color: #000;
@@ -182,38 +133,21 @@
 
   .swiper-button-prev.active::after,
   .swiper-button-next.active::after {
-    color: #fff; /* White arrow for active state */
-  }
+    color: #fff; 
+    }
 
-  /* Positioning adjustments if needed */
   .swiper-button-prev,
   .swiper-container-rtl .swiper-button-next {
     left: auto;
     right: 3.5%;
   }
-  .swiper-button-prev.swiper-button-disabled, .swiper-button-next.swiper-button-disabled{
-    // opacity: 1;
+  .swiper-button-prev.swiper-button-disabled, .swiper-button-next.swiper-button-disabled{   
     background-color: #F2F2F2; 
     }
   .swiper-button-prev.swiper-button-disabled::after, 
   .swiper-button-next.swiper-button-disabled::after{
     color: #000;    
   }
-//   .swiper-button-prev::after,
-// .swiper-button-next::after {
-//   font-family: "Material Symbols Outlined";
-//   font-weight: normal;
-//   font-style: normal;
-//   font-size: 24px;
-//   line-height: 1;
-//   letter-spacing: normal;
-//   text-transform: none;
-//   display: inline-block;
-//   white-space: nowrap;
-//   direction: ltr;
-//   -webkit-font-feature-settings: "liga";
-//   -webkit-font-smoothing: antialiased;
-// }
   .swiper-button-prev::after {
   content: none;
 }
@@ -245,17 +179,15 @@
       right: 35% !important;
     }
 }
+
 .featured_product_list{
 .swiper-button-prev.swiper-button-disabled, 
 .swiper-button-next.swiper-button-disabled{
   box-shadow: 0 2px 10px rgba(54, 54, 54, 0.15) !important;
 }
 }
-.instagram_sec .swipe_arrow .swiper-button-prev, .swipe_arrow .swiper-container-rtl .swiper-button-next {left: 1%;}
 
-.custom__grid{
-  gap: 15px;
-}
+.instagram_sec .swipe_arrow .swiper-button-prev, .swipe_arrow .swiper-container-rtl .swiper-button-next {left: 1%;}
 
 .testi-arrow{
   align-items: end;

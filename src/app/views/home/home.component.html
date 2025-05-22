@@ -500,8 +500,7 @@
                 <button *ngIf="tab.activeIndex===j" class="primary-btn outline-btn" (click)="exploreAll(tab);" type="button">
                   Explore All
                 </button>
-              </ng-container>
-              
+              </ng-container>              
             </div>
           </div>
           <div class="col-12 px-0">
@@ -516,8 +515,7 @@
                           <a appMouseHover class="product-box p-0" [ngClass]="template_setting?.p_card? '': ''"
                           (click)="tabNavigate(tab); commonService.selected_product=x;" routerLink="{{ x.seo_status ? '/product/'+x.seo_details.page_url : '/product/'+x._id }}">
                             <div class="prod-div">
-                              <figure class="product-image">
-                                
+                              <figure class="product-image">                                
                                 <div class="product_labellist label_{{commonService.application_setting?.tag_position}}">
                                   <span class="span_label" *ngIf="commonService.store_properties?.auto_tags?.sold_out && x.stock<=0">
                                     {{commonService.store_properties?.auto_tags?.sold_out}}
@@ -644,10 +642,10 @@
                 <ng-container *ngFor="let tab of segment.multitab_list; let j=index;">
                   <tab *ngIf="tab?.image_list?.length>=swiperService.multi_tab_featured_products?.card_count" heading="{{tab?.name}}">
                     <!-- slider -->
-                    <div *ngIf="tab?.image_list?.length>=swiperService.multi_tab_featured_products?.card_count" class="swiper-container multi-slider product-slider px-max" [ngClass]="commonService.desktop_device? 'desktoptabslider_'+(i+1)+(j+1): 'tabslider_'+(i+1)+(j+1)" appHomeSwiper>
+                    <div *ngIf="tab?.image_list?.length>=swiperService.multi_tab_featured_products?.card_count" class="swiper-container featured-sections multi-slider product-slider px-max" [ngClass]="commonService.desktop_device? 'desktoptabslider_'+(i+1)+(j+1): 'tabslider_'+(i+1)+(j+1)" appHomeSwiper>
                       <div class="swiper-wrapper">
                         <div *ngFor="let x of tab.image_list; let k=index;" class="swiper-slide p-0">
-                          <div class="product-box cursor h-100">
+                          <div class="product-box cursor h-100 p-0">
                             <a (click)="commonService.onPageRedirect(x);" class="prod-div h-100">
                               <figure class="mb-0">
                                 <img loading="lazy" width="100%" height="100%" appLqimgLoad appDeferLoad [ImagelazyLoad]="imgBaseUrl+x.desktop_img" alt="{{(x.img_alt)? x.img_alt: 'Image'}}">
