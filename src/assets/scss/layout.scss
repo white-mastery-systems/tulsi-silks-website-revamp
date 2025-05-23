@@ -1712,11 +1712,27 @@ span{
   .terms {
     text-align: center !important;
   }
+   
+  .swiper-button-next,
+  .swiper-button-prev{
+    width: 35px !important;
+    height: 35px !important;
+  }
+  
   .testimonial-container {   
     .testimonial {
       padding: 20px 20px 20px !important; 
       min-height: 250px !important;
       justify-content: flex-start !important;
+      align-items: flex-start !important;
+      .testimonial-profile{
+        align-items: self-start !important;
+        justify-content: start !important;
+        width: 100%;
+      }
+    }
+    .testimonial-desc p {
+      text-align: start !important;
     }
   }
   .testi-arrow{
@@ -1724,11 +1740,12 @@ span{
   }
   .testimonial-sec .testimonial-container .testimonial .testimonial-profile .double-codes img{
     width: 45px;
-    right: -6px;
-    top: -6px;
+    right: 10px;
+    top: 7px;
   }
   .tabs .nav-tabs{
     margin-left: 15px;
+    padding-right: 15px;
   }
   .grid-categories .page-width{
     padding: 0 15px !important;
@@ -1755,6 +1772,8 @@ span{
   .parent-testi{
     .grid-img{
       padding-top: 220px;
+      padding-left: 0;
+      padding-right: 0;
     }
   }
   .equal-space:nth-child(odd) {
@@ -1782,6 +1801,7 @@ span{
   .titles{
     margin-bottom: 18px !important;
     padding: 0 0 0 15px !important;
+    text-align: left !important;
     h2{
       font-size: 24px;
     }
@@ -1857,6 +1877,17 @@ span{
 @media screen and (max-width: 767px) {
   .grid-categories figure {
     margin: 0 0 0px !important;
+  }
+  .home-news-letter .modal-header .close{
+    background-color: #fff;
+    top: 40px !important;
+    right: 10% !important;
+    border-radius: 100%;
+    padding: 5px;
+    cursor: pointer;
+    img{
+      height: 20px !important;
+    }
   }
   .grid-odd-center {
     &:last-child {

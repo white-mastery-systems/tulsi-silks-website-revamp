@@ -640,9 +640,8 @@
             <div class="tabs">
               <tabset>
                 <ng-container *ngFor="let tab of segment.multitab_list; let j=index;">
-                  <tab *ngIf="tab?.image_list?.length>=swiperService.multi_tab_featured_products?.card_count" heading="{{tab?.name}}">
-                    <!-- slider -->
-                    <div *ngIf="tab?.image_list?.length>=swiperService.multi_tab_featured_products?.card_count" class="swiper-container featured-sections multi-slider product-slider px-max" [ngClass]="commonService.desktop_device? 'desktoptabslider_'+(i+1)+(j+1): 'tabslider_'+(i+1)+(j+1)" appHomeSwiper>
+                  <tab heading="{{tab?.name}}">
+                    <div class="swiper-container featured-sections multi-slider product-slider px-max" [ngClass]="commonService.desktop_device? 'desktoptabslider_'+(i+1)+(j+1): 'tabslider_'+(i+1)+(j+1)" appHomeSwiper>
                       <div class="swiper-wrapper">
                         <div *ngFor="let x of tab.image_list; let k=index;" class="swiper-slide p-0">
                           <div class="product-box cursor h-100 p-0">
@@ -683,7 +682,10 @@
     <!-- Highlighted Section -->
     <section *ngIf="segment.type=='highlighted_section' && segment.image_list?.length" class="primary-section highlight-sec-margin single-highlighted-sec highlighted-sec" [ngClass]="(i>1)? 'wow fadeInUp': null">
       <div class="container">
-        <div class="row" (click)="(segment.image_list[0]?.btn_status)? '': commonService.onPageRedirect(segment.image_list[0]);" [ngClass]="(segment.image_list[0].position=='right')? 'flex-row-reverse': ''">
+        <div class="row" (click)="(segment.image_list[0]?.btn_status)? '': commonService.onPageRedirect(segment.image_list[0]);" [ngClass]="{
+          'flex-row-reverse': segment.image_list[0].position=='right' && commonService.desktop_device,
+          'flex-column-reverse pt-3': segment.image_list[0].position=='right' && !commonService.desktop_device
+        }">
           <div class="col-md-6 d-flex flex-column align-items-start justify-content-center px-0">
             <div class="landing-highlighted w-100">
               <figure>
@@ -1050,9 +1052,7 @@
               <!-- <span></span> -->
             </div>
             <div class="blog-slider-btn">
-              <button class="primary-btn outline-btn" type="button">
-                @tulsisilks
-              </button>
+              <button class="primary-btn outline-btn" type="button">&#64;tulsisilks</button>
             </div>
           </div>
           <!-- grid -->
