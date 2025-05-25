@@ -1402,7 +1402,7 @@ a.video-thum {
       letter-spacing: 0.025em;
     }
     .custom-border-bottom{
-      border-bottom: 1px solid $primary-border;
+      border-bottom: 1px solid #ccc;
       margin-bottom: 20px;
     }    
     .product-price {     
@@ -1648,7 +1648,7 @@ accordion-group {
   .panel {
     margin-bottom: 10px;
     border-radius: 10px;
-    border: 1px solid $primary-border;
+    border: 1px solid #ccc;
     .panel-heading {
       background: transparent;
       padding: 20px 25px;
@@ -2354,6 +2354,7 @@ option {
   // }
   a.active {
   position: relative;
+  color: #D99550;
 }
 
 
@@ -2362,7 +2363,7 @@ a.active::after {
   position: absolute;
   height: 2px;
   width: 100%;
-  background-color: #c57f00; /* your desired border color */
+  background-color: #D99550; /* your desired border color */
   left: 0;
 }
 
@@ -3862,4 +3863,7 @@ input::-webkit-inner-spin-button {
       }
     }
   }
+}
+.tabs .nav-tabs::-webkit-scrollbar {
+  display: none !important;
 }
