@@ -186,9 +186,14 @@
                       <div class="category-grid-text">
                         <div class="inner-content">
                           <h2 class="mb-3" [ngClass]="(x?.content_details?.text_color=='dark')? 'text-dark': 'text-light'">{{ x.content_details.heading }}</h2>
-                          <p *ngIf="j === 0">Fine fabrics that speak the language of tradition</p>
-                          <p *ngIf="j === 1">Handcrafted sarees that celebrate India’s rich textile heritage</p>
-                          <button class="primary-btn">Shop Now</button>
+                          <ng-container *ngIf="j===0">
+                            <p>Fine fabrics that speak the language of tradition</p>
+                            <button routerLink="/sections/by-fabrics" class="primary-btn">Shop Now</button>
+                          </ng-container>
+                          <ng-container *ngIf="j===1">
+                            <p>Handcrafted sarees that celebrate India’s rich textile heritage</p>
+                            <button routerLink="/sections/by-crafts" class="primary-btn">Shop Now</button>
+                          </ng-container>
                         </div>
                       </div>
                     </figure>

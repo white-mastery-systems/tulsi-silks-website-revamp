@@ -31,7 +31,7 @@
               <div *ngFor="let x of section.categories | orderAsc: 'rank';" class="col-lg-3 col-md-6 col-sm-6 col-12 d-flex">
                 <div class="team-member gift-card cursor">
                   <figure (click)="!x.btn_status? onSelectDiscount(x): ''">
-                    <img width="100%" height="100%" [src]="imgBaseUrl+x.image" alt="offer">
+                    <img width="100%" height="100%" [src]="imgBaseUrl+x.image" alt="fabric">
                   </figure>
                   <div class="gift-card-values">
                     <h4 class="text-uppercase">{{x.name}}</h4>
@@ -44,7 +44,7 @@
               <div *ngFor="let x of section.categories | orderAsc: 'rank';" class="col-lg-3 col-md-6 col-sm-6 col-12 d-flex">
                 <div class="team-member gift-card cursor">
                   <figure (click)="!x.btn_status? onSelectDiscount(x): ''">
-                    <img width="100%" height="100%" [src]="imgBaseUrl+x.image" alt="offer">
+                    <img width="100%" height="100%" [src]="imgBaseUrl+x.image" alt="craft">
                   </figure>
                   <div class="gift-card-values">
                     <h4 class="text-uppercase">{{x.name}}</h4>
