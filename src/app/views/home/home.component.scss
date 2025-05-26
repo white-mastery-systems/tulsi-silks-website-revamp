@@ -204,3 +204,26 @@
       position: unset !important;
     }
 }
+
+
+.instagram_sec{
+  .swiper-wrapper{
+    -webkit-transition-timing-function:linear!important;
+    transition-timing-function:linear!important; 
+  }
+  .swiper-slide {
+    width: 400px;
+    height: auto;   
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+    img{
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      margin-bottom: 0px;
+    }
+  }
+}
