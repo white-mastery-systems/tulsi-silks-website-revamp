@@ -6,25 +6,13 @@
 
   <!-- breadcrumb -->
   <section class="head-breadcrumb">
-    <div class="{{template_setting?.body_type}}">
+    <div class="container-fluid">
       <div class="row">
-        <!-- <div *ngIf="commonService.discount_page?.page_config?.heading" class="col-md-12">
-          <div class="head-breadcrumb-inner border-btm d-flex justify-content-between">
-            <div>
-              <h2>{{ commonService.discount_page.page_config.heading }}</h2>
-              <p *ngIf="commonService.discount_page.page_config?.sub_heading">{{ commonService.discount_page.page_config.sub_heading }}</p>
-            </div>
-            <div *ngIf="template_setting?.display_goback && commonService?.desktop_device" class="d-flex align-items-center justify-content-end">
-              <span (click)="commonService.goBack();">GO BACK</span>
-            </div>
-          </div>
-        </div> -->
-
-        <div *ngIf="template_setting?.breadcrumb" class="col-md-12">
+        <div class="col-md-12">
           <div class="breadcrumb-navigation mt-3">
             <ul class="collapsed">
               <li><a routerLink="/">Home</a></li>
-              <li><span class="active-page">Sale</span></li>
+              <li><span class="active-page">{{ (params.type=='by-fabrics')? 'By Fabrics': 'By Crafts' }}</span></li>
             </ul>
           </div>
         </div>
@@ -33,8 +21,8 @@
   </section>
   <!--# breadcrumb #-->
 
-  <section class="common-site-section our-team">
-    <div class="{{template_setting?.body_type}}">
+  <section class="common-site-section">
+    <div class="container-fluid">
       <div class="row">
         <ng-container *ngFor="let menu of commonService.menu_list;">
           <ng-container *ngFor="let section of menu.sections;">
@@ -47,7 +35,6 @@
                   </figure>
                   <div class="gift-card-values">
                     <h4 class="text-uppercase">{{x.name}}</h4>
-                    <!-- <button class="primary-btn d-flex justify-content-center align-items-center w-100" (click)="onSelectDiscount(x);">{{x.btn_text}}</button> -->
                   </div>
                 </div>
               </div>
@@ -61,7 +48,6 @@
                   </figure>
                   <div class="gift-card-values">
                     <h4 class="text-uppercase">{{x.name}}</h4>
-                    <!-- <button class="primary-btn d-flex justify-content-center align-items-center w-100" (click)="onSelectDiscount(x);">View</button> -->
                   </div>
                 </div>
               </div>
