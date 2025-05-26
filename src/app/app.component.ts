@@ -263,11 +263,12 @@ export class AppComponent {
                   if(sec.categories?.length) {
                     sec.categories.forEach(cat => {
                       if(cat.link_status && cat.link_type=='category') {
-                        let cInd = this.commonService.catalog_list.findIndex(el => el._id==cat.category_id);
-                        if(cInd!=-1) {
+                        let catData = this.commonService.catalog_list.find(el => el._id==cat.category_id);
+                        if(catData) {
                           cat.link_type = 'internal';
-                          cat.link = '/category/'+this.commonService.catalog_list[cInd]._id;
-                          if(this.commonService.catalog_list[cInd].seo_status) cat.link = '/category/'+this.commonService.catalog_list[cInd].seo_details?.page_url;
+                          cat.link = '/category/'+catData._id;
+                          if(catData.seo_status) cat.link = '/category/'+catData.seo_details?.page_url;
+                          if(catData.image) cat.image = catData.image;
                         }
                       }
                       // sub category

@@ -1,6 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Inject, OnInit, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
+import { ActivatedRoute, Params, Router } from '@angular/router';
 import { CommonService } from '../../../services/common.service';
 import { StoreApiService } from '../../../services/store-api.service';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-sections',
@@ -10,23 +13,46 @@ import { StoreApiService } from '../../../services/store-api.service';
 
 export class SectionsComponent implements OnInit {
 
-  constructor(private storeApi: StoreApiService, public commonService: CommonService) { }
+  params: any;
+  imgBaseUrl: string = environment.img_baseurl;
+
+  constructor(@Inject(PLATFORM_ID) private platformId: Object, private router: Router, private activeRoute: ActivatedRoute, public commonService: CommonService, private storeApi: StoreApiService) { }
 
   ngOnInit(): void {
-    if(!this.commonService.search_category_list.length) {
-        if(this.commonService.menu_list.length) {
-          // this.createSearchCategoryList();
+    this.activeRoute.params.subscribe((params: Params) => {
+      this.params = params;
+    });
+  }
+
+  onSelectDiscount(x) {
+    if(x.link_type == 'category')
+    {
+      this.storeApi.CATEGORY_DETAILS({ category_id: x.category_id }).subscribe(result => {
+        if(result.status) {
+          let categoryDetails = result.data;
+          if(categoryDetails.seo_status) this.router.navigate(['/category/'+categoryDetails.seo_details.page_url]);
+          else this.router.navigate(['/category/'+categoryDetails._id]);
         }
-        else {
-          this.storeApi.STORE_DETAILS().subscribe(result => {
-            if(result.status) {
-              let storeDetails = JSON.parse(result.store_details);
-              this.commonService.menu_list = storeDetails.menu_list;
-              // this.createSearchCategoryList();
-            }
-          });
+        else console.log("response", result);
+      });
+    }
+    else if(x.link_type == 'product')
+    {
+      this.storeApi.PRODUCT_DETAILS({ product_id: x.product_id }).subscribe(result => {
+        if(result.status) {
+          let productDetails = result.data;
+          if(productDetails.seo_status) this.router.navigate(['/product/'+productDetails.seo_details.page_url]);
+          else this.router.navigate(['/product/'+productDetails._id]);
         }
-      }
+        else console.log("response", result);
+      });
+    }
+    else if(x.link_type == 'internal') {
+      this.router.navigate([x.link]);
+    }
+    else if(isPlatformBrowser(this.platformId) && x.link_type == 'external') {
+      window.open(x.link, "_blank");
+    }
   }
 
 }

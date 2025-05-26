@@ -34,14 +34,14 @@ html::-webkit-scrollbar-thumb {
 }
 
 .custom-height::-webkit-scrollbar {
-  width: 4px;
+  width: 2px;
   height: 2px;
   background-color: transparent;
 }
 
 .custom-height::-webkit-scrollbar-thumb {
-  -webkit-box-shadow: inset 0 0 6px #000;
-  background: #000;
+  -webkit-box-shadow: inset 0 0 6px #000000;
+  background: #ddd;
 }
 .slim-scroll::-webkit-scrollbar-thumb {
   background: #000000;
@@ -1319,6 +1319,7 @@ a.video-thum {
 .right-side{
   flex-direction: row-reverse;
   align-self: flex-start;
+  gap:10px;
 }
 .custom-height{
   height: 550px;
@@ -1340,7 +1341,7 @@ a.video-thum {
 }
 
 .sm_roduct_nav a {
-  margin: 0px 10px 10px 0px;
+  margin: 0px 3px 10px 0px;
   overflow: hidden;
   position: relative;
   padding: 0;
