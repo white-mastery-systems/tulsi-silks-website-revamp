@@ -83,15 +83,6 @@ export class HomeSwiperDirective {
       320: { slidesPerView: 1.5, spaceBetween: 0 }
     }
   };
-  instagram: any = {
-    auto_play: true,
-    // break_points: {
-    //   1024: { slidesPerView: 3.4, spaceBetween: 0 },
-    //   768: { slidesPerView: 3.4, spaceBetween: 0 },
-    //   640: { slidesPerView: 3, spaceBetween: 0 },
-    //   320: { slidesPerView: 1.5, spaceBetween: 0 }
-    // }
-  };
 
   constructor(@Inject(PLATFORM_ID) private platformId: Object, private _element: ElementRef, private assetLoader: DynamicAssetLoaderService) { }
 ​
@@ -173,11 +164,9 @@ export class HomeSwiperDirective {
           else if(swipeElement.includes("insta")) {
             if(this.loadedElements.indexOf(swipeElement) == -1) {
               this.loadedElements.push(swipeElement);
-              let configData = this.instagram;
               // swiper config
               let swipeConfig: any = {
-                speed: 3000,  
-                breakpoints: configData.break_points,
+                speed: 3000,
                 navigation: {
                   nextEl: '#swipe_next_'+swipeElement.split("_")[1],
                   prevEl: '#swipe_prev_'+swipeElement.split("_")[1]
@@ -185,12 +174,10 @@ export class HomeSwiperDirective {
                 slidesPerView: 'auto',  
                 loop: true,        
                 allowTouchMove: false,              
-                        
+                autoplay: { delay: 0, disableOnInteraction: false }   
               }
-              if(configData.loop) swipeConfig.loop = true;
-              if(configData.auto_play) swipeConfig.autoplay = { delay: 0, disableOnInteraction: false };
               let swipeInit = new Swiper('.'+swipeElement, swipeConfig);              
-              if(configData.auto_play && swipeElement.includes("desktop")) this.autoPlayEvt(swipeInit); 
+              if(swipeElement.includes("desktop")) this.autoPlayEvt(swipeInit); 
             }
           }
           else this.initializeSwiper(swipeElement, this.featured_products);

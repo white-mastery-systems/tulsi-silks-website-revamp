@@ -442,9 +442,10 @@
   }
   .blog-slider-btn{
     padding-right: 40px;
-    button{
+    button, a{
       color:#D99550 !important;
       border-bottom: 1px solid #d99550 !important;
+      text-decoration: none;
     }
   }
   figure{

@@ -105,12 +105,15 @@ export class HomeComponent implements OnInit {
           layoutList.push({
             type: 'instagram',
             image_list: [
-              { permalink: 'https://instagram.com/p/abc123', media_url: 'assets/images/insta1.png' },
-              { permalink: 'https://instagram.com/p/def456', media_url: 'assets/images/insta2.png' },
-              { permalink: 'https://instagram.com/p/def456', media_url: 'assets/images/insta3.png' },
-              { permalink: 'https://instagram.com/p/def456', media_url: 'assets/images/insta1.png' },
-              { permalink: 'https://instagram.com/p/def456', media_url: 'assets/images/insta2.png' },
-              { permalink: 'https://instagram.com/p/def456', media_url: 'assets/images/insta3.png' },
+              { permalink: 'https://www.instagram.com/tulsisilks', media_url: 'assets/images/insta1.png' },
+              { permalink: 'https://www.instagram.com/tulsisilks', media_url: 'assets/images/insta2.png' },
+              { permalink: 'https://www.instagram.com/tulsisilks', media_url: 'assets/images/insta3.png' },
+              { permalink: 'https://www.instagram.com/tulsisilks', media_url: 'assets/images/insta1.png' },
+              { permalink: 'https://www.instagram.com/tulsisilks', media_url: 'assets/images/insta2.png' },
+              { permalink: 'https://www.instagram.com/tulsisilks', media_url: 'assets/images/insta3.png' },
+              { permalink: 'https://www.instagram.com/tulsisilks', media_url: 'assets/images/insta1.png' },
+              { permalink: 'https://www.instagram.com/tulsisilks', media_url: 'assets/images/insta2.png' },
+              { permalink: 'https://www.instagram.com/tulsisilks', media_url: 'assets/images/insta3.png' }
             ],
             heading: "Connect With Us",
             sub_heading: "See how our silks shine in real life",
