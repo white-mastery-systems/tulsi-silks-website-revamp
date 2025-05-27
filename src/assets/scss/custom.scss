@@ -2202,10 +2202,18 @@ option {
   justify-content: flex-end;
 }
 
+.des__right{
+  color: #000000;
+  margin-bottom: 12px;
+}
+
 @media only screen and (max-width: 768px) {
   .invoice-gst-no {
     display: flex;
     justify-content: flex-start;
+  }
+  .des__right{
+    font-size: 18px !important;
   }
 }
 

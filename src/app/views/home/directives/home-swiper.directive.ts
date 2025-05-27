@@ -61,8 +61,7 @@ export class HomeSwiperDirective {
       768: { slidesPerView: 1, spaceBetween: 15 },
       640: { slidesPerView: 1, spaceBetween: 15 },
       320: { slidesPerView: 1, spaceBetween: 15 }
-    },  
-    pagination: { el: '#swipe_pagination', clickable: true },
+    }
   };
   
   blogs: any = {

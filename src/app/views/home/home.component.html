@@ -559,8 +559,7 @@
                               </div>
                             </div>
                           </a>
-                        </div>
-                        
+                        </div>                        
                         <div class="swiper-slide">
                           <div class="product-box cursor d-flex justify-content-center align-items-center" [ngClass]="template_setting?.p_card? 'primary-card p-3': ''">
                             <button class="primary-btn" (click)="exploreAll(tab);" type="button">
@@ -646,7 +645,7 @@
               <tabset>
                 <ng-container *ngFor="let tab of segment.multitab_list; let j=index;">
                   <tab heading="{{tab?.name}}">
-                    <div class="swiper-container featured-sections multi-slider product-slider px-max" [ngClass]="commonService.desktop_device? 'desktoptabslider_'+(i+1)+(j+1): 'tabslider_'+(i+1)+(j+1)" appHomeSwiper>
+                    <div class="swiper-container swipe_arrow featured-sections multi-slider product-slider px-max" [ngClass]="commonService.desktop_device? 'desktoptabslider_'+(i+1)+(j+1): 'tabslider_'+(i+1)+(j+1)" appHomeSwiper>
                       <div class="swiper-wrapper">
                         <div *ngFor="let x of tab.image_list; let k=index;" class="swiper-slide p-0">
                           <div class="product-box cursor h-100 p-0">
@@ -669,10 +668,14 @@
                           </div>
                         </div>
                       </div>
-                      <ng-container *ngIf="commonService?.screen_width>=992">
-                        <div id="swipe_next_{{i+1}}{{j+1}}" class="swiper-button swiper-button-next"></div>
-                        <div id="swipe_prev_{{i+1}}{{j+1}}" class="swiper-button swiper-button-prev"></div>
-                      </ng-container>
+                      <!-- <ng-container *ngIf="commonService?.screen_width>=992">
+                        <div id="swipe_next_{{i+1}}{{j+1}}" class="swiper-button swiper-button-next">
+                         <lucide-icon name="chevron-right" [size]="20" stroke="1" color="black"></lucide-icon>
+                        </div>
+                        <div id="swipe_prev_{{i+1}}{{j+1}}" class="swiper-button swiper-button-prev">
+                         <lucide-icon name="chevron-left" [size]="20" stroke="1" color="black"></lucide-icon>
+                        </div>
+                      </ng-container> -->
                     </div>
                   </tab>
                 </ng-container>
@@ -702,6 +705,7 @@
             <div class="highlighted-text-width">
               <div *ngIf="segment.heading" class="landing-highlighted-text d-flex flex-column text-left">
                 <h2>{{segment.heading}}</h2>
+                <h5 class="des__right" *ngIf="segment.image_list[0].position=='right'">Celebrate elegance, gift tradition</h5>
                 <h6 *ngIf="segment.sub_heading" [innerHTML]="segment.sub_heading"></h6>
               </div>
               <button *ngIf="segment.image_list[0].link_status && segment.image_list[0].btn_status && segment.image_list[0].btn_text" (click)="commonService.onPageRedirect(segment.image_list[0]);" class="primary-btn">
