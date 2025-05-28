@@ -84,6 +84,9 @@ export function app(): express.Express {
   server.use('/category/5d38185edf972007f663040e', function(req, res) {
     res.redirect('/category/traditional');
   });
+  server.use('/category/tissue-kanjivaram', function(req, res) {
+    res.redirect('/category/kanjivaram-tissue-silk-sarees');
+  });
   
   // Example Express Rest API endpoints
   // server.get('/api/**', (req, res) => { });

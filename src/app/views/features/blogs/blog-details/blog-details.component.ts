@@ -196,6 +196,11 @@ export class BlogDetailsComponent implements OnInit {
             product.temp_discounted_price = this.cc.CALC(product.discounted_price);
           }
         }
+        else if(segment.type=="highlighted_product" && segment.product_details) {
+          let product = segment.product_details;
+          product.temp_selling_price = this.cc.CALC(product.selling_price);
+          product.temp_discounted_price = this.cc.CALC(product.discounted_price);
+        }
       }
     }
   }
