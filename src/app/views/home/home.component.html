@@ -148,6 +148,26 @@
     </ng-container>
     <!-- #Main Slider -->
 
+    <!-- About Segment -->
+    <section *ngIf="i==1" class="primary-section">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-12 about-section">
+            <div class="about-logo">
+              <div class="about-logo-bg d-flex justify-content-center align-items-center">
+                <img src="assets/images/about-logo.svg" />
+              </div>
+            </div>
+            <div class="titles">
+              <h2>Celebrating 30 Years of Saree Excellence</h2>
+              <p>For over 30 years, Tulsi Silks has been weaving tradition into every saree, with each uniquely handcrafted piece reflecting a legacy of timeless elegance and unmatched craftsmanship</p>               
+            </div>              
+          </div>          
+        </div>
+      </div>
+    </section>
+    <!-- #About Segment -->
+
     <!-- Section Grid -->
      <ng-container *ngIf="segment.section_grid_type=='grid_1'">
       <section *ngIf="segment.type=='section' && segment.image_list?.length" class="grid-categories grid-sec-margin primary-section" [ngClass]="(i>1)? 'wow fadeInUp': null">

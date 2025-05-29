@@ -1810,8 +1810,14 @@ span{
       font-size: 16px !important;
     }
   } 
+  
   .breadcrumb-navigation li span{
     font-size: 12px !important;
+  }
+  .about-section{
+    .titles{
+      padding:10px 0 0!important
+    }
   }
 }
 
@@ -2168,13 +2174,13 @@ span{
     padding-left: 90px;
     color: #000;
     h2{
-      font-size: 36px;     
+      font-size: 40px;     
       color: #000;
     }
      p{
-        font-size: 16px;
-        color: #000;
-        opacity: .7;
+        font-size: 18px;
+        color: #3D3D3D;
+        opacity: 1;
       }
   }
   .welcome-img{
@@ -2207,4 +2213,32 @@ span{
 .equal-space:nth-child(even) {
   padding-left: 0;
   padding-right: 7.5px;
+}
+
+.about-section{
+  background: rgba(217, 149, 80, 0.1);
+  padding:50px;
+  margin-top:50px;
+  .titles{
+    margin-bottom:0!important;
+    padding-top:10px!important;
+    text-align: center!important;
+    p{
+      margin-bottom: 0;
+    }
+  }
+  .about-logo{
+    position: absolute;
+    left:0;
+    right:0;
+    top:-50px;
+    display: flex;
+    justify-content: center;
+    .about-logo-bg{
+      width: 100px;
+      height: 100px;
+      border-radius: 100%;
+      background-color: #fff;
+    }
+  }
 }

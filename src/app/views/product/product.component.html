@@ -89,6 +89,120 @@
   <h1 *ngIf="productDetails?.seo_status" [hidden]="true">{{productDetails?.seo_details?.h1_tag}}</h1>
   <!-- #SEO h1 tag -->
 
+  <!--Sticky Cart-->
+  <div class="stickyCart" id="stickyCart">
+    <div class="{{template_setting?.body_type}}">
+      <div class="row">
+        <div class="col-lg-8 col-md-8 col-6">
+          <div class="sticky-cart-details d-flex align-items-center">
+            <div class="product-image">
+              <ng-container *ngFor="let x of productDetails.image_list; let i=index;">
+                <div class="big-img-container" [hidden]="activeImgIndex!=i" id="photogallery" itemscope itemtype="http://schema.org/ImageGallery">
+                  <a itemprop="contentUrl" data-id={{x}}>
+                    <img fetchpriority="high" width="100%" height="100%" appImgLazyLoad [ImagelazyLoad]="imgBaseUrl+x.image" itemprop="thumbnail" alt="{{(x.img_alt)? x.img_alt: productDetails.name+(i+1)}}">
+                  </a>
+                </div>
+              </ng-container>
+            </div>
+
+            <div class="product-details pl-4">
+              <h4 class="product-name">{{productDetails.name}}</h4>
+              <div class="product-price">
+                <ng-container *ngIf="productDetails.quantity>0">
+                  <p *ngIf="productDetails.disc_status">
+                    <span class="product-strike">
+                      {{ (productDetails.temp_selling_price*(productDetails.quantity+productDetails.additional_qty)) | currency:cc.currency?.country_code:'symbol':cc.format }}
+                    </span>
+                  </p>
+                  <p>
+                    <span *ngIf="productDetails.unit=='Pcs'" class="product-price">
+                      {{ (((productDetails.temp_discounted_price*1)+(productDetails.temp_addon_price*1)) * productDetails.quantity) | currency:cc.currency?.country_code:'symbol':cc.format }}
+                    </span>
+                    <span *ngIf="productDetails.unit!='Pcs'" class="product-price">
+                      {{ ((productDetails.temp_discounted_price*(productDetails.quantity+productDetails.additional_qty)) + (productDetails.temp_addon_price*1)) | currency:cc.currency?.country_code:'symbol':cc.format }}
+                      {{ (productDetails.addon_price==0 && productDetails.unit=='Mts' && productDetails.quantity==1 && productDetails.additional_qty==0)? '/ Metre': '' }}
+                      {{ (productDetails.addon_price==0 && productDetails.unit=='Kgs' && productDetails.quantity==1 && productDetails.additional_qty==0)? '/ Kg': '' }}
+                    </span>
+                  </p>
+                </ng-container>
+              </div>
+            </div>                
+          </div>
+        </div>
+        <div class="col-lg-4 col-md-4 col-12 d-flex align-items-center justify-content-md-end">  
+          <div class="sticky-cart-details d-flex align-items-center">
+            <!-- qty scale -->
+            <ng-container *ngIf="!productDetails.addon_must && !customized_model">
+              <ng-container *ngIf="template_setting.qty_scale && productDetails.stock >= commonService.min_qty[productDetails.unit] && productDetails.additional_qty==0">
+                <div *ngIf="productDetails.unit!='Pcs' || productDetails.stock > commonService.min_qty[productDetails.unit]" class="product-qty-scale pb-0">
+                  <div class="d-flex justify-content-start align-items-center">
+                    <div class="pro-qty d-flex justify-content-center align-items-center height-100">
+                      <button [ngClass]="productDetails.quantity>commonService.min_qty[productDetails.unit]? '': 'qty-btn-disabled'" (click)="(productDetails.quantity+productDetails.additional_qty)>commonService.min_qty[productDetails.unit]? decQty(): ''">
+                        <i class="material-icons">remove</i>
+                      </button>
+                      <span class="btn-width">{{productDetails.quantity+productDetails.additional_qty}}</span>
+                      <button [ngClass]="productDetails.stock>(productDetails.quantity+productDetails.additional_qty)? '': 'qty-btn-disabled'" (click)="productDetails.stock>(productDetails.quantity+productDetails.additional_qty)? incQty(): ''">
+                        <i class="material-icons">add</i>
+                      </button>
+                    </div>                      
+                  </div>
+                </div>
+              </ng-container>
+            </ng-container>
+
+            <!-- btn & addon -->
+            <div class="product-add-btn ml-4">
+              <ng-container *ngIf="productDetails.stock >= commonService.min_qty[productDetails.unit]">
+                <!-- buy now & add to cart -->
+                <ng-container *ngIf="!commonService.application_setting?.product_addon || !productDetails.addon_must || customized_model || productDetails?.selected_addon && !productDetails?.selected_addon?.custom_list?.length && !productDetails?.selected_addon?.updated_mm_list?.length && !productDetails?.selected_addon?.notes_list?.length">
+                  <div *ngIf="productDetails.stock >= (productDetails.quantity+productDetails.additional_qty)" class="buy-add-cart-btn">
+                    <div class="row m-0">
+                      <div class="col-md-12 p-0">
+                        <div class="buy-add-cart-btn-inner">                          
+                          <button *ngIf="!productDetails?.added_to_cart" class="primary-btn w-100" type="button" (click)="addtoCart(true);">ADD TO CART</button>
+                          <button *ngIf="productDetails?.added_to_cart" (click)="gotoCart();" class="secondary-btn w-100 d-inline-flex justify-content-center align-items-center" type="button">
+                            GO TO CART
+                            <i class="material-icons pl-1">arrow_forward</i>
+                          </button>
+                          <button *ngIf="!commonService.store_properties.pickup_locations?.length && !commonService.application_setting.disable_delivery && template_setting?.enable_buynow;"
+                          type="button" class="primary-btn w-100 d-inline-flex justify-content-center align-items-center" [disabled]="productDetails?.buynow_loader" (click)="buyNow();">
+                            BUY NOW
+                            <div class="box" *ngIf="productDetails?.buynow_loader">
+                              <div class="spinner"></div>
+                            </div>
+                          </button>                         
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </ng-container>
+              </ng-container>
+              <!-- enquiry btn -->
+              <div
+                *ngIf="
+                  productDetails.allow_preorder &&
+                  productDetails.stock <
+                    commonService.min_qty[productDetails.unit]
+                "
+                class="row m-0"
+              >
+                <div class="col-md-12 p-0">
+                  <button
+                    (click)="openEnqModal(enquiryModal)"
+                    class="primary-btn w-100"
+                    type="button"
+                  >
+                    ENQUIRE NOW
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>  
+        </div>            
+      </div>
+    </div>
+  </div>
+
   <section class="common-site-section product-detail pb-0">
     <div class="{{template_setting?.body_type}}">
       <div class="row">
@@ -506,8 +620,7 @@
           </div>
           <!-- #FAQ -->
         </div>
-      </div>
-
+      </div>   
     
 
       <!-- product reviews -->

@@ -36,6 +36,16 @@ export class AppComponent {
     if(isPlatformBrowser(this.platformId)) {
       this.commonService.scroll_x_pos = window.pageXOffset;
       this.commonService.scroll_y_pos = window.pageYOffset;
+      
+      // Sticky cart
+      let stickyElem = this.document.getElementById('stickyCart');
+      if (stickyElem) {
+        if (window.pageYOffset > 250) {
+          stickyElem.classList.add('sticky_show');
+        } else {
+          stickyElem.classList.remove('sticky_show');
+        }
+      }
       // for scroll-top icon
       let scrollElem = this.document.getElementById('scrollup');
       if(scrollElem) {
