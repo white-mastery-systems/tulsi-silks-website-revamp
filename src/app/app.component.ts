@@ -36,7 +36,7 @@ export class AppComponent {
     if(isPlatformBrowser(this.platformId)) {
       this.commonService.scroll_x_pos = window.pageXOffset;
       this.commonService.scroll_y_pos = window.pageYOffset;
-      
+
       // Sticky cart
       let stickyElem = this.document.getElementById('stickyCart');
       if (stickyElem) {
@@ -116,6 +116,14 @@ export class AppComponent {
       fromEvent(document, 'touchmove').subscribe(() => this.onInteract());
       fromEvent(document, 'scroll').subscribe(() => this.onInteract());
       fromEvent(document, 'click').subscribe(() => this.onInteract());
+      // check guest address
+      if(sessionStorage.getItem("checkout_address")) {
+        let checkoutAddress = this.commonService.decryptData(sessionStorage.getItem("checkout_address"));
+        if(!checkoutAddress?.shipping?.country) {
+          sessionStorage.removeItem("checkout_address");
+          window.location.reload();
+        }
+      }
     }
   }
 

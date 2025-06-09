@@ -5,6 +5,8 @@ import { Router, ActivatedRoute, Params } from '@angular/router';
 import { environment } from '../../../../../environments/environment';
 import { StoreApiService } from '../../../../services/store-api.service';
 import { CommonService } from '../../../../services/common.service';
+import { SwiperService } from '../../../../services/swiper.service';
+import { CurrencyConversionService } from '../../../../services/currency-conversion.service';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -20,12 +22,17 @@ export class BlogDetailsComponent implements OnInit {
   imgBaseUrl: string = environment.img_baseurl;
   template_setting: any = environment.template_setting;
   storeSubscription: Subscription;
+  subscription: Subscription;
   bcList: any = [];
 
   constructor(
-    private router: Router, private storeApi: StoreApiService, private activeRoute: ActivatedRoute,
-    public commonService: CommonService, private sanitizer: DomSanitizer, private datePipe: DatePipe, private renderer: Renderer2
+    private router: Router, private storeApi: StoreApiService, private activeRoute: ActivatedRoute, public swiperService: SwiperService,
+    public commonService: CommonService, private sanitizer: DomSanitizer, private datePipe: DatePipe, private renderer: Renderer2,
+    public cc: CurrencyConversionService
   ) {
+    this.subscription = this.commonService.currency_type.subscribe(() => {
+      this.findCurrency();
+    });
     this.storeSubscription = this.commonService.storeDataListener.subscribe(() => {
       this.getData();
     });
@@ -42,6 +49,33 @@ export class BlogDetailsComponent implements OnInit {
       this.storeApi.BLOG_DETAILS(params['blog_id']).subscribe(result => {
         if(result.status) {
           this.blog_details = result.data;
+          if(!this.blog_details.segments) this.blog_details.segments = [];
+          for(let segment of this.blog_details.segments) {
+            if(segment.type=="featured_product") {
+              let cardCount = this.swiperService.featured_products.card_count;
+              segment.product_list.forEach(obj => {
+                obj.created_on = new Date(new Date(new Date(obj.created_on).setHours(23,59,59,59)).setDate(new Date(obj.created_on).getDate() + 30));
+                if(obj.badge_list?.length) obj.badge_list = this.commonService.buildTags(obj.badge_list);
+                if(obj.hold_till) {
+                  let balanceStock = obj.stock;
+                  if(new Date() < new Date(obj.hold_till)) balanceStock = obj.stock - obj.hold_qty;
+                  obj.stock = balanceStock;
+                }
+              });
+              if(segment.product_list.length && cardCount > segment.product_list.length) {
+                let remaining = cardCount - segment.product_list.length;
+                for(let i=0; i<remaining; i++)
+                {
+                  segment.product_list = segment.product_list.concat(segment.product_list);
+                  if(segment.product_list.length >= cardCount) {
+                    segment.product_list.length = cardCount;
+                    break;
+                  }
+                }
+              }
+            }
+          }
+          this.findCurrency();
           this.updateMetaData();
         }
         else {
@@ -51,6 +85,28 @@ export class BlogDetailsComponent implements OnInit {
         setTimeout(() => { this.pageLoader = false; }, 500);
       });
     });
+  }
+
+  exploreAll(segment) {
+    if(segment.type=="featured_product") {
+      if(segment.featured_category_id=="all_products") this.router.navigate(['/all-products']);
+      else if(segment.featured_category_id=="new_arrivals") this.router.navigate(['/new-arrivals']);
+      else if(segment.featured_category_id=="on_sale") this.router.navigate(['/on-sale']);
+      else if(segment.featured_category_id=="featured_products") this.router.navigate(['/featured-products']);
+      else this.getCatalogInfo(segment.featured_category_id);
+    }
+    else if(segment.type=="featured") this.router.navigate(['/featured-products']);
+    else if(segment.type=="new_arrivals") this.router.navigate(['/new-arrivals']);
+    else if(segment.type=="discounted") this.router.navigate(['/on-sale']);
+    else if(segment.type=="category") this.getCatalogInfo(segment.category_id);
+  }
+  getCatalogInfo(catId) {
+    let secIndex = this.commonService.catalog_list.findIndex(obj => obj._id==catId);
+    if(secIndex != -1) {
+      let categoryDetails = this.commonService.catalog_list[secIndex];
+      if(categoryDetails.seo_status) this.router.navigate(['/category/'+categoryDetails.seo_details.page_url]);
+      else this.router.navigate(['/category/'+categoryDetails._id]);
+    }
   }
 
   updateMetaData() {
@@ -129,6 +185,24 @@ export class BlogDetailsComponent implements OnInit {
     this.storeSubscription.unsubscribe();
     this.commonService.removeElement('blog-jsonld');
     this.commonService.removeElement('blog-faq-jsonld');
+  }
+
+  findCurrency() {
+    if(this.blog_details?.segments?.length) {
+      for(let segment of this.blog_details.segments) {
+        if(segment.type=="featured_product") {
+          for(let product of segment.product_list) {
+            product.temp_selling_price = this.cc.CALC(product.selling_price);
+            product.temp_discounted_price = this.cc.CALC(product.discounted_price);
+          }
+        }
+        else if(segment.type=="highlighted_product" && segment.product_details) {
+          let product = segment.product_details;
+          product.temp_selling_price = this.cc.CALC(product.selling_price);
+          product.temp_discounted_price = this.cc.CALC(product.discounted_price);
+        }
+      }
+    }
   }
 
 }

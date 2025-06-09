@@ -133,9 +133,9 @@ export class QuickOrderDetailsComponent implements OnInit {
                 if(sessionStorage.getItem("guest_email")) {
                   if(sessionStorage.getItem("checkout_address")) {
                     let guestAddress = this.commonService.decryptData(sessionStorage.getItem("checkout_address"));
-                    this.checkoutDetails.shipping_address = guestAddress;
-                    this.shipping_address = this.checkoutDetails.shipping_address;
-                    this.billing_address = this.checkoutDetails.shipping_address;
+                    this.checkoutDetails.shipping_address = guestAddress.shipping;
+                    this.shipping_address = guestAddress.shipping;
+                    this.billing_address = guestAddress.billing;
                     sessionStorage.setItem("checkout_details", this.commonService.encryptData(this.checkoutDetails));
                     // pincode verification
                     if(this.commonService.ys_features.indexOf('pincode_service')!=-1 && this.commonService.store_properties.pincodes.length && this.commonService.store_properties.pincodes.indexOf(this.checkoutDetails.shipping_address.pincode)==-1) {
