@@ -39,11 +39,14 @@
               </div>
               <ng-container *ngIf="category_details?.header_content?.length">
                 <div class="acc-body">
-                  <div class="text" [ngClass]="!showMore? 'cate-acc-oll': ''" [innerHtml]="category_details.header_content"></div>
+                  <div class="text"
+                      [ngClass]="{'collapsed': !showMore, 'expanded': showMore}"
+                      [innerHtml]="category_details.header_content">
+                  </div>
                 </div>
-                <div class="acc-read-more mt-3">
-                  <button class="show-more-btn acc-more" (click)="showMore=!showMore;">
-                    {{ showMore? 'Read Less': 'Read More' }}
+                <div class="acc-read-more mt-1 d-flex justify-content-end">
+                  <button class="show-more-btn acc-more" (click)="showMore = !showMore">
+                    {{ showMore ? 'Read Less' : 'Read More' }}
                   </button>
                 </div>
               </ng-container>
@@ -59,14 +62,22 @@
   <section *ngIf="template_setting?.breadcrumb" class="head-breadcrumb">
     <div class="{{template_setting?.body_type}}">
       <div class="row">
-        <div class="col-md-12">
-          <div class="breadcrumb-navigation mt-3">
+        <div class="col-md-12 d-flex align-items-center justify-content-between">
+          <div class="breadcrumb-navigation col-xl-6 col-12">
             <ul class="collapsed">
               <li><a routerLink="/">Home</a></li>
               <li *ngIf="category_details?.name">
                 <span class="active-page">{{category_details.name}}</span>
               </li>
             </ul>
+          </div>
+          <div *ngIf="commonService?.screen_width>=992" class="col-xl-6 d-flex justify-content-end">
+                    <span>
+                      Sort by:
+                      <select name="sort_list" [(ngModel)]="sort_value">
+                        <option *ngFor="let x of sort_list;" [ngValue]="x.value">{{x.name}}</option>
+                      </select>
+                    </span>
           </div>
         </div>
       </div>
@@ -75,14 +86,14 @@
   <!--# breadcrumb #-->
 
   <!-- product list -->
-  <section *ngIf="list.length" class="common-site-section product-list">
+  <section *ngIf="list.length" class="common-site-section product-list pt-3">
     <div class="{{template_setting?.body_type}}">
       <div class="row">
 
         <!-- filters -->
         <div *ngIf="commonService?.screen_width>=992 && tag_list?.length" class="col-lg-3">
-          <div class="col-md-12" style="height:50px;">
-            <p *ngIf="tagSelected" (click)="clearTagFilter();" class="cursor">Clear All</p>
+          <div class="col-md-12" style="height:40px;">
+            <p *ngIf="tagSelected" (click)="clearTagFilter();" class="cursor mb-0">Clear All</p>
           </div>
           <aside class="sidebar color-select">
             <div class="accordion" [ngClass]="template_setting?.p_card? 'primary-card': ''" id="accordion" role="tablist">
@@ -197,14 +208,14 @@
                       </div>
                     </div>
                   </div>
-                  <div class="col-6">
+                  <!-- <div class="col-6">
                     <span>
                       Sort by:
                       <select name="sort_list" [(ngModel)]="sort_value">
                         <option *ngFor="let x of sort_list;" [ngValue]="x.value">{{x.name}}</option>
                       </select>
                     </span>
-                  </div>
+                  </div> -->
                 </div>
               </div>
             </div>
@@ -231,7 +242,7 @@
             <!-- product list -->
             <div *ngFor="let x of list | rangeFilter:rangeMin:rangeMax | productSort: sort_value | paginate: { itemsPerPage: pageSize, currentPage: page }; let i=index;" class="cat-grid col-sm-6 col-6 pr-0 d-flex"
             [ngClass]="{ 'col-md-6': gridType=='two', 'col-md-4': gridType=='three', 'col-md-3': gridType=='four' }" >
-              <a appMouseHover class="product-box smooth-fadein" [ngClass]="template_setting?.p_card? 'primary-card': ''"
+              <a appMouseHover class="product-box smooth-fadein p-0" [ngClass]="template_setting?.p_card? '': ''"
               (click)="onSelectProduct(x);" routerLink="{{ x.seo_status ? '/product/'+x.seo_details.page_url : '/product/'+x._id }}">
                 <div class="prod-div">
                   <figure class="product-image">

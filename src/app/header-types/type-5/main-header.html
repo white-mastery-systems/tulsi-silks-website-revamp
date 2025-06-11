@@ -41,7 +41,13 @@
 
               <!-- menu list -->
               <li *ngFor="let menu of commonService.menu_list | orderAsc: 'rank'; let i=index;" [ngClass]="{ 'has-children mega-menu slim-scroll': menu?.sec_count, 'pos-relative': menu?.sec_count<=2 }">
-                <a (mouseenter)="(!menu?.sec_count && commonService.desktop_device)? commonService.resetMegaMenu(): ''" (click)="(!menu?.sec_count)? commonService.onPageRedirect(menu): ''">{{menu.name}}</a>
+                <a (mouseenter)="(!menu?.sec_count && commonService.desktop_device)? commonService.resetMegaMenu(): ''" (click)="(!menu?.sec_count)? commonService.onPageRedirect(menu): ''">
+                  {{menu.name}}
+                  <ng-container *ngIf="menu?.sec_count">
+                    <lucide-icon name="chevron-down" [size]="18" class="ms-1 align-middle"></lucide-icon>
+                  </ng-container>
+                </a>
+
                 <ul class="cd-secondary-nav cd-secondary-nav is-hidden slim-scroll" [ngClass]="{
                   'menu-layout-one': menu?.sec_count<=1,
                   'menu-layout-two': menu?.sec_count==2,

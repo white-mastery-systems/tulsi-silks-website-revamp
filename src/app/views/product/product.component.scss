@@ -18,6 +18,7 @@
     .select-btn{
         padding-top: 20px;
         gap: 15px;
+        flex-wrap: wrap-reverse;
     }
     .primary-btn{
         background-color: #fff;
@@ -162,9 +163,27 @@
     }
     .sticky-cart-details{
       width:100%;
-      justify-content: space-between;
+      justify-content: space-around;
+      .product-add-btn{
+        margin: 0 !important;
+      }
       .product-image, .product-details{
         display: none;
       }   
     }
   }
+  .header-s-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 7px;
+    padding: 12px;
+    cursor: pointer;
+    background-color: #f2f2f2;
+}
+.active-image{
+  border: 1px solid #000;
+  padding: 2.5px;
+}

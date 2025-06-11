@@ -27,7 +27,7 @@ export const environment = {
     enable_product_inc: true, // for allow to order single qty of each product only(cart page)
     display_estimated_delivery_time: false,
     display_unit: true,
-    product_swiper: true,
+    product_swiper: false,
     display_goback: true,
     breadcrumb: true,
     enable_buynow: true,

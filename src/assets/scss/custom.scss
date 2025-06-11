@@ -739,6 +739,13 @@ p.error-msg {
   justify-content: center;
 }
 
+.popup-padding{
+  padding: 2rem;
+  p{
+    line-height: 1.5;
+  }
+}
+
 .payment-loader,
 .payment-loader:before,
 .payment-loader:after {
@@ -1172,8 +1179,14 @@ p.error-msg {
   .acc-body {
     .text {
       height: auto !important;
+      position: relative;
     }
   }
+  // .acc-read-more{
+  //   position: absolute;
+  //   right: 22%;
+  //   bottom: -6%;
+  // }
   h5 ,h1, h2, h3, h4, h6 {
     color: $primary-text;
     font-weight: bold !important;
@@ -1200,6 +1213,9 @@ p.error-msg {
   }
   p * {
     color: $primary-text !important;   
+  }
+  ul{
+    line-height: 1.6;
   }
 }
 .category-banner-accordion .fc_status p a{
@@ -1339,16 +1355,20 @@ a.video-thum {
   // overflow-x: hidden;
   margin-bottom: 0px;
 }
+.modal-content{
+border-radius: 0 !important;
+}
 
 .sm_roduct_nav a {
   margin: 0px 3px 10px 0px;
   overflow: hidden;
   position: relative;
-  padding: 0;
+  padding: 2.5px;
   display: inline-block !important;
   img {
     width: 100px;
     z-index: 0;
+    
     transition: transform 0.2s;
     &:hover {
       transform: scale(1.1);
@@ -1396,7 +1416,7 @@ a.video-thum {
       // font-weight: 400;
 
       margin-bottom: 0;
-      padding-bottom: 12px;
+      padding-bottom: 16px;
       font-size: 26px;
       line-height: 1.25em;
       // margin: -0.25em 0;
@@ -1547,7 +1567,8 @@ a.video-thum {
       }
       img{
         width: auto;
-        height: 28px;
+        height: 22px;
+        max-width:max-content;
       }
     }
   }
@@ -2114,8 +2135,8 @@ textarea {
   height: 100%;
   -o-object-fit: cover;
   object-fit: cover;
-  -o-object-position: center;
-  object-position: center;
+  -o-object-position: top;
+  object-position: top;
 }
 
 .head-breadcrumb {

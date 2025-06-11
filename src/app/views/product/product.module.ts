@@ -8,7 +8,7 @@ import { SharedModule } from '../../shared/shared.module';
 import { CustomizationModule } from '../../shared/modules/customization/customization.module';
 import { ProductComponent } from './product.component';
 import { RelatedProductsDirective } from './directives/related-products.directive';
-import { LucideAngularModule, ChevronLeft, ChevronRight, XCircle } from 'lucide-angular';
+import { LucideAngularModule, ChevronLeft, ChevronRight, XCircle, Heart, Share2 } from 'lucide-angular';
 
 @NgModule({
   declarations: [ProductComponent, RelatedProductsDirective],
@@ -19,7 +19,7 @@ import { LucideAngularModule, ChevronLeft, ChevronRight, XCircle } from 'lucide-
     YouTubePlayerModule,
     NgxPaginationModule,
     AccordionModule.forRoot(),
-    LucideAngularModule.pick({ ChevronLeft, ChevronRight, XCircle })
+    LucideAngularModule.pick({ ChevronLeft, ChevronRight, XCircle, Heart, Share2 })
   ]
 })
 

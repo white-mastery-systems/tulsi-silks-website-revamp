@@ -25,7 +25,7 @@ body {
     margin-top: 124px;
   }
   .dynamic-height {
-    height: calc(100vh - 220px) !important;
+    height: calc(100vh - 360px) !important;
   }
   .order-0{
     order: 0 !important;
@@ -157,7 +157,7 @@ $mobile-final-height: calc(74px + #{$mobile-announcement-bar-mh});
   .center-logo{
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: start;
   }
   .header-right-sec {
     display: flex;
@@ -809,6 +809,9 @@ $mobile-final-height: calc(74px + #{$mobile-announcement-bar-mh});
       list-style: none;
       margin-left: 20px;
       position: relative;
+      // a:hover{
+      //   color: #d99550 !important;
+      // }
       &:last-child{
         margin-right: 0 !important;
       }
@@ -833,18 +836,19 @@ $mobile-final-height: calc(74px + #{$mobile-announcement-bar-mh});
       transition: color 0.3s, box-shadow 0.3s;
       transition: color 0.3s, box-shadow 0.3s, -webkit-box-shadow 0.3s;
     }
+   
     // .cd-primary-nav > li > a{
     //   i{
     //     color:#000000;
     //   }
     // }
     .cd-primary-nav > li > a:hover {
-      color: $header-highlighted-text !important;
+      // color: #d99550 !important;
       text-decoration: none;
     }
 
     .cd-primary-nav > li > a:active {
-      color: $header-highlighted-text !important;
+      // color: #d99550 !important;
       text-decoration: none;
     }
   
@@ -895,6 +899,29 @@ $mobile-final-height: calc(74px + #{$mobile-announcement-bar-mh});
   }
   
   @media only screen and (min-width: 992px) {
+    .cd-primary-nav{
+      li{
+        a:hover{
+          color: #d99550 !important;
+        }
+      }
+    }
+    // .has-children{
+    //   li:hover a{
+    //     color: #d99550 !important;
+    //   }
+    // }
+    .has-children {
+      li {      
+      ul{
+        li{
+          a{
+            color: #000 !important;
+          }
+        }
+      }
+      }
+    }
     .cd-primary-nav .cd-secondary-nav::after,
     .cd-primary-nav .cd-nav-gallery::after,
     .cd-primary-nav .cd-nav-icons::after {
@@ -979,7 +1006,7 @@ $mobile-final-height: calc(74px + #{$mobile-announcement-bar-mh});
   
     .cd-primary-nav .cd-secondary-nav > li > a {
       /* secondary nav title */
-      color: #D99550 !important;
+      // color: #D99550 !important;
       font-weight: 400;
       font-size: 1rem;
       line-height: 1;

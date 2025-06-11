@@ -206,8 +206,9 @@ article, aside, footer, header, nav, section { width: 100%; float: left; positio
 /* PRODUCT BOX */
 .product-box{ width: 100%; float: left; position: relative; }
 .product-box *{-webkit-transition: .25s ease-in-out;-moz-transition: .25s ease-in-out;-ms-transition: .25s ease-in-out; -o-transition: .25s ease-in-out; transition: all 640ms cubic-bezier(.645,.05,.355,1);}
-.product-box .product-image{ width: 100%; float: left; position: relative;}
-.product-box .product-image img{ width: 100%; float: left;}
+.product-box .product-image{ width: 100%; float: left; position: relative;overflow: hidden;}
+.product-box .product-image img{ width: 100%; float: left;transition: transform 1s ease-in-out;}
+.product-box:hover img{ transform: scale(1.1);transition: transform 1s ease-in-out;}
 .product-box .product-image .image-hover{position: absolute; left: 0; top: 0; opacity: 0;}
 .product-box .product-image figcaption{width: 100%; position: absolute; left: 0; bottom: 0; text-align: center;}
 .product-box .product-image figcaption a{ height: 30px; line-height: 32px; padding: 0 8px; background: #fff; display: inline-block;}
@@ -254,8 +255,8 @@ article, aside, footer, header, nav, section { width: 100%; float: left; positio
 .grid-categories .grids .grid-item.double{width: 50%; float: left;}
 .grid-categories .category{ width:100%; float:left; position:relative; margin-bottom:0px;}
 .grid-categories .category figure{ width:100%; position: relative; float:left; margin: 0; overflow: hidden; }
-.grid-categories .category figure img{ width:100%;}
-.grid-categories .category:hover figure{ opacity: 0.8;}
+.grid-categories .category figure img{ width:100%;transition: transform 1s ease-in-out;}
+.grid-categories .category:hover img{ transform: scale(1.1);transition: transform 1s ease-in-out;}
 
 /* SHOPPING CART */
 .shopping-cart{ width: 100%; float: left;}
@@ -322,12 +323,13 @@ article, aside, footer, header, nav, section { width: 100%; float: left; positio
 /* NEWS */
 .news{width: 100%;}
 .news .news-box{ width: 100%; float: left; position: relative;}
-.news .news-box figure{width: 100%; float: left; margin: 0;}
-.news .news-box figure img{width: 100%; float: left; margin-bottom: 20px;}
+.news .news-box figure{width: 100%; float: left; margin: 0;overflow: hidden;}
+.news .news-box figure img{width: 100%; float: left; margin-bottom: 20px;transition: transform 1s ease-in-out;}
+.news .news-box:hover img{ transform: scale(1.1);transition: transform 1s ease-in-out;}
 .news .news-box figure figcaption{ width: 100%; float: left;margin-top: 5px;}
 .news .news-box figure figcaption small{ width:100%; float:left; font-size:0.875rem; opacity: 0.8; margin-bottom: 10px;}
 .news .news-box figure figcaption h3{ width:100%; float:left; font-size:18px; font-weight:400;}
-.news .news-box figure figcaption h3 a{float: left;color: #000;}
+.news .news-box figure figcaption h3 a{float: left;color: #000;line-height: 1.6;}
 .news .news-box figure figcaption h3 a:hover{text-decoration: none;}
 
 /* CONTACT FORM */
@@ -396,9 +398,12 @@ article, aside, footer, header, nav, section { width: 100%; float: left; positio
     margin-bottom: 0px;
     padding-right: 15px;    
   }
-  .home-section .news .news-box{height: 280px;}
+  .home-section .news .news-box{height: 300px;}
   .news .news-box figure figcaption h3{
     font-size: 1rem !important;
+    a{
+      line-height: 1.4 !important;
+    }
   }
 	.inner-hero{background-size: auto 200%;}
 	.inner-hero h4{font-size: 2.5rem;}

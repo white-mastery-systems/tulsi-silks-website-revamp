@@ -46,7 +46,7 @@
     <div class="{{template_setting?.body_type}}">
       <div class="row">
         <div class="col-md-12 d-flex align-items-center justify-content-between">
-          <div class="breadcrumb-navigation mt-3">
+          <div class="breadcrumb-navigation mt-3 col-9 px-0">
             <ul class="collapsed">
               <li><a routerLink="/">Home</a></li>
               <li *ngIf="category_details?.name">
@@ -58,22 +58,24 @@
               <li><span class="active-page">{{productDetails?.name}}</span></li>
             </ul>
           </div>
-          <div class="product-details d-flex align-items-center justify-content-end pb-3" *ngIf="commonService?.screen_width<=767">
+          <div class="product-details d-flex align-items-center justify-content-end pb-3 col-3 px-0" *ngIf="commonService?.screen_width<=767">
               <!-- wishlist -->
             <div class="add-wishlist">
-              <a class="d-flex align-items-center" *ngIf="!exist_in_wishlist;" (click)="modifyWishList('add', productDetails); exist_in_wishlist=true;">
-                <i class="material-icons image">favorite_border</i>
+              <a class="d-flex align-items-center header-s-icon mr-2" *ngIf="!exist_in_wishlist;" (click)="modifyWishList('add', productDetails); exist_in_wishlist=true;">
+                <!-- <i class="material-icons image">favorite_border</i> -->
+                <lucide-icon name="heart" [size]="20" stroke="1" color="black"></lucide-icon>
               </a>
-              <a class="d-flex align-items-center add-wishlist-i" *ngIf="exist_in_wishlist;" (click)="modifyWishList('remove', productDetails);  exist_in_wishlist=false;">
-                <i class="material-icons liked smooth-fadein image">favorite</i>
+              <a class="d-flex align-items-center add-wishlist-i header-s-icon mr-2" *ngIf="exist_in_wishlist;" (click)="modifyWishList('remove', productDetails);  exist_in_wishlist=false;">
+                <!-- <lucide-icon name="heart" [size]="20" stroke="1" color="red" fill="red"></lucide-icon> -->
+                 <img src="assets/images/whishlist-heart.svg" alt="wishlist-icon" width="40" height="40">
               </a>
             </div>
             <!-- #wishlist# -->
 
             <!-- share -->
             <div *ngIf="template_setting?.social_share && productDetails?.seo_status" class="add-wishlist">
-              <a (click)="socialShare();" class="d-flex align-items-center">
-                <img src="assets/images/share.svg" alt="share" class="image">
+              <a (click)="socialShare();" class="d-flex align-items-center header-s-icon">
+                <lucide-icon name="share-2" [size]="20" stroke="1" color="black"></lucide-icon>
                 <!-- <i class="material-icons">download</i> -->
               </a>
             </div>
@@ -129,7 +131,7 @@
             </div>                
           </div>
         </div>
-        <div class="col-lg-4 col-md-4 col-12 d-flex align-items-center justify-content-md-end">  
+        <div class="col-lg-4 col-md-4 col-12 d-flex align-items-center justify-content-md-end px-0">  
           <div class="sticky-cart-details d-flex align-items-center">
             <!-- qty scale -->
             <ng-container *ngIf="!productDetails.addon_must && !customized_model">
@@ -256,10 +258,10 @@
               <div class="sm_roduct_nav nav nav-tabs slim-scroll">
                 <ng-container *ngIf="productDetails?.image_list?.length>1 || productDetails?.video_details?.src">
                   <ng-container *ngFor="let x of productDetails.image_list; let i=index;">
-                    <a class="d-flex flex-column" (click)="productDetails.show_video=false; activeImgIndex=i;">
-                      <img loading="lazy" width="100%" height="100%" appImgLazyLoad [ImagelazyLoad]="imgBaseUrl+x.image" alt="{{(x.img_alt)? x.img_alt: productDetails.name+(i+1)}}">
+                    <a class="d-flex flex-column" (click)="productDetails.show_video = false; activeImgIndex = i;" [ngClass]="{'active-image': activeImgIndex === i}">
+                      <img loading="lazy" width="100%" height="100%" appImgLazyLoad [ImagelazyLoad]="imgBaseUrl + x.image" alt="{{ x.img_alt ? x.img_alt : productDetails.name + (i + 1) }}">
                       <div class="view-item-thum" *ngIf="x.title">
-                        <span>{{x.title}}</span>
+                        <span>{{ x.title }}</span>
                       </div>
                     </a>
                   </ng-container>
@@ -279,20 +281,21 @@
           <div class="product-details">
             <div class="d-flex justify-content-end align-items-center pb-3" *ngIf="commonService?.screen_width>=768">
               <!-- wishlist -->
-            <div class="add-wishlist">
-              <a class="d-flex align-items-center" *ngIf="!exist_in_wishlist;" (click)="modifyWishList('add', productDetails); exist_in_wishlist=true;">
-                <i class="material-icons image">favorite_border</i>
+            <div class="add-wishlist mr-3">
+              <a class="d-flex align-items-center header-s-icon" *ngIf="!exist_in_wishlist;" (click)="modifyWishList('add', productDetails); exist_in_wishlist=true;">
+                <lucide-icon name="heart" [size]="20" stroke="1" color="black"></lucide-icon>
               </a>
-              <a class="d-flex align-items-center add-wishlist-i" *ngIf="exist_in_wishlist;" (click)="modifyWishList('remove', productDetails);  exist_in_wishlist=false;">
-                <i class="material-icons liked smooth-fadein image">favorite</i>
+              <a class="d-flex align-items-center add-wishlist-i header-s-icon" *ngIf="exist_in_wishlist;" (click)="modifyWishList('remove', productDetails);  exist_in_wishlist=false;">
+               <!-- <lucide-icon name="heart" [size]="20" stroke="1" color="red" fill="red"></lucide-icon> -->
+                <img src="assets/images/whishlist-heart.svg" alt="wishlist-icon" width="40" height="40">
               </a>
             </div>
             <!-- #wishlist# -->
 
             <!-- share -->
-            <div *ngIf="template_setting?.social_share && productDetails?.seo_status" class="add-wishlist">
+            <div *ngIf="template_setting?.social_share && productDetails?.seo_status" class="add-wishlist header-s-icon">
               <a (click)="socialShare();" class="d-flex align-items-center">
-                <img src="assets/images/share.svg" alt="share" class="image">
+                <lucide-icon name="share-2" [size]="20" stroke="1" color="black"></lucide-icon>
                 <!-- <i class="material-icons">download</i> -->
               </a>
             </div>
@@ -336,7 +339,7 @@
             
             <div class="product-addon d-flex justify-content-between align-items-center">
               <!-- variants -->
-               <div class="d-flex justify-content-start align-items-center">
+               <div *ngIf="productDetails.unit!='Pcs' || productDetails.stock > commonService.min_qty[productDetails.unit]" class="d-flex justify-content-start align-items-center">
                   <p class="variants-title mb-0">Quantity</p>
                   <span class="qty-unit ml-1" *ngIf="template_setting?.display_unit">({{productDetails?.unit}})</span>
                </div>              
