@@ -37,6 +37,7 @@ const mainRoutes: Routes = [
   { path: 'order-review/:id', loadChildren: () => import('./views/features/order-review/order-review.module').then(m => m.OrderReviewModule) },
   
   { path: 'contact-us', loadChildren: () => import('./views/properties/contact-us/contact-us.module').then(m => m.ContactUsModule) },
+  { path: 'about-us', loadChildren: () => import('./views/properties/about-us/about-us.module').then(m => m.AboutUsModule) },
   { path: 'store-locator', loadChildren: () => import('./views/properties/store-locator/store-locator.module').then(m => m.StoreLocatorModule) },
   { path: 'privacy-policy', loadChildren: () => import('./views/properties/policy/policy.module').then(m => m.PolicyModule) },
   { path: 'shipping-policy', loadChildren: () => import('./views/properties/policy/policy.module').then(m => m.PolicyModule) },

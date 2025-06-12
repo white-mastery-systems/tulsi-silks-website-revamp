@@ -277,7 +277,12 @@ article, aside, footer, header, nav, section { width: 100%; float: left; positio
 .product-list{ width: 100%; float: left;}
 .product-list .sidebar{ width: calc(100% - 30px); float: left; margin-right: 30px;}
 
-.product-list .listing-bar{ width: 100%; float: left; margin-bottom: 25px; margin-top: -10px; padding-bottom: 15px; border-bottom: 1px solid #eee;}
+.product-list .listing-bar{ width: 100%; float: left; 
+  margin-bottom: 15px; 
+  // margin-top: -10px; 
+  // padding-bottom: 15px; 
+  // border-bottom: 1px solid #eee;
+}
 .product-list .listing-bar small{font-size: 0.75rem; float: left; line-height: 30px;}
 .product-list .listing-bar span{float: right; font-size: 0.75rem; line-height: 30px;}
 .product-list .listing-bar span select{ width: auto; height: 30px; padding-left: 10px; padding-right: 30px; margin-left: 5px;}

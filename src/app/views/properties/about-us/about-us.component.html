@@ -1,0 +1,273 @@
+ <section *ngIf="!pageLoader" class="over-all smooth-fadein">
+ 
+  <section *ngIf="primary_main_slider?.length" class="dynamic-height primary-section home-slider">
+    <div class="swiper-container dynamic-height" [ngClass]="(primary_main_slider?.length>1 && commonService.desktop_device)? 'desktop_pms': (primary_main_slider?.length>1)? 'pms': ''" appHomeSwiper>
+      <div class="swiper-wrapper">
+        <div class="swiper-slide" *ngFor="let x of primary_main_slider; let j=index;" (click)="(x?.btn_status)? '': onPageRedirect(x);">
+        <!-- desktop -->
+          <ng-container>
+            <div class="banner_overlay"></div>
+            <img class="img--fitscreen desk-img" width="100%" height="100%" [src]="imgBaseUrl + x.desktop_img" alt="{{ x.img_alt || 'slider' }}">
+            <img class="img--fitscreen mob-img" width="100%" height="100%" [src]="imgBaseUrl + x.mobile_img" alt="{{ x.img_alt || 'slider' }}">
+            <div class="home-slider-text d-flex col-md-6">
+              <div class="custom-width">
+                <h1>Celebrating 30+ Years of Saree Elegance</h1>
+                <p>Tradition stitched into every drape</p>
+                <button routerLink="/all-products" class="primary-btn">Shop Now</button>
+              </div>
+            </div>
+          </ng-container>
+        </div>
+      </div>
+      <div id="primary_pagination" class="swiper-pagination"></div>
+      <!-- <ng-container *ngIf="commonService?.desktop_device && commonService?.primary_main_slider?.length>1">
+        <div [hidden]="!commonService?.window_loaded" id="primary_next" class="swiper-button swiper-button-next"></div>
+        <div [hidden]="!commonService?.window_loaded" id="primary_prev" class="swiper-button swiper-button-prev"></div>
+      </ng-container> -->
+    </div>
+  </section>
+
+  <!-- About Segment -->
+    <section class="primary-section">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-12 about-section">
+            <div class="about-logo">
+              <div class="about-logo-bg d-flex justify-content-center align-items-center">
+                <img src="assets/images/about-logo.svg" />
+              </div>
+            </div>
+            <div class="titles">
+              <h2>Where Tradition Meets Craftsmanship in Every Drape</h2>
+              <p>With a legacy of silk craftsmanship, Tulsi Silks creates sarees that celebrate culture, beauty, and tradition, each drape an elegant expression of heritage, woven with pride and perfected through years of expertise</p>               
+            </div>              
+          </div>          
+        </div>
+      </div>
+    </section>
+  <!-- #About Segment -->
+
+  <section class="timeline-sec wow fadeInUp">
+    <div class="container">      
+      <div class="timeline-container">
+        <div class="timeline-track">
+          <div class="timeline-progress" [style.width.%]="getDotLeftPosition(currentIndex)"></div>
+            <div class="timeline-dot" *ngFor="let item of timelineData; let i = index" [ngClass]="{ active: i === currentIndex }" [style.left.%]="getDotLeftPosition(i)">
+              <span>{{ item.year }}</span>
+            </div>
+        </div>
+        <div class="timeline-content">
+          <div class="row">
+            <div class="timeline-image col-xl-6 col-12">
+              <img [src]="timelineData[currentIndex].image" width="100%" height="100%" alt="Timeline image" />
+            </div>
+            <div class="timeline-text col-xl-6 col-12 d-flex flex-column justify-content-center align-items-start">
+              <h2>{{ timelineData[currentIndex].title }}</h2>
+              <p>{{ timelineData[currentIndex].description }}</p>
+              <div class="navigation-buttons">
+                <button (click)="prev()" [disabled]="currentIndex === 0">
+                  <lucide-icon name="chevron-left" [size]="20" stroke="1" color="black"></lucide-icon>
+                </button>
+                <button (click)="next()" [disabled]="currentIndex === timelineData.length - 1">
+                  <lucide-icon name="chevron-right" [size]="20" stroke="1" color="black"></lucide-icon>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="unique-saree-section wow fadeInUp">
+      <div class="page-width">
+        <div class="row align-items-center text-center text-xl-start">
+          
+          <!-- Left Image -->
+          <div class="col-xl-4 col-12 mb-xl-0 left-image">
+            <img [src]="'/assets/images/about-left-Image.png'" alt="Saree Left" class="img-fluid rounded shadow" />
+          </div>
+
+          <!-- Center Content -->
+          <div class="col-xl-4 col-12 text-center">
+            <div class="icon-wrapper mb-3">
+              <img src="/assets/images/about-flower.png" alt="Mandala Icon" width="50" />
+            </div>
+            <h2 class="section-title">As Rare As Your Radiance</h2>
+            <p class="section-description">
+              Every saree is a signature of craftsmanship and culture, designed to echo your individuality and our heritage. Perfect for weddings, events, or everyday elegance, each piece is designed to make you feel confident, radiant, and unforgettable.
+            </p>
+            <button  class="primary-btn mt-3">Explore Sarees</button>
+          </div>
+
+          <!-- Right Image -->
+          <div class="col-xl-4 col-12 mt-xl-0 right-image">
+            <img [src]="'/assets/images/about-rigth-image.png'" alt="Saree Right" class="img-fluid rounded shadow" />
+          </div>
+          
+        </div>
+      </div>
+  </section>
+
+  <section class="woven-section wow fadeInUp">
+  <div class="container text-center">
+    <h2 class="title">Woven with the Finest</h2>
+    <p class="subtitle">Discover rich fabrics and Crafts Sarees</p>
+
+    <div class="row justify-content-center align-items-center mt-5 desktop-view">
+      
+      <!-- Left Side Features -->
+      <div class="col-md-3 col-6 text-md-end text-center mb-4 mb-md-0">
+        <div class="feature-block">
+          <img src="/assets/images/shrub.png" alt="Pure Silk" class="feature-icon mb-2" />
+          <h5 class="feature-title">Pure Silk</h5>
+          <p class="feature-text">Known for its luxurious sheen and durability, sourced from trusted weavers</p>
+        </div>
+
+        <div class="feature-block mt-5">
+          <img src="/assets/images/hand-heart.png" alt="Zari Thread work" class="feature-icon mb-2" />
+          <h5 class="feature-title">Zari Thread work</h5>
+          <p class="feature-text">Crafted with traditional gold and silver threads for an enduring touch of elegance</p>
+        </div>
+      </div>
+
+      <!-- Center Image -->
+      <div class="col-md-6 col-12 mb-4 mb-md-0 text-center">
+        <img src="/assets/images/woven-image.png" alt="Saree" class="img-fluid main-image" />
+      </div>
+
+      <!-- Right Side Features -->
+      <div class="col-md-3 col-6 text-md-start text-center">
+        <div class="feature-block">
+          <img src="/assets/images/leaf.png" alt="Natural Cotton" class="feature-icon mb-2" />
+          <h5 class="feature-title">Natural Cotton</h5>
+          <p class="feature-text">Breathable and soft, ideal for everyday elegance with heritage roots</p>
+        </div>
+
+        <div class="feature-block mt-5">
+          <img src="/assets/images/wheat.png" alt="Organic Dyes" class="feature-icon mb-2" />
+          <h5 class="feature-title">Organic Dyes</h5>
+          <p class="feature-text">Eco-friendly dyes that preserve the richness of traditional palettes</p>
+        </div>
+      </div>
+
+    </div>
+    <div class="row mobile-view">
+      <!-- Center Image -->
+      <div class="col-md-6 col-12 mb-4 mb-md-0">
+        <img src="/assets/images/woven-image.png" alt="Saree" class="img-fluid main-image" />
+      </div>
+      <div class="col-md-6 col-12 mb-4 mb-md-0">
+        <div class="col-12 d-flex align-items-start justify-content-start mobile-content">
+          <div class="feature-block">
+            <img src="/assets/images/shrub.png" alt="Pure Silk" class="feature-icon mb-2" />
+            <h5 class="feature-title">Pure Silk</h5>
+            <p class="feature-text">Known for its luxurious sheen and durability, sourced from trusted weavers</p>
+          </div>
+          <div class="feature-block">
+            <img src="/assets/images/hand-heart.png" alt="Zari Thread work" class="feature-icon mb-2" />
+            <h5 class="feature-title">Zari Thread work</h5>
+            <p class="feature-text">Crafted with traditional gold and silver threads for an enduring touch of elegance</p>
+          </div>        
+        </div>
+        <div class="col-12 d-flex align-items-start justify-content-start mobile-content">
+          <div class="feature-block">
+            <img src="/assets/images/leaf.png" alt="Natural Cotton" class="feature-icon mb-2" />
+            <h5 class="feature-title">Natural Cotton</h5>
+            <p class="feature-text">Breathable and soft, ideal for everyday elegance with heritage roots</p>
+          </div>
+          <div class="feature-block">
+            <img src="/assets/images/wheat.png" alt="Organic Dyes" class="feature-icon mb-2" />
+            <h5 class="feature-title">Organic Dyes</h5>
+            <p class="feature-text">Eco-friendly dyes that preserve the richness of traditional palettes</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="scroll-section">
+  <div class="page-width text-center">
+    <div class='row'>  
+       <div class="col-xl-6">
+         <img class='image' id="main-image" src="assets/images/scroll-image.png" alt="hygiai-patient-app-labs.png"/>
+       </div>
+      <div class="col-xl-6">
+        <div class='sections-container'>
+        <div class='section1 sections'  id="assets/images/scroll-image.png" appSegmentIntersection>
+           <h2 class="title">Handwoven Indian Heritage</h2>
+           <p class="subtitle">Tulsi Silks is committed to preserving India’s rich textile legacy through exceptional craftsmanship. Every saree is meticulously handwoven by master artisans, combining heritage techniques with uncompromising quality standards. Our attention to detail ensures that each drape is a refined expression of artistry and cultural integrity.</p>
+          </div>
+          <div class='section2 sections' id="assets/images/img-2.jpg" appSegmentIntersection>
+            <h2 class="title">Classic Meets Contemporary</h2>
+           <p class="subtitle">At Tulsi Silks, tradition is not static—it evolves. Our design philosophy bridges classic techniques with contemporary styling, offering versatile sarees that complement both traditional ceremonies and modern wardrobes. From bridal couture to minimalist silks, each collection is curated with a forward-thinking perspective.</p>
+          </div>
+          <div class='section3 sections' id="assets/images/img-3.jpg" appSegmentIntersection>
+           <h2 class="title">Cherished Through Generations</h2>
+           <p class="subtitle">Over the decades, Tulsi Silks has become a trusted destination for saree connoisseurs. Our commitment extends beyond the product—delivering a personalised, seamless shopping experience, whether in-store or online. With a focus on authenticity, consistency, and customer care, we build relationships that span generations.</p>
+          </div>          
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- <section class="primary-section home-slider">
+    <div class="swiper-container">
+      <div class="swiper-wrapper">
+        <div class="swiper-slide">
+            <img class="img--fitscreen mob-img" width="100%" height="100%" src="assets/images/scroll-image.png" alt="">
+            <div class="home-slider-text d-flex col-md-6">
+              <div class="custom-width">
+                <h1>Celebrating 30+ Years of Saree Elegance</h1>
+                <p>Tradition stitched into every drape</p>
+              </div>
+            </div>
+        </div>
+        <div class="swiper-slide"> 
+            <img class="img--fitscreen mob-img" width="100%" height="100%" src="assets/images/img-2.jpg" alt="">
+            <div class="home-slider-text d-flex col-md-6">
+              <div class="custom-width">
+                <h1>Celebrating 30+ Years of Saree Elegance</h1>
+                <p>Tradition stitched into every drape</p>
+              </div>
+            </div>
+        </div>
+        <div class="swiper-slide"> 
+            <img class="img--fitscreen mob-img" width="100%" height="100%" src="assets/images/img-3.jpg" alt="">
+            <div class="home-slider-text d-flex col-md-6">
+              <div class="custom-width">
+                <h1>Celebrating 30+ Years of Saree Elegance</h1>
+                <p>Tradition stitched into every drape</p>
+              </div>
+            </div>
+        </div>
+      </div>      
+      <ng-container *ngIf="commonService?.desktop_device && segment.image_list?.length>1">
+          <div id="swipe_next_{{i+1}}" class="swiper-button swiper-button-next">
+            <lucide-icon name="chevron-right" [size]="20" stroke="1" color="white"></lucide-icon>
+          </div>
+          <div id="swipe_prev_{{i+1}}" class="swiper-button swiper-button-prev">
+            <lucide-icon name="chevron-left" [size]="20" stroke="1" color="black"></lucide-icon>
+          </div>
+      </ng-container>
+    </div>
+  </section> -->
+
+<section class="footer-sec">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-12 inner-section">            
+            <div class="titles">
+              <h2>Be Part of the Legacy</h2>
+              <p>Join a community that values authenticity, tradition, and timeless beauty. Explore our collection and find the saree that speaks to your soul</p> 
+              <button class="primary-btn">Explore Sarees</button>              
+            </div>              
+          </div>          
+        </div>
+      </div>
+</section>
+
+
+</section>

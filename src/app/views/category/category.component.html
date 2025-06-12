@@ -71,7 +71,7 @@
               </li>
             </ul>
           </div>
-          <div *ngIf="commonService?.screen_width>=992" class="col-xl-6 d-flex justify-content-end">
+          <div *ngIf="commonService?.screen_width>=992" class="col-xl-6 d-flex justify-content-end pr-0">
                     <span>
                       Sort by:
                       <select name="sort_list" [(ngModel)]="sort_value">
@@ -86,7 +86,7 @@
   <!--# breadcrumb #-->
 
   <!-- product list -->
-  <section *ngIf="list.length" class="common-site-section product-list pt-3">
+  <section *ngIf="list.length" class="common-site-section product-list pt-2">
     <div class="{{template_setting?.body_type}}">
       <div class="row">
 

@@ -1,0 +1,165 @@
+import { Component, OnInit, Inject } from '@angular/core';
+import { isPlatformBrowser, DOCUMENT } from '@angular/common';
+import { CommonService } from '../../../services/common.service';
+import { environment } from '../../../../environments/environment';
+interface TimelineItem {
+  year: number;
+  image: string;
+  title: string;
+  description: string;
+}
+@Component({
+  selector: 'app-about-us',
+  templateUrl: './about-us.component.html',
+  styleUrls: ['./about-us.component.scss']
+})
+export class AboutUsComponent implements OnInit {
+  imgBaseUrl = '/assets/';
+  pageLoader: boolean;
+  template_setting = environment.template_setting;
+  primary_main_slider: any[] = [];
+  screen_width: number = 0;
+  currentIndex = 0;
+
+
+  timelineData: TimelineItem[] = [
+    {
+      year: 1993,
+      image: 'assets/images/timeline-1.jpg',
+      title: 'Our Story Begins: Draped in Legacy Since 1993',
+      description: 'Tulsi Silks was born from the vision of Suresh and Santosh Parekh, who brought their deep expertise in textiles to life. Every saree crafted then and now echoes their unwavering commitment to quality and timeless heritage.'
+    },
+    {
+      year: 2013,
+      image: 'assets/images/timeline-2.jpg',
+      title: 'A Beautiful Expansion: Growing with Grace and Purpose',
+      description: 'In 2013, we moved into a larger, more vibrant space in Mylapore to meet growing love and demand. Yet, our ethos remained the same—celebrating handwoven beauty, personal service, and authentic craftsmanship.'
+    },
+    {
+      year: 2023,
+      image: 'assets/images/timeline-3.jpg',
+      title: 'A Timeless Saree Legacy: Today, a Symbol of Elegance',
+      description: 'With over 30 years of trust, Tulsi Silks is a cherished name for exquisite sarees across generations. From Kanjivaram classics to designer drapes, we continue to weave culture, elegance, and soul into every creation.'
+    },
+    // {
+    //   year: 2010,
+    //   image: 'assets/images/ranger-image.png',
+    //   title: 'Digital Footprint',
+    //   description: 'The brand stepped into the digital world, launching its first e-commerce store.'
+    // },
+    // {
+    //   year: 2015,
+    //   image: 'assets/images/ranger-image.png',
+    //   title: 'Global Reach',
+    //   description: 'Tulsi Silks started shipping worldwide, attracting a global audience.'
+    // },
+    // {
+    //   year: 2020,
+    //   image: 'assets/images/ranger-image.png',
+    //   title: 'Innovation & Heritage',
+    //   description: 'While rooted in tradition, we began exploring modern motifs and sustainable fabrics.'
+    // },
+    // {
+    //   year: 2025,
+    //   image: 'assets/images/ranger-image.png',
+    //   title: 'A New Era',
+    //   description: 'Embracing new-age craftsmanship while honoring timeless heritage.'
+    // }
+  ];
+
+
+  constructor(public commonService: CommonService,@Inject(DOCUMENT) private document) { }
+
+  ngOnInit(): void {
+    this.screen_width = window.innerWidth;
+    this.loadSliderData();
+  }
+
+  next(): void {
+    if (this.currentIndex < this.timelineData.length - 1) {
+      this.currentIndex++;
+    }
+  }
+
+  prev(): void {
+    if (this.currentIndex > 0) {
+      this.currentIndex--;
+    }
+  }
+
+  loadSliderData(): void {
+    this.primary_main_slider = [
+      {
+        mobile_img: 'images/banner-mob.png',
+        desktop_img: 'images/about-des-slider1.png',
+        img_alt: 'Elegant Saree',
+        position: 'm_c',
+        content_status: true,
+        content_details: {
+          heading: 'Elegant Sarees Collection',
+          sub_heading: 'Unveil the beauty of tradition',
+          text_color: 'light'
+        },
+        btn_status: true,
+        btn_text: 'Explore Now',
+        btn_link: '/products/sarees'
+      },
+      // {
+      //   mobile_img: 'slider2-mobile.jpg',
+      //   desktop_img: 'images/about-des-slider1.png',
+      //   img_alt: 'Classic Weaves',
+      //   position: 'm_r',
+      //   content_status: true,
+      //   content_details: {
+      //     heading: 'Handpicked Classics',
+      //     sub_heading: 'Crafted with elegance and grace',
+      //     text_color: 'dark'
+      //   },
+      //   btn_status: true,
+      //   btn_text: 'Shop Now',
+      //   btn_link: '/products/classics'
+      // },
+      // {
+      //   mobile_img: 'slider3-mobile.jpg',
+      //   desktop_img: 'images/about-des-slider1.png',
+      //   img_alt: 'Festive Styles',
+      //   position: 't_c',
+      //   content_status: true,
+      //   content_details: {
+      //     heading: 'Celebrate the Season',
+      //     sub_heading: 'Festive collections for every occasion',
+      //     text_color: 'light'
+      //   },
+      //   btn_status: true,
+      //   btn_text: 'View Collection',
+      //   btn_link: '/products/festive'
+      // }
+    ];
+  }
+
+  getDotLeftPosition(index: number): number {
+  const count = this.timelineData.length - 1;
+  return (index / count) * 100;
+}
+
+  onPageRedirect(slide: any): void {
+    // You can customize this with router navigation
+    if (slide.btn_link) {
+      window.location.href = slide.btn_link;
+    }
+  }
+
+  setSliderHeight() {
+      // For set body margin-top and main-slider height
+      if(environment.template_setting.primary_slider=='fs_slider') {
+        let mastHeight = this.document.getElementById("headroom-head").offsetHeight;
+        this.document.body.style.marginTop = mastHeight+'px';
+        let slider_height = "calc(100vh - " + mastHeight + "px)";
+        let classList = this.document.getElementsByClassName('dynamic-height');
+        for(let i=0; i<classList.length; i++) {
+          classList[i].style.height = slider_height;
+        }
+      }
+    }
+
+}

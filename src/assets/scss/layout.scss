@@ -33,7 +33,19 @@
     min-height: $mobile-announcement-bar-mh;
   }
 }
+.mob-img{
+  display: none;
+}
 @media screen and (max-width: 767px) {
+   .about-footer{
+    padding-top: 50px !important;
+   }
+  .desk-img{
+    display: none;
+  }
+  .mob-img{
+    display: block;
+  }
   .top-news {
     display: flex;
   }
@@ -1587,7 +1599,9 @@ span{
 // -------------------HOME-------------
 
 //   ------------------FOOTER START-----------------
-
+  .about-footer{
+    padding-top: 240px;
+  }
 .footer {
   position: static;
   z-index: 0;
