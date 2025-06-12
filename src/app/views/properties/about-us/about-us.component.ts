@@ -8,6 +8,12 @@ interface TimelineItem {
   title: string;
   description: string;
 }
+
+interface HeritageItem {
+  image: string;
+  title: string;
+  description: string;
+}
 @Component({
   selector: 'app-about-us',
   templateUrl: './about-us.component.html',
@@ -20,7 +26,23 @@ export class AboutUsComponent implements OnInit {
   primary_main_slider: any[] = [];
   screen_width: number = 0;
   currentIndex = 0;
-
+heritageData: HeritageItem[] = [
+    {
+      image: 'assets/images/scroll-image.png',
+      title: 'Handwoven Indian Heritage',
+      description: 'Tulsi Silks is committed to preserving India\'s rich textile legacy through exceptional craftsmanship. Every saree is meticulously handwoven by master artisans, combining heritage techniques with uncompromising quality standards. Our attention to detail ensures that each drape is a refined expression of artistry and cultural integrity.'
+    },
+    {
+      image: 'assets/images/img-2.jpg',
+      title: 'Classic Meets Contemporary',
+      description: 'At Tulsi Silks, tradition is not static—it evolves. Our design philosophy bridges classic techniques with contemporary styling, offering versatile sarees that complement both traditional ceremonies and modern wardrobes. From bridal couture to minimalist silks, each collection is curated with a forward-thinking perspective.'
+    },
+    {
+      image: 'assets/images/img-3.jpg',
+      title: 'Cherished Through Generations',
+      description: 'Over the decades, Tulsi Silks has become a trusted destination for saree connoisseurs. Our commitment extends beyond the product—delivering a personalised, seamless shopping experience, whether in-store or online. With a focus of authenticity, consistency, and customer care, we build relationships that span generations.'
+    }
+  ];
 
   timelineData: TimelineItem[] = [
     {

@@ -187,9 +187,10 @@
   </div>
 </section>
 
+<!-- Replace your existing scroll-section with this -->
 <section class="scroll-section">
   <div class="page-width text-center">
-    <div class='row'>  
+    <div class='row desktop-heritage-view'>  
        <div class="col-xl-6">
          <img class='image' id="main-image" src="assets/images/scroll-image.png" alt="hygiai-patient-app-labs.png"/>
        </div>
@@ -197,7 +198,7 @@
         <div class='sections-container'>
         <div class='section1 sections'  id="assets/images/scroll-image.png" appSegmentIntersection>
            <h2 class="title">Handwoven Indian Heritage</h2>
-           <p class="subtitle">Tulsi Silks is committed to preserving India’s rich textile legacy through exceptional craftsmanship. Every saree is meticulously handwoven by master artisans, combining heritage techniques with uncompromising quality standards. Our attention to detail ensures that each drape is a refined expression of artistry and cultural integrity.</p>
+           <p class="subtitle">Tulsi Silks is committed to preserving India's rich textile legacy through exceptional craftsmanship. Every saree is meticulously handwoven by master artisans, combining heritage techniques with uncompromising quality standards. Our attention to detail ensures that each drape is a refined expression of artistry and cultural integrity.</p>
           </div>
           <div class='section2 sections' id="assets/images/img-2.jpg" appSegmentIntersection>
             <h2 class="title">Classic Meets Contemporary</h2>
@@ -207,6 +208,36 @@
            <h2 class="title">Cherished Through Generations</h2>
            <p class="subtitle">Over the decades, Tulsi Silks has become a trusted destination for saree connoisseurs. Our commitment extends beyond the product—delivering a personalised, seamless shopping experience, whether in-store or online. With a focus on authenticity, consistency, and customer care, we build relationships that span generations.</p>
           </div>          
+        </div>
+      </div>
+    </div>
+
+    <!-- Mobile Swiper Version -->
+    <div class="mobile-heritage-view">
+      <div class="swiper-container heritage-swiper" appHeritageSwiper>
+        <div class="swiper-wrapper">
+          <div class="swiper-slide" *ngFor="let heritage of heritageData; let i = index">
+            <div class="heritage-slide-content">
+              <div class="heritage-image">
+                <img [src]="heritage.image" [alt]="heritage.title" class="img-fluid" />
+              </div>
+              <div class="heritage-text">
+                <h2 class="heritage-title">{{ heritage.title }}</h2>
+                <p class="heritage-description">{{ heritage.description }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Pagination -->
+        <div class="swiper-pagination heritage-pagination"></div>
+        
+        <!-- Navigation arrows -->
+        <div class="swiper-button-next heritage-next">
+          <lucide-icon name="chevron-right" [size]="20" stroke="1" color="white"></lucide-icon>
+        </div>
+        <div class="swiper-button-prev heritage-prev">
+          <lucide-icon name="chevron-left" [size]="20" stroke="1" color="white"></lucide-icon>
         </div>
       </div>
     </div>

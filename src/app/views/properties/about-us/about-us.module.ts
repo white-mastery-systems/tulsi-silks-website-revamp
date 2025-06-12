@@ -6,11 +6,12 @@ import { AboutUsComponent } from './about-us.component';
 import { SharedModule } from '../../../shared/shared.module';
 import { SliderDirective } from './directives/slider.directive';
 import { SegmentIntersectionDirective } from './directives/segment-intersection.directive';
+import { HeritageSwiperDirective } from './directives/heritage-swiper.directive';
 import { LucideAngularModule, ChevronLeft, ChevronRight } from 'lucide-angular';
 
 @NgModule({
   declarations: [
-    AboutUsComponent, SliderDirective, SegmentIntersectionDirective
+    AboutUsComponent, SliderDirective, SegmentIntersectionDirective, HeritageSwiperDirective
   ],
   imports: [
     CommonModule,
