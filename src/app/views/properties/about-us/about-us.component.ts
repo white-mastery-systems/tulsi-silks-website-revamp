@@ -20,13 +20,13 @@ interface HeritageItem {
   styleUrls: ['./about-us.component.scss']
 })
 export class AboutUsComponent implements OnInit {
-  imgBaseUrl = '/assets/';
+  imgBaseUrl = 'assets/';
   pageLoader: boolean;
   template_setting = environment.template_setting;
   primary_main_slider: any[] = [];
   screen_width: number = 0;
   currentIndex = 0;
-heritageData: HeritageItem[] = [
+  heritageData: HeritageItem[] = [
     {
       image: 'assets/images/scroll-image.png',
       title: 'Handwoven Indian Heritage',

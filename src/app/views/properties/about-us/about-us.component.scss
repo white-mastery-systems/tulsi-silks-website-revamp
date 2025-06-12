@@ -303,8 +303,16 @@
   }
 
 @media (max-width: 767px) {
+    
 .footer-sec{
     margin: 0 !important;
+    .inner-section{
+     padding: 40px 0 !important;
+    }    
+    .titles{
+        padding: 0 15px !important;
+        margin-bottom: 0 !important;
+    }
 }
     .home-slider{
       .home-slider-text{
@@ -356,6 +364,7 @@
     }
     .unique-saree-section{
         padding-top: 20px;
+        padding-bottom: 20px;
         .left-image{
             img{
                 padding-right: 0 !important;
