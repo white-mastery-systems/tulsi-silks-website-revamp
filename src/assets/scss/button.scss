@@ -131,7 +131,7 @@ button {
   font-weight: 400;
   background: $secondary-btn-bg;
   color: $secondary-btn-txt;
-  text-transform: uppercase;
+  text-transform: capitalize;
   cursor: pointer;
   border-radius: $btn-radius;
   height: 48px;

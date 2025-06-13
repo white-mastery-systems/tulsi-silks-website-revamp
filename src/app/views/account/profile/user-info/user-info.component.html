@@ -61,9 +61,9 @@
                   <input *ngIf="customer_details?.name_change" type="text" name="name" [(ngModel)]="customer_details.name" #name="ngModel" required>
                 </div>
                 <div class="col-md-6 d-flex align-items-center justify-content-end">
-                  <button class="primary-btn" *ngIf="!customer_details?.name_change" type="button" (click)="customer_details.name_change=true;">CHANGE</button>
+                  <button class="primary-btn" *ngIf="!customer_details?.name_change" type="button" (click)="customer_details.name_change=true;">Change</button>
                   <button class="primary-btn d-flex justify-content-center align-items-center" [disabled]="customer_details?.name_update" *ngIf="customer_details?.name_change" type="submit">
-                    SAVE
+                    Save
                     <div class="box" *ngIf="customer_details?.name_update">
                       <div class="spinner"></div>
                     </div>
@@ -99,10 +99,10 @@
                 </div>
                 <div class="col-md-6 d-flex align-items-center justify-content-end">
                   <button class="primary-btn" *ngIf="!customer_details?.mobile_change" type="button" (click)="onEditMobile();">
-                    {{ (customer_details?.mobile)? 'CHANGE': 'ADD' }}
+                    {{ (customer_details?.mobile)? 'Change': 'Add' }}
                   </button>
                   <button class="primary-btn d-flex justify-content-center align-items-center" [disabled]="customer_details?.mobile_update" *ngIf="customer_details?.mobile_change" type="submit">
-                    SAVE
+                    Save
                     <div class="box" *ngIf="customer_details?.mobile_update">
                       <div class="spinner"></div>
                     </div>
@@ -132,7 +132,7 @@
                 <h6 class="m-0">******</h6>
               </div>
               <div class="col-md-6 d-flex align-items-center justify-content-end">
-                <button class="primary-btn" type="button" (click)="pwdForm={}; changePwdModal.show();">CHANGE</button>
+                <button class="primary-btn" type="button" (click)="pwdForm={}; changePwdModal.show();">Change</button>
               </div>
             </div>
           </div>
@@ -198,9 +198,9 @@
           </div>
         </div>
         <div class="modal-footer">
-          <button type="button" class="secondary-btn" (click)="changePwdModal.hide();">CLOSE</button>
+          <button type="button" class="secondary-btn" (click)="changePwdModal.hide();">Close</button>
           <button class="primary-btn d-flex justify-content-center align-items-center" type="submit" [disabled]="pwdForm.new_pwd!=pwdForm.confirm_new_pwd || pwdForm.submit">
-            SUBMIT
+            Submit
             <div class="box" *ngIf="pwdForm.submit">
               <div class="spinner"></div>
             </div>

@@ -99,14 +99,14 @@
           <div class="col-md-12 mt-4">
             <div class="proceed-sec d-flex justify-content-between w-100 m-0">
               <!-- left btn -->
-              <button *ngIf="assistIndex==0" click="commonService.goBack();" class="primary-btn">CLOSE</button>
+              <button *ngIf="assistIndex==0" click="commonService.goBack();" class="primary-btn">Close</button>
               <button *ngIf="assistIndex>0" (click)="assistIndex=assistIndex-1; commonService?.pageScrollTop();"
-                class="primary-btn">PREVIOUS</button>
+                class="primary-btn">Previous</button>
               <!-- right btn -->
               <button *ngIf="assist_list[assistIndex+1]?.filtered_option_list?.length" (click)="onNext();"
-                class="primary-btn">NEXT</button>
+                class="primary-btn">Next</button>
               <button *ngIf="!assist_list[assistIndex+1]?.filtered_option_list?.length"
-                (click)="measurement_list=[]; onSave();" class="primary-btn">SAVE</button>
+                (click)="measurement_list=[]; onSave();" class="primary-btn">Save</button>
             </div>
           </div>
           <div *ngIf="!assist_list[assistIndex+1]?.filtered_option_list?.length" class="col-md-12 mt-4">
@@ -177,8 +177,8 @@
       </div>
 
       <div class="modal-footer">
-        <button class="secondary-btn" type="button" (click)="mmDetailsModal.hide();">CLOSE</button>
-        <button class="primary-btn" type="button" (click)="onSaveWithUpdatedMm();">SAVE</button>
+        <button class="secondary-btn" type="button" (click)="mmDetailsModal.hide();">Close</button>
+        <button class="primary-btn" type="button" (click)="onSaveWithUpdatedMm();">Save</button>
       </div>
     </div>
   </div>

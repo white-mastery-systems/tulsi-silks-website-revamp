@@ -417,6 +417,7 @@ export class AppComponent {
           if(this.document.getElementById('ccLink')) this.document.getElementById('ccLink').href = this.commonService.origin+currentUrl;
           //NOTE: This Function Will trigger close event in menu
           this.commonService.resetMegaMenu();
+          setTimeout(() => { this.moveNavigation(); }, 0);
         }
       });
     }

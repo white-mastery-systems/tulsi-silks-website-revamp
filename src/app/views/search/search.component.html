@@ -46,7 +46,7 @@
                         <option *ngFor="let x of commonService.search_category_list | orderAsc: 'rank';" [ngValue]="x._id">{{x.name}}</option>
                       </select>
                     </ng-container>
-                    <button class="primary-btn" type="submit" [disabled]="searchForm?.name?.length<3">SEARCH</button>
+                    <button class="primary-btn" type="submit" [disabled]="searchForm?.name?.length<3">Search</button>
                   </form>
                   <ng-container *ngIf="commonService.application_setting?.search_keywords?.length">
                     <h5>Popular Search Terms</h5>

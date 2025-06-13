@@ -87,17 +87,17 @@
             <ng-container *ngIf="commonService.selected_model?.mm_sets?.length || commonService.selected_model?.notes_list?.length">
               <div *ngIf="commonService.selected_model?.mm_sets?.length" class="col-md-6 col-6 pr-1 pl-1">
                 <button class="primary-btn w-100" type="button" (click)="commonService.customView=false; commonService.measurementView=true; commonService.notesView=false; commonService?.scrollModalTop(0);">
-                  VIEW MEASUREMENTS
+                  View Measurements
                 </button>
               </div>
               <div *ngIf="commonService.selected_model?.notes_list?.length" class="col-md-6 col-6 pr-1 pl-1">
                 <button class="primary-btn w-100" type="button" (click)="commonService.customView=false; commonService.measurementView=false; commonService.notesView=true; commonService?.scrollModalTop(0);">
-                  VIEW NOTES
+                  View Notes
                 </button>
               </div>
             </ng-container>
             <div *ngIf="!commonService.selected_model?.mm_sets?.length && !commonService.selected_model?.notes_list?.length" class="col-md-6 col-6 pr-1 pl-1">
-              <button class="primary-btn w-100" (click)="customizationDetailsModal.hide();" type="button">CLOSE</button>
+              <button class="primary-btn w-100" (click)="customizationDetailsModal.hide();" type="button">Close</button>
             </div>
           </ng-container>
           <!-- measurement view -->
@@ -105,17 +105,17 @@
             <ng-container *ngIf="commonService.selected_model?.custom_list?.length || commonService.selected_model?.notes_list?.length">
               <div *ngIf="commonService.selected_model?.custom_list?.length" class="col-md-6 col-6 pr-1 pl-1">
                 <button class="primary-btn w-100" type="button" (click)="commonService.customView=true; commonService.measurementView=false; commonService.notesView=false; commonService?.scrollModalTop(0);">
-                  VIEW CUSTOMIZATION
+                  View Customization
                 </button>
               </div>
               <div *ngIf="commonService.selected_model?.notes_list?.length" class="col-md-6 col-6 pr-1 pl-1">
                 <button class="primary-btn w-100" type="button" (click)="commonService.customView=false; commonService.measurementView=false; commonService.notesView=true; commonService?.scrollModalTop(0);">
-                  VIEW NOTES
+                  View Notes
                 </button>
               </div>
             </ng-container>
             <div *ngIf="!commonService.selected_model?.custom_list?.length && !commonService.selected_model?.notes_list?.length" class="col-md-6 col-6 pr-1 pl-1">
-              <button class="primary-btn w-100" (click)="customizationDetailsModal.hide();" type="button">CLOSE</button>
+              <button class="primary-btn w-100" (click)="customizationDetailsModal.hide();" type="button">Close</button>
             </div>
           </ng-container>
           <!-- notes view -->
@@ -123,17 +123,17 @@
             <ng-container *ngIf="commonService.selected_model?.custom_list?.length || commonService.selected_model?.mm_sets?.length">
               <div *ngIf="commonService.selected_model?.custom_list?.length" class="col-md-6 col-6 pr-1 pl-1">
                 <button class="primary-btn w-100" type="button" (click)="commonService.customView=true; commonService.measurementView=false; commonService.notesView=false; commonService?.scrollModalTop(0);">
-                  VIEW CUSTOMIZATION
+                  View Customization
                 </button>
               </div>
               <div *ngIf="commonService.selected_model?.mm_sets?.length" class="col-md-6 col-6 pr-1 pl-1">
                 <button class="primary-btn w-100" type="button" (click)="commonService.customView=false; commonService.measurementView=true; commonService.notesView=false; commonService?.scrollModalTop(0);">
-                  VIEW MEASUREMENTS
+                  View Measurements
                 </button>
               </div>
             </ng-container>
             <div *ngIf="!commonService.selected_model?.custom_list?.length && !commonService.selected_model?.mm_sets?.length" class="col-md-6 col-6 pr-1 pl-1">
-              <button class="primary-btn w-100" (click)="customizationDetailsModal.hide();" type="button">CLOSE</button>
+              <button class="primary-btn w-100" (click)="customizationDetailsModal.hide();" type="button">Close</button>
             </div>
           </ng-container>
         </div>

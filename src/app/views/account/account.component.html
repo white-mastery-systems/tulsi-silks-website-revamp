@@ -112,7 +112,7 @@
                   <div class="form-group col-12">
                     <button class="primary-btn d-flex justify-content-center align-items-center w-100" type="submit" 
                       [disabled]="registerForm.confirm_pwd && registerForm.password!=registerForm.confirm_pwd || registerForm.submit">
-                      SIGN UP
+                      Sign Up
                       <div class="box" *ngIf="registerForm.submit">
                         <div class="spinner"></div>
                       </div>
@@ -177,7 +177,7 @@
                   <!-- #alert# -->
                   <div class="form-group col-12">
                     <button class="primary-btn d-flex justify-content-center align-items-center w-100" type="submit" [disabled]="loginForm.submit">
-                      SIGN IN
+                      Sign In
                       <div class="box" *ngIf="loginForm.submit">
                         <div class="spinner"></div>
                       </div>
@@ -324,7 +324,7 @@
       <div class="row mt-5">
         <div class="col-md-12">
           <div class="acoount_logout">
-            <button (click)="logoutModal.show();" class="primary-btn">LOGOUT</button>
+            <button (click)="logoutModal.show();" class="primary-btn">Logout</button>
           </div>
         </div>
       </div>
@@ -359,9 +359,9 @@
           </div>
         </div>
         <div class="modal-footer">
-          <button type="button" class="secondary-btn" (click)="forgotModal.hide();">CLOSE</button>
+          <button type="button" class="secondary-btn" (click)="forgotModal.hide();">Close</button>
           <button type="submit" class="primary-btn d-flex justify-content-center align-items-center" [disabled]="forgotForm.submit">
-            SUBMIT
+            Submit
             <div class="box" *ngIf="forgotForm.submit">
               <div class="spinner"></div>
             </div>
@@ -381,8 +381,8 @@
         <h6 class="m-0">Are you sure, you want to logout?</h6>
       </div>
       <div class="modal-footer">
-        <button class="secondary-btn" type="button" (click)="logoutModal.hide();">NO</button>
-        <button class="primary-btn" type="button" (click)="onLogout(logoutModal);">YES</button>
+        <button class="secondary-btn" type="button" (click)="logoutModal.hide();">No</button>
+        <button class="primary-btn" type="button" (click)="onLogout(logoutModal);">Yes</button>
       </div>
     </div>
   </div>

@@ -10,7 +10,7 @@
           <div class="content-404" align="center">
             <h4>{{errorMsg}}</h4>
             <p>
-              <button class="primary-btn" type="button" routerLink="/">GO TO HOME PAGE</button>
+              <button class="primary-btn" type="button" routerLink="/">Go to Home Page</button>
             </p>
           </div>
         </div>
@@ -366,12 +366,12 @@
                       </button>
                       <!-- call to store, if no payment methods exist -->
                       <a *ngIf="!commonService?.payment_methods.length">
-                        <button class="primary-btn w-100 mb-1" [disabled]="true">PLACE ORDER</button>
+                        <button class="primary-btn w-100 mb-1" [disabled]="true">Place Order</button>
                       </a>
                     </div>
                     <!-- place order -->
                     <div *ngIf="((orderForm.sub_total*1)-(orderForm.manualDiscAmount*1)) <= 0" class="col-md-12">
-                      <button type="button" class="primary-btn w-100" [disabled]="true">PLACE ORDER</button>
+                      <button type="button" class="primary-btn w-100" [disabled]="true">Place Order</button>
                     </div>
 
                   </div>

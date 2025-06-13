@@ -96,7 +96,7 @@
                     <!-- btn -->
                     <button *ngIf="commonService.store_properties.pincodes?.indexOf(x.pincode)!=-1" type="button" (click)="x.submit=true; onSelectForProduct(x, i);"
                     [disabled]="x.submit" class="primary-btn d-flex justify-content-center align-items-center w-100">
-                      DELIVER HERE
+                      Deliver Here
                       <div class="box" *ngIf="x.submit">
                         <div class="spinner"></div>
                       </div>
@@ -104,7 +104,7 @@
                   </ng-container>
                   <button *ngIf="commonService.ys_features.indexOf('pincode_service')==-1 || !commonService.store_properties.pincodes.length" type="button" (click)="x.submit=true; onSelectForProduct(x, i);" [disabled]="x.submit"
                   class="primary-btn d-flex justify-content-center align-items-center w-100">
-                    DELIVER HERE
+                    Deliver Here
                     <div class="box" *ngIf="x.submit">
                       <div class="spinner"></div>
                     </div>
@@ -113,7 +113,7 @@
                 <!-- for gift card -->
                 <button *ngIf="params?.type=='giftcard'" type="button" (click)="x.submit=true; onSelectForGiftcard(x);" [disabled]="x.submit"
                   class="primary-btn d-flex justify-content-center align-items-center w-100">
-                  SELECT
+                  Select
                   <div class="box" *ngIf="x.submit">
                     <div class="spinner"></div>
                   </div>
@@ -134,7 +134,7 @@
       <div class="row">
         <div class="col-12">
           <div class="add_address-btn">
-            <button type="button" class="primary-btn" (click)="onOpenAddressModal(addressModal);">ADD NEW ADDRESS</button>
+            <button type="button" class="primary-btn" (click)="onOpenAddressModal(addressModal);">Add New Address</button>
           </div>
         </div>
       </div>
@@ -157,9 +157,9 @@
                         pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" title="Please enter a valid Email ID" (input)="guestForm.errorMsg=null;" appLowercase required />
                       </div>
                       <div class="col-6 d-flex align-items-center justify-content-end">
-                        <button class="primary-btn" *ngIf="!guestForm?.email_change" type="button" (click)="guestForm.email_change=true;">CHANGE</button>
+                        <button class="primary-btn" *ngIf="!guestForm?.email_change" type="button" (click)="guestForm.email_change=true;">Change</button>
                         <button *ngIf="guestForm?.email_change" class="primary-btn d-flex justify-content-center align-items-center" type="submit" [disabled]="guestForm.submit">
-                          UPDATE
+                          Update
                           <div class="box" *ngIf="guestForm.submit">
                             <div class="spinner"></div>
                           </div>
@@ -386,7 +386,7 @@
                 </div>
                 <div class="col-lg-4 offset-lg-8">
                   <button class="mt-3 primary-btn w-100 d-flex justify-content-center align-items-center" [disabled]="btnLoader" type="submit">
-                    SUBMIT
+                    Submit
                     <div class="box" *ngIf="btnLoader">
                       <div class="spinner"></div>
                     </div>
@@ -531,9 +531,9 @@
             </div>
           </div>
           <div class="col-12 px-0 d-flex justify-content-end">
-            <button type="button" class="secondary-btn mr-2" (click)="addressModal.hide();">CLOSE</button>
+            <button type="button" class="secondary-btn mr-2" (click)="addressModal.hide();">Close</button>
             <button class="primary-btn d-flex justify-content-center align-items-center" type="submit" [disabled]="addressForm.submit">
-              ADD
+              Add
               <div class="box" *ngIf="addressForm.submit">
                 <div class="spinner"></div>
               </div>

@@ -193,7 +193,7 @@
                     <!-- if max shipping wgt restriction exist -->
                     <ng-container *ngIf="commonService.application_setting.max_shipping_weight > 0 && commonService.application_setting.max_shipping_weight >= cartWeight && cartTotal >= commonService.application_setting.min_checkout_value">
                       <button class="primary-btn d-flex justify-content-center align-items-center w-100 mt-1 mb-1" [disabled]="btnLoader" (click)="onCheckout();" type="button">
-                        CHECKOUT
+                        Checkout
                         <div class="box" *ngIf="btnLoader">
                           <div class="spinner"></div>
                         </div>
@@ -203,7 +203,7 @@
                     <!-- if max shipping wgt restriction not exist -->
                     <ng-container *ngIf="commonService.application_setting.max_shipping_weight===0 && cartTotal >= commonService.application_setting.min_checkout_value">
                       <button class="primary-btn d-flex justify-content-center align-items-center w-100 mt-1 mb-1" [disabled]="btnLoader" (click)="onCheckout();" type="button">
-                        CHECKOUT
+                        Checkout
                         <div class="box" *ngIf="btnLoader">
                           <div class="spinner"></div>
                         </div>
@@ -213,7 +213,7 @@
                   </ng-container>
                   <ng-container *ngIf="!commonService.store_properties.pickup_locations?.length && commonService.application_setting.disable_delivery && commonService.ys_features.indexOf('whatsapp_chat')!=-1 && commonService.application_setting.chat_status && commonService.application_setting.chat_config?.type=='whatsapp'">
                     <a href="https://api.whatsapp.com/send?phone={{commonService.application_setting.chat_config.mobile}}&text={{commonService.application_setting.chat_config.message}}" class="w-100" target="_blank">
-                      <button class="primary-btn w-100" type="button">ENQUIRE NOW</button>
+                      <button class="primary-btn w-100" type="button">Enquire Now</button>
                     </a>
                   </ng-container>
                 </div>

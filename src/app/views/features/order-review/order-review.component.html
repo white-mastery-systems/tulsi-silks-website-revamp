@@ -60,7 +60,7 @@
         <div class="col-lg-3 col-md-12 d-flex align-items-center justify-content-center">
           <div class="profile_address-btn">
             <button class="primary-btn d-flex justify-content-center align-items-center" *ngIf="!x.review_details" (click)="x.submit=true; getProductDetails(i, reviewModal);" type="button" [disabled]="x.submit">
-              REVIEW PRODUCT
+              Review Product
               <div class="box" *ngIf="x.submit">
                 <div class="spinner"></div>
               </div>
@@ -188,16 +188,16 @@
             </div>
           </div>
           <div *ngIf="reviewForm.store_id" class="col-12 px-0 d-flex justify-content-end">
-            <button type="button" class="secondary-btn mr-2" (click)="reviewModal.hide();">CANCEL</button>
+            <button type="button" class="secondary-btn mr-2" (click)="reviewModal.hide();">Cancel</button>
             <button class="primary-btn d-flex justify-content-center align-items-center" type="submit" [disabled]="reviewForm.submit">
-              SUBMIT
+              Submit
               <div class="box" *ngIf="reviewForm.submit">
                 <div class="spinner"></div>
               </div>
             </button>
           </div>
           <div *ngIf="!reviewForm.store_id" class="col-12 px-0 d-flex justify-content-end">
-            <button type="button" class="primary-btn" (click)="reviewModal.hide();">CLOSE</button>
+            <button type="button" class="primary-btn" (click)="reviewModal.hide();">Close</button>
           </div>
         </div>
       </form>

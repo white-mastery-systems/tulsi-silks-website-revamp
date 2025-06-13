@@ -161,14 +161,14 @@
                     <div class="row m-0">
                       <div class="col-md-12 p-0">
                         <div class="buy-add-cart-btn-inner">                          
-                          <button *ngIf="!productDetails?.added_to_cart" class="primary-btn w-100" type="button" (click)="addtoCart(true);">ADD TO CART</button>
+                          <button *ngIf="!productDetails?.added_to_cart" class="primary-btn w-100" type="button" (click)="addtoCart(true);">Add to Cart</button>
                           <button *ngIf="productDetails?.added_to_cart" (click)="gotoCart();" class="secondary-btn w-100 d-inline-flex justify-content-center align-items-center" type="button">
-                            GO TO CART
+                            Go to Cart
                             <i class="material-icons pl-1">arrow_forward</i>
                           </button>
                           <button *ngIf="!commonService.store_properties.pickup_locations?.length && !commonService.application_setting.disable_delivery && template_setting?.enable_buynow;"
                           type="button" class="primary-btn w-100 d-inline-flex justify-content-center align-items-center" [disabled]="productDetails?.buynow_loader" (click)="buyNow();">
-                            BUY NOW
+                            Buy Now
                             <div class="box" *ngIf="productDetails?.buynow_loader">
                               <div class="spinner"></div>
                             </div>
@@ -194,7 +194,7 @@
                     class="primary-btn w-100"
                     type="button"
                   >
-                    ENQUIRE NOW
+                    Enquire Now
                   </button>
                 </div>
               </div>
@@ -485,12 +485,12 @@
                         <div class="buy-add-cart-btn-inner">                          
                           <button *ngIf="!productDetails?.added_to_cart" class="primary-btn w-100" type="button" (click)="addtoCart(true);">ADD TO CART</button>
                           <button *ngIf="productDetails?.added_to_cart" (click)="gotoCart();" class="secondary-btn w-100 d-inline-flex justify-content-center align-items-center" type="button">
-                            GO TO CART
+                            Go to Cart
                             <i class="material-icons pl-1">arrow_forward</i>
                           </button>
                           <button *ngIf="!commonService.store_properties.pickup_locations?.length && !commonService.application_setting.disable_delivery && template_setting?.enable_buynow;"
                           type="button" class="primary-btn w-100 d-inline-flex justify-content-center align-items-center" [disabled]="productDetails?.buynow_loader" (click)="buyNow();">
-                            BUY NOW
+                            Buy Now
                             <div class="box" *ngIf="productDetails?.buynow_loader">
                               <div class="spinner"></div>
                             </div>
@@ -530,7 +530,7 @@
                     class="primary-btn w-100"
                     type="button"
                   >
-                    ENQUIRE NOW
+                    Enquire Now
                   </button>
                 </div>
               </div>
@@ -943,7 +943,7 @@
       </div>
 
       <div class="modal-footer">
-        <button type="button" class="primary-btn" (click)="addonTypesModal.hide();">CLOSE</button>
+        <button type="button" class="primary-btn" (click)="addonTypesModal.hide();">Close</button>
       </div>
     </div>
   </div>
@@ -977,7 +977,7 @@
       </div>
 
       <div class="modal-footer">
-        <button type="button" class="primary-btn" (click)="addonListModal.hide();">CLOSE</button>
+        <button type="button" class="primary-btn" (click)="addonListModal.hide();">Close</button>
       </div>
     </div>
   </div>
@@ -1015,7 +1015,7 @@
       </div>
 
       <div class="modal-footer">
-        <button type="button" class="primary-btn" (click)="mmOptionsModal.hide();">CLOSE</button>
+        <button type="button" class="primary-btn" (click)="mmOptionsModal.hide();">Close</button>
       </div>
     </div>
   </div>
@@ -1166,28 +1166,28 @@
           <!-- left side -->
           <!-- custom section -->
           <ng-container *ngIf="customSection">
-            <button *ngIf="customIndex==0" (click)="clearAddon(); createNewModal.hide();" class="primary-btn">CLOSE</button>
-            <button *ngIf="customIndex>0" (click)="customPrev();" class="primary-btn">PREVIOUS</button>
+            <button *ngIf="customIndex==0" (click)="clearAddon(); createNewModal.hide();" class="primary-btn">Close</button>
+            <button *ngIf="customIndex>0" (click)="customPrev();" class="primary-btn">Previous</button>
           </ng-container>
           <!-- measurement section -->
           <ng-container *ngIf="mmSection">
-            <button *ngIf="mmIndex==0 && !custom_list?.length" (click)="clearAddon(); createNewModal.hide();" class="primary-btn">CLOSE</button>
-            <button *ngIf="custom_list?.length || mmIndex>0" (click)="customPrev();" class="primary-btn">PREVIOUS</button>
+            <button *ngIf="mmIndex==0 && !custom_list?.length" (click)="clearAddon(); createNewModal.hide();" class="primary-btn">Close</button>
+            <button *ngIf="custom_list?.length || mmIndex>0" (click)="customPrev();" class="primary-btn">Previous</button>
           </ng-container>
           <!-- note section -->
           <ng-container *ngIf="noteSection">
-            <button *ngIf="!custom_list?.length && !measurement_sets?.length" (click)="clearAddon(); createNewModal.hide();" class="primary-btn">CLOSE</button>
-            <button *ngIf="custom_list?.length || measurement_sets?.length" (click)="customPrev();" class="primary-btn">PREVIOUS</button>
+            <button *ngIf="!custom_list?.length && !measurement_sets?.length" (click)="clearAddon(); createNewModal.hide();" class="primary-btn">Close</button>
+            <button *ngIf="custom_list?.length || measurement_sets?.length" (click)="customPrev();" class="primary-btn">Previous</button>
           </ng-container>
           <!-- #left side -->
 
           <!-- right side -->
           <!-- custom section -->
           <ng-container *ngIf="customSection">
-            <button *ngIf="custom_list[customIndex+1]?.filtered_option_list?.length || measurement_sets.length || notes_list.length" (click)="(custom_list[customIndex+1]?.filtered_option_list?.length)? onCustomNext(false): onCustomNext(true);" class="primary-btn">NEXT</button>
+            <button *ngIf="custom_list[customIndex+1]?.filtered_option_list?.length || measurement_sets.length || notes_list.length" (click)="(custom_list[customIndex+1]?.filtered_option_list?.length)? onCustomNext(false): onCustomNext(true);" class="primary-btn">Next</button>
             <button *ngIf="!custom_list[customIndex+1]?.filtered_option_list?.length && !measurement_sets.length&& !notes_list.length" (click)="onSaveNewModal(createNewModal, selectedCustomizationDetailsModal);" [disabled]="addonForm.submit"
               class="primary-btn d-flex justify-content-center align-items-center">
-              SUBMIT
+              Submit
               <div class="box" *ngIf="addonForm.submit">
                 <div class="spinner"></div>
               </div>
@@ -1195,10 +1195,10 @@
           </ng-container>
           <!-- measurement section -->
           <ng-container *ngIf="mmSection">
-            <button *ngIf="(measurement_sets?.length-1)>mmIndex || notes_list.length" (click)="onMmNext();" class="primary-btn">NEXT</button>
+            <button *ngIf="(measurement_sets?.length-1)>mmIndex || notes_list.length" (click)="onMmNext();" class="primary-btn">Next</button>
             <button *ngIf="(measurement_sets?.length-1)==mmIndex && !notes_list.length" (click)="onSaveNewModal(createNewModal, selectedCustomizationDetailsModal);" [disabled]="addonForm.submit"
               class="primary-btn d-flex justify-content-center align-items-center">
-              SUBMIT
+              Submit
               <div class="box" *ngIf="addonForm.submit">
                 <div class="spinner"></div>
               </div>
@@ -1207,7 +1207,7 @@
           <!-- note section -->
           <button *ngIf="noteSection" (click)="onSaveNewModal(createNewModal, selectedCustomizationDetailsModal);" [disabled]="addonForm.submit"
             class="primary-btn d-flex justify-content-center align-items-center">
-            SUBMIT
+            Submit
             <div class="box" *ngIf="addonForm.submit">
               <div class="spinner"></div>
             </div>
@@ -1262,21 +1262,21 @@
               </ng-container>
               <div *ngIf="!x?.custom_list?.length" class="col-lg-4 col-md-6"></div>
               <div class="col-lg-4 col-md-12">
-                <button type="button" (click)="existingListModal.hide(); onSelectModal(x, selectedCustomizationDetailsModal);" class="primary-btn w-100 mb-2">SELECT</button>
-                <button type="button" (click)="existingListModal.hide(); clearAddon(); onViewModel(x);" class="secondary-btn w-100">VIEW</button>
+                <button type="button" (click)="existingListModal.hide(); onSelectModal(x, selectedCustomizationDetailsModal);" class="primary-btn w-100 mb-2">Select</button>
+                <button type="button" (click)="existingListModal.hide(); clearAddon(); onViewModel(x);" class="secondary-btn w-100">View</button>
               </div>
             </div>
           </div>
         </div>
         <div class="row">
           <div class="col-md-12">
-            <button class="primary-btn" (click)="closeExistingAndOpenNewModal(existingListModal, createNewModal);" type="button">ADD NEW MODEL</button>
+            <button class="primary-btn" (click)="closeExistingAndOpenNewModal(existingListModal, createNewModal);" type="button">Add New Model</button>
           </div>
         </div>
       </div>
 
       <div class="modal-footer">
-        <button type="button" class="secondary-btn" (click)="clearAddon(); existingListModal.hide();">CLOSE</button>
+        <button type="button" class="secondary-btn" (click)="clearAddon(); existingListModal.hide();">Close</button>
       </div>
     </div>
   </div>
@@ -1371,12 +1371,12 @@
             <ng-container *ngIf="customized_model?.mm_sets?.length || customized_model?.notes_list?.length">
               <div *ngIf="customized_model?.mm_sets?.length" class="col-6 pr-1 pl-1" [ngClass]="(customized_model?.notes_list?.length)? 'col-md-4': 'col-md-6'">
                 <button class="primary-btn w-100" type="button" [ngClass]="(customized_model?.notes_list?.length)? '': 'mb-0'" (click)="commonService.customView=false; commonService.measurementView=true; commonService.notesView=false; commonService?.scrollModalTop(0);">
-                  VIEW MEASUREMENTS
+                  View Measurements
                 </button>
               </div>
               <div *ngIf="customized_model?.notes_list?.length" class="col-6 pr-1 pl-1" [ngClass]="(customized_model?.mm_sets?.length)? 'col-md-4': 'col-md-6'">
                 <button class="primary-btn w-100" type="button" [ngClass]="(customized_model?.mm_sets?.length)? '': 'mb-0'" (click)="commonService.customView=false; commonService.measurementView=false; commonService.notesView=true; commonService?.scrollModalTop(0);">
-                  VIEW NOTES
+                  View Notes
                 </button>
               </div>
             </ng-container>
@@ -1386,12 +1386,12 @@
             <ng-container *ngIf="customized_model?.custom_list?.length || customized_model?.notes_list?.length">
               <div *ngIf="customized_model?.custom_list?.length" class="col-6 pr-1 pl-1" [ngClass]="(customized_model?.notes_list?.length)? 'col-md-4': 'col-md-6'">
                 <button class="primary-btn w-100" type="button" [ngClass]="(customized_model?.notes_list?.length)? '': 'mb-0'" (click)="commonService.customView=true; commonService.measurementView=false; commonService.notesView=false; commonService?.scrollModalTop(0);">
-                  VIEW CUSTOMIZATION
+                  View Customization
                 </button>
               </div>
               <div *ngIf="customized_model?.notes_list?.length" class="col-6 pr-1 pl-1" [ngClass]="(customized_model?.custom_list?.length)? 'col-md-4': 'col-md-6'">
                 <button class="primary-btn w-100" type="button" [ngClass]="(customized_model?.custom_list?.length)? '': 'mb-0'" (click)="commonService.customView=false; commonService.measurementView=false; commonService.notesView=true; commonService?.scrollModalTop(0);">
-                  VIEW NOTES
+                  View Notes
                 </button>
               </div>
             </ng-container>
@@ -1401,22 +1401,22 @@
             <ng-container *ngIf="customized_model?.custom_list?.length || customized_model?.mm_sets?.length">
               <div *ngIf="customized_model?.custom_list?.length" class="col-6 pr-1 pl-1" [ngClass]="(customized_model?.mm_sets?.length)? 'col-md-4': 'col-md-6'">
                 <button class="primary-btn w-100" type="button" [ngClass]="(customized_model?.mm_sets?.length)? '': 'mb-0'" (click)="commonService.customView=true; commonService.measurementView=false; commonService.notesView=false; commonService?.scrollModalTop(0);">
-                  VIEW CUSTOMIZATION
+                  View Customization
                 </button>
               </div>
               <div *ngIf="customized_model?.mm_sets?.length" class="col-6 pr-1 pl-1" [ngClass]="(customized_model?.custom_list?.length)? 'col-md-4': 'col-md-6'">
                 <button class="primary-btn w-100" type="button" [ngClass]="(customized_model?.custom_list?.length)? '': 'mb-0'" (click)="commonService.customView=false; commonService.measurementView=true; commonService.notesView=false; commonService?.scrollModalTop(0);">
-                  VIEW MEASUREMENTS
+                  View Measurements
                 </button>
               </div>
             </ng-container>
           </ng-container>
           <div class="pr-1 pl-1" [ngClass]="(customized_model?.custom_list?.length && customized_model?.mm_sets?.length && customized_model?.notes_list?.length)? 'col-md-4 col-12': 'col-md-6 col-6'">
             <button class="primary-btn w-100 mb-0" type="button" *ngIf="!productDetails?.added_to_cart && productDetails.stock>=(productDetails.quantity+productDetails.additional_qty)" (click)="addtoCart(false); selectedCustomizationDetailsModal.hide();">
-              ADD TO CART
+              Add To Cart
             </button>
             <button class="primary-btn w-100 mb-0" type="button" *ngIf="productDetails?.added_to_cart || productDetails.stock<(productDetails.quantity+productDetails.additional_qty)" (click)="selectedCustomizationDetailsModal.hide();">
-              CLOSE
+              Close
             </button>
           </div>
         </div>
@@ -1519,7 +1519,7 @@
         <div class="modal-footer">
           <button class="primary-btn d-flex justify-content-center align-items-center w-100" type="submit"
             [disabled]="enqForm.submit">
-            SUBMIT
+            Submit
             <div class="box" *ngIf="enqForm.submit">
               <div class="spinner"></div>
             </div>

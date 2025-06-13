@@ -43,7 +43,7 @@
               <li *ngFor="let menu of commonService.menu_list | orderAsc: 'rank'; let i=index;" [ngClass]="{ 'has-children mega-menu slim-scroll': menu?.sec_count, 'pos-relative': menu?.sec_count<=2 }">
                 <a (mouseenter)="(!menu?.sec_count && commonService.desktop_device)? commonService.resetMegaMenu(): ''" (click)="(!menu?.sec_count)? commonService.onPageRedirect(menu): ''">
                   {{menu.name}}
-                  <ng-container *ngIf="menu?.sec_count">
+                  <ng-container *ngIf="menu?.sec_count && commonService?.screen_width>=768">
                     <lucide-icon name="chevron-down" [size]="18" class="ms-1 align-middle"></lucide-icon>
                   </ng-container>
                 </a>
@@ -213,7 +213,7 @@
                   </div>
                 </div>
                 <div class="cart-footer" *ngIf="cartService.cart_list?.length">
-                  <button routerLink="/cart" class="primary-btn w-100" id="view-btn">GO TO CHECKOUT</button>
+                  <button routerLink="/cart" class="primary-btn w-100" id="view-btn">Go to Checkout</button>
                 </div>
               </div>
             </div>

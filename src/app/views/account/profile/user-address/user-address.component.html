@@ -82,7 +82,7 @@
 
       <div class="row">
         <div class="col-12">
-          <button class="primary-btn" type="button" (click)="onAddAddress(addressModal);">ADD NEW ADDRESS</button>
+          <button class="primary-btn" type="button" (click)="onAddAddress(addressModal);">Add New Address</button>
         </div>
       </div>
 
@@ -232,9 +232,9 @@
             </div>
           </div>
           <div class="col-12 px-0 d-flex justify-content-end">
-            <button type="button" class="secondary-btn mr-2" (click)="addressModal.hide();">CLOSE</button>
+            <button type="button" class="secondary-btn mr-2" (click)="addressModal.hide();">Close</button>
             <button class="primary-btn d-flex justify-content-center align-items-center" type="submit" [disabled]="addressForm.submit">
-              {{ (addressFormType=='add')? 'ADD': 'SAVE CHANGES' }}
+              {{ (addressFormType=='add')? 'Add': 'Save Changes' }}
               <div class="box" *ngIf="addressForm.submit">
                 <div class="spinner"></div>
               </div>
@@ -256,9 +256,9 @@
         </div>
       </div>
       <div class="modal-footer">
-        <button class="secondary-btn" type="button" (click)="removeModal.hide();">NO</button>
+        <button class="secondary-btn" type="button" (click)="removeModal.hide();">No</button>
         <button class="primary-btn d-flex justify-content-center align-items-center" type="button" (click)="onDelete(removeModal);" [disabled]="deleteForm.submit">
-          YES
+          Yes
           <div class="box" *ngIf="deleteForm.submit">
             <div class="spinner"></div>
           </div>

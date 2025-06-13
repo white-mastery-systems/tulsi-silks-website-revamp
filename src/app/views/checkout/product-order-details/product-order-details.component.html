@@ -249,7 +249,7 @@
                         </div>
                         <div class="col-6 d-flex align-items-start justify-content-end">
                           <button class="primary-btn" type="button"  routerLink="{{ checkout_details?.order_type=='delivery'? '/checkout/delivery-methods': '/checkout/pickup-methods' }}">
-                            CHANGE
+                            Change
                           </button>
                         </div>
                       </div>
@@ -289,7 +289,7 @@
                           <h4>{{ (checkout_details?.order_type=='delivery')? 'Shipping': 'Pickup' }} Address</h4>
                         </div>
                         <div *ngIf="checkout_details?.order_type=='delivery'" class="col-6 d-flex align-items-start justify-content-end">
-                          <button class="primary-btn" type="button" routerLink="/checkout/address-list/product">CHANGE</button>
+                          <button class="primary-btn" type="button" routerLink="/checkout/address-list/product">Change</button>
                         </div>
                       </div>
                     </div>
@@ -467,7 +467,7 @@
                               <input type="text" class="form-control" placeholder="Enter Your Code" name="code{{i}}" id="code" [(ngModel)]="x.code" #code="ngModel"
                                 (input)="x.status=null; x.price=0; onGcAmtCalc();" required appUppercase />
                               <div class="input-group-append">
-                                <button class="primary-btn" *ngIf="!x.status" [disabled]="!x.code" type="submit">APPLY</button>
+                                <button class="primary-btn" *ngIf="!x.status" [disabled]="!x.code" type="submit">Apply</button>
                                 <span *ngIf="x.status=='valid'" class="sucess-bg smooth-fadein m-0 d-flex align-items-center justify-content-center">Valid</span>
                                 <span *ngIf="x.status=='invalid'" class="error-bg smooth-fadein m-0 d-flex align-items-center justify-content-center">Invalid</span>
                               </div>
@@ -505,7 +505,7 @@
                             <input type="text" class="form-control" placeholder="Enter Your Code" name="code" id="code" [(ngModel)]="offer_form.code" #code="ngModel"
                               (input)="orderForm.offer_invalid_error=null; offer_form.alert_msg=null; offer_form.status=null; offerAmount=0; tempOfferAmount=0;" required appUppercase />
                             <div class="input-group-append">
-                              <button *ngIf="!offer_form.status" class="primary-btn" [disabled]="!offer_form.code" type="submit">APPLY</button>
+                              <button *ngIf="!offer_form.status" class="primary-btn" [disabled]="!offer_form.code" type="submit">Apply</button>
                               <span *ngIf="offer_form.status" [ngClass]="(offer_form.status=='valid' && tempOfferAmount>0)? 'sucess-bg': 'error-bg'" class="smooth-fadein m-0 d-flex align-items-center justify-content-center">
                                 {{ (offer_form.status=='valid' && tempOfferAmount>0)? 'Valid': 'Invalid' }}
                               </span>
@@ -609,7 +609,7 @@
                     </div>
                     <!-- place order -->
                     <div *ngIf="(((sub_total*1)+(shipping_method.shipping_price*1)+(orderForm.gift_wrapper*1)+(orderForm.packaging_charges*1))-((manualDiscAmount*1)+(discountAmount*1)+(offerAmount*1))) == 0" class="col-md-12">
-                      <button type="button" (click)="onMakePayment({});" class="primary-btn w-100" [disabled]="orderForm.submit">PLACE ORDER<em></em></button>
+                      <button type="button" (click)="onMakePayment({});" class="primary-btn w-100" [disabled]="orderForm.submit">Place Order<em></em></button>
                     </div>
 
                   </div>
@@ -685,8 +685,8 @@
         </div>
       </div>
       <div class="modal-footer">
-        <button class="secondary-btn" type="button" (click)="accept_cod_tc=false; codModal.hide();">DECLINE</button>
-        <button class="primary-btn" type="button" (click)="accept_cod_tc=true; onMakePayment({name: 'COD'});">PLACE ORDER</button>
+        <button class="secondary-btn" type="button" (click)="accept_cod_tc=false; codModal.hide();">Decline</button>
+        <button class="primary-btn" type="button" (click)="accept_cod_tc=true; onMakePayment({name: 'COD'});">Place Order</button>
       </div>
     </div>
     <!-- with sms config -->
@@ -727,9 +727,9 @@
           </div>
         </div>
         <div class="modal-footer">
-          <button class="secondary-btn" type="button" (click)="accept_cod_tc=false; codModal.hide();">CLOSE</button>
+          <button class="secondary-btn" type="button" (click)="accept_cod_tc=false; codModal.hide();">Close</button>
           <button class="primary-btn d-flex justify-content-center align-items-center" type="submit" [disabled]="otpForm.submit">
-            SEND OTP
+            Send OTP
             <div class="box" *ngIf="otpForm.submit">
               <div class="spinner"></div>
             </div>
@@ -779,8 +779,8 @@
           </div>
         </div>
         <div class="modal-footer">
-          <button class="secondary-btn" type="button" (click)="accept_cod_tc=false; codModal.hide();">DECLINE</button>
-          <button class="primary-btn" type="submit">PLACE ORDER</button>
+          <button class="secondary-btn" type="button" (click)="accept_cod_tc=false; codModal.hide();">Decline</button>
+          <button class="primary-btn" type="submit">Place Order</button>
         </div>
       </form>
     </div>
@@ -954,8 +954,8 @@
       </div>
       <div class="modal-footer">
         <div class="qr-proc-btn-sec d-flex justify-content-center">
-          <button class="secondary-btn mr-3" type="button" (click)="qrcodemodal.hide();">CLOSE</button>
-          <button class="primary-btn" type="button" (click)="qrcodemodal.hide(); qrcodeconfirmmodal.show();">PROCEED TO NEXT STEP</button>
+          <button class="secondary-btn mr-3" type="button" (click)="qrcodemodal.hide();">Close</button>
+          <button class="primary-btn" type="button" (click)="qrcodemodal.hide(); qrcodeconfirmmodal.show();">Proceed to Next Step</button>
         </div>
       </div>
     </div>
@@ -987,8 +987,8 @@
                 <p>Click Confirm, only after amount deducted form your account, We will manually verify your transaction. Are you sure?</p>
               </div>
               <div class="qr-proc-btn-sec d-flex justify-content-center mt-3">
-                <button class="secondary-btn mr-3" (click)="qrcodeconfirmmodal.hide(); qrcodemodal.show();" type="button">GO BACK</button>
-                <button class="primary-btn" type="submit">CONFIRM</button>
+                <button class="secondary-btn mr-3" (click)="qrcodeconfirmmodal.hide(); qrcodemodal.show();" type="button">Go Back</button>
+                <button class="primary-btn" type="submit">Confirm</button>
               </div>
             </div>
           </form>
@@ -1033,8 +1033,8 @@
         </div>
         <div class="modal-footer">
           <div class="qr-proc-btn-sec d-flex justify-content-center">
-            <button class="secondary-btn mr-3" type="button" (click)="bankpaymodal.hide();">CLOSE</button>
-            <button class="primary-btn" type="submit">PLACE ORDER</button>
+            <button class="secondary-btn mr-3" type="button" (click)="bankpaymodal.hide();">Close</button>
+            <button class="primary-btn" type="submit">Place Order</button>
           </div>
         </div>
       </div>

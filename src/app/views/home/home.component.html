@@ -1215,12 +1215,12 @@
       <div class="modal-footer flex-column">
         <div class="proceed-sec d-flex justify-content-between w-100 m-0">
           <!-- left btn -->
-          <button *ngIf="styleIndex==0" (click)="styleModal.hide();" class="primary-btn">CLOSE</button>
-          <button *ngIf="styleIndex>0" (click)="styleIndex=styleIndex-1; commonService?.scrollModalTop(0);" class="primary-btn">PREVIOUS</button>
+          <button *ngIf="styleIndex==0" (click)="styleModal.hide();" class="primary-btn">Close</button>
+          <button *ngIf="styleIndex>0" (click)="styleIndex=styleIndex-1; commonService?.scrollModalTop(0);" class="primary-btn">Previous</button>
           <!-- #left btn -->
           <!-- right btn -->
-          <button *ngIf="commonService?.ai_styles[styleIndex+1]?.filtered_option_list?.length" (click)="onStyleNext();" class="primary-btn">NEXT</button>
-          <button *ngIf="!commonService?.ai_styles[styleIndex+1]?.filtered_option_list?.length" (click)="styleModal.hide(); onStylingFilter();" class="primary-btn">SUBMIT</button>
+          <button *ngIf="commonService?.ai_styles[styleIndex+1]?.filtered_option_list?.length" (click)="onStyleNext();" class="primary-btn">Next</button>
+          <button *ngIf="!commonService?.ai_styles[styleIndex+1]?.filtered_option_list?.length" (click)="styleModal.hide(); onStylingFilter();" class="primary-btn">Submit</button>
           <!-- #right btn -->
         </div>
       </div>

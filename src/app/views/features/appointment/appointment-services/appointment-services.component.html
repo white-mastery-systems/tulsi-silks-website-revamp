@@ -46,7 +46,7 @@
               <h6>{{ x.name }}</h6>
               <p *ngIf="x.temp_price > 0">{{ x.temp_price | currency:cc.currency?.country_code:'symbol':cc.format }}</p>
               <button (click)="onSelect(x);" class="primary-btn d-flex justify-content-center align-items-center w-100">
-                BOOK APPOINTMENT
+                Book Appointment
               </button>
             </div>
           </div>
