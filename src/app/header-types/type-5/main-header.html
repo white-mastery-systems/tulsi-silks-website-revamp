@@ -102,9 +102,17 @@
               </li>
 
               <!-- account -->
-              <li *ngIf="commonService?.screen_width<=991">
-                <a routerLink="/account">My Account</a>
-              </li>
+              <ng-container *ngIf="commonService?.screen_width<=991">
+                <li>
+                  <a routerLink="/account">My Account</a>
+                </li>
+                <li>
+                  <a routerLink="/wishlist">My Wishlist</a>
+                </li>
+                <li>
+                  <a routerLink="/cart">Shopping Bag</a>
+                </li>
+              </ng-container>
             </ul>
           </nav>
           <!-- #navbar -->

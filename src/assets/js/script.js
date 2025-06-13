@@ -206,13 +206,15 @@
       $('.cd-main-header').removeClass('nav-is-visible');
       $('.cd-primary-nav').removeClass('nav-is-visible');
       $('.cd-primary-nav').removeClass('nav-active');
-        $('.cd-primary-nav').addClass('nav-dismiss');
+      $('.cd-primary-nav').addClass('nav-dismiss');
       $('.has-children ul').addClass('is-hidden');
       $('.has-children a').removeClass('selected');
       $('.moves-out').removeClass('moves-out');
       $('.cd-main-content').removeClass('nav-is-visible').one('webkitTransitionEnd otransitionend oTransitionEnd msTransitionEnd transitionend', function () {
         $('body').removeClass('overflow-hidden');
       });
+      $('.cd-overlay').removeClass('is-visible');
+      $('body').removeClass('overflow-hidden');
     }
 
     function toggleSearch(type) {

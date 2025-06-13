@@ -21,8 +21,10 @@ export class HeritageSwiperDirective implements AfterViewInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    if (this.swiper) {
-      this.swiper.destroy(true, true);
+    if (isPlatformBrowser(this.platformId)) {
+      if (this.swiper) {
+        this.swiper.destroy(true, true);
+      }
     }
   }
 
@@ -53,4 +55,5 @@ export class HeritageSwiperDirective implements AfterViewInit, OnDestroy {
       });
     }, 100);
   }
+  
 }

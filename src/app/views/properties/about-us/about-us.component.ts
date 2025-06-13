@@ -1,25 +1,28 @@
-import { Component, OnInit, Inject } from '@angular/core';
+import { Component, OnInit, PLATFORM_ID, Inject } from '@angular/core';
 import { isPlatformBrowser, DOCUMENT } from '@angular/common';
 import { CommonService } from '../../../services/common.service';
 import { environment } from '../../../../environments/environment';
+
 interface TimelineItem {
   year: number;
   image: string;
   title: string;
   description: string;
 }
-
 interface HeritageItem {
   image: string;
   title: string;
   description: string;
 }
+
 @Component({
   selector: 'app-about-us',
   templateUrl: './about-us.component.html',
   styleUrls: ['./about-us.component.scss']
 })
+
 export class AboutUsComponent implements OnInit {
+
   imgBaseUrl = 'assets/';
   pageLoader: boolean;
   template_setting = environment.template_setting;
@@ -62,39 +65,17 @@ export class AboutUsComponent implements OnInit {
       image: 'assets/images/timeline-3.jpg',
       title: 'A Timeless Saree Legacy: Today, a Symbol of Elegance',
       description: 'With over 30 years of trust, Tulsi Silks is a cherished name for exquisite sarees across generations. From Kanjivaram classics to designer drapes, we continue to weave culture, elegance, and soul into every creation.'
-    },
-    // {
-    //   year: 2010,
-    //   image: 'assets/images/ranger-image.png',
-    //   title: 'Digital Footprint',
-    //   description: 'The brand stepped into the digital world, launching its first e-commerce store.'
-    // },
-    // {
-    //   year: 2015,
-    //   image: 'assets/images/ranger-image.png',
-    //   title: 'Global Reach',
-    //   description: 'Tulsi Silks started shipping worldwide, attracting a global audience.'
-    // },
-    // {
-    //   year: 2020,
-    //   image: 'assets/images/ranger-image.png',
-    //   title: 'Innovation & Heritage',
-    //   description: 'While rooted in tradition, we began exploring modern motifs and sustainable fabrics.'
-    // },
-    // {
-    //   year: 2025,
-    //   image: 'assets/images/ranger-image.png',
-    //   title: 'A New Era',
-    //   description: 'Embracing new-age craftsmanship while honoring timeless heritage.'
-    // }
+    }
   ];
 
 
-  constructor(public commonService: CommonService,@Inject(DOCUMENT) private document) { }
+  constructor(public commonService: CommonService, @Inject(DOCUMENT) private document, @Inject(PLATFORM_ID) private platformId: Object) { }
 
   ngOnInit(): void {
-    this.screen_width = window.innerWidth;
-    this.loadSliderData();
+    if (isPlatformBrowser(this.platformId)) {
+      this.screen_width = window.innerWidth;
+      this.loadSliderData();
+    }
   }
 
   next(): void {
@@ -166,8 +147,10 @@ export class AboutUsComponent implements OnInit {
 
   onPageRedirect(slide: any): void {
     // You can customize this with router navigation
-    if (slide.btn_link) {
-      window.location.href = slide.btn_link;
+    if (isPlatformBrowser(this.platformId)) {
+      if (slide.btn_link) {
+        window.location.href = slide.btn_link;
+      }
     }
   }
 
