@@ -354,7 +354,10 @@
                 <p *ngIf="segment.sub_heading" [innerHTML]="segment.sub_heading"></p>
                 <!-- <span></span> -->
               </div>             
-              <div class="product-silder-btn" *ngIf="segment.blogs_type!='grid'">
+              <div class="product-silder-btn" *ngIf="segment.blogs_type!='grid' && commonService?.screen_width>=767">
+                <button class="primary-btn" (click)="exploreAll(segment);" type="button">View All</button>
+              </div>
+              <div class="product-silder-btn" *ngIf="segment.blogs_type!='grid' && commonService?.screen_width<=767">
                 <button class="primary-btn outline-btn" (click)="exploreAll(segment);" type="button">View All</button>
               </div>
             </div>
