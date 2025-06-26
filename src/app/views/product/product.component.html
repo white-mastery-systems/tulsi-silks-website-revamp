@@ -323,21 +323,21 @@
                     </span>
                   </p>
                 </ng-container>
+                <p *ngIf="productDetails.quantity<=0">
+                  <span class="product-price">
+                    {{ (productDetails.temp_discounted_price*1) | currency:cc.currency?.country_code:'symbol':cc.format }}
+                  </span>
+                </p>
                 <div>
                   <p class="product-code">Product Code: {{productDetails.sku}}</p>
                 </div>                
               </div>
-              <p *ngIf="productDetails.quantity<=0">
-                <span class="product-price">
-                  {{ (productDetails.temp_discounted_price*1) | currency:cc.currency?.country_code:'symbol':cc.format }}
-                </span>
-              </p>
               <p *ngIf="customized_model || productDetails.additional_qty>0" class="product-code">
                 {{productDetails.quantity+productDetails.additional_qty}} {{productDetails.unit}}
               </p>             
             </div>
             
-            <div class="product-addon d-flex justify-content-between align-items-center">
+            <div *ngIf="productDetails.quantity" class="product-addon d-flex justify-content-between align-items-center">
               <!-- variants -->
                <div *ngIf="productDetails.unit!='Pcs' || productDetails.stock > commonService.min_qty[productDetails.unit]" class="d-flex justify-content-start align-items-center">
                   <p class="variants-title mb-0">Quantity</p>
@@ -465,14 +465,19 @@
               </div>
 
               <!-- sold out -->
-              <div *ngIf="productDetails.stock < commonService.min_qty[productDetails.unit] || (productDetails.quantity+productDetails.additional_qty) > productDetails.stock" class="danger-alert smooth-fadein">
-                <div class="alert-msg d-flex align-items-center justify-content-center p-2">
-                  <span class="material-icons"></span>
-                  <p class="m-0">
-                    {{ (productDetails.stock < commonService.min_qty[productDetails.unit])? 'SOLD OUT': 'NOT ENOUGH QUANTITY TO PURCHASE' }}
-                  </p>
+               <ng-container *ngIf="productDetails.stock < commonService.min_qty[productDetails.unit] || (productDetails.quantity+productDetails.additional_qty) > productDetails.stock">
+                <div class="danger-alert smooth-fadein">
+                  <div class="alert-msg d-flex align-items-center justify-content-center p-2">
+                    <span class="material-icons"></span>
+                    <p class="m-0">
+                      {{ (productDetails.stock < commonService.min_qty[productDetails.unit])? 'SOLD OUT': 'NOT ENOUGH QUANTITY TO PURCHASE' }}
+                    </p>
+                  </div>
                 </div>
-              </div>
+                <div *ngIf="productDetails.allow_preorder">
+                  <p style="font-size: 1rem; padding: 5px 0; line-height: 1.6;">This exclusive piece can be specially made for you and delivered in 30 days. Contact us for more details!</p>
+                </div>
+              </ng-container>
             </div>
             <!-- btn & addon -->
             <div class="product-add-btn">
@@ -518,20 +523,22 @@
               <!-- enquiry btn -->
               <div
                 *ngIf="
-                  productDetails.allow_preorder &&
                   productDetails.stock <
                     commonService.min_qty[productDetails.unit]
                 "
                 class="row m-0"
               >
                 <div class="col-md-12 p-0">
-                  <button
+                  <button *ngIf="!productDetails.allow_preorder"
                     (click)="openEnqModal(enquiryModal)"
                     class="primary-btn w-100"
                     type="button"
                   >
                     Enquire Now
                   </button>
+                  <a *ngIf="productDetails.allow_preorder" class="primary-btn btn-href w-100" target="_blank" href="https://api.whatsapp.com/send?phone=919791019822&text=Hey%20there,%20I’m%20interested%20in%20the%20{{productDetails.name}}%20and%20would%20like%20to%20know%20more%20about%20ordering%20it.%0A{{commonService.origin+router.url}}">
+                    Enquire Now
+                  </a>
                 </div>
               </div>
             </div>

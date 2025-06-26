@@ -95,6 +95,22 @@
           <div class="col-md-12" style="height:40px;">
             <p *ngIf="tagSelected" (click)="clearTagFilter();" class="cursor mb-0">Clear All</p>
           </div>
+          <div style="height:104px;">
+            <div *ngIf="template_setting.price_range && IsBrowser" class="by_price">
+              <p class="by">By Price</p>
+              <div style="margin-top: 20px;">
+                <ngx-slider [(value)]="rangeMin" [(highValue)]="rangeMax" [options]="range_disp"></ngx-slider>
+                <div class="price_label">
+                  Price:
+                  <span class="from">
+                    <span class="money">{{rangeMin | currency:cc.currency?.country_code:'symbol':cc.format}}</span>
+                  </span> - <span class="to">
+                    <span class="money">{{rangeMax | currency:cc.currency?.country_code:'symbol':cc.format}}</span>
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
           <aside class="sidebar color-select">
             <div class="accordion" [ngClass]="template_setting?.p_card? 'primary-card': ''" id="accordion" role="tablist">
               <div class="card color-card" *ngFor="let x of tag_list | orderAsc: 'rank'; let i=index;">
@@ -146,20 +162,6 @@
                 </div>
               </div>
             </div>
-            <!-- price -->  
-            <div *ngIf="template_setting?.price_range" class="row m-0 col-md-12 px-0"> 
-              <div class="form-group w-100 pt-3">
-                <p class="fs-12 mb-2">Minimum amount</p>
-                <div class="price-range" align="center">Min INR {{range_disp.min | number: '1.0-0'}}</div>    
-                <input type="number" name="min_amt" class="form-control" [(ngModel)]="rangeMin">             
-              </div>
-              <div class="form-group w-100">                
-                <p class="fs-12 mb-2">Maximum amount</p>
-                <div class="price-range" align="center">Max INR {{range_disp.max | number: '1.0-0'}}</div>        
-                <input type="number" name="max_amt" class="form-control" [(ngModel)]="rangeMax">             
-              </div>
-            </div>
-            <!-- #price -->
           </aside>
         </div>
         <!-- #filters -->
@@ -434,6 +436,18 @@
       <div class="modal-body slim-scroll">
         <div class="row">
           <div class="col-md-12">
+            <div *ngIf="template_setting.price_range && IsBrowser && !commonService.desktop_device" class="by_price mb-3">
+              <p class="by">By Price</p>
+              <ngx-slider [(value)]="rangeMin" [(highValue)]="rangeMax" [options]="range_disp"></ngx-slider>
+              <div class="price_label">
+                Price:
+                <span class="from">
+                  <span class="money">{{rangeMin | currency:cc.currency?.country_code:'symbol':cc.format}}</span>
+                </span> - <span class="to">
+                  <span class="money">{{rangeMax | currency:cc.currency?.country_code:'symbol':cc.format}}</span>
+                </span>
+              </div>
+            </div>
             <div class="accordion" [ngClass]="template_setting?.p_card? 'primary-card': ''" id="accordion" role="tablist">
               <div class="card color-card" *ngFor="let x of tag_list | orderAsc: 'rank'; let i=index;">
                 <div class="card-header">

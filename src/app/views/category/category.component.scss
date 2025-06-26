@@ -1,22 +1,27 @@
 .text {
   overflow: hidden;
   transition: max-height 0.8s ease-in-out;
-  max-height: 150px; /* large enough for full content */
+  max-height: 150px;
+  /* large enough for full content */
 }
 
 .collapsed {
-  max-height: 42px; /* initial preview height */
+  max-height: 42px;
+  /* initial preview height */
 }
+
 .text {
   transition: max-height 0.8s ease-in-out, opacity 0.8s ease-in-out;
   opacity: 1;
 }
+
 .collapsed {
   opacity: 0.8;
 }
-.head-breadcrumb{
-    select{
-        width: auto;
-        height: 30px;
-    }
+
+.head-breadcrumb {
+  select {
+    width: auto;
+    height: 30px;
+  }
 }

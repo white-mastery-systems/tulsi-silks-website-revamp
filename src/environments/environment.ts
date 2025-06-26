@@ -34,7 +34,7 @@ export const environment = {
     social_share: true,
     related_products_limit: 10,
     blog_count: 10,
-    price_range: false,
+    price_range: true,
     category_grid_options: false,
     purchase_badge: false,
     purchase_txt: false,

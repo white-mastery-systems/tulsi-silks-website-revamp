@@ -6,6 +6,7 @@ import { environment } from './../../../environments/environment';
 import { StoreApiService } from '../../services/store-api.service';
 import { CommonService } from '../../services/common.service';
 import { CurrencyConversionService } from '../../services/currency-conversion.service';
+import { Options } from '@angular-slider/ngx-slider';
 
 @Component({
   selector: 'app-category',
@@ -32,10 +33,11 @@ export class CategoryComponent implements OnInit {
   subscription: Subscription;
   store_tags: any = []; gridType: string = "four";
   rangeMin: number; rangeMax: number;
-  range_disp: any = { min: 0, max: 0 };
+  range_disp: Options = { floor: 0, ceil: 0 };
   randomProducts: any = []; page: number = 1;
   pageSize: number = this.template_setting.products_per_page;
   bcList: any = [];
+  IsBrowser: boolean;
 
   categorySchema: any = {
     "@context": "https://schema.org",
@@ -69,6 +71,7 @@ export class CategoryComponent implements OnInit {
     this.subscription = this.commonService.currency_type.subscribe(currency => {
       this.findCurrency();
     });
+    if(isPlatformBrowser(this.platformId)) this.IsBrowser = true;
   }
 
   ngOnInit(): void {
@@ -82,6 +85,9 @@ export class CategoryComponent implements OnInit {
           this.sort_value = this.commonService.category_page_attr.sort_value;
           this.collapseIndex = this.commonService.category_page_attr.collapse_index;
           this.category_details = this.commonService.category_page_attr.category_details;
+          this.rangeMin = this.commonService.category_page_attr.range_min;
+          this.rangeMax = this.commonService.category_page_attr.range_max;
+          this.range_disp = this.commonService.category_page_attr.range_disp;
           // seo
           this.updateMetaData();
           this.parent_list = this.commonService.category_page_attr.parent_list;
@@ -184,6 +190,9 @@ export class CategoryComponent implements OnInit {
           this.sort_value = this.commonService.category_page_attr.sort_value;
           this.collapseIndex = this.commonService.category_page_attr.collapse_index;
           this.category_details = this.commonService.category_page_attr.category_details;
+          this.rangeMin = this.commonService.category_page_attr.range_min;
+          this.rangeMax = this.commonService.category_page_attr.range_max;
+          this.range_disp = this.commonService.category_page_attr.range_disp;
           this.randomProducts = this.commonService.category_page_attr.random_products;
           if(this.category_details?.faqs?.length) this.buildFAQSchema();
           // seo
@@ -274,6 +283,7 @@ export class CategoryComponent implements OnInit {
         });
       }
     }
+    this.findMinMax();
   }
 
   filterProducts(productList) {
@@ -313,7 +323,8 @@ export class CategoryComponent implements OnInit {
     this.commonService.category_page_attr = {
       category_id: this.params.category_id, page: this.page, sort_value: this.sort_value, tag_list: this.tag_list,
       collapse_index: this.collapseIndex, scroll_y_pos: this.commonService.scroll_y_pos, category_details: this.category_details,
-      parent_list: this.parent_list, page_url: this.router.url, grid_type: this.gridType, random_products: this.randomProducts
+      parent_list: this.parent_list, page_url: this.router.url, grid_type: this.gridType, random_products: this.randomProducts,
+      range_min: this.rangeMin, range_max: this.rangeMax, range_disp: this.range_disp
     }
     if(isPlatformBrowser(this.platformId)) {
       sessionStorage.setItem("category_details", this.commonService.encryptData(this.category_details));
@@ -409,9 +420,18 @@ export class CategoryComponent implements OnInit {
   }
 
   findMinMax() {
-    let minPrice = this.list.reduce((min, p) => parseFloat(p?.temp_discounted_price)<min ? parseFloat(p?.temp_discounted_price) : min, parseFloat(this.list[0]?.temp_discounted_price));
-    let maxPrice = this.list.reduce((max, p) => parseFloat(p?.temp_discounted_price)>max ? parseFloat(p?.temp_discounted_price) : max, parseFloat(this.list[0]?.temp_discounted_price));
-    this.range_disp = { min: minPrice, max: maxPrice };
+    if(this.commonService.category_page_attr.category_id == this.router.url) {
+
+    }
+    else if(this.params.category_id && this.commonService.category_page_attr.category_id == this.params.category_id) {
+
+    }
+    else {
+      let minPrice = this.list.reduce((min, p) => parseFloat(p?.temp_discounted_price)<min ? parseFloat(p?.temp_discounted_price) : min, parseFloat(this.list[0]?.temp_discounted_price));
+      let maxPrice = this.list.reduce((max, p) => parseFloat(p?.temp_discounted_price)>max ? parseFloat(p?.temp_discounted_price) : max, parseFloat(this.list[0]?.temp_discounted_price));
+      this.rangeMin = minPrice; this.rangeMax = maxPrice;
+      if(!isNaN(minPrice) && !isNaN(maxPrice)) this.range_disp = { floor: minPrice, ceil: maxPrice };
+    }
   }
 
   updateMetaData() {

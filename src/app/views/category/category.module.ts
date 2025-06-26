@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { NgxPaginationModule } from 'ngx-pagination';
 import { CollapseModule } from 'ngx-bootstrap/collapse';
+import { NgxSliderModule } from '@angular-slider/ngx-slider';
 
 import { CategoryRoutingModule } from './category-routing.module';
 import { SharedModule } from '../../shared/shared.module';
@@ -15,6 +16,7 @@ import { AccordionModule } from 'ngx-bootstrap/accordion';
     SharedModule,
     CategoryRoutingModule,
     NgxPaginationModule,
+    NgxSliderModule,
     CollapseModule.forRoot(),
     AccordionModule.forRoot()
   ]

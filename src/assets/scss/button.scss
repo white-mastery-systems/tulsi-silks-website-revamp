@@ -51,6 +51,16 @@ button {
   }
 }
 
+.btn-href {
+  color: #fff !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  font-size: 1rem  !important;
+  font-weight: 400 !important;
+  text-decoration: none !important;
+}
+
 // primary btn
 .primary-btn {
   display: inline-block;
