@@ -209,11 +209,11 @@ export class AppComponent {
               pincodes: storeProperties.pincodes, currency_list: storeProperties.currency_list, opening_days: storeProperties.opening_days,
               pickup_locations: [], img_tag_list: [], auto_tags: {}
             };
-            // if(storeProperties.auto_tags) {
-            //   storeProperties.auto_tags.filter(obj => obj.status=='active').forEach(el => {
-            //     this.commonService.store_properties.auto_tags[el.type] = el.name;
-            //   });
-            // }
+            if(storeProperties.auto_tags) {
+              storeProperties.auto_tags.filter(obj => obj.status=='active').forEach(el => {
+                this.commonService.store_properties.auto_tags[el.type] = el.name;
+              });
+            }
             if(storeProperties.img_tag_list?.length) {
               this.commonService.store_properties.img_tag_list = storeProperties.img_tag_list.filter(el => el.status=='active');
             }

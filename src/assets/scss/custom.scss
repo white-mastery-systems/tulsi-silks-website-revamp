@@ -491,6 +491,31 @@ p.error-msg {
     }
   }
 }
+.info-alert {
+  background-color: rgb(204, 204, 204);
+  width: 100%;
+  margin: 0.5rem 0;
+  .alert-msg {
+    span {
+      font-size: 1.25rem;
+      margin-right: 5px;
+      margin-bottom: 0 !important;
+      opacity: 0.7;
+      display: -ms-flexbox !important;
+      display: flex !important;
+      &:before {
+        content: "error_outline";
+        font-family: "Material Icons";
+        color: grey !important;
+      }
+    }
+    p {
+      color: grey !important;
+      font-size: 1rem;
+      font-weight: 400;
+    }
+  }
+}
 
 .smooth-fadein {
   animation: fadein 2s;

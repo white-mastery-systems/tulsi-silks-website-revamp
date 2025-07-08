@@ -466,7 +466,7 @@
 
               <!-- sold out -->
                <ng-container *ngIf="productDetails.stock < commonService.min_qty[productDetails.unit] || (productDetails.quantity+productDetails.additional_qty) > productDetails.stock">
-                <div class="danger-alert smooth-fadein">
+                <div class="info-alert smooth-fadein">
                   <div class="alert-msg d-flex align-items-center justify-content-center p-2">
                     <span class="material-icons"></span>
                     <p class="m-0">
@@ -475,7 +475,7 @@
                   </div>
                 </div>
                 <div *ngIf="productDetails.allow_preorder">
-                  <p style="font-size: 1rem; padding: 5px 0; line-height: 1.6;">This exclusive piece can be specially made for you and delivered in 30 days. Contact us for more details!</p>
+                  <p style="font-size: 1rem; font-weight: bold; padding: 5px 0; line-height: 1.6;">This exclusive piece can be specially made for you and delivered in 30 days. Contact us for more details!</p>
                 </div>
               </ng-container>
             </div>
@@ -548,7 +548,7 @@
             </div>
             <!-- #size chart -->
              <!-- timeline -->
-              <div class="timeline">
+              <div *ngIf="productDetails.stock>0" class="timeline">
                 <div class="step">
                   <div class="circle">
                     <!-- Lucide: Package -->

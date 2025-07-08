@@ -87,6 +87,42 @@ export function app(): express.Express {
   server.use('/category/tissue-kanjivaram', function(req, res) {
     res.redirect('/category/kanjivaram-tissue-silk-sarees');
   });
+  server.use('/category/5d32c0fcc3fd167a10dcfca2', function(req, res) {
+    res.redirect('/category/bridal-kanjivaram');
+  });
+  server.use('/category/5d381824df972007f6630409', function(req, res) {
+    res.redirect('/category/checks');
+  });
+  server.use('/category/5d38596cdf972007f6630528', function(req, res) {
+    res.redirect('/category/chiffon');
+  });
+  server.use('/category/5d385966df972007f6630525', function(req, res) {
+    res.redirect('/category/crepe');
+  });
+  server.use('/category/5d32c153c3fd167a10dcfcba', function(req, res) {
+    res.redirect('/category/dupatta');
+  });
+  server.use('/category/5d38595fdf972007f6630523', function(req, res) {
+    res.redirect('/category/georgette');
+  });
+  server.use('/category/5d381295df972007f66303f1', function(req, res) {
+    res.redirect('/category/kani-silk');
+  });
+  server.use('/category/5d381801df972007f6630402', function(req, res) {
+    res.redirect('/category/korvai');
+  });
+  server.use('/category/5d38341bdf972007f6630477', function(req, res) {
+    res.redirect('/category/linen-embroidery');
+  });
+  server.use('/category/5d383328df972007f6630456', function(req, res) {
+    res.redirect('/category/tussar');
+  });
+  server.use('/category/5d3834f8df972007f66304a2', function(req, res) {
+    res.redirect('/category/tussar-kota');
+  });
+  server.use('/category/5d38336cdf972007f663046a', function(req, res) {
+    res.redirect('/category/woven-raw-silk');
+  });
   
   // Example Express Rest API endpoints
   // server.get('/api/**', (req, res) => { });
