@@ -38,6 +38,7 @@ export class CategoryComponent implements OnInit {
   pageSize: number = this.template_setting.products_per_page;
   bcList: any = [];
   IsBrowser: boolean;
+  trendColorList = ["Black", "White/Off-White", "Beige", "Brown", "Grey", "Cream", "Blue", "Red", "Maroon", "Gold", "Silver"];
 
   categorySchema: any = {
     "@context": "https://schema.org",
@@ -374,6 +375,23 @@ export class CategoryComponent implements OnInit {
       }
     });
     if(this.tag_list.length && !click) this.gridType = "three";
+    if(this.tag_list.length) {
+      let trendingColors = this.tag_list[0].option_list.filter(el => this.trendColorList.indexOf(el.name)!=-1);
+      let classicColors = this.tag_list[0].option_list.filter(el => this.trendColorList.indexOf(el.name)==-1);
+      let newtagList = [];
+      if(trendingColors.length) {
+        newtagList.push(
+          { _id: this.tag_list[0]._id, name: "Trending Colors", rank: 1, option_list: trendingColors }
+        )
+      }
+      if(classicColors.length) {
+        newtagList.push(
+          { _id: this.tag_list[0]._id, name: "Classic Colors", rank: 2, option_list: classicColors }
+        )
+      }
+      this.tag_list = newtagList;
+      if(this.tag_list.length===1) this.collapseIndex = 0;
+    }
   }
   onTagFilter(changeEvent) {
     let parentProducts: any = this.parent_list;

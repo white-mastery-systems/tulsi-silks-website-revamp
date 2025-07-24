@@ -129,7 +129,7 @@
                         <label *ngIf="!y.notFound" class="store-label w-100 m-0 mb-3">
                           <div class="d-flex align-items-center">
                             <div>
-                              <input class="option-input checkbox" type="checkbox" name="{{y.checked}}" [checked]="y.checked" (change)="y.checked? y.checked=false: y.checked=true; onTagFilter(true);">
+                              <input class="option-input checkbox" type="checkbox" name="{{y.checked}}" [checked]="y.checked" (change)="y.checked? y.checked=false: y.checked=true; onTagFilter(true); onCreateTagList(list, true);">
                             </div>
                             <div>
                               <p class="m-0">{{y.name}}</p>
@@ -145,7 +145,7 @@
                         <label *ngIf="!y.notFound" class="store-label w-100 m-0 mb-3">
                           <div class="d-flex align-items-center">
                             <div>
-                              <input class="option-input checkbox" type="checkbox" name="{{y.checked}}" [checked]="y.checked" (change)="y.checked? y.checked=false: y.checked=true; onTagFilter(true);">
+                              <input class="option-input checkbox" type="checkbox" name="{{y.checked}}" [checked]="y.checked" (change)="y.checked? y.checked=false: y.checked=true; onTagFilter(true); onCreateTagList(list, true);">
                             </div>
                             <div>
                               <p class="m-0">{{y.name}}</p>
@@ -465,7 +465,7 @@
                         <label *ngIf="!y.notFound" class="store-label w-100 m-0 mb-3">
                           <div class="d-flex align-items-center">
                             <div>
-                              <input class="option-input checkbox" type="checkbox" name="{{y.checked}}" [checked]="y.checked" (change)="y.checked? y.checked=false: y.checked=true; onTagFilter(true);">
+                              <input class="option-input checkbox" type="checkbox" name="{{y.checked}}" [checked]="y.checked" (change)="y.checked? y.checked=false: y.checked=true; onTagFilter(true); onCreateTagList(list, true);">
                             </div>
                             <div>
                               <p class="m-0">{{y.name}}</p>
@@ -481,7 +481,7 @@
                         <label *ngIf="!y.notFound" class="store-label w-100 m-0 mb-3">
                           <div class="d-flex align-items-center">
                             <div>
-                              <input class="option-input checkbox" type="checkbox" name="{{y.checked}}" [checked]="y.checked" (change)="y.checked? y.checked=false: y.checked=true; onTagFilter(true);">
+                              <input class="option-input checkbox" type="checkbox" name="{{y.checked}}" [checked]="y.checked" (change)="y.checked? y.checked=false: y.checked=true; onTagFilter(true); onCreateTagList(list, true);">
                             </div>
                             <div>
                               <p class="m-0">{{y.name}}</p>
