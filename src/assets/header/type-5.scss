@@ -1013,6 +1013,9 @@ $mobile-final-height: calc(74px + #{$mobile-announcement-bar-mh});
       letter-spacing: 1px;
       // margin-bottom: 0.6em;
       margin-bottom: 0em;
+      &:hover{
+        text-decoration: none;
+      }
     }
   
     .cd-primary-nav .cd-secondary-nav a {
@@ -1023,7 +1026,9 @@ $mobile-final-height: calc(74px + #{$mobile-announcement-bar-mh});
       padding: 0 18% 0 0;
       // color: #2e3233;
       border-bottom: none;
-    
+      &:hover{
+        text-decoration: none;
+      }    
     }
   
     // .cd-primary-nav .cd-secondary-nav a:hover {

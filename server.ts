@@ -123,6 +123,9 @@ export function app(): express.Express {
   server.use('/category/5d38336cdf972007f663046a', function(req, res) {
     res.redirect('/category/woven-raw-silk');
   });
+  server.use('/blogs/12-latest-saree-trends-in-2025', function(req, res) {
+    res.redirect('/blogs/latest-saree-trends-in-2025-new-trend-saree-collection-for-women');
+  });
   
   // Example Express Rest API endpoints
   // server.get('/api/**', (req, res) => { });

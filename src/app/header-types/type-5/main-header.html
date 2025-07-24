@@ -39,67 +39,137 @@
                 </li>
               </ng-container>
 
-              <!-- menu list -->
-              <li *ngFor="let menu of commonService.menu_list | orderAsc: 'rank'; let i=index;" [ngClass]="{ 'has-children mega-menu slim-scroll': menu?.sec_count, 'pos-relative': menu?.sec_count<=2 }">
-                <a (mouseenter)="(!menu?.sec_count && commonService.desktop_device)? commonService.resetMegaMenu(): ''" (click)="(!menu?.sec_count)? commonService.onPageRedirect(menu): ''">
-                  {{menu.name}}
-                  <ng-container *ngIf="menu?.sec_count && commonService?.screen_width>=768">
-                    <lucide-icon name="chevron-down" [size]="18" class="ms-1 align-middle"></lucide-icon>
-                  </ng-container>
-                </a>
+              <!-- mobile menu list -->
+              <ng-container *ngIf="!commonService.desktop_device">
+                <li *ngFor="let menu of commonService.menu_list | orderAsc: 'rank'; let i=index;" [ngClass]="{ 'has-children mega-menu slim-scroll': menu?.sec_count, 'pos-relative': menu?.sec_count<=2 }">
+                  <a (mouseenter)="(!menu?.sec_count && commonService.desktop_device)? commonService.resetMegaMenu(): ''" (click)="(!menu?.sec_count)? commonService.onPageRedirect(menu): ''">
+                    {{menu.name}}
+                    <ng-container *ngIf="menu?.sec_count && commonService?.screen_width>=768">
+                      <lucide-icon name="chevron-down" [size]="18" class="ms-1 align-middle"></lucide-icon>
+                    </ng-container>
+                  </a>
 
-                <ul class="cd-secondary-nav cd-secondary-nav is-hidden slim-scroll" [ngClass]="{
-                  'menu-layout-one': menu?.sec_count<=1,
-                  'menu-layout-two': menu?.sec_count==2,
-                  'menu-layout-three': menu?.sec_count==3,
-                  'menu-layout-four': menu?.sec_count==4,
-                  'menu-layout-five': menu?.sec_count>4
-                }">
-                  <li class="go-back">
-                    <a>{{menu.name}}</a>
-                  </li>
-                  <li class="see-all display-none">
-                    <a>&nbsp;</a>
-                  </li>
-                  <!-- sections without category -->
-                  <li *ngIf="menu?.sections_in_one_col">
-                    <a *ngFor="let sec of menu.sections | orderAsc: 'rank';" (click)="commonService.onPageRedirect(sec);">{{ sec.name }}</a>
-                  </li>
-                  <!-- section with category -->
-                  <ng-container *ngIf="!menu?.sections_in_one_col">
-                    <li class="slim-scroll" *ngFor="let sec of menu.sections | orderAsc: 'rank';" [ngClass]="(sec?.categories?.length)? 'has-children' : ''">
-                      <a (click)="(sec?.categories?.length && commonService?.screen_width<=991)? '' :commonService.onPageRedirect(sec);">{{ sec.name }}</a>
-                      <ul class="is-hidden">
-                        <li class="go-back">
-                          <a>{{sec.name}}</a>
-                        </li>
-                        <li class="slim-scroll" *ngFor="let cat of sec.categories | orderAsc: 'rank';" [ngClass]="(cat?.sub_categories?.length)? 'has-children' : ''">
-                          <a (click)="(cat?.sub_categories?.length)? '' :commonService.onPageRedirect(cat);">{{ cat.name }}</a>
-                          <ul class="is-hidden">
-                            <li class="go-back">
-                              <a>{{ cat.name }}</a>
-                            </li>
-                            <li class="see-all" *ngFor="let sub_cat of cat.sub_categories | orderAsc: 'rank';">
-                              <a (click)="commonService.onPageRedirect(sub_cat);">{{ sub_cat.name }}</a>
-                            </li>
-                          </ul>
-                        </li>
-                      </ul>
+                  <ul class="cd-secondary-nav cd-secondary-nav is-hidden slim-scroll" [ngClass]="{
+                    'menu-layout-one': menu?.sec_count<=1,
+                    'menu-layout-two': menu?.sec_count==2,
+                    'menu-layout-three': menu?.sec_count==3,
+                    'menu-layout-four': menu?.sec_count==4,
+                    'menu-layout-five': menu?.sec_count>4
+                  }">
+                    <li class="go-back">
+                      <a>{{menu.name}}</a>
                     </li>
-                  </ng-container>
-                  <!-- menu images -->
-                  <li class="nav-img-wrapper slim-scroll" *ngFor="let x of menu.menu_images;">
-                    <div class="nav-img">
-                      <h4 *ngIf="x.heading" class="nav-img-title">{{x.heading}}</h4>
-                      <img width="100%" height="100%" appImgLazyLoad [ImagelazyLoad]="imgBaseUrl+x.image" alt="menu-img" class="menu-nav-img">
-                      <p *ngIf="x.sub_heading" class="blog-description pt-3">{{x.sub_heading}}</p>
-                      <div *ngIf="x.btn_status" class="button-container">
-                        <button class="primary-btn" (click)="commonService.onPageRedirect(x);">{{x.btn_text}}</button>
+                    <li class="see-all display-none">
+                      <a>&nbsp;</a>
+                    </li>
+                    <!-- sections without category -->
+                    <li *ngIf="menu?.sections_in_one_col">
+                      <a *ngFor="let sec of menu.sections | orderAsc: 'rank';" (click)="commonService.onPageRedirect(sec);">{{ sec.name }}</a>
+                    </li>
+                    <!-- section with category -->
+                    <ng-container *ngIf="!menu?.sections_in_one_col">
+                      <li class="slim-scroll" *ngFor="let sec of menu.sections | orderAsc: 'rank';" [ngClass]="(sec?.categories?.length)? 'has-children' : ''">
+                        <a (click)="(sec?.categories?.length && commonService?.screen_width<=991)? '' :commonService.onPageRedirect(sec);">{{ sec.name }}</a>
+                        <ul class="is-hidden">
+                          <li class="go-back">
+                            <a>{{sec.name}}</a>
+                          </li>
+                          <li class="slim-scroll" *ngFor="let cat of sec.categories | orderAsc: 'rank';" [ngClass]="(cat?.sub_categories?.length)? 'has-children' : ''">
+                            <a (click)="(cat?.sub_categories?.length)? '' :commonService.onPageRedirect(cat);">{{ cat.name }}</a>
+                            <ul class="is-hidden">
+                              <li class="go-back">
+                                <a>{{ cat.name }}</a>
+                              </li>
+                              <li class="see-all" *ngFor="let sub_cat of cat.sub_categories | orderAsc: 'rank';">
+                                <a (click)="commonService.onPageRedirect(sub_cat);">{{ sub_cat.name }}</a>
+                              </li>
+                            </ul>
+                          </li>
+                        </ul>
+                      </li>
+                    </ng-container>
+                    <!-- menu images -->
+                    <li class="nav-img-wrapper slim-scroll" *ngFor="let x of menu.menu_images;">
+                      <div class="nav-img">
+                        <h4 *ngIf="x.heading" class="nav-img-title">{{x.heading}}</h4>
+                        <img width="100%" height="100%" appImgLazyLoad [ImagelazyLoad]="imgBaseUrl+x.image" alt="menu-img" class="menu-nav-img">
+                        <p *ngIf="x.sub_heading" class="blog-description pt-3">{{x.sub_heading}}</p>
+                        <div *ngIf="x.btn_status" class="button-container">
+                          <button class="primary-btn" (click)="commonService.onPageRedirect(x);">{{x.btn_text}}</button>
+                        </div>
                       </div>
-                    </div>
-                  </li>
-                </ul>
-              </li>
+                    </li>
+                  </ul>
+                </li>
+              </ng-container>
+
+              <!-- desktop menu list-->
+              <ng-container *ngIf="commonService.desktop_device">
+                <li *ngFor="let menu of commonService.menu_list | orderAsc: 'rank'; let i=index;" [ngClass]="{ 'has-children mega-menu slim-scroll': menu?.sec_count, 'pos-relative': menu?.sec_count<=2 }">
+                  <a (mouseenter)="(!menu?.sec_count && commonService.desktop_device)? commonService.resetMegaMenu(): ''"
+                  [routerLink]="(!menu?.sec_count && menu.link_type=='internal')? menu.link: null"
+                  (click)="(!menu?.sec_count && menu.link_type!='internal')? commonService.onPageRedirect(menu): null;">
+                    {{menu.name}}
+                    <ng-container *ngIf="menu?.sec_count && commonService?.screen_width>=768">
+                      <lucide-icon name="chevron-down" [size]="18" class="ms-1 align-middle"></lucide-icon>
+                    </ng-container>
+                  </a>
+
+                  <ul class="cd-secondary-nav cd-secondary-nav is-hidden slim-scroll" [ngClass]="{
+                    'menu-layout-one': menu?.sec_count<=1,
+                    'menu-layout-two': menu?.sec_count==2,
+                    'menu-layout-three': menu?.sec_count==3,
+                    'menu-layout-four': menu?.sec_count==4,
+                    'menu-layout-five': menu?.sec_count>4
+                  }">
+                    <li class="go-back">
+                      <a>{{menu.name}}</a>
+                    </li>
+                    <li class="see-all display-none">
+                      <a>&nbsp;</a>
+                    </li>
+                    <!-- sections without category -->
+                    <li *ngIf="menu?.sections_in_one_col">
+                      <a *ngFor="let sec of menu.sections | orderAsc: 'rank';" [routerLink]="(sec.link_type=='internal')? sec.link: null" (click)="(sec.link_type!='internal')? commonService.onPageRedirect(sec): null;">{{ sec.name }}</a>
+                    </li>
+                    <!-- section with category -->
+                    <ng-container *ngIf="!menu?.sections_in_one_col">
+                      <li class="slim-scroll" *ngFor="let sec of menu.sections | orderAsc: 'rank';" [ngClass]="(sec?.categories?.length)? 'has-children' : ''">
+                        <a (click)="(!sec.categories.length && sec.link_type!='internal')? commonService.onPageRedirect(sec): null;"
+                        [routerLink]="(!sec.categories.length && sec.link_type=='internal')? sec.link: null">{{ sec.name }}</a>
+                        <ul class="is-hidden">
+                          <li class="go-back">
+                            <a>{{sec.name}}</a>
+                          </li>
+                          <li class="slim-scroll" *ngFor="let cat of sec.categories | orderAsc: 'rank';" [ngClass]="(cat?.sub_categories?.length)? 'has-children' : ''">
+                            <a (click)="(!cat.sub_categories.length && cat.link_type!='internal')? commonService.onPageRedirect(cat): null;"
+                            [routerLink]="(!cat.sub_categories.length && cat.link_type=='internal')? cat.link: null">{{ cat.name }}</a>
+                            <ul class="is-hidden">
+                              <li class="go-back">
+                                <a>{{ cat.name }}</a>
+                              </li>
+                              <li class="see-all" *ngFor="let sub_cat of cat.sub_categories | orderAsc: 'rank';">
+                                <a [routerLink]="(sub_cat.link_type=='internal')? sub_cat.link: null" (click)="(sub_cat.link_type!='internal')? commonService.onPageRedirect(sub_cat): null;">{{ sub_cat.name }}</a>
+                              </li>
+                            </ul>
+                          </li>
+                        </ul>
+                      </li>
+                    </ng-container>
+                    <!-- menu images -->
+                    <li class="nav-img-wrapper slim-scroll" *ngFor="let x of menu.menu_images;">
+                      <div class="nav-img">
+                        <h4 *ngIf="x.heading" class="nav-img-title">{{x.heading}}</h4>
+                        <img width="100%" height="100%" appImgLazyLoad [ImagelazyLoad]="imgBaseUrl+x.image" alt="menu-img" class="menu-nav-img">
+                        <p *ngIf="x.sub_heading" class="blog-description pt-3">{{x.sub_heading}}</p>
+                        <div *ngIf="x.btn_status" class="button-container">
+                          <button class="primary-btn" (click)="commonService.onPageRedirect(x);">{{x.btn_text}}</button>
+                        </div>
+                      </div>
+                    </li>
+                  </ul>
+                </li>
+              </ng-container>
 
               <!-- account -->
               <ng-container *ngIf="commonService?.screen_width<=991">
