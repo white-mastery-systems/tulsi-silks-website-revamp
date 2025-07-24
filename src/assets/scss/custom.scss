@@ -3969,3 +3969,43 @@ input::-webkit-inner-spin-button {
     background-color: #e7e7e7 !important;
   }
 }
+
+//tooltip
+.tooltip-wrapper {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+}
+
+.custom-tooltip {
+  visibility: hidden;
+  opacity: 0;
+  position: absolute;
+  top: 125%; /* Show above icon */
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #000;
+  color: #fff;
+  padding: 6px 10px;
+  border-radius: 4px;
+  white-space: nowrap;
+  font-size: 12px;
+  transition: opacity 0.3s;
+  z-index: 10;
+}
+
+.tooltip-wrapper:hover .custom-tooltip {
+  visibility: visible;
+  opacity: 1;
+}
+
+.custom-tooltip::after {
+  content: '';
+  position: absolute;
+  bottom: 100%; /* Arrow pointing down */
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 6px;
+  border-style: solid;
+  border-color:  transparent transparent #000 transparent;
+}

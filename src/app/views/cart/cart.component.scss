@@ -1,0 +1,14 @@
+.pro-qty-one
+{
+    width: 50px !important;
+    border: 1px solid #eee;
+    padding: 5px !important; 
+    display: block;
+    letter-spacing: 2px;
+    font-size: 1.125rem;
+    font-weight: 400;
+    padding: 5px 0;
+        span {
+            margin: 0 5px;
+        }
+}

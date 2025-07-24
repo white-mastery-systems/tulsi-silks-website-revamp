@@ -42,9 +42,9 @@
             <table class="table">
               <thead class="wishlist-head">
                 <tr>
-                  <td colspan="2"><h6>PRODUCT</h6></td>
-                  <td><h6>QUANTITY</h6></td>
-                  <td><h6>PRICE</h6></td>
+                  <td colspan="2"><h6>Product</h6></td>
+                  <td><h6>Quantity</h6></td>
+                  <td><h6>Price</h6></td>
                   <td></td>
                 </tr>
               </thead>
@@ -80,12 +80,12 @@
                   <td class="pro-quantity">
                     <div class="d-flex justify-content-start align-items-center">
                       <!-- Quantity Selector -->
-                      <div *ngIf="template_setting?.enable_product_inc && x.additional_qty==0" class="pro-qty d-flex justify-content-center align-items-center height-100">
-                        <button (click)="decProductQuantity(i);">
+                      <div *ngIf="template_setting?.enable_product_inc && x.additional_qty==0" [ngClass]="x.stock>1? 'pro-qty': 'pro-qty-one'" class="d-flex justify-content-center align-items-center height-100">
+                        <button *ngIf="x.stock >1" (click)="decProductQuantity(i);">
                           <i class="material-icons">remove</i>
                         </button>
                         <span class="btn-width">{{ x.quantity }}</span>
-                        <button [ngClass]="x.stock>x.quantity? '': 'qty-btn-disabled'" (click)="x.stock>x.quantity? incProductQuantity(i): '';">
+                        <button *ngIf="x.stock >1" [ngClass]="x.stock>x.quantity? '': 'qty-btn-disabled'" (click)="x.stock>x.quantity? incProductQuantity(i): '';">
                           <i class="material-icons">add</i>
                         </button>
                       </div>
@@ -152,7 +152,7 @@
               <div class="row border-btm">
                 <div class="col-6">
                   <div class="product-order-type border-none pb-3">
-                    <h4>BAG TOTAL
+                    <h4><b>Bag Total</b>
                       <span class="total-items">({{cartQty}} {{ cartQty>1 ? 'Items' : 'Item' }})</span>
                     </h4>
                   </div>
@@ -263,12 +263,12 @@
                     <div class="mt-2 mb-2">
                       <div class="d-flex justify-content-start align-items-center">
                         <!-- Quantity Selector -->
-                        <div *ngIf="template_setting?.enable_product_inc" class="pro-qty d-flex  justify-content-center align-items-center height-100">
-                          <button (click)="decProductQuantity(i);">
+                        <div *ngIf="template_setting?.enable_product_inc" [ngClass]="x.stock>1? 'pro-qty': 'pro-qty-one'" class="d-flex justify-content-center align-items-center height-100">
+                          <button *ngIf="x.stock>1" (click)="decProductQuantity(i);">
                             <i class="material-icons">remove</i>
                           </button>
                           <span class="btn-width">{{ x.quantity }}</span>
-                          <button [ngClass]="x.stock>x.quantity? '': 'qty-btn-disabled'" (click)="x.stock>x.quantity? incProductQuantity(i): '';">
+                          <button *ngIf="x.stock>1" [ngClass]="x.stock>x.quantity? '': 'qty-btn-disabled'" (click)="x.stock>x.quantity? incProductQuantity(i): '';">
                             <i class="material-icons">add</i>
                           </button>
                         </div>

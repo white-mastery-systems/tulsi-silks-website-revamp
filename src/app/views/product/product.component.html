@@ -46,20 +46,23 @@
     <div class="{{template_setting?.body_type}}">
       <div class="row">
         <div class="col-md-12 d-flex align-items-center justify-content-between">
-          <div class="breadcrumb-navigation col-9 px-0">
+          <div class="breadcrumb-navigation col-md-12 col-9 px-0">
             <ul class="collapsed">
-              <li><a routerLink="/">Home</a></li>
+              <li>
+                <a routerLink="/">Home</a>
+              </li>
               <li *ngIf="category_details?.name">
                 <a *ngIf="!category_details.route" [routerLink]="category_details.seo_status? '/category/'+category_details.seo_details.page_url: '/category/'+category_details._id">
                   {{category_details.name}}
                 </a>
                 <a *ngIf="category_details.route" [routerLink]="category_details.route">{{category_details.name}}</a>
               </li>
-              <li><span class="active-page">{{productDetails?.name}}</span></li>
+              <li>
+                <span class="active-page">{{productDetails?.name}}</span></li>
             </ul>
           </div>
           <div class="product-details d-flex align-items-center justify-content-end pb-3 col-3 px-0" *ngIf="commonService?.screen_width<=767">
-              <!-- wishlist -->
+            <!-- wishlist -->
             <div class="add-wishlist">
               <a class="d-flex align-items-center header-s-icon mr-2" *ngIf="!exist_in_wishlist;" (click)="modifyWishList('add', productDetails); exist_in_wishlist=true;">
                 <!-- <i class="material-icons image">favorite_border</i> -->
@@ -67,7 +70,7 @@
               </a>
               <a class="d-flex align-items-center add-wishlist-i header-s-icon mr-2" *ngIf="exist_in_wishlist;" (click)="modifyWishList('remove', productDetails);  exist_in_wishlist=false;">
                 <!-- <lucide-icon name="heart" [size]="20" stroke="1" color="red" fill="red"></lucide-icon> -->
-                 <img src="assets/images/whishlist-heart.svg" alt="wishlist-icon" width="40" height="40">
+                <img src="assets/images/whishlist-heart.svg" alt="wishlist-icon" width="40" height="40">
               </a>
             </div>
             <!-- #wishlist# -->
@@ -75,9 +78,12 @@
             <!-- share -->
             <div *ngIf="template_setting?.social_share && productDetails?.seo_status" class="add-wishlist">
               <a (click)="socialShare();" class="d-flex align-items-center header-s-icon">
-                <lucide-icon name="share-2" [size]="20" stroke="1" color="black"></lucide-icon>
-                <!-- <i class="material-icons">download</i> -->
-              </a>
+                <div class="tooltip-wrapper">
+              <lucide-icon name="share-2" [size]="20" stroke="1" color="black"></lucide-icon>
+              <div class="custom-tooltip">Share</div>
+            </div>
+                <!--<lucide-icon name="share-2" [size]="20" stroke="1" color="black"></lucide-icon>456-->
+                <!-- <i class="material-icons">download</i> --></a>
             </div>
             <!-- #share#-->
           </div>
@@ -128,10 +134,10 @@
                   </p>
                 </ng-container>
               </div>
-            </div>                
+            </div>
           </div>
         </div>
-        <div class="col-lg-4 col-md-4 col-12 d-flex align-items-center justify-content-md-end px-0">  
+        <div class="col-lg-4 col-md-4 col-12 d-flex align-items-center justify-content-md-end px-0">
           <div class="sticky-cart-details d-flex align-items-center">
             <!-- qty scale -->
             <ng-container *ngIf="!productDetails.addon_must && !customized_model">
@@ -146,7 +152,7 @@
                       <button [ngClass]="productDetails.stock>(productDetails.quantity+productDetails.additional_qty)? '': 'qty-btn-disabled'" (click)="productDetails.stock>(productDetails.quantity+productDetails.additional_qty)? incQty(): ''">
                         <i class="material-icons">add</i>
                       </button>
-                    </div>                      
+                    </div>
                   </div>
                 </div>
               </ng-container>
@@ -160,7 +166,7 @@
                   <div *ngIf="productDetails.stock >= (productDetails.quantity+productDetails.additional_qty)" class="buy-add-cart-btn">
                     <div class="row m-0">
                       <div class="col-md-12 p-0">
-                        <div class="buy-add-cart-btn-inner">                          
+                        <div class="buy-add-cart-btn-inner">
                           <button *ngIf="!productDetails?.added_to_cart" class="primary-btn w-100" type="button" (click)="addtoCart(true);">Add to Cart</button>
                           <button *ngIf="productDetails?.added_to_cart" (click)="gotoCart();" class="secondary-btn w-100 d-inline-flex justify-content-center align-items-center" type="button">
                             Go to Cart
@@ -172,7 +178,7 @@
                             <div class="box" *ngIf="productDetails?.buynow_loader">
                               <div class="spinner"></div>
                             </div>
-                          </button>                         
+                          </button>
                         </div>
                       </div>
                     </div>
@@ -199,8 +205,8 @@
                 </div>
               </div>
             </div>
-          </div>  
-        </div>            
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -281,25 +287,33 @@
           <div class="product-details">
             <div class="d-flex justify-content-end align-items-center pb-3" *ngIf="commonService?.screen_width>=768">
               <!-- wishlist -->
-            <div class="add-wishlist mr-3">
-              <a class="d-flex align-items-center header-s-icon" *ngIf="!exist_in_wishlist;" (click)="modifyWishList('add', productDetails); exist_in_wishlist=true;">
-                <lucide-icon name="heart" [size]="20" stroke="1" color="black"></lucide-icon>
-              </a>
-              <a class="d-flex align-items-center add-wishlist-i header-s-icon" *ngIf="exist_in_wishlist;" (click)="modifyWishList('remove', productDetails);  exist_in_wishlist=false;">
-               <!-- <lucide-icon name="heart" [size]="20" stroke="1" color="red" fill="red"></lucide-icon> -->
-                <img src="assets/images/whishlist-heart.svg" alt="wishlist-icon" width="40" height="40">
-              </a>
+              <div class="add-wishlist mr-3">
+                <a class="d-flex align-items-center header-s-icon" *ngIf="!exist_in_wishlist;" (click)="modifyWishList('add', productDetails); exist_in_wishlist=true;">
+                  <div class="tooltip-wrapper">
+              <lucide-icon name="heart" [size]="20" stroke="1" color="black"></lucide-icon>
+              <div class="custom-tooltip">Wishlist</div>
             </div>
-            <!-- #wishlist# -->
+                  <!--<lucide-icon name="heart" [size]="20" stroke="1" color="black"></lucide-icon>-->
+                </a>
+                <a class="d-flex align-items-center add-wishlist-i header-s-icon" *ngIf="exist_in_wishlist;" (click)="modifyWishList('remove', productDetails);  exist_in_wishlist=false;">
+                  <!-- <lucide-icon name="heart" [size]="20" stroke="1" color="red" fill="red"></lucide-icon> -->
+                  <img src="assets/images/whishlist-heart.svg" alt="wishlist-icon" width="40" height="40">
+                </a>
+              </div>
+              <!-- #wishlist# -->
 
-            <!-- share -->
-            <div *ngIf="template_setting?.social_share && productDetails?.seo_status" class="add-wishlist header-s-icon">
-              <a (click)="socialShare();" class="d-flex align-items-center">
-                <lucide-icon name="share-2" [size]="20" stroke="1" color="black"></lucide-icon>
-                <!-- <i class="material-icons">download</i> -->
-              </a>
-            </div>
-            <!-- #share#-->
+              <!-- share -->
+              <div *ngIf="template_setting?.social_share && productDetails?.seo_status" class="add-wishlist header-s-icon">
+                <a (click)="socialShare();" class="d-flex align-items-center">
+                  <div class="tooltip-wrapper">
+                    <lucide-icon name="share-2" [size]="20" stroke="1" color="black"></lucide-icon>
+                    <div class="custom-tooltip">Share</div>
+                  </div>
+                  <!--<lucide-icon name="share-2" [size]="20" stroke="1" color="black"></lucide-icon>123-->
+                  <!-- <i class="material-icons">download</i> -->
+                </a>
+              </div>
+              <!-- #share#-->
             </div>
             <!-- product-discription -->
             <div class="product-discription">
@@ -330,19 +344,20 @@
                 </p>
                 <div>
                   <p class="product-code">Product Code: {{productDetails.sku}}</p>
-                </div>                
+                </div>
               </div>
               <p *ngIf="customized_model || productDetails.additional_qty>0" class="product-code">
-                {{productDetails.quantity+productDetails.additional_qty}} {{productDetails.unit}}
-              </p>             
+                {{productDetails.quantity+productDetails.additional_qty}}
+                {{productDetails.unit}}
+              </p>
             </div>
-            
+
             <div *ngIf="productDetails.quantity" class="product-addon d-flex justify-content-between align-items-center">
               <!-- variants -->
-               <div *ngIf="productDetails.unit!='Pcs' || productDetails.stock > commonService.min_qty[productDetails.unit]" class="d-flex justify-content-start align-items-center">
-                  <p class="variants-title mb-0">Quantity</p>
-                  <span class="qty-unit ml-1" *ngIf="template_setting?.display_unit">({{productDetails?.unit}})</span>
-               </div>              
+              <div *ngIf="productDetails.unit!='Pcs' || productDetails.stock > commonService.min_qty[productDetails.unit]" class="d-flex justify-content-start align-items-center">
+                <p class="variants-title mb-0">Quantity</p>
+                <span class="qty-unit ml-1" *ngIf="template_setting?.display_unit">({{productDetails?.unit}})</span>
+              </div>
               <div *ngIf="productDetails.variant_status" class="size-variant pb-3">
                 <div *ngFor="let x of productDetails.variant_types; let i=index;">
                   <div class="sizes">
@@ -352,7 +367,7 @@
                     <ng-container *ngFor="let y of x.options; let j=index;">
                       <div class="d-inline-block mr-4">
                         <label class="store-label d-flex align-items-center m-0">
-                          <input type="radio" class="option-input radio" name="{{x.name}}" [checked]="x.value==y.value" (change)="x.value=y.value; setVariantPrice();" />
+                          <input type="radio" class="option-input radio" name="{{x.name}}" [checked]="x.value==y.value" (change)="x.value=y.value; setVariantPrice();"/>
                           <span>{{y.value}}</span>
                         </label>
                       </div>
@@ -374,7 +389,7 @@
                         <button [ngClass]="productDetails.stock>(productDetails.quantity+productDetails.additional_qty)? '': 'qty-btn-disabled'" (click)="productDetails.stock>(productDetails.quantity+productDetails.additional_qty)? incQty(): ''">
                           <i class="material-icons">add</i>
                         </button>
-                      </div>                      
+                      </div>
                     </div>
                   </div>
                 </ng-container>
@@ -383,7 +398,8 @@
               <!-- stock -->
               <ng-container *ngIf="commonService.application_setting?.disp_stock_left && productDetails.stock>commonService.min_qty[productDetails.unit]">
                 <p class="stock-report m-0 pb-3" *ngIf="!commonService.application_setting?.min_stock || commonService.application_setting?.min_stock>=productDetails.stock">
-                  <strong>{{productDetails.stock}} {{productDetails.unit}} Left in Stock.</strong>
+                  <strong>{{productDetails.stock}}
+                    {{productDetails.unit}} Left in Stock.</strong>
                 </p>
               </ng-container>
             </div>
@@ -407,7 +423,7 @@
                 </div>
               </div>
               <!-- selected custom model -->
-               <div *ngIf="customized_model" class="gray poss-rel d-flex align-items-center">
+              <div *ngIf="customized_model" class="gray poss-rel d-flex align-items-center">
                 Your custom design:
                 <div class="selected-option d-flex align-items-center">
                   <div class="cursor prod-link-mdl" (click)="openCustomDetailsModal(selectedCustomizationDetailsModal);">{{customized_model?.name}}</div>
@@ -426,7 +442,7 @@
                 <p class="mb-0 title">Add Ons</p>
               </div>
               <h5>Customization (Optional)</h5>
-              <p>Personalize your saree to match your style</p>              
+              <p>Personalize your saree to match your style</p>
               <div class="d-flex justify-content-start align-items-center select-btn">
                 <ng-container *ngFor="let x of productDetails.addon_list">
                   <button (click)="chooseAddonNew(x, existingListModal, createNewModal, mmOptionsModal);" class="primary-btn">
@@ -434,10 +450,11 @@
                     <ng-container *ngIf="x.price">
                       + {{ x.temp_price | currency:cc.currency?.country_code:'symbol':cc.format }}
                     </ng-container>
-                  </button>                  
-                </ng-container>                
+                  </button>
+                </ng-container>
               </div>
-              <p class="note pt-2"><span>Note:</span> Login Required</p>
+              <p class="note pt-2" *ngIf="!commonService.customer_token">
+                <span>Note:</span> Please log in to enable customization options</p>
             </div>
 
             <!-- alert section -->
@@ -466,7 +483,7 @@
               </div>
 
               <!-- sold out -->
-               <ng-container *ngIf="productDetails.stock < commonService.min_qty[productDetails.unit] || (productDetails.quantity+productDetails.additional_qty) > productDetails.stock">
+              <ng-container *ngIf="productDetails.stock < commonService.min_qty[productDetails.unit] || (productDetails.quantity+productDetails.additional_qty) > productDetails.stock">
                 <div class="info-alert smooth-fadein">
                   <div class="alert-msg d-flex align-items-center justify-content-center p-2">
                     <span class="material-icons"></span>
@@ -488,7 +505,7 @@
                   <div *ngIf="productDetails.stock >= (productDetails.quantity+productDetails.additional_qty)" class="buy-add-cart-btn">
                     <div class="row m-0">
                       <div class="col-md-12 p-0">
-                        <div class="buy-add-cart-btn-inner">                          
+                        <div class="buy-add-cart-btn-inner">
                           <button *ngIf="!productDetails?.added_to_cart" class="primary-btn w-100" type="button" (click)="addtoCart(true);">Add to Cart</button>
                           <button *ngIf="productDetails?.added_to_cart" (click)="gotoCart();" class="secondary-btn w-100 d-inline-flex justify-content-center align-items-center" type="button">
                             Go to Cart
@@ -545,39 +562,40 @@
             </div>
             <!-- size chart -->
             <div *ngIf="productDetails?.chart_details" class="size-chart pt-3 pb-2">
-              <p (click)="sizechartModal.show();">Size Chart <i class="material-icons">table_chart</i></p>
+              <p (click)="sizechartModal.show();">Size Chart <i class="material-icons">table_chart</i>
+              </p>
             </div>
             <!-- #size chart -->
-             <!-- timeline -->
-              <div *ngIf="productDetails.stock>0" class="timeline">
-                <div class="step">
-                  <div class="circle">
-                    <!-- Lucide: Package -->
-                   <img src="assets/images/package-check 1.svg">
-                  </div>
-                  <div class="title">Order Placed</div>
-                  <div class="date">{{ commonService.currDate | date: 'MMM d' }}</div>
+            <!-- timeline -->
+            <div *ngIf="productDetails.stock>0" class="timeline">
+              <div class="step">
+                <div class="circle">
+                  <!-- Lucide: Package -->
+                  <img src="assets/images/package-check 1.svg">
                 </div>
-
-                <div class="step">
-                  <div class="circle">
-                    <!-- Lucide: Truck -->
-                    <img src="assets/images/truck 1.svg">
-                  </div>
-                  <div class="title">Shipping</div>
-                  <div class="date">{{ shippingDuration.ship_start | date: 'MMM d' }} - {{ shippingDuration.ship_end | date: 'MMM d' }}</div>
-                </div>
-
-                <div class="step">
-                  <div class="circle">
-                    <!-- Lucide: Lock -->
-                    <img src="assets/images/map-pin-house 1.svg">
-                  </div>
-                  <div class="title">Delivered</div>
-                  <div class="date">{{ shippingDuration.delivery_start | date: 'MMM d' }} - {{ shippingDuration.delivery_end | date: 'MMM d' }}</div>
-                </div>
+                <div class="title">Order Placed</div>
+                <div class="date">{{ commonService.currDate | date: 'MMM d' }}</div>
               </div>
-              <!-- #timeline -->
+
+              <div class="step">
+                <div class="circle">
+                  <!-- Lucide: Truck -->
+                  <img src="assets/images/truck 1.svg">
+                </div>
+                <div class="title">Shipping</div>
+                <div class="date">{{ shippingDuration.ship_start | date: 'MMM d' }} - {{ shippingDuration.ship_end | date: 'MMM d' }}</div>
+              </div>
+
+              <div class="step">
+                <div class="circle">
+                  <!-- Lucide: Lock -->
+                  <img src="assets/images/map-pin-house 1.svg">
+                </div>
+                <div class="title">Delivered</div>
+                <div class="date">{{ shippingDuration.delivery_start | date: 'MMM d' }} - {{ shippingDuration.delivery_end | date: 'MMM d' }}</div>
+              </div>
+            </div>
+            <!-- #timeline -->
             <!-- product-explanation -->
             <div *ngIf="productDetails.description" class="product-explanation pt-3 mb-3">
               <div class="ql-container">
@@ -586,7 +604,7 @@
                 </div>
               </div>
             </div>
-            <!-- #product-explanation# -->           
+            <!-- #product-explanation# -->
 
           </div>
 
@@ -631,8 +649,7 @@
           </div>
           <!-- #FAQ -->
         </div>
-      </div>   
-    
+      </div>
 
       <!-- product reviews -->
       <div *ngIf="reviews.length" class="product-reviews-wrapper mt-3">
@@ -644,7 +661,8 @@
                 <div class="col-6">
                   <div class="avg-rating">
                     <div class="avg-rating-inner">
-                      {{avg_review}}<i class="material-icons">star</i>
+                      {{avg_review}}
+                      <i class="material-icons">star</i>
                     </div>
                     <div *ngIf="reviews.length>1" class="total-reviews">
                       <span>Based on {{reviews.length}} Reviews</span>
@@ -659,14 +677,15 @@
                   </select>
                 </div>
               </div>
-            
+
               <div class="primary-card review-card pr-3 pl-3">
                 <div class="row m-0">
                   <div class="col-md-12 p-0">
                     <div *ngFor="let x of reviews | paginate: { itemsPerPage: pageSize, currentPage: page };" class="customer-review-card">
                       <div class="review-title">
                         <div class="customer-star" [ngClass]="{ 'rating-good': x.rating>2, 'rating-avg': x.rating===2, 'rating-bad': x.rating===1 }">
-                          {{x.rating}}<i class="material-icons">star</i>
+                          {{x.rating}}
+                          <i class="material-icons">star</i>
                         </div>
                         {{x.title}}
                       </div>
@@ -768,14 +787,14 @@
     <!-- #related products -->
 
     <!-- blogs -->
-     <section *ngIf="blogList?.length" class="news">
+    <section *ngIf="blogList?.length" class="news">
       <div class="container-fluid">
-        <div class="row">         
+        <div class="row">
           <div class="col-12 px-0 d-flex justify-content-between align-items-end">
             <div class="titles custom-title w-auto pl-0" >
               <h2 class="text-black">Articles</h2>
               <p>Stories woven in silk and tradition</p>
-            </div>            
+            </div>
             <div class="blog-slider-btn">
               <button class="primary-btn outline-btn" routerLink="/blogs" type="button">
                 View All
@@ -798,7 +817,7 @@
                   </figcaption>
                 </figure>
               </div>
-            </div> 
+            </div>
           </div>
           <!-- slider -->
           <div class="col-12 px-0" *ngIf="!commonService.desktop_device">
@@ -1055,7 +1074,7 @@
               <div class="col-md-12">
                 <label for="model_name">Model Name<span class="req-star">*</span></label>
                 <input class="w-100" type="text" name="name" placeholder="Enter a name for your model" id="model_name" (input)="addonForm.alert_msg=null;"
-                [(ngModel)]="addonForm.name" #name="ngModel" required />
+                [(ngModel)]="addonForm.name" #name="ngModel" required/>
               </div>
             </div>
           </div>
@@ -1071,10 +1090,10 @@
                       <label class="store-label cursor m-0">
                         <!-- Radio -->
                         <input *ngIf="custom_list[customIndex]?.type=='either_or'" type="radio" class="option-input radio" name="option"
-                        [checked]="custom_list[customIndex].selected_option==x.name" (change)="addonForm.alert_msg=null; custom_list[customIndex].selected_option=x.name; getRadioNextList(x.name);" />
+                        [checked]="custom_list[customIndex].selected_option==x.name" (change)="addonForm.alert_msg=null; custom_list[customIndex].selected_option=x.name; getRadioNextList(x.name);"/>
                         <!-- Checkbox -->
                         <input *ngIf="custom_list[customIndex]?.type!='either_or'" type="checkbox" class="option-input checkbox" name="option{{i}}"
-                        [(ngModel)]="x.custom_option_checked" (change)="addonForm.alert_msg=null; getCheckboxNextList(); disableOption();" [disabled]="x.disabled" />
+                        [(ngModel)]="x.custom_option_checked" (change)="addonForm.alert_msg=null; getCheckboxNextList(); disableOption();" [disabled]="x.disabled"/>
                         <!-- Content -->
                         <img width="100%" height="100%" imgBroken *ngIf="x.image" [src]="imgBaseUrl+x.image" alt="addon" class="img-fluid">
                         <img width="100%" height="100%" imgBroken *ngIf="!x.image" class="addon-icon opacity6" src="assets/images/addon.svg" alt="addon">
@@ -1102,7 +1121,7 @@
                           <div class="d-flex align-items-center  justify-content-center">
                             <ng-container *ngFor="let unit of measurement_sets[mmIndex].units;">
                               <label class="store-label d-flex align-items-center m-2">
-                                <input type="radio" class="option-input radio" [value]="unit.name" name="unit" (change)="addonForm.alert_msg=null; onChangeUnit();" [(ngModel)]="addonForm.mm_unit" />in {{unit.name}}
+                                <input type="radio" class="option-input radio" [value]="unit.name" name="unit" (change)="addonForm.alert_msg=null; onChangeUnit();" [(ngModel)]="addonForm.mm_unit"/>in {{unit.name}}
                               </label>
                             </ng-container>
                           </div>
@@ -1110,7 +1129,7 @@
                         <div *ngIf="mmIndex>0" class="gray-card primary-card p-3">
                           <div class="d-flex align-items-center  justify-content-center">
                             <label class="store-label d-flex align-items-center m-2">
-                              <input type="radio" class="option-input radio" checked />in {{addonForm.mm_unit}}
+                              <input type="radio" class="option-input radio" checked/>in {{addonForm.mm_unit}}
                             </label>
                           </div>
                         </div>
@@ -1127,9 +1146,10 @@
                           <div class="gray-card primary-card p-3">
                             <div class="row">
                               <div class="col-8">
-                                <label for="value{{mmIndex}}{{i}}">{{x.name}}<span class="req-star">*</span></label>
+                                <label for="value{{mmIndex}}{{i}}">{{x.name}}
+                                  <span class="req-star">*</span></label>
                                 <input class="w-100" type="tel" name="value{{mmIndex}}{{i}}" id="value{{mmIndex}}{{i}}" (input)="addonForm.alert_msg=null; x.alert_msg='';"
-                                [(ngModel)]="x.value" #value="ngModel" (focusout)="mmFocusOut(x);" appNumberOnly required />
+                                [(ngModel)]="x.value" #value="ngModel" (focusout)="mmFocusOut(x);" appNumberOnly required/>
                                 <p *ngIf="x.alert_msg" style="font-size: 12px; color: red !important;">{{x.alert_msg}}</p>
                               </div>
                               <div class="col-4 d-flex align-items-center">
@@ -1150,7 +1170,8 @@
                 <h6 class="ml-3">{{productDetails.selected_addon?.notes_title}}</h6>
                 <div *ngFor="let x of notes_list; let i=index;" class="col-lg-12 mb-3">
                   <div class="gray-card primary-card p-3">
-                    <p>{{x.name}}<span *ngIf="x.required" class="req-star">*</span></p>
+                    <p>{{x.name}}
+                      <span *ngIf="x.required" class="req-star">*</span></p>
                     <input class="w-100" type="text" id="notes_name{{i}}" name="notes_name{{i}}" [(ngModel)]="x.value" [required]="x.required">
                   </div>
                 </div>
@@ -1251,291 +1272,292 @@
               <div class="col-lg-2 col-md-6">
                 <div class="profile_address">
                   <h6>Name</h6>
-                  <p>{{x.name}}<p>
-                </div>
-              </div>
-              <div class="col-lg-2 col-md-6">
-                <div class="profile_address">
-                  <h6>Created On</h6>
-                  <p>{{x.created_on | date : "dd MMM y"}}<p>
-                </div>
-              </div>
-              <ng-container *ngIf="x?.custom_list?.length">
-                <div *ngFor="let y of x.custom_list | slice:0:2; let j=index;" class="col-md-6" [ngClass]="x.custom_list.length==1? 'col-lg-4': 'col-lg-2'">
-                  <div class="profile_address">
-                    <h6>{{y.name}}</h6>
-                    <p>{{y.value[0]?.name}}<p>
+                  <p>{{x.name}}
+                    <p></div>
                   </div>
-                </div>
-              </ng-container>
-              <div *ngIf="!x?.custom_list?.length" class="col-lg-4 col-md-6"></div>
-              <div class="col-lg-4 col-md-12">
-                <button type="button" (click)="existingListModal.hide(); onSelectModal(x, selectedCustomizationDetailsModal);" class="primary-btn w-100 mb-2">Select</button>
-                <button type="button" (click)="existingListModal.hide(); clearAddon(); onViewModel(x);" class="secondary-btn w-100">View</button>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-md-12">
-            <button class="primary-btn" (click)="closeExistingAndOpenNewModal(existingListModal, createNewModal);" type="button">Add New Model</button>
-          </div>
-        </div>
-      </div>
-
-      <div class="modal-footer">
-        <button type="button" class="secondary-btn" (click)="clearAddon(); existingListModal.hide();">Close</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- Selected Customization Details Modal -->
-<div bsModal #selectedCustomizationDetailsModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="dialog-waiter">
-  <div class="modal-dialog modal-lg modal-dialog-scrollable" role="document">
-    <div class="modal-content">
-      <div class="modal-header d-flex align-items-center">
-        <div>
-          <h5 class="modal-title">
-            <strong>{{customized_model?.name}}</strong>
-          </h5>
-          <p class="m-0">These are the details of the customization</p>
-        </div>
-        <div class="d-flex">
-          <i class="material-icons" (click)="selectedCustomizationDetailsModal.hide();">close</i>
-        </div>
-      </div>
-
-      <div class="modal-body slim-scroll">
-        <!-- custom list -->
-        <div *ngIf="commonService.customView" class="row">
-          <ng-container *ngFor="let x of customized_model?.custom_list; let i=index;">
-            <div class="col-md-6 d-flex" *ngFor="let y of x.value; let j=index;">
-              <div class="gray-card primary-card d-flex align-items-center w-100 p-3">
-                <div class="d-flex flex-row">
-                  <div class="modal-img">
-                    <img width="100%" height="100%" imgBroken *ngIf="y.image" [src]="imgBaseUrl+y.image" alt="model">
-                    <img width="100%" height="100%" imgBroken class="addon-icon opacity6" *ngIf="!y.image" src="assets/images/addon.svg" alt="addon">
-                  </div>
-                  <div class="d-flex flex-column justify-content-center">
-                    <h6>{{x.name}}</h6>
-                    <p class="m-0">{{y.name}}</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </ng-container>
-        </div>
-        <!-- measurement list -->
-        <div *ngIf="commonService.measurementView" class="row">
-          <ng-container *ngFor="let x of customized_model?.mm_sets; let i=index;">
-            <div class="d-flex" [ngClass]="(customized_model?.mm_sets?.length===1)? 'col-md-12': 'col-md-6'">
-              <div class="gray-card primary-card w-100 p-3 mb-3">
-                <div align="center">
-                  <h5>{{x.name}}</h5>
-                </div>
-                <div>
-                  <div class="d-flex align-items-center justify-content-center mb-3">
-                    <img width="100%" height="100%" imgBroken *ngIf="x.image" [src]="imgBaseUrl+x.image" alt="measurement_img">
-                  </div>
-                  <ng-container *ngFor="let y of x.list; let j=index;">
-                    <div class="pr-1 pl-1">
-                      <div class="row measurement-table">
-                        <div class="col-6 d-flex juustify-content-start align-items-center border">
-                          <p class="m-0">{{y.name}}:</p>
-                        </div>
-                        <div class="col-6 d-flex juustify-content-start align-items-center border">
-                          <p class="m-0">{{y.value}} {{ customized_model?.mm_unit }}</p>
+                  <div class="col-lg-2 col-md-6">
+                    <div class="profile_address">
+                      <h6>Created On</h6>
+                      <p>{{x.created_on | date : "dd MMM y"}}
+                        <p></div>
+                      </div>
+                      <ng-container *ngIf="x?.custom_list?.length">
+                        <div *ngFor="let y of x.custom_list | slice:0:2; let j=index;" class="col-md-6" [ngClass]="x.custom_list.length==1? 'col-lg-4': 'col-lg-2'">
+                          <div class="profile_address">
+                            <h6>{{y.name}}</h6>
+                            <p>{{y.value[0]?.name}}
+                              <p></div>
+                            </div>
+                          </ng-container>
+                          <div *ngIf="!x?.custom_list?.length" class="col-lg-4 col-md-6"></div>
+                          <div class="col-lg-4 col-md-12">
+                            <button type="button" (click)="existingListModal.hide(); onSelectModal(x, selectedCustomizationDetailsModal);" class="primary-btn w-100 mb-2">Select</button>
+                            <button type="button" (click)="existingListModal.hide(); clearAddon(); onViewModel(x);" class="secondary-btn w-100">View</button>
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </ng-container>
-                </div>
-              </div>
-            </div>
-          </ng-container>
-        </div>
-        <!-- notes list -->
-        <div *ngIf="commonService.notesView;" class="row">
-          <ng-container *ngFor="let x of customized_model?.notes_list; let i=index;">
-            <div *ngIf="x.value" class="col-md-12 d-flex">
-              <div class="gray-card primary-card d-flex align-items-center w-100 p-3">
-                <div class="d-flex flex-row">
-                  <div class="d-flex flex-column justify-content-center">
-                    <h6>{{x.name}}</h6>
-                    <p class="m-0">{{x.value}}</p>
+                    <div class="row">
+                      <div class="col-md-12">
+                        <button class="primary-btn" (click)="closeExistingAndOpenNewModal(existingListModal, createNewModal);" type="button">Add New Model</button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="modal-footer">
+                    <button type="button" class="secondary-btn" (click)="clearAddon(); existingListModal.hide();">Close</button>
                   </div>
                 </div>
               </div>
             </div>
-          </ng-container>
-        </div>
-      </div>
 
-      <div class="modal-footer custom-view-mdl-ftr-btn">
-        <div class="row w-100 justify-content-end m-0">
-          <!-- custom view -->
-          <ng-container *ngIf="commonService.customView">
-            <ng-container *ngIf="customized_model?.mm_sets?.length || customized_model?.notes_list?.length">
-              <div *ngIf="customized_model?.mm_sets?.length" class="col-6 pr-1 pl-1" [ngClass]="(customized_model?.notes_list?.length)? 'col-md-4': 'col-md-6'">
-                <button class="primary-btn w-100" type="button" [ngClass]="(customized_model?.notes_list?.length)? '': 'mb-0'" (click)="commonService.customView=false; commonService.measurementView=true; commonService.notesView=false; commonService?.scrollModalTop(0);">
+            <!-- Selected Customization Details Modal -->
+            <div bsModal #selectedCustomizationDetailsModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="dialog-waiter">
+              <div class="modal-dialog modal-lg modal-dialog-scrollable" role="document">
+                <div class="modal-content">
+                  <div class="modal-header d-flex align-items-center">
+                    <div>
+                      <h5 class="modal-title">
+                        <strong>{{customized_model?.name}}</strong>
+                      </h5>
+                      <p class="m-0">These are the details of the customization</p>
+                    </div>
+                    <div class="d-flex">
+                      <i class="material-icons" (click)="selectedCustomizationDetailsModal.hide();">close</i>
+                    </div>
+                  </div>
+
+                  <div class="modal-body slim-scroll">
+                    <!-- custom list -->
+                    <div *ngIf="commonService.customView" class="row">
+                      <ng-container *ngFor="let x of customized_model?.custom_list; let i=index;">
+                        <div class="col-md-6 d-flex" *ngFor="let y of x.value; let j=index;">
+                          <div class="gray-card primary-card d-flex align-items-center w-100 p-3">
+                            <div class="d-flex flex-row">
+                              <div class="modal-img">
+                                <img width="100%" height="100%" imgBroken *ngIf="y.image" [src]="imgBaseUrl+y.image" alt="model">
+                                <img width="100%" height="100%" imgBroken class="addon-icon opacity6" *ngIf="!y.image" src="assets/images/addon.svg" alt="addon">
+                              </div>
+                              <div class="d-flex flex-column justify-content-center">
+                                <h6>{{x.name}}</h6>
+                                <p class="m-0">{{y.name}}</p>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </ng-container>
+                    </div>
+                    <!-- measurement list -->
+                    <div *ngIf="commonService.measurementView" class="row">
+                      <ng-container *ngFor="let x of customized_model?.mm_sets; let i=index;">
+                        <div class="d-flex" [ngClass]="(customized_model?.mm_sets?.length===1)? 'col-md-12': 'col-md-6'">
+                          <div class="gray-card primary-card w-100 p-3 mb-3">
+                            <div align="center">
+                              <h5>{{x.name}}</h5>
+                            </div>
+                            <div>
+                              <div class="d-flex align-items-center justify-content-center mb-3">
+                                <img width="100%" height="100%" imgBroken *ngIf="x.image" [src]="imgBaseUrl+x.image" alt="measurement_img">
+                              </div>
+                              <ng-container *ngFor="let y of x.list; let j=index;">
+                                <div class="pr-1 pl-1">
+                                  <div class="row measurement-table">
+                                    <div class="col-6 d-flex juustify-content-start align-items-center border">
+                                      <p class="m-0">{{y.name}}:</p>
+                                    </div>
+                                    <div class="col-6 d-flex juustify-content-start align-items-center border">
+                                      <p class="m-0">{{y.value}}
+                                        {{ customized_model?.mm_unit }}</p>
+                                    </div>
+                                  </div>
+                                </div>
+                              </ng-container>
+                            </div>
+                          </div>
+                        </div>
+                      </ng-container>
+                    </div>
+                    <!-- notes list -->
+                    <div *ngIf="commonService.notesView;" class="row">
+                      <ng-container *ngFor="let x of customized_model?.notes_list; let i=index;">
+                        <div *ngIf="x.value" class="col-md-12 d-flex">
+                          <div class="gray-card primary-card d-flex align-items-center w-100 p-3">
+                            <div class="d-flex flex-row">
+                              <div class="d-flex flex-column justify-content-center">
+                                <h6>{{x.name}}</h6>
+                                <p class="m-0">{{x.value}}</p>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </ng-container>
+                    </div>
+                  </div>
+
+                  <div class="modal-footer custom-view-mdl-ftr-btn">
+                    <div class="row w-100 justify-content-end m-0">
+                      <!-- custom view -->
+                      <ng-container *ngIf="commonService.customView">
+                        <ng-container *ngIf="customized_model?.mm_sets?.length || customized_model?.notes_list?.length">
+                          <div *ngIf="customized_model?.mm_sets?.length" class="col-6 pr-1 pl-1" [ngClass]="(customized_model?.notes_list?.length)? 'col-md-4': 'col-md-6'">
+                            <button class="primary-btn w-100" type="button" [ngClass]="(customized_model?.notes_list?.length)? '': 'mb-0'" (click)="commonService.customView=false; commonService.measurementView=true; commonService.notesView=false; commonService?.scrollModalTop(0);">
                   View Measurements
                 </button>
-              </div>
-              <div *ngIf="customized_model?.notes_list?.length" class="col-6 pr-1 pl-1" [ngClass]="(customized_model?.mm_sets?.length)? 'col-md-4': 'col-md-6'">
-                <button class="primary-btn w-100" type="button" [ngClass]="(customized_model?.mm_sets?.length)? '': 'mb-0'" (click)="commonService.customView=false; commonService.measurementView=false; commonService.notesView=true; commonService?.scrollModalTop(0);">
+                          </div>
+                          <div *ngIf="customized_model?.notes_list?.length" class="col-6 pr-1 pl-1" [ngClass]="(customized_model?.mm_sets?.length)? 'col-md-4': 'col-md-6'">
+                            <button class="primary-btn w-100" type="button" [ngClass]="(customized_model?.mm_sets?.length)? '': 'mb-0'" (click)="commonService.customView=false; commonService.measurementView=false; commonService.notesView=true; commonService?.scrollModalTop(0);">
                   View Notes
                 </button>
-              </div>
-            </ng-container>
-          </ng-container>
-          <!-- measurement view -->
-          <ng-container *ngIf="commonService.measurementView">
-            <ng-container *ngIf="customized_model?.custom_list?.length || customized_model?.notes_list?.length">
-              <div *ngIf="customized_model?.custom_list?.length" class="col-6 pr-1 pl-1" [ngClass]="(customized_model?.notes_list?.length)? 'col-md-4': 'col-md-6'">
-                <button class="primary-btn w-100" type="button" [ngClass]="(customized_model?.notes_list?.length)? '': 'mb-0'" (click)="commonService.customView=true; commonService.measurementView=false; commonService.notesView=false; commonService?.scrollModalTop(0);">
+                          </div>
+                        </ng-container>
+                      </ng-container>
+                      <!-- measurement view -->
+                      <ng-container *ngIf="commonService.measurementView">
+                        <ng-container *ngIf="customized_model?.custom_list?.length || customized_model?.notes_list?.length">
+                          <div *ngIf="customized_model?.custom_list?.length" class="col-6 pr-1 pl-1" [ngClass]="(customized_model?.notes_list?.length)? 'col-md-4': 'col-md-6'">
+                            <button class="primary-btn w-100" type="button" [ngClass]="(customized_model?.notes_list?.length)? '': 'mb-0'" (click)="commonService.customView=true; commonService.measurementView=false; commonService.notesView=false; commonService?.scrollModalTop(0);">
                   View Customization
                 </button>
-              </div>
-              <div *ngIf="customized_model?.notes_list?.length" class="col-6 pr-1 pl-1" [ngClass]="(customized_model?.custom_list?.length)? 'col-md-4': 'col-md-6'">
-                <button class="primary-btn w-100" type="button" [ngClass]="(customized_model?.custom_list?.length)? '': 'mb-0'" (click)="commonService.customView=false; commonService.measurementView=false; commonService.notesView=true; commonService?.scrollModalTop(0);">
+                          </div>
+                          <div *ngIf="customized_model?.notes_list?.length" class="col-6 pr-1 pl-1" [ngClass]="(customized_model?.custom_list?.length)? 'col-md-4': 'col-md-6'">
+                            <button class="primary-btn w-100" type="button" [ngClass]="(customized_model?.custom_list?.length)? '': 'mb-0'" (click)="commonService.customView=false; commonService.measurementView=false; commonService.notesView=true; commonService?.scrollModalTop(0);">
                   View Notes
                 </button>
-              </div>
-            </ng-container>
-          </ng-container>
-          <!-- notes view -->
-          <ng-container *ngIf="commonService.notesView">
-            <ng-container *ngIf="customized_model?.custom_list?.length || customized_model?.mm_sets?.length">
-              <div *ngIf="customized_model?.custom_list?.length" class="col-6 pr-1 pl-1" [ngClass]="(customized_model?.mm_sets?.length)? 'col-md-4': 'col-md-6'">
-                <button class="primary-btn w-100" type="button" [ngClass]="(customized_model?.mm_sets?.length)? '': 'mb-0'" (click)="commonService.customView=true; commonService.measurementView=false; commonService.notesView=false; commonService?.scrollModalTop(0);">
+                          </div>
+                        </ng-container>
+                      </ng-container>
+                      <!-- notes view -->
+                      <ng-container *ngIf="commonService.notesView">
+                        <ng-container *ngIf="customized_model?.custom_list?.length || customized_model?.mm_sets?.length">
+                          <div *ngIf="customized_model?.custom_list?.length" class="col-6 pr-1 pl-1" [ngClass]="(customized_model?.mm_sets?.length)? 'col-md-4': 'col-md-6'">
+                            <button class="primary-btn w-100" type="button" [ngClass]="(customized_model?.mm_sets?.length)? '': 'mb-0'" (click)="commonService.customView=true; commonService.measurementView=false; commonService.notesView=false; commonService?.scrollModalTop(0);">
                   View Customization
                 </button>
-              </div>
-              <div *ngIf="customized_model?.mm_sets?.length" class="col-6 pr-1 pl-1" [ngClass]="(customized_model?.custom_list?.length)? 'col-md-4': 'col-md-6'">
-                <button class="primary-btn w-100" type="button" [ngClass]="(customized_model?.custom_list?.length)? '': 'mb-0'" (click)="commonService.customView=false; commonService.measurementView=true; commonService.notesView=false; commonService?.scrollModalTop(0);">
+                          </div>
+                          <div *ngIf="customized_model?.mm_sets?.length" class="col-6 pr-1 pl-1" [ngClass]="(customized_model?.custom_list?.length)? 'col-md-4': 'col-md-6'">
+                            <button class="primary-btn w-100" type="button" [ngClass]="(customized_model?.custom_list?.length)? '': 'mb-0'" (click)="commonService.customView=false; commonService.measurementView=true; commonService.notesView=false; commonService?.scrollModalTop(0);">
                   View Measurements
                 </button>
-              </div>
-            </ng-container>
-          </ng-container>
-          <div class="pr-1 pl-1" [ngClass]="(customized_model?.custom_list?.length && customized_model?.mm_sets?.length && customized_model?.notes_list?.length)? 'col-md-4 col-12': 'col-md-6 col-6'">
-            <button class="primary-btn w-100 mb-0" type="button" *ngIf="!productDetails?.added_to_cart && productDetails.stock>=(productDetails.quantity+productDetails.additional_qty)" (click)="addtoCart(false); selectedCustomizationDetailsModal.hide();">
+                          </div>
+                        </ng-container>
+                      </ng-container>
+                      <div class="pr-1 pl-1" [ngClass]="(customized_model?.custom_list?.length && customized_model?.mm_sets?.length && customized_model?.notes_list?.length)? 'col-md-4 col-12': 'col-md-6 col-6'">
+                        <button class="primary-btn w-100 mb-0" type="button" *ngIf="!productDetails?.added_to_cart && productDetails.stock>=(productDetails.quantity+productDetails.additional_qty)" (click)="addtoCart(false); selectedCustomizationDetailsModal.hide();">
               Add To Cart
             </button>
-            <button class="primary-btn w-100 mb-0" type="button" *ngIf="productDetails?.added_to_cart || productDetails.stock<(productDetails.quantity+productDetails.additional_qty)" (click)="selectedCustomizationDetailsModal.hide();">
+                        <button class="primary-btn w-100 mb-0" type="button" *ngIf="productDetails?.added_to_cart || productDetails.stock<(productDetails.quantity+productDetails.additional_qty)" (click)="selectedCustomizationDetailsModal.hide();">
               Close
             </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- Size chart modal -->
-<div bsModal #sizechartModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="dialog-chart">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header d-flex align-items-center">
-        <div>
-          <h6 class="modal-title">{{productDetails.name}}</h6>
-        </div>
-        <div class="d-flex">
-          <i class="material-icons" (click)="sizechartModal.hide();">close</i>
-        </div>
-      </div>
-
-      <div class="modal-body">
-        <div class="sizechart-body">
-          <div class="row">
-            <div class="col-md-12 mb-3">
-              <p class="m-0 text-right">{{productDetails?.chart_details?.unit}}</p>
-            </div>
-            <div class="col-md-12">
-              <div class="sizechart">
-                <table *ngIf="productDetails?.chart_details?.chart_list?.length" class="table">
-                  <tr>
-                    <th *ngFor="let key of productDetails.chart_keys;">{{key}}</th>
-                  </tr>
-                  <tr *ngFor="let item of productDetails.chart_details.chart_list;">
-                    <td *ngFor="let key of productDetails.chart_keys;">{{item[key]}}</td>
-                  </tr>
-                </table>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
-            <div class="col-md-12">
-              <p class="sizenote">{{productDetails?.chart_details?.description}}</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
 
-<!-- Enquiry modal -->
-<div bsModal #enquiryModal="bs-modal" class="modal fade" [config]="{ backdrop: 'static' }" tabindex="-1" role="dialog"
+            <!-- Size chart modal -->
+            <div bsModal #sizechartModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="dialog-chart">
+              <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                  <div class="modal-header d-flex align-items-center">
+                    <div>
+                      <h6 class="modal-title">{{productDetails.name}}</h6>
+                    </div>
+                    <div class="d-flex">
+                      <i class="material-icons" (click)="sizechartModal.hide();">close</i>
+                    </div>
+                  </div>
+
+                  <div class="modal-body">
+                    <div class="sizechart-body">
+                      <div class="row">
+                        <div class="col-md-12 mb-3">
+                          <p class="m-0 text-right">{{productDetails?.chart_details?.unit}}</p>
+                        </div>
+                        <div class="col-md-12">
+                          <div class="sizechart">
+                            <table *ngIf="productDetails?.chart_details?.chart_list?.length" class="table">
+                              <tr>
+                                <th *ngFor="let key of productDetails.chart_keys;">{{key}}</th>
+                              </tr>
+                              <tr *ngFor="let item of productDetails.chart_details.chart_list;">
+                                <td *ngFor="let key of productDetails.chart_keys;">{{item[key]}}</td>
+                              </tr>
+                            </table>
+                          </div>
+                        </div>
+                        <div class="col-md-12">
+                          <p class="sizenote">{{productDetails?.chart_details?.description}}</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Enquiry modal -->
+            <div bsModal #enquiryModal="bs-modal" class="modal fade" [config]="{ backdrop: 'static' }" tabindex="-1" role="dialog"
   aria-labelledby="subscribe-model">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
-      <form autocomplete="off" (ngSubmit)="onEnquire()" ngNativeValidate>
-        <div class="modal-body">
-          <div class="d-flex justify-content-end">
-            <i id="closeEnqModal" (click)="enquiryModal.hide()" class="material-icons">close</i>
-          </div>
-          <div class="row">
-            <div class="form-group col-12">
-              <label for="name">Name</label>
-              <input class="w-100" type="text" name="name" id="name" [(ngModel)]="enqForm.name"
-                (input)="enqForm.errorMsg = null" required />
-            </div>
-            <div class="form-group col-12">
-              <label for="email">Email</label>
-              <input class="w-100" type="email" name="email" id="email" [(ngModel)]="enqForm.email"
+              <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                  <form autocomplete="off" (ngSubmit)="onEnquire()" ngNativeValidate>
+                    <div class="modal-body">
+                      <div class="d-flex justify-content-end">
+                        <i id="closeEnqModal" (click)="enquiryModal.hide()" class="material-icons">close</i>
+                      </div>
+                      <div class="row">
+                        <div class="form-group col-12">
+                          <label for="name">Name</label>
+                          <input class="w-100" type="text" name="name" id="name" [(ngModel)]="enqForm.name"
+                (input)="enqForm.errorMsg = null" required/>
+                        </div>
+                        <div class="form-group col-12">
+                          <label for="email">Email</label>
+                          <input class="w-100" type="email" name="email" id="email" [(ngModel)]="enqForm.email"
                 (input)="enqForm.errorMsg = null" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
-                title="Please enter a valid Email ID" appLowercase required />
-            </div>
-            <div class="form-group col-12">
-              <label for="mobile">Mobile No</label>
-              <div class="input-group modal-phone-no">
-                <div class="input-group-prepend">
-                  <select name="dial_code" id="mobile" [(ngModel)]="enqForm.dial_code"
+                title="Please enter a valid Email ID" appLowercase required/>
+                        </div>
+                        <div class="form-group col-12">
+                          <label for="mobile">Mobile No</label>
+                          <div class="input-group modal-phone-no">
+                            <div class="input-group-prepend">
+                              <select name="dial_code" id="mobile" [(ngModel)]="enqForm.dial_code"
                     class="form-control h-auto border-radius-0" required>
-                    <option *ngFor="
+                                <option *ngFor="
                         let x of commonService.country_list
                           | orderAsc : 'dial_code'
                       " [ngValue]="x.dial_code">
-                      {{ x.dial_code }}
-                    </option>
-                  </select>
-                </div>
-                <input type="tel" class="form-control border-radius-1" name="mobile" [(ngModel)]="enqForm.mobile"
-                  appNumberOnly required />
-              </div>
-            </div>
-            <div *ngIf="enqForm.alert_msg" class="col-12">
-              <div class="success-alert">
-                <div class="alert-msg d-flex align-items-center justify-content-center p-2">
-                  <span class="material-icons"></span>
-                  <p class="m-0">{{ enqForm.alert_msg }}</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button class="primary-btn d-flex justify-content-center align-items-center w-100" type="submit"
+                                  {{ x.dial_code }}
+                                </option>
+                              </select>
+                            </div>
+                            <input type="tel" class="form-control border-radius-1" name="mobile" [(ngModel)]="enqForm.mobile"
+                  appNumberOnly required/>
+                          </div>
+                        </div>
+                        <div *ngIf="enqForm.alert_msg" class="col-12">
+                          <div class="success-alert">
+                            <div class="alert-msg d-flex align-items-center justify-content-center p-2">
+                              <span class="material-icons"></span>
+                              <p class="m-0">{{ enqForm.alert_msg }}</p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="modal-footer">
+                      <button class="primary-btn d-flex justify-content-center align-items-center w-100" type="submit"
             [disabled]="enqForm.submit">
             Submit
             <div class="box" *ngIf="enqForm.submit">
-              <div class="spinner"></div>
+                          <div class="spinner"></div>
+                        </div>
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </div>
             </div>
-          </button>
-        </div>
-      </form>
-    </div>
-  </div>
-</div>
 
-<app-customization></app-customization>
+            <app-customization></app-customization>
