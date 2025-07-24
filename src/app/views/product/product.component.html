@@ -79,11 +79,12 @@
             <div *ngIf="template_setting?.social_share && productDetails?.seo_status" class="add-wishlist">
               <a (click)="socialShare();" class="d-flex align-items-center header-s-icon">
                 <div class="tooltip-wrapper">
-              <lucide-icon name="share-2" [size]="20" stroke="1" color="black"></lucide-icon>
-              <div class="custom-tooltip">Share</div>
-            </div>
+                  <lucide-icon name="share-2" [size]="20" stroke="1" color="black"></lucide-icon>
+                  <div class="custom-tooltip">Share</div>
+                </div>
                 <!--<lucide-icon name="share-2" [size]="20" stroke="1" color="black"></lucide-icon>456-->
-                <!-- <i class="material-icons">download</i> --></a>
+                <!-- <i class="material-icons">download</i> -->
+              </a>
             </div>
             <!-- #share#-->
           </div>
@@ -290,9 +291,9 @@
               <div class="add-wishlist mr-3">
                 <a class="d-flex align-items-center header-s-icon" *ngIf="!exist_in_wishlist;" (click)="modifyWishList('add', productDetails); exist_in_wishlist=true;">
                   <div class="tooltip-wrapper">
-              <lucide-icon name="heart" [size]="20" stroke="1" color="black"></lucide-icon>
-              <div class="custom-tooltip">Wishlist</div>
-            </div>
+                    <lucide-icon name="heart" [size]="20" stroke="1" color="black"></lucide-icon>
+                    <div class="custom-tooltip">Wishlist</div>
+                  </div>
                   <!--<lucide-icon name="heart" [size]="20" stroke="1" color="black"></lucide-icon>-->
                 </a>
                 <a class="d-flex align-items-center add-wishlist-i header-s-icon" *ngIf="exist_in_wishlist;" (click)="modifyWishList('remove', productDetails);  exist_in_wishlist=false;">
@@ -629,7 +630,13 @@
             </div> -->
             <accordion *ngIf="productDetails?.footnote_list?.length" [isAnimated]="true">
               <ng-container *ngFor="let x of productDetails.footnote_list;">
-                <accordion-group heading="{{x.name}}">
+                <accordion-group 
+      [heading]="x.name === 'Measurements Saree' ? 'Saree Measurements' 
+               : x.name === 'Measurements Dupatta' ? 'Dupatta Measurements' 
+               : x.name === 'Measurement Blouse' ? 'Blouse Measurements'
+               : x.name === 'Measurements Dhoti' ? 'Dhoti Measurements'
+               : x.name === 'Measurement Pavadai' ? 'Pavadai Measurements'
+               : x.name">
                   <p>{{x.value}}</p>
                 </accordion-group>
               </ng-container>
