@@ -77,12 +77,14 @@
   .swiper-button-next {
     background-color: #fff;
   }
-  #swipe_next_3{
+  #swipe_next_3,
+  #swipe_next_6{
     lucide-icon{
       filter: invert(1);
     }
   }
-  #swipe_prev_3{
+  #swipe_prev_3,
+  #swipe_prev_6{
     lucide-icon{
       filter: invert(0);
     }

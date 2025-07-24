@@ -284,7 +284,7 @@ small,
 	.justify-content-md-end {
 		-ms-flex-pack: end !important;
 		justify-content: flex-end !important;
-	}
+	}	
 }
 @media (min-width: 992px) {
 	.container {
@@ -318,6 +318,10 @@ small,
 	.container-fluid {
 		/* max-width: 860px; */
 		max-width: 95%;
+	}
+	.mb-md-0,
+	.my-md-0 {
+		margin-bottom: 0 !important;
 	}
 }
 @media (min-width: 992px) {
@@ -714,7 +718,7 @@ small,
 	}
 	.offset-md-11 {
 		margin-left: 91.666667%;
-	}
+	}	
 }
 @media (min-width: 992px) {
 	.col-lg {
@@ -1837,7 +1841,7 @@ select.form-control:focus::-ms-value {
 }
 .mb-4,
 .my-4 {
-	margin-bottom: 1.5rem !important;
+	margin-bottom: 1.5rem;
 }
 .ml-4,
 .mx-4 {

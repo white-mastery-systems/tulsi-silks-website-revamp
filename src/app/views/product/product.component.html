@@ -46,7 +46,7 @@
     <div class="{{template_setting?.body_type}}">
       <div class="row">
         <div class="col-md-12 d-flex align-items-center justify-content-between">
-          <div class="breadcrumb-navigation mt-3 col-9 px-0">
+          <div class="breadcrumb-navigation col-9 px-0">
             <ul class="collapsed">
               <li><a routerLink="/">Home</a></li>
               <li *ngIf="category_details?.name">
@@ -426,7 +426,7 @@
                 <p class="mb-0 title">Add Ons</p>
               </div>
               <h5>Customization (Optional)</h5>
-              <p>Personalize your saree to match your style</p>
+              <p>Personalize your saree to match your style</p>              
               <div class="d-flex justify-content-start align-items-center select-btn">
                 <ng-container *ngFor="let x of productDetails.addon_list">
                   <button (click)="chooseAddonNew(x, existingListModal, createNewModal, mmOptionsModal);" class="primary-btn">
@@ -434,9 +434,10 @@
                     <ng-container *ngIf="x.price">
                       + {{ x.temp_price | currency:cc.currency?.country_code:'symbol':cc.format }}
                     </ng-container>
-                  </button>
-                </ng-container>
+                  </button>                  
+                </ng-container>                
               </div>
+              <p class="note pt-2"><span>Note:</span> Login Required</p>
             </div>
 
             <!-- alert section -->
@@ -488,7 +489,7 @@
                     <div class="row m-0">
                       <div class="col-md-12 p-0">
                         <div class="buy-add-cart-btn-inner">                          
-                          <button *ngIf="!productDetails?.added_to_cart" class="primary-btn w-100" type="button" (click)="addtoCart(true);">ADD TO CART</button>
+                          <button *ngIf="!productDetails?.added_to_cart" class="primary-btn w-100" type="button" (click)="addtoCart(true);">Add to Cart</button>
                           <button *ngIf="productDetails?.added_to_cart" (click)="gotoCart();" class="secondary-btn w-100 d-inline-flex justify-content-center align-items-center" type="button">
                             Go to Cart
                             <i class="material-icons pl-1">arrow_forward</i>

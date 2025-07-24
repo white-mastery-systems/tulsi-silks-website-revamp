@@ -30,6 +30,7 @@ export class AppComponent {
   isConnected = true; chatLoaded: boolean;
   headroomInit: boolean; intracted: boolean;
   randomNum: any; currUrl: string;
+  showTooltip = false;
 
   @HostListener('window:scroll', ['$event'])
   onScrollEvent() {

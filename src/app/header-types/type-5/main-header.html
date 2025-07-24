@@ -218,14 +218,21 @@
 
           <!-- search -->
           <div *ngIf="commonService.ys_features.indexOf('product_search')!=-1" routerLink="/search" class="btn-search header-icon-container header-s-icon">
-            <lucide-icon name="search" [size]="20" stroke="1" color="black"></lucide-icon>
+            <div class="tooltip-wrapper">
+              <lucide-icon name="search" [size]="20" stroke="1" color="black"></lucide-icon>
+              <div class="custom-tooltip">Search</div>
+            </div>
             <!-- <img src="assets/images/search.png" alt="search-icon" class="header-s-icon"> -->
             <!-- <i [hidden]="!commonService?.window_loaded" class="{{template_setting?.mat_icon_type}} transform-90">{{template_setting?.mat_icons?.search}}</i> -->
           </div>
           <!-- wishlist -->
           <div *ngIf="commonService?.screen_width>=991" class="header-icon-container">
             <a class="header-s-icon" [hidden]="!commonService?.window_loaded" (click)="(commonService?.customer_token)? '': commonService.after_login_event={ redirect: '/wishlist' }" [routerLink]="(commonService?.customer_token)? '/wishlist' : '/account'">
+              <div class="tooltip-wrapper">
               <lucide-icon name="heart" [size]="20" stroke="1" color="black"></lucide-icon>
+              <div class="custom-tooltip">Wishlist</div>
+             </div>
+              
               <!-- <img src="assets/images/heart.png" alt="wishlist-icon" class="header-s-icon"> -->
               <!-- <i class="{{template_setting?.mat_icon_type}}">{{template_setting?.mat_icons?.wishlist}}</i> -->
               <sup *ngIf="wishService.wish_list?.length">
@@ -236,7 +243,11 @@
             <!-- my account -->
             <div *ngIf="commonService?.screen_width>=991" class="header-icon-container">
               <a class="header-s-icon" routerLink="/account">
+              <div class="tooltip-wrapper">
                 <lucide-icon name="user" [size]="20" stroke="1" color="black"></lucide-icon>
+                <div class="custom-tooltip">Account</div>
+             </div>
+                
                 <!-- <img src="assets/images/user.png" alt="user-icon" class="header-s-icon"> -->
                 <!-- <i [hidden]="!commonService?.window_loaded" class="{{template_setting?.mat_icon_type}}">{{template_setting?.mat_icons?.account}}</i> -->
               </a>
@@ -245,7 +256,10 @@
           <div *ngIf="commonService?.screen_width>=991" class="mini-cart header-icon-container">
             <div id="minicart-trigger">
               <a class="header-s-icon" [hidden]="!commonService?.window_loaded">
-                <lucide-icon name="shopping-cart" [size]="20" stroke="1" color="black"></lucide-icon>
+                <div class="tooltip-wrapper">
+                  <lucide-icon name="shopping-cart" [size]="20" stroke="1" color="black"></lucide-icon>
+                  <div class="custom-tooltip">Cart</div>
+                </div>                
                 <!-- <img src="assets/images/shopping-cart.png" alt="cart-icon" class="header-s-icon"> -->
                 <!-- <i class="{{template_setting?.mat_icon_type}}">{{template_setting?.mat_icons?.cart}}</i> -->
                 <sup *ngIf="cartService?.cart_list?.length">
@@ -270,7 +284,7 @@
                       </div>
                       <div class="content">
                         <div class="content-inner">
-                          <p class="overflow-dots mb-0 p-0">
+                          <p class="overflow-dotss mb-0 p-0">
                             <strong>{{x.name}}</strong>
                           </p>
                           <div class="quatity">
@@ -283,7 +297,7 @@
                   </div>
                 </div>
                 <div class="cart-footer" *ngIf="cartService.cart_list?.length">
-                  <button routerLink="/cart" class="primary-btn w-100" id="view-btn">Go to Checkout</button>
+                  <button routerLink="/cart" class="primary-btn w-100" id="view-btn">Go to Cart</button>
                 </div>
               </div>
             </div>
