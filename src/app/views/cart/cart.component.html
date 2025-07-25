@@ -294,6 +294,26 @@
           </div>
         </div>
         <!-- # for mobile # -->
+
+        <!-- free shipping badge -->
+        <div *ngIf="balanceAmount && orderType=='delivery'" class="col-md-6">
+          <div class="order-floating-popup-wrapper">
+            <div class="floating-inner">
+              <i (click)="balanceAmount=0;" class="material-icons">cancel</i>
+              <div class="floating-popup-content">
+                <p>
+                  Add products worth {{ balanceAmount | currency:cc.currency?.country_code:'symbol':cc.format }}
+                  and avail FREE DOMESTIC SHIPPING.
+                </p>
+              </div>
+              <div class="floating-popup-btn">
+                <a routerLink="/">Continue shopping</a>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- # free shipping badge # -->
+
       </div>
     </div>
     <!-- items not found -->

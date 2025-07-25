@@ -40,6 +40,7 @@ export class StoreApiService {
   ADDON_DETAILS(x) { return this.http.get<any>(environment.ws_url+'/store_details/product/addon_details?store_id='+this.store_id+'&addon_id='+x); }
   
   SHIPPING_METHODS() { return this.http.get<any>(environment.ws_url+'/store_details/shipping_methods?store_id='+this.store_id); }
+  DOMESTIC_SHIPPING_METHODS() { return this.http.get<any>(environment.ws_url+'/store_details/shipping_methods?type=Domestic&store_id='+this.store_id); }
   DELIVERY_METHODS() { return this.http.get<any>(environment.ws_url+'/store_details/delivery_methods?store_id='+this.store_id); }
   QUICK_ORDER_DETAILS(x) { return this.http.post<any>(environment.ws_url+'/store_details/quick_order_details', x); }
   
