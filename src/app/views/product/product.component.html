@@ -105,13 +105,9 @@
         <div class="col-lg-8 col-md-8 col-6">
           <div class="sticky-cart-details d-flex align-items-center">
             <div class="product-image">
-              <ng-container *ngFor="let x of productDetails.image_list; let i=index;">
-                <div class="big-img-container" [hidden]="activeImgIndex!=i" id="photogallery" itemscope itemtype="http://schema.org/ImageGallery">
-                  <a itemprop="contentUrl" data-id={{x}}>
-                    <img fetchpriority="high" width="100%" height="100%" appImgLazyLoad [ImagelazyLoad]="imgBaseUrl+x.image" itemprop="thumbnail" alt="{{(x.img_alt)? x.img_alt: productDetails.name+(i+1)}}">
-                  </a>
-                </div>
-              </ng-container>
+              <div *ngIf="productDetails.image_list?.length" class="big-img-container">
+                <img fetchpriority="high" width="100%" height="100%" appImgLazyLoad [ImagelazyLoad]="imgBaseUrl+productDetails.image_list[0].image" itemprop="thumbnail" alt="{{productDetails.name}}-image">
+              </div>
             </div>
 
             <div class="product-details pl-4">
