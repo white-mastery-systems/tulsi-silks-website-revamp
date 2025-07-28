@@ -85,32 +85,32 @@ export class ProductComponent implements OnInit {
       "@type": "Brand",
       "name": "Tulsi Silks"
     },
-    // "review": {
-    //   "@type": "Review",
-    //   "reviewRating": {
-    //     "@type": "Rating",
-    //     "ratingValue": "4.5",
-    //     "bestRating": "5"
-    //   },
-    //   "author": {
-    //     "@type": "Person",
-    //     "name": "Shabeer"
-    //   }
-    // },
+    "review": {
+      "@type": "Review",
+      "reviewRating": {
+        "@type": "Rating",
+        "ratingValue": this.commonService.reviewerList[Math.floor(Math.random() * this.commonService.reviewerList.length)].rating,
+        "bestRating": "5"
+      },
+      "author": {
+        "@type": "Person",
+        "name": this.commonService.reviewerList[Math.floor(Math.random() * this.commonService.reviewerList.length)].name
+      }
+    },
     "aggregateRating": {
       "@type": "AggregateRating",
-      "ratingValue": "4.9",
-      "reviewCount": "250"
+      "ratingValue": this.commonService.ratingList[Math.floor(Math.random() * this.commonService.ratingList.length)].rating,
+      "reviewCount": this.commonService.ratingList[Math.floor(Math.random() * this.commonService.ratingList.length)].count
     },
     "offers": {
       "@type": "Offer",
       "priceCurrency": "INR",
       "priceValidUntil": new Date().getFullYear()+1+"-06-30",
-      "itemCondition": "https://schema.org/NewCondition",
-      "seller": {
-        "@type": "Organization",
-        "name": "Tulsi Silks"
-      }
+      "itemCondition": "https://schema.org/NewCondition"
+      // "seller": {
+      //   "@type": "Organization",
+      //   "name": "Tulsi Silks"
+      // }
     }
   };
 
