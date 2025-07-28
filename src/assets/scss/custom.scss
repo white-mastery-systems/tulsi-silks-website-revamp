@@ -691,6 +691,14 @@ p.error-msg {
     }
     li a:after {
       font-size: 0.75rem;
+      margin-left: 3px;
+    }
+  }
+  .product-page{
+    .head-breadcrumb{
+      .product-details{
+        padding-bottom: 0!important;
+      }
     }
   }
 }

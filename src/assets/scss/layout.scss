@@ -798,7 +798,7 @@ span{
       display: block;
       white-space: nowrap;
       overflow-y: hidden;
-      margin-top: 15px;
+      margin-top: 2px;
       overflow-x: scroll; 
     }
   }
@@ -1885,6 +1885,13 @@ span{
       font-size: 16px !important;
     }
   } 
+
+  .breadcrumb-navigation .active-page{
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 70px;
+    white-space: nowrap;
+  }
   
   .breadcrumb-navigation li span{
     font-size: 12px !important;
