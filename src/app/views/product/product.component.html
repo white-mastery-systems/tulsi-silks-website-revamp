@@ -44,7 +44,7 @@
   <!-- breadcrumb -->
   <section *ngIf="template_setting?.breadcrumb" class="head-breadcrumb">
     <div class="{{template_setting?.body_type}}">
-      <div class="row">
+      <div class="row">  
         <div class="col-md-12 d-flex align-items-center justify-content-between">
           <div class="breadcrumb-navigation col-md-12 col-9 px-0">
             <ul class="collapsed">
@@ -60,7 +60,7 @@
               <li>
                 <span class="active-page">{{productDetails?.name}}</span></li>
             </ul>
-          </div>
+          </div>         
           <div class="product-details d-flex align-items-center justify-content-end pb-3 col-3 px-0" *ngIf="commonService?.screen_width<=767">
             <!-- wishlist -->
             <div class="add-wishlist">
@@ -162,7 +162,7 @@
                 <ng-container *ngIf="!commonService.application_setting?.product_addon || !productDetails.addon_must || customized_model || productDetails?.selected_addon && !productDetails?.selected_addon?.custom_list?.length && !productDetails?.selected_addon?.updated_mm_list?.length && !productDetails?.selected_addon?.notes_list?.length">
                   <div *ngIf="productDetails.stock >= (productDetails.quantity+productDetails.additional_qty)" class="buy-add-cart-btn">
                     <div class="row m-0">
-                      <div class="col-md-12 p-0">
+                      <div class="col-md-12 p-0">                        
                         <div class="buy-add-cart-btn-inner">
                           <button *ngIf="!productDetails?.added_to_cart" class="primary-btn w-100" type="button" (click)="addtoCart(true);">Add to Cart</button>
                           <button *ngIf="productDetails?.added_to_cart" (click)="gotoCart();" class="secondary-btn w-100 d-inline-flex justify-content-center align-items-center" type="button">
@@ -503,7 +503,7 @@
                     <div class="row m-0">
                       <div class="col-md-12 p-0">
                         <div class="buy-add-cart-btn-inner">
-                          <button *ngIf="!productDetails?.added_to_cart" class="primary-btn w-100" type="button" (click)="addtoCart(true);">Add to Cart</button>
+                          <button *ngIf="!productDetails?.added_to_cart" class="add-to-cart-btn w-100" type="button" (click)="addtoCart(true);">Add to Cart</button>
                           <button *ngIf="productDetails?.added_to_cart" (click)="gotoCart();" class="secondary-btn w-100 d-inline-flex justify-content-center align-items-center" type="button">
                             Go to Cart
                             <i class="material-icons pl-1">arrow_forward</i>

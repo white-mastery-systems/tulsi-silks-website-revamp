@@ -198,3 +198,109 @@
     color:#D99550;
   }
 }
+
+// .add-to-cart-btn {
+//   font-size: 18px;
+//     padding: 0;
+//     background:#d99550;
+//     // background: linear-gradient(135deg, #d99550f2, #d99550cc, #d9955099, #d99550cc, #d99550f2);
+//     -webkit-backdrop-filter: blur(7px);
+//     backdrop-filter: blur(7px);
+//     box-shadow: 0 3px 10px #d995504d, inset 0 1px #ffffff80, inset 0 -1px #fff3;
+//     border: none;
+//     position: relative;
+//     // overflow: hidden;
+//     transition: all .3s ease;
+//     width:100%;
+//     height: 48px;
+//     color:#fff;
+//     font-size: 1rem;
+//     text-transform: uppercase;
+// }
+
+// .add-to-cart-btn::before {
+//   content: "";
+//   position: absolute;
+//   top: 0;
+//   left: -100%;
+//   width: 35%;
+//   height: 100%;
+//   background: linear-gradient(90deg,transparent, rgba(255, 255, 255, 0.3), transparent);
+//   animation: quickBuyShine 3.5s ease-in-out infinite;
+//   z-index: 1;
+// }
+
+// .add-to-cart-btn:hover{
+//    transform: translateY(-1px);  
+//     color:#000;
+//     &::before{
+//       left: 100%;
+//     }
+// }
+
+// @keyframes quickBuyShine {
+//   0% {
+//     left: -100%;
+//   }
+//   30% {
+//     left: 100%;
+//   }
+//   100% {
+//     left: -100%;
+//   }
+// }
+
+.add-to-cart-btn {
+  font-size: 1rem;
+  padding: 0;
+  width: 100%;
+  height: 48px;
+  background-color: #000000; 
+  color: #ffffff;
+  text-transform: uppercase;
+  border: none;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  box-shadow: 
+    0 3px 10px rgba(255, 255, 255, 0.05), 
+    inset 0 1px 0 rgba(255, 255, 255, 0.1), 
+    inset 0 -1px 0 rgba(255, 255, 255, 0.05); 
+  
+  backdrop-filter: blur(7px);
+  -webkit-backdrop-filter: blur(7px);
+}
+
+.add-to-cart-btn::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 35%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.25),
+    transparent
+  );
+  animation: quickBuyShine 3.5s ease-in-out infinite;
+  z-index: 1;
+}
+
+.add-to-cart-btn:hover {
+  transform: translateY(-1px);
+  color: #fff;
+}
+
+@keyframes quickBuyShine {
+  0% {
+    left: -100%;
+  }
+  30% {
+    left: 100%;
+  }
+  100% {
+    left: -100%;
+  }
+}
