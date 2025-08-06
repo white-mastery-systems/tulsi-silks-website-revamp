@@ -17,6 +17,7 @@ export const CssStore: Scripts[] = [
   { name: 'jquery', type: 'js', src: 'https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.1/jquery.min.js' },
   { name: 'square-sandbox', type: 'js', src: 'https://js.squareupsandbox.com/v2/paymentform' },
   { name: 'square-live', type: 'js', src: 'https://js.squareup.com/v2/paymentform' },
+  { name: 'razorpay', type: 'js', src: 'https://checkout.razorpay.com/v1/checkout.js' },
   { name: 'script-js', type: 'js', src: 'assets/js/script.js' },
   { name: 'swiper-js', type: 'js', src: 'assets/js/swiper.min.js' },
   { name: 'foloosipay', type: 'js', src: 'assets/js/foloosi.js' },

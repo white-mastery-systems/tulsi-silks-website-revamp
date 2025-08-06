@@ -126,6 +126,9 @@ export function app(): express.Express {
   server.use('/blogs/12-latest-saree-trends-in-2025', function(req, res) {
     res.redirect('/blogs/latest-saree-trends-in-2025-new-trend-saree-collection-for-women');
   });
+  server.use('/blogs/12-different-types-of-silk-and-sarees-made-from-them', function(req, res) {
+    res.redirect('/blogs/12-different-types-of-silk-sarees-made-for-every-indian-women');
+  });
   
   // Example Express Rest API endpoints
   // server.get('/api/**', (req, res) => { });

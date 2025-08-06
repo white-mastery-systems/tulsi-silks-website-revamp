@@ -60,7 +60,7 @@
               <li>
                 <span class="active-page">{{productDetails?.name}}</span></li>
             </ul>
-          </div>         
+          </div>      
           <div class="product-details d-flex align-items-center justify-content-end pb-3 col-3 px-0" *ngIf="commonService?.screen_width<=767">
             <!-- wishlist -->
             <div class="add-wishlist">
@@ -502,19 +502,28 @@
                   <div *ngIf="productDetails.stock >= (productDetails.quantity+productDetails.additional_qty)" class="buy-add-cart-btn">
                     <div class="row m-0">
                       <div class="col-md-12 p-0">
-                        <div class="buy-add-cart-btn-inner">
-                          <button *ngIf="!productDetails?.added_to_cart" class="add-to-cart-btn w-100" type="button" (click)="addtoCart(true);">Add to Cart</button>
+                        <div class="buy-add-cart-btn-inner flex-column mb-2">
+                          <!--switch toggle--> 
+                          <section *ngIf="!productDetails?.added_to_cart" (click)="addtoCart(true);" class="d-flex cursor justify-content-center align-items-center section-btn">  
+                            <div id="wordCarousel" appButtonFlip>
+                              <div>
+                                <div class="carouselSlide">Add to Cart</div>
+                                <div class="carouselSlide">Make it Mine</div>                                
+                              </div>
+                            </div>
+                          </section>
+                          <!-- <button *ngIf="!productDetails?.added_to_cart" class="add-to-cart-btn w-100" type="button" (click)="addtoCart(true);">Add to Cart</button> -->
                           <button *ngIf="productDetails?.added_to_cart" (click)="gotoCart();" class="secondary-btn w-100 d-inline-flex justify-content-center align-items-center" type="button">
                             Go to Cart
                             <i class="material-icons pl-1">arrow_forward</i>
                           </button>
-                          <button *ngIf="!commonService.store_properties.pickup_locations?.length && !commonService.application_setting.disable_delivery && template_setting?.enable_buynow;"
+                          <!-- <button *ngIf="!commonService.store_properties.pickup_locations?.length && !commonService.application_setting.disable_delivery && template_setting?.enable_buynow;"
                           type="button" class="primary-btn w-100 d-inline-flex justify-content-center align-items-center" [disabled]="productDetails?.buynow_loader" (click)="buyNow();">
                             Buy Now
                             <div class="box" *ngIf="productDetails?.buynow_loader">
                               <div class="spinner"></div>
                             </div>
-                          </button>
+                          </button> -->
                           <!-- <ng-container *ngIf="!commonService.store_properties.pickup_locations?.length && commonService.application_setting.disable_delivery && commonService.ys_features.indexOf('whatsapp_chat')!=-1 && commonService.application_setting.chat_status && commonService.application_setting.chat_config?.type=='whatsapp'">
                             <a href="https://api.whatsapp.com/send?phone={{commonService.application_setting.chat_config.mobile}}&text={{commonService.application_setting.chat_config.message}}" class="w-100" target="_blank">
                              <button class="primary-btn w-100" type="button">ENQUIRE NOW</button>
@@ -557,6 +566,16 @@
                 </div>
               </div>
             </div>
+
+            <!--EMI Note-->
+            <div class="timeline emi-note py-3">
+              <div class="step">               
+                <div class="title text-left mb-2">EMI options available</div> 
+                <div class="date text-left">Our payment partner and your bank offer you EMI options for online purchases. Activate by selecting EMI option on payment page.</div>            
+              </div>  
+            </div>
+            <!--#EMI Note-->
+
             <!-- size chart -->
             <div *ngIf="productDetails?.chart_details" class="size-chart pt-3 pb-2">
               <p (click)="sizechartModal.show();">Size Chart <i class="material-icons">table_chart</i>

@@ -37,6 +37,15 @@
       margin: auto;
       margin-top: 10px;
 
+      &.emi-note{
+        .title{
+          font-size: 18px;
+        }
+        .date{
+          line-height: 1.5;
+        }
+      }
+    
     .step {
       text-align: center;
       position: relative;
@@ -302,5 +311,36 @@
   }
   100% {
     left: -100%;
+  }
+}
+
+.section-btn {
+  background-color: #000;
+  color:#fff;
+  height: 48px;
+}
+#wordCarousel {
+  height: 20px;
+  overflow: hidden;
+}
+.carouselSlide {
+  font-size: 20px; 
+  font-weight: 500;
+  line-height: 100%; 
+}
+#wordCarousel > div {
+  height: 100%;
+  animation: carousel 1s infinite;
+}
+
+@keyframes carousel {
+  0% {
+    transform: translateY(0);
+  }
+  80% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(-100%);
   }
 }
