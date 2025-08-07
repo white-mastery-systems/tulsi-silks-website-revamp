@@ -13,6 +13,7 @@ declare var SqPaymentForm : any;
 declare var Foloosipay: any;
 declare const fbq: Function;
 declare var window: any;
+declare const Razorpay: any;
 
 @Component({
   selector: 'app-product-order-details',
@@ -71,6 +72,9 @@ export class ProductOrderDetailsComponent implements OnInit {
         Foloosipay.init();
       }).catch(error => console.log("err", error));
     }
+    // razorpay
+    this.assetLoader.load('razorpay').then(() => { })
+    .catch(error => console.log("err", error));
   }
 
   ngOnInit(): void {
@@ -274,10 +278,39 @@ export class ProductOrderDetailsComponent implements OnInit {
                     this.razorpayOptions.my_order_id = result.data.order_id;
                     this.razorpayOptions.razorpay_order_id = result.data.razorpay_response.id;
                     if(paymentDetails.app_config) {
-                      this.razorpayOptions.key = paymentDetails.app_config.key;
-                      this.razorpayOptions.store_name = paymentDetails.app_config.name;
-                      this.razorpayOptions.description = paymentDetails.app_config.description;
-                      setTimeout(_ => this.razorpayForm.nativeElement.submit());
+                      // this.razorpayOptions.key = paymentDetails.app_config.key;
+                      // this.razorpayOptions.store_name = paymentDetails.app_config.name;
+                      // this.razorpayOptions.description = paymentDetails.app_config.description;
+                      // setTimeout(_ => this.razorpayForm.nativeElement.submit());
+                      const options = {
+                        key: paymentDetails.app_config.key, 
+                        order_id: result.data.razorpay_response.id,
+                        name: paymentDetails.app_config.name,
+                        description: paymentDetails.app_config.description,
+                        prefill: {
+                          name: this.razorpayOptions.customer_name,
+                          email: this.razorpayOptions.customer_email,
+                          contact: this.razorpayOptions.customer_mobile
+                        },
+                        notes: {
+                          my_store_id: this.commonService.store_id,
+                          my_order_id: result.data.order_id,
+                          my_order_type: "product"
+                        },
+                        callback_url: environment.razorpay_redirect_url+this.commonService.store_id,
+                        modal: {
+                          ondismiss: () => {
+                            window.location.href = this.commonService.origin;
+                          }
+                        },
+                        config: {
+                          display: {
+                            sequence: ["block.upi", "block.card", "block.netbanking", "block.wallet", "block.paylater"]
+                          }
+                        }
+                      };
+                      const rzp1 = new Razorpay(options);
+                      rzp1.open();
                     }
                     else {
                       this.orderForm.submit = false;

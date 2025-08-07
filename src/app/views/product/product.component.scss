@@ -314,33 +314,72 @@
   }
 }
 
-.section-btn {
+.carousel {
+  position: relative;
+  width: 100%;
+  text-align: center;
+  font-size: 20px;
+  line-height: 45px;
+  height: 45px;
   background-color: #000;
-  color:#fff;
-  height: 48px;
-}
-#wordCarousel {
-  height: 20px;
-  overflow: hidden;
-}
-.carouselSlide {
-  font-size: 20px; 
-  font-weight: 500;
-  line-height: 100%; 
-}
-#wordCarousel > div {
-  height: 100%;
-  animation: carousel 1s infinite;
+  color: #fff;
+  cursor: pointer;
 }
 
-@keyframes carousel {
-  0% {
+.carousel .change_outer {
+ position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    text-align: left;
+    height: 45px;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    margin: 0 auto;
+}
+.carousel .change_outer .change_inner {
+  position: relative;
+  -webkit-animation: rotate 4s ease-in-out infinite;
+          animation: rotate 4s ease-in-out infinite;
+}
+.carousel .change_outer .element {
+  display: block;
+  font-weight: 500;
+}
+
+@-webkit-keyframes rotate {
+  0%, 20% {
     transform: translateY(0);
   }
-  80% {
-    transform: translateY(0);
+  25%, 45% {
+    transform: translateY(-45px);
+  }
+  50%, 70% {
+    transform: translateY(-90px);
+  }
+  75%, 95% {
+    transform: translateY(-135px);
   }
   100% {
-    transform: translateY(-100%);
+    transform: translateY(-180px);
+  }
+}
+
+@keyframes rotate {
+  0%, 20% {
+    transform: translateY(0);
+  }
+  25%, 45% {
+    transform: translateY(-45px);
+  }
+  50%, 70% {
+    transform: translateY(-90px);
+  }
+  75%, 95% {
+    transform: translateY(-135px);
+  }
+  100% {
+    transform: translateY(-180px);
   }
 }

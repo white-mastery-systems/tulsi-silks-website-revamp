@@ -504,14 +504,25 @@
                       <div class="col-md-12 p-0">
                         <div class="buy-add-cart-btn-inner flex-column mb-2">
                           <!--switch toggle--> 
-                          <section *ngIf="!productDetails?.added_to_cart" (click)="addtoCart(true);" class="d-flex cursor justify-content-center align-items-center section-btn">  
+                          <!-- <section *ngIf="!productDetails?.added_to_cart" (click)="addtoCart(true);" class="d-flex cursor justify-content-center align-items-center section-btn">  
                             <div id="wordCarousel" appButtonFlip>
                               <div>
                                 <div class="carouselSlide">Add to Cart</div>
                                 <div class="carouselSlide">Make it Mine</div>                                
                               </div>
                             </div>
-                          </section>
+                          </section> -->
+                          <div *ngIf="!productDetails?.added_to_cart" (click)="addtoCart(true);" class="carousel">
+                            <div class="change_outer">
+                              <div class="change_inner">
+                                <div class="element">Add to Cart</div>
+                                <div class="element">Make it Mine</div>
+                                <div class="element">Add to Cart</div>
+                                <div class="element">Make it Mine</div>
+                                <div class="element">Add to Cart</div>
+                              </div>
+                            </div>
+                          </div>
                           <!-- <button *ngIf="!productDetails?.added_to_cart" class="add-to-cart-btn w-100" type="button" (click)="addtoCart(true);">Add to Cart</button> -->
                           <button *ngIf="productDetails?.added_to_cart" (click)="gotoCart();" class="secondary-btn w-100 d-inline-flex justify-content-center align-items-center" type="button">
                             Go to Cart
