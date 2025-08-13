@@ -179,9 +179,21 @@
       .product-add-btn{
         margin: 0 !important;
       }
-      .product-image, .product-details{
+      .product-image{
         display: none;
       }   
+
+      .product-details{
+        padding-left: 0!important;  
+      }
+
+       h4, p, p.product-price{
+          font-size: 14px!important;
+        } 
+
+       button{
+          padding:0 16px;
+        }
     }
   }
   .header-s-icon {
