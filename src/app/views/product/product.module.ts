@@ -10,9 +10,10 @@ import { ProductComponent } from './product.component';
 import { RelatedProductsDirective } from './directives/related-products.directive';
 import { LucideAngularModule, ChevronLeft, ChevronRight, XCircle, Heart, Share2 } from 'lucide-angular';
 import { ButtonFlipDirective } from './directives/button-flip.directive';
+import { StickyFooterDirective } from './directives/sticky-footer.directive';
 
 @NgModule({
-  declarations: [ProductComponent, RelatedProductsDirective, ButtonFlipDirective],
+  declarations: [ProductComponent, RelatedProductsDirective, ButtonFlipDirective, StickyFooterDirective],
   imports: [
     SharedModule,
     CustomizationModule,

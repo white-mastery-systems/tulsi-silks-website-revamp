@@ -502,7 +502,7 @@
                   <div *ngIf="productDetails.stock >= (productDetails.quantity+productDetails.additional_qty)" class="buy-add-cart-btn">
                     <div class="row m-0">
                       <div class="col-md-12 p-0">
-                        <div class="buy-add-cart-btn-inner flex-column mb-2">
+                        <div class="buy-add-cart-btn-inner flex-column mb-2" appStickyFooter>
                           <!--switch toggle--> 
                           <!-- <section *ngIf="!productDetails?.added_to_cart" (click)="addtoCart(true);" class="d-flex cursor justify-content-center align-items-center section-btn">  
                             <div id="wordCarousel" appButtonFlip>
@@ -586,7 +586,7 @@
                 </button>  
                 <button class="primary-btn-outline w-100 d-inline-flex justify-content-center align-items-center" *ngIf="exist_in_wishlist;" (click)="modifyWishList('remove', productDetails);  exist_in_wishlist=false;">                  
                   <lucide-icon name="heart" [size]="20" stroke="1" color="red" class="mr-1 icon-fill"></lucide-icon>
-                  Remove to Wishlist
+                  Remove from Wishlist
                 </button>            
               </div>
               <!-- #wishlist# -->
