@@ -11,13 +11,13 @@
   <!-- #SEO h1 tag -->
 
   <!-- Primary Highlights Section -->
-  <section *ngIf="commonService?.primary_highlights?.length>=swiperService?.highlights?.card_count" class="primary-section primary-highlighted-sec wow fadeInUp">
+  <section *ngIf="commonService?.category_highlights?.length>=swiperService?.highlights?.card_count" class="primary-section primary-highlighted-sec">
     <div class="{{template_setting?.body_type}}">
       <div class="row">
         <div class="col-12">
-          <div class="swiper-container multi-slider product-slider featured-sections" [ngClass]="commonService.desktop_device? 'desktop_phls': 'phls'" appHomeHighlights>
+          <div class="swiper-container multi-slider product-slider featured-sections" [ngClass]="commonService.desktop_device? 'desktop_phls': 'phls'" appCategoryHighlights>
             <div class="swiper-wrapper">
-              <div *ngFor="let x of commonService?.primary_highlights; let i=index;" class="swiper-slide">
+              <div *ngFor="let x of commonService?.category_highlights; let i=index;" class="swiper-slide">
                 <div class="product-box cursor">
                   <a (click)="commonService.onPageRedirect(x);" class="prod-div">
                     <figure class="mb-0">

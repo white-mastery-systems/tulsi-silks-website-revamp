@@ -9,9 +9,10 @@ import { CategoryComponent } from './category.component';
 import { RangeFilterPipe } from './pipes/range-filter.pipe';
 import { ProductSortPipe } from './pipes/product-sort.pipe';
 import { AccordionModule } from 'ngx-bootstrap/accordion';
+import { CategoryHighlightsDirective } from './directives/category-highlights.directive';
 
 @NgModule({
-  declarations: [CategoryComponent, RangeFilterPipe, ProductSortPipe],
+  declarations: [CategoryComponent, RangeFilterPipe, ProductSortPipe, CategoryHighlightsDirective],
   imports: [
     SharedModule,
     CategoryRoutingModule,
