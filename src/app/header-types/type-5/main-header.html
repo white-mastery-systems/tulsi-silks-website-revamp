@@ -2,9 +2,14 @@
 <header class="sticky-header" id="headroom-head">
 
   <!-- announcement bar -->
-  <div class="top-news">
+  <div class="top-news" *ngIf="!commonService.isUSACustomer">
     <p class="mb-0" [ngClass]="(commonService.application_setting?.announcebar_config?.link_status)? 'cursor': ''"
     (click)="commonService.onPageRedirect(commonService.application_setting?.announcebar_config);" id="announceBar">{{commonService.announcementBar}}</p>
+  </div>
+
+  <div class="top-news" *ngIf="commonService.isUSACustomer">
+    <p class="mb-0" [ngClass]="(commonService.application_setting?.announcebar_config?.link_status)? 'cursor': ''"
+    (click)="commonService.onPageRedirect(commonService.application_setting?.announcebar_config);" id="announceBar">Important: US orders are on hold due to a 50% customs duty. We’ll resume once charges are clarified. Thank you for understanding.</p>
   </div>
 
   <header class="cd-main-header">
@@ -194,7 +199,7 @@
                 <span></span>
               </a>
             </li>
-          </ul>        
+          </ul>
         </div>
 
         <div class="col-xl-3 col-4 header-left-sec order-2">
@@ -229,37 +234,37 @@
           <div *ngIf="commonService?.screen_width>=991" class="header-icon-container">
             <a class="header-s-icon" [hidden]="!commonService?.window_loaded" (click)="(commonService?.customer_token)? '': commonService.after_login_event={ redirect: '/wishlist' }" [routerLink]="(commonService?.customer_token)? '/wishlist' : '/account'">
               <div class="tooltip-wrapper">
-              <lucide-icon name="heart" [size]="20" stroke="1" color="black"></lucide-icon>
-              <div class="custom-tooltip">Wishlist</div>
-             </div>
-              
+                <lucide-icon name="heart" [size]="20" stroke="1" color="black"></lucide-icon>
+                <div class="custom-tooltip">Wishlist</div>
+              </div>
+
               <!-- <img src="assets/images/heart.png" alt="wishlist-icon" class="header-s-icon"> -->
               <!-- <i class="{{template_setting?.mat_icon_type}}">{{template_setting?.mat_icons?.wishlist}}</i> -->
               <sup *ngIf="wishService.wish_list?.length">
                 <div class="item-badge">{{ wishService.wish_list.length }}</div>
               </sup>
             </a>
-          </div>           
-            <!-- my account -->
-            <div *ngIf="commonService?.screen_width>=991" class="header-icon-container">
-              <a class="header-s-icon" routerLink="/account">
+          </div>
+          <!-- my account -->
+          <div *ngIf="commonService?.screen_width>=991" class="header-icon-container">
+            <a class="header-s-icon" routerLink="/account">
               <div class="tooltip-wrapper">
                 <lucide-icon name="user" [size]="20" stroke="1" color="black"></lucide-icon>
                 <div class="custom-tooltip">Account</div>
-             </div>
-                
-                <!-- <img src="assets/images/user.png" alt="user-icon" class="header-s-icon"> -->
-                <!-- <i [hidden]="!commonService?.window_loaded" class="{{template_setting?.mat_icon_type}}">{{template_setting?.mat_icons?.account}}</i> -->
-              </a>
-            </div>
+              </div>
+
+              <!-- <img src="assets/images/user.png" alt="user-icon" class="header-s-icon"> -->
+              <!-- <i [hidden]="!commonService?.window_loaded" class="{{template_setting?.mat_icon_type}}">{{template_setting?.mat_icons?.account}}</i> -->
+            </a>
+          </div>
           <!-- cart -->
-          <div *ngIf="commonService?.screen_width>=991" class="mini-cart header-icon-container">
+          <div class="mini-cart header-icon-container">
             <div id="minicart-trigger">
               <a class="header-s-icon" [hidden]="!commonService?.window_loaded">
                 <div class="tooltip-wrapper">
                   <lucide-icon name="shopping-cart" [size]="20" stroke="1" color="black"></lucide-icon>
                   <div class="custom-tooltip">Cart</div>
-                </div>                
+                </div>
                 <!-- <img src="assets/images/shopping-cart.png" alt="cart-icon" class="header-s-icon"> -->
                 <!-- <i class="{{template_setting?.mat_icon_type}}">{{template_setting?.mat_icons?.cart}}</i> -->
                 <sup *ngIf="cartService?.cart_list?.length">
@@ -273,7 +278,8 @@
                   <div class="cart-product-list slim-scroll">
                     <div class="cart-count">
                       <h4>Shopping Bag
-                        <span>{{cartService.cart_list?.length}} {{(cartService.cart_list?.length>1)? 'items': 'item'}}</span>
+                        <span>{{cartService.cart_list?.length}}
+                          {{(cartService.cart_list?.length>1)? 'items': 'item'}}</span>
                       </h4>
                     </div>
                     <div class="cart-inner" *ngFor="let x of cartService.cart_list | slice:0:2; let i=index;">
@@ -288,7 +294,8 @@
                             <strong>{{x.name}}</strong>
                           </p>
                           <div class="quatity">
-                            <span>Qty: {{x.quantity}} {{template_setting?.display_unit? x.unit: ''}}</span>
+                            <span>Qty: {{x.quantity}}
+                              {{template_setting?.display_unit? x.unit: ''}}</span>
                             <span>{{ x.temp_final_price | currency:cc.currency?.country_code:'symbol':cc.format }}</span>
                           </div>
                         </div>

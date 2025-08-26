@@ -23,7 +23,7 @@ declare const WOW: any;
 })
 
 export class AppComponent {
-  
+
   template_setting: any = environment.template_setting;
   tempAnnounceBar: string; private subscription: Subscription;
   imgBaseUrl: string = environment.img_baseurl;
@@ -34,24 +34,24 @@ export class AppComponent {
 
   @HostListener('window:scroll', ['$event'])
   onScrollEvent() {
-    if(isPlatformBrowser(this.platformId)) {
+    if (isPlatformBrowser(this.platformId)) {
       this.commonService.scroll_x_pos = window.pageXOffset;
       this.commonService.scroll_y_pos = window.pageYOffset;
       // for scroll-top icon
       let scrollElem = this.document.getElementById('scrollup');
-      if(scrollElem) {
-        if(window.pageYOffset > 100) scrollElem.style.display = 'block';
+      if (scrollElem) {
+        if (window.pageYOffset > 100) scrollElem.style.display = 'block';
         else scrollElem.style.display = 'none';
       }
       // wow js
-      if(window.pageYOffset > 0 && !this.commonService.wowjsLoaded) {
+      if (window.pageYOffset > 0 && !this.commonService.wowjsLoaded) {
         this.commonService.wowjsLoaded = true;
         this.assetLoader.load('wow-js').then(() => {
           new WOW().init();
         }).catch(error => console.log("wow-js err", error));
       }
       // headroom
-      if(window.pageYOffset > 150 && !this.headroomInit) {
+      if (window.pageYOffset > 150 && !this.headroomInit) {
         this.headroomInit = true;
         this.assetLoader.load('headroom-js', 'headroom-css').then(() => {
           let headroomElement = this.document.querySelector("#headroom-head");
@@ -66,37 +66,37 @@ export class AppComponent {
   }
   @HostListener('window:resize', ['$event'])
   onResizeEvent() {
-    if(isPlatformBrowser(this.platformId)) {
+    if (isPlatformBrowser(this.platformId)) {
       this.commonService.screen_height = window.innerHeight;
       this.commonService.screen_width = window.innerWidth;
       // for mega menu
-      if(!window.requestAnimationFrame) setTimeout(() => { this.moveNavigation(); }, 300);
+      if (!window.requestAnimationFrame) setTimeout(() => { this.moveNavigation(); }, 300);
       else window.requestAnimationFrame(() => { this.moveNavigation(); });
     }
   }
 
-	constructor(
+  constructor(
     @Inject(PLATFORM_ID) private platformId: Object, private deviceService: DeviceDetectorService, @Inject(DOCUMENT) private document,
-		private storeApi: StoreApiService, private api: ApiService, public router: Router, public commonService: CommonService,
+    private storeApi: StoreApiService, private api: ApiService, public router: Router, public commonService: CommonService,
     public wishService: WishlistService, public cartService: CartlistService, public cc: CurrencyConversionService,
     private swiperService: SwiperService, private location: Location, private connectionService: ConnectionService,
     private assetLoader: DynamicAssetLoaderService
-	) {
+  ) {
     // this.randomNum = localStorage.setItem("random_num", "654TRTYR654")
     // device type
-    if(this.deviceService.isDesktop()) {
+    if (this.deviceService.isDesktop()) {
       this.commonService.desktop_device = true;
     }
     else {
       let iosPlatforms = ["iPad", "iPhone", "iPod", "iPod touch"];
-      if(iosPlatforms.indexOf(navigator.platform) != -1) {
+      if (iosPlatforms.indexOf(navigator.platform) != -1) {
         this.commonService.ios = true;
       }
     }
     // window properties
     this.onScrollEvent();
     this.onResizeEvent();
-    if(isPlatformBrowser(this.platformId)) {
+    if (isPlatformBrowser(this.platformId)) {
       // network status
       this.commonService.IsBrowser = true;
       this.connectionService.monitor().subscribe(isConnected => {
@@ -108,9 +108,9 @@ export class AppComponent {
       fromEvent(document, 'scroll').subscribe(() => this.onInteract());
       fromEvent(document, 'click').subscribe(() => this.onInteract());
       // check guest address
-      if(sessionStorage.getItem("checkout_address")) {
+      if (sessionStorage.getItem("checkout_address")) {
         let checkoutAddress = this.commonService.decryptData(sessionStorage.getItem("checkout_address"));
-        if(!checkoutAddress?.shipping?.country) {
+        if (!checkoutAddress?.shipping?.country) {
           sessionStorage.removeItem("checkout_address");
           window.location.reload();
         }
@@ -118,8 +118,36 @@ export class AppComponent {
     }
   }
 
+  checkCountryByIp(ipIndexList: string[]) {
+    if (!ipIndexList.length) {
+      this.commonService.isUSACustomer = false; // default if all fail
+      return;
+    }
+
+    const ipIndex = ipIndexList[0];
+    ipIndexList.splice(0, 1);
+
+    this.commonService.getIpInfo(ipIndex)
+      .then((ipInfo: any) => {
+        // Check if API returned country as US
+        if (
+          ipInfo?.country?.toLowerCase() === 'united states' ||
+          ipInfo?.country_code === 'US'
+        ) {
+          this.commonService.isUSACustomer = true;
+        } else {
+          this.commonService.isUSACustomer = false;
+        }
+      })
+      .catch(() => {
+        // Retry next IP index if current one fails
+        this.checkCountryByIp(ipIndexList);
+      });
+
+  }
+
   onInteract() {
-    if(this.commonService.storeDataLoaded && !this.intracted) {
+    if (this.commonService.storeDataLoaded && !this.intracted) {
       this.intracted = true;
       // script
       this.assetLoader.load('jquery').then(() => {
@@ -130,49 +158,49 @@ export class AppComponent {
   }
 
   ngOnInit() {
-    if(isPlatformBrowser(this.platformId)) {
+    if (isPlatformBrowser(this.platformId)) {
       let bgElem = this.document.getElementById('pre-bg');
-      if(bgElem && bgElem.style.display != "none") bgElem.style.display = "none";
+      if (bgElem && bgElem.style.display != "none") bgElem.style.display = "none";
     }
-    if(this.commonService.store_id) {
+    if (this.commonService.store_id) {
       // this.randomNum = localStorage.getItem("random_num");
       // if(!this.randomNum) {
-        let cd = new Date(new Date().toLocaleString("en-US", {timeZone: "Asia/Kolkata"}));
-        this.randomNum = cd.getFullYear()+''+cd.getMonth()+''+cd.getDate()+''+cd.getHours()+''+cd.getMinutes();
+      let cd = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Kolkata" }));
+      this.randomNum = cd.getFullYear() + '' + cd.getMonth() + '' + cd.getDate() + '' + cd.getHours() + '' + cd.getMinutes();
       // }
       // site images
-      this.commonService.favicon = "uploads/"+this.commonService.store_id+"/favicon.png?v="+this.randomNum;
-      this.commonService.store_logo = "uploads/"+this.commonService.store_id+"/logo.png?v="+this.randomNum;
-      this.commonService.social_logo = "uploads/"+this.commonService.store_id+"/social_logo.jpg?v="+this.randomNum;
+      this.commonService.favicon = "uploads/" + this.commonService.store_id + "/favicon.png?v=" + this.randomNum;
+      this.commonService.store_logo = "uploads/" + this.commonService.store_id + "/logo.png?v=" + this.randomNum;
+      this.commonService.social_logo = "uploads/" + this.commonService.store_id + "/social_logo.jpg?v=" + this.randomNum;
       // primary slider
       this.commonService.primary_main_slider = [{
-        "desktop_img": "uploads/"+this.commonService.store_id+"/layouts/desktop_primary_slider.jpg?v="+this.randomNum,
-        "mobile_img": "uploads/"+this.commonService.store_id+"/layouts/mobile_primary_slider.jpg?v="+this.randomNum
+        "desktop_img": "uploads/" + this.commonService.store_id + "/layouts/desktop_primary_slider.jpg?v=" + this.randomNum,
+        "mobile_img": "uploads/" + this.commonService.store_id + "/layouts/mobile_primary_slider.jpg?v=" + this.randomNum
       }];
       // primary highlights
       this.commonService.primary_highlights = [];
-      if(this.template_setting.highlights) {
-        for (let i=0; i<this.swiperService.highlights.card_count; i++){
+      if (this.template_setting.highlights) {
+        for (let i = 0; i < this.swiperService.highlights.card_count; i++) {
           this.commonService.primary_highlights.push({ desktop_img: "uploads/yourstore/placeholder.jpg" });
         }
       }
     }
-    if(isPlatformBrowser(this.platformId) && !sessionStorage.getItem('sid')) {
-      this.commonService.session_id = this.randomString(8)+new Date().valueOf()+this.randomString(8);
+    if (isPlatformBrowser(this.platformId) && !sessionStorage.getItem('sid')) {
+      this.commonService.session_id = this.randomString(8) + new Date().valueOf() + this.randomString(8);
       sessionStorage.setItem('sid', this.commonService.session_id);
     }
   }
 
   ngAfterContentInit() {
     this.commonService.window_loaded = true;
-    if(this.commonService.store_id) {
+    if (this.commonService.store_id) {
       // favicon
-      this.document.getElementById('appFavicon').setAttribute('href', this.imgBaseUrl+this.commonService.favicon);
+      this.document.getElementById('appFavicon').setAttribute('href', this.imgBaseUrl + this.commonService.favicon);
       /* STORE DETAILS */
       this.storeApi.STORE_DETAILS().subscribe(result => {
-        if(result.status) {
+        if (result.status) {
           let storeDetails = JSON.parse(result.store_details);
-          if(storeDetails.status=='active') {
+          if (storeDetails.status == 'active') {
             let liveCurrencies = JSON.parse(result.live_currencies);
             let storeProperties = storeDetails.store_properties[0];
             // ys features
@@ -180,7 +208,7 @@ export class AppComponent {
             localStorage.setItem("ys_features", this.commonService.encryptData(this.commonService.ys_features));
             // ip-based currency
             this.commonService.ipBasedCurrency = false;
-            if(this.commonService.ys_features.indexOf('ip_based_4_currency')!=-1 || this.commonService.ys_features.indexOf('ip_based_10_currency')!=-1 || this.commonService.ys_features.indexOf('ip_based_25_plus_currency')!=-1) {
+            if (this.commonService.ys_features.indexOf('ip_based_4_currency') != -1 || this.commonService.ys_features.indexOf('ip_based_10_currency') != -1 || this.commonService.ys_features.indexOf('ip_based_25_plus_currency') != -1) {
               this.commonService.ipBasedCurrency = true;
             }
             // store details
@@ -188,9 +216,9 @@ export class AppComponent {
               name: storeDetails.name, company_details: storeDetails.company_details, country: storeDetails.country,
               additional_features: storeDetails.additional_features, package_details: storeDetails.package_details
             };
-            if(storeDetails.gst_no) this.commonService.store_details.gst_no = storeDetails.gst_no;
-            if(storeDetails.tax_config) this.commonService.store_details.tax_config = storeDetails.tax_config;
-            if(storeDetails.packaging_charges) this.commonService.store_details.packaging_charges = storeDetails.packaging_charges;
+            if (storeDetails.gst_no) this.commonService.store_details.gst_no = storeDetails.gst_no;
+            if (storeDetails.tax_config) this.commonService.store_details.tax_config = storeDetails.tax_config;
+            if (storeDetails.packaging_charges) this.commonService.store_details.packaging_charges = storeDetails.packaging_charges;
             localStorage.setItem("store_details", this.commonService.encryptData(this.commonService.store_details));
             // seo details
             this.commonService.seo_details = storeDetails.seo_details;
@@ -200,37 +228,37 @@ export class AppComponent {
               pincodes: storeProperties.pincodes, currency_list: storeProperties.currency_list, opening_days: storeProperties.opening_days,
               pickup_locations: [], img_tag_list: [], auto_tags: {}
             };
-            if(storeProperties.auto_tags) {
-              storeProperties.auto_tags.filter(obj => obj.status=='active').forEach(el => {
+            if (storeProperties.auto_tags) {
+              storeProperties.auto_tags.filter(obj => obj.status == 'active').forEach(el => {
                 this.commonService.store_properties.auto_tags[el.type] = el.name;
               });
             }
-            if(storeProperties.img_tag_list?.length) {
-              this.commonService.store_properties.img_tag_list = storeProperties.img_tag_list.filter(el => el.status=='active');
+            if (storeProperties.img_tag_list?.length) {
+              this.commonService.store_properties.img_tag_list = storeProperties.img_tag_list.filter(el => el.status == 'active');
             }
-            if(this.commonService.ys_features.indexOf('store_pickup')!=-1) {
-              this.commonService.store_properties.pickup_locations = storeProperties.branches.filter(obj => obj.pickup_location && obj.status=='active');
+            if (this.commonService.ys_features.indexOf('store_pickup') != -1) {
+              this.commonService.store_properties.pickup_locations = storeProperties.branches.filter(obj => obj.pickup_location && obj.status == 'active');
             }
             localStorage.setItem("store_properties", this.commonService.encryptData(this.commonService.store_properties));
             // payment methods
             this.commonService.payment_methods = storeDetails.payment_types;
             localStorage.setItem("payment_methods", this.commonService.encryptData(this.commonService.payment_methods));
             // application setting
-            if(storeProperties.application_setting) {
+            if (storeProperties.application_setting) {
               this.commonService.application_setting = storeProperties.application_setting;
-              if(this.commonService.application_setting.min_qty) this.commonService.min_qty = this.commonService.application_setting.min_qty;
-              if(this.commonService.application_setting.step_qty) this.commonService.step_qty = this.commonService.application_setting.step_qty;
-              if(this.commonService.application_setting.customize_name) this.commonService.customize_name = this.commonService.application_setting.customize_name;
+              if (this.commonService.application_setting.min_qty) this.commonService.min_qty = this.commonService.application_setting.min_qty;
+              if (this.commonService.application_setting.step_qty) this.commonService.step_qty = this.commonService.application_setting.step_qty;
+              if (this.commonService.application_setting.customize_name) this.commonService.customize_name = this.commonService.application_setting.customize_name;
             }
             localStorage.setItem("application_setting", this.commonService.encryptData(this.commonService.application_setting));
             // checkout setting
-            if(storeProperties.checkout_setting) this.commonService.checkout_setting = storeProperties.checkout_setting;
+            if (storeProperties.checkout_setting) this.commonService.checkout_setting = storeProperties.checkout_setting;
             localStorage.setItem("checkout_setting", this.commonService.encryptData(this.commonService.checkout_setting));
             // footer config
-            if(storeProperties.footer_config) this.commonService.footer_config = storeProperties.footer_config;
+            if (storeProperties.footer_config) this.commonService.footer_config = storeProperties.footer_config;
             localStorage.setItem("footer_config", this.commonService.encryptData(this.commonService.footer_config));
             // giftcard config
-            if(storeProperties.giftcard_config) this.commonService.giftcard_config = storeProperties.giftcard_config;
+            if (storeProperties.giftcard_config) this.commonService.giftcard_config = storeProperties.giftcard_config;
             localStorage.setItem("giftcard_config", this.commonService.encryptData(this.commonService.giftcard_config));
             this.commonService.storeDataLoaded = true;
             this.commonService.storeDataListener.next(true);
@@ -242,53 +270,53 @@ export class AppComponent {
             this.commonService.menu_list = storeDetails.menu_list;
             this.commonService.menu_list.forEach(menu => {
               menu.sec_count = menu.sections.length + menu.menu_images.length;
-              if(menu.sections.length) {
+              if (menu.sections.length) {
                 let secIndex = menu.sections.findIndex(sec => sec.categories.length);
-                if(secIndex==-1) {
+                if (secIndex == -1) {
                   menu.sections_in_one_col = true;
                   menu.sec_count = 1 + menu.menu_images.length;
                 }
               }
-              if(menu.link_status && menu.link_type=='category') {
-                let cInd = this.commonService.catalog_list.findIndex(el => el._id==menu.category_id);
-                if(cInd!=-1) {
+              if (menu.link_status && menu.link_type == 'category') {
+                let cInd = this.commonService.catalog_list.findIndex(el => el._id == menu.category_id);
+                if (cInd != -1) {
                   menu.link_type = 'internal';
-                  menu.link = '/category/'+this.commonService.catalog_list[cInd]._id;
-                  if(this.commonService.catalog_list[cInd].seo_status) menu.link = '/category/'+this.commonService.catalog_list[cInd].seo_details?.page_url;
+                  menu.link = '/category/' + this.commonService.catalog_list[cInd]._id;
+                  if (this.commonService.catalog_list[cInd].seo_status) menu.link = '/category/' + this.commonService.catalog_list[cInd].seo_details?.page_url;
                 }
               }
               // section
-              if(menu.sections?.length) {
+              if (menu.sections?.length) {
                 menu.sections.forEach(sec => {
-                  if(sec.link_status && sec.link_type=='category') {
-                    let cInd = this.commonService.catalog_list.findIndex(el => el._id==sec.category_id);
-                    if(cInd!=-1) {
+                  if (sec.link_status && sec.link_type == 'category') {
+                    let cInd = this.commonService.catalog_list.findIndex(el => el._id == sec.category_id);
+                    if (cInd != -1) {
                       sec.link_type = 'internal';
-                      sec.link = '/category/'+this.commonService.catalog_list[cInd]._id;
-                      if(this.commonService.catalog_list[cInd].seo_status) sec.link = '/category/'+this.commonService.catalog_list[cInd].seo_details?.page_url;
+                      sec.link = '/category/' + this.commonService.catalog_list[cInd]._id;
+                      if (this.commonService.catalog_list[cInd].seo_status) sec.link = '/category/' + this.commonService.catalog_list[cInd].seo_details?.page_url;
                     }
                   }
                   // category
-                  if(sec.categories?.length) {
+                  if (sec.categories?.length) {
                     sec.categories.forEach(cat => {
-                      if(cat.link_status && cat.link_type=='category') {
-                        let catData = this.commonService.catalog_list.find(el => el._id==cat.category_id);
-                        if(catData) {
+                      if (cat.link_status && cat.link_type == 'category') {
+                        let catData = this.commonService.catalog_list.find(el => el._id == cat.category_id);
+                        if (catData) {
                           cat.link_type = 'internal';
-                          cat.link = '/category/'+catData._id;
-                          if(catData.seo_status) cat.link = '/category/'+catData.seo_details?.page_url;
-                          if(catData.image) cat.image = catData.image;
+                          cat.link = '/category/' + catData._id;
+                          if (catData.seo_status) cat.link = '/category/' + catData.seo_details?.page_url;
+                          if (catData.image) cat.image = catData.image;
                         }
                       }
                       // sub category
-                      if(cat.sub_categories?.length) {
+                      if (cat.sub_categories?.length) {
                         cat.sub_categories.forEach(subCat => {
-                          if(subCat.link_status && subCat.link_type=='category') {
-                            let cInd = this.commonService.catalog_list.findIndex(el => el._id==subCat.category_id);
-                            if(cInd!=-1) {
+                          if (subCat.link_status && subCat.link_type == 'category') {
+                            let cInd = this.commonService.catalog_list.findIndex(el => el._id == subCat.category_id);
+                            if (cInd != -1) {
                               subCat.link_type = 'internal';
-                              subCat.link = '/category/'+this.commonService.catalog_list[cInd]._id;
-                              if(this.commonService.catalog_list[cInd].seo_status) subCat.link = '/category/'+this.commonService.catalog_list[cInd].seo_details?.page_url;
+                              subCat.link = '/category/' + this.commonService.catalog_list[cInd]._id;
+                              if (this.commonService.catalog_list[cInd].seo_status) subCat.link = '/category/' + this.commonService.catalog_list[cInd].seo_details?.page_url;
                             }
                           }
                         });
@@ -301,14 +329,14 @@ export class AppComponent {
             // footer seo links
             this.storeApi.FOOTER_SEO_LINKS().subscribe(result => {
               this.commonService.footer_seo_links = [];
-              if(result.status) {
+              if (result.status) {
                 this.commonService.footer_seo_links = result.list;
                 this.commonService.footer_seo_links.forEach(obj => {
                   obj.links.forEach(el => {
-                    if(el.link_type=='category') {
+                    if (el.link_type == 'category') {
                       let urlDetails = this.findUrl(el);
-                      if(urlDetails.link_type) el.link_type = urlDetails.link_type;
-                      if(urlDetails.link) el.link = urlDetails.link;
+                      if (urlDetails.link_type) el.link_type = urlDetails.link_type;
+                      if (urlDetails.link) el.link = urlDetails.link;
                     }
                   });
                 });
@@ -316,13 +344,12 @@ export class AppComponent {
               else console.log("fsl response", result);
             });
             // announcement bar
-            if(this.commonService.application_setting.announcebar_status) {
+            if (this.commonService.application_setting.announcebar_status) {
               let abConfig = this.commonService.application_setting.announcebar_config;
-              if(abConfig && abConfig.timer && abConfig.timer_date) {
+              if (abConfig && abConfig.timer && abConfig.timer_date) {
                 // TIMER
                 const countDownDate = new Date(abConfig.timer_date).getTime();
-                if(isPlatformBrowser(this.platformId) && countDownDate > new Date().getTime())
-                {
+                if (isPlatformBrowser(this.platformId) && countDownDate > new Date().getTime()) {
                   this.tempAnnounceBar = abConfig.content;
                   this.subscription = interval(1000).subscribe(x => { this.startAnnounceInterval(countDownDate); });
                 }
@@ -332,11 +359,11 @@ export class AppComponent {
             }
             this.setBodyMarginTop(100);
             // newsletter
-            if(this.commonService.application_setting.newsletter_status) {
+            if (this.commonService.application_setting.newsletter_status) {
               let nlConfig = this.commonService.application_setting.newsletter_config;
               nlConfig.sub_heading = nlConfig.sub_heading.replace(new RegExp('\n', 'g'), "<br />");
-              if(isPlatformBrowser(this.platformId) && nlConfig.open_onload && this.commonService.ys_features.indexOf('newsletter')!=-1 && this.router.url=='/') {
-                if(this.document.getElementById("openSubscribeModal")) this.document.getElementById("openSubscribeModal").click();
+              if (isPlatformBrowser(this.platformId) && nlConfig.open_onload && this.commonService.ys_features.indexOf('newsletter') != -1 && this.router.url == '/') {
+                if (this.document.getElementById("openSubscribeModal")) this.document.getElementById("openSubscribeModal").click();
               }
             }
             // chat
@@ -346,16 +373,16 @@ export class AppComponent {
             // currency types
             this.updateCurrencyValue(storeDetails.currency_types, liveCurrencies);
             // update customer details
-            if(this.commonService.customer_token) {
+            if (this.commonService.customer_token) {
               this.api.USER_DETAILS().subscribe(result => {
-                if(result.status) {
+                if (result.status) {
                   this.wishService.resetWishList(result.data.wish_list);
                   this.cartService.resetCartList(result.data.cart_list);
                   this.commonService.user_details = {
                     name: result.data.name, email: result.data.email,
                     dial_code: result.data.dial_code, mobile: result.data.mobile
                   };
-                  if(result.data.gst) this.commonService.user_details.gst = result.data.gst;
+                  if (result.data.gst) this.commonService.user_details.gst = result.data.gst;
                   localStorage.setItem("user_details", this.commonService.encryptData(this.commonService.user_details));
                 }
                 else {
@@ -375,20 +402,24 @@ export class AppComponent {
         }
         else console.log("store response", result);
       });
-
+      let ipIndexList = [];
+      this.commonService.ip_urls.forEach((element, index) => {
+        ipIndexList.push(index.toString());
+      });
+      this.checkCountryByIp(ipIndexList);
       /* ROUTER EVENT */
       let currentUrl = this.router.url;
       this.router.events.subscribe(event => {
-        if(event instanceof NavigationEnd) {
+        if (event instanceof NavigationEnd) {
           this.commonService.removeElement('bc-jsonld');
           // SEO
           let routeName = this.location.path();
           let catPages = ['/all-products', '/new-arrivals', '/on-sale', '/featured-products']
-          if(catPages.indexOf(routeName)==-1 && routeName.indexOf("/category/")==-1 && routeName.indexOf("/product/")==-1 && routeName.indexOf("/blogs")==-1 && routeName.indexOf("/account")==-1 && routeName.indexOf("/wishlist")==-1 && routeName.indexOf("/contact-us")==-1 && routeName.indexOf("/404")==-1 && routeName.indexOf("/web-stories")==-1) {
+          if (catPages.indexOf(routeName) == -1 && routeName.indexOf("/category/") == -1 && routeName.indexOf("/product/") == -1 && routeName.indexOf("/blogs") == -1 && routeName.indexOf("/account") == -1 && routeName.indexOf("/wishlist") == -1 && routeName.indexOf("/contact-us") == -1 && routeName.indexOf("/404") == -1 && routeName.indexOf("/web-stories") == -1) {
             this.commonService.getStoreSeoDetails();
           }
-          if(this.router.url!='/') this.setBodyMarginTop(100);
-          if(routeName.indexOf("/order-summary/") == -1) {
+          if (this.router.url != '/') this.setBodyMarginTop(100);
+          if (routeName.indexOf("/order-summary/") == -1) {
             this.commonService.loadGoogleAnalytics("UA-102000599-1, AW-847341911", 5000);
           }
           // chat
@@ -405,7 +436,7 @@ export class AppComponent {
           currentUrl = event.url.split('?')[0];
           this.currUrl = currentUrl;
           // canonical
-          if(this.document.getElementById('ccLink')) this.document.getElementById('ccLink').href = this.commonService.origin+currentUrl;
+          if (this.document.getElementById('ccLink')) this.document.getElementById('ccLink').href = this.commonService.origin + currentUrl;
           //NOTE: This Function Will trigger close event in menu
           this.commonService.resetMegaMenu();
           setTimeout(() => { this.moveNavigation(); }, 0);
@@ -416,60 +447,60 @@ export class AppComponent {
 
   findUrl(menu) {
     let catList = this.commonService.catalog_list;
-    let cInd = catList.findIndex(el => el._id==menu.category_id);
-    if(cInd!=-1) {
+    let cInd = catList.findIndex(el => el._id == menu.category_id);
+    if (cInd != -1) {
       menu.link_type = 'internal';
-      menu.link = '/category/'+catList[cInd]._id;
-      if(catList[cInd].seo_status) menu.link = '/category/'+catList[cInd].seo_details?.page_url;
+      menu.link = '/category/' + catList[cInd]._id;
+      if (catList[cInd].seo_status) menu.link = '/category/' + catList[cInd].seo_details?.page_url;
     }
     return menu;
   }
 
-	updateCurrencyValue(currencyTypes, liveList) {
+  updateCurrencyValue(currencyTypes, liveList) {
     let currencyIndex = currencyTypes.findIndex(obj => obj.default_currency);
     this.commonService.store_details.currency = currencyTypes[currencyIndex].country_code;
     localStorage.setItem("store_details", this.commonService.encryptData(this.commonService.store_details));
     // run in browser side(for overcome ssr country_code unefined error)
-    if(isPlatformBrowser(this.platformId)) {
+    if (isPlatformBrowser(this.platformId)) {
       currencyTypes.forEach(element => {
-        let liveIndex = liveList.findIndex(obj => obj.name==element.country_code);
+        let liveIndex = liveList.findIndex(obj => obj.name == element.country_code);
         element.country_inr_value = parseFloat(liveList[liveIndex].rates[this.commonService.store_details.currency].toFixed(2));
       });
       this.commonService.currency_types = currencyTypes;
       // ip based
-      if(this.commonService.ipBasedCurrency && this.commonService.store_properties.currency_list.length) {
+      if (this.commonService.ipBasedCurrency && this.commonService.store_properties.currency_list.length) {
         let ipIndex = "0"; let ipIndexList = [];
         this.commonService.ip_urls.forEach((element, index) => {
           ipIndexList.push(index.toString());
         });
-        if(localStorage.getItem("ip_index")) ipIndex = localStorage.getItem("ip_index");
+        if (localStorage.getItem("ip_index")) ipIndex = localStorage.getItem("ip_index");
         ipIndexList.splice(ipIndexList.indexOf(ipIndex), 1);
         // call api(1)
         this.commonService.getIpInfo(ipIndex)
-        .then((ipInfo) => { this.getCurrencyType(ipInfo, currencyIndex); })
-        .catch((err) => {
-          ipIndex = ipIndexList[0]; ipIndexList.splice(0, 1);
-          // call api(2)
-          this.commonService.getIpInfo(ipIndex)
-          .then((ipInfo) => {this.getCurrencyType(ipInfo, currencyIndex); })
+          .then((ipInfo) => { this.getCurrencyType(ipInfo, currencyIndex); })
           .catch((err) => {
             ipIndex = ipIndexList[0]; ipIndexList.splice(0, 1);
-            // call api(3)
+            // call api(2)
             this.commonService.getIpInfo(ipIndex)
-            .then((ipInfo) => { this.getCurrencyType(ipInfo, currencyIndex); })
-            .catch((err) => {
-              console.log("-----err", err);
-              this.commonService.ipBasedCurrency = false;
-              this.setStoreCurrency(currencyIndex);
-            });
+              .then((ipInfo) => { this.getCurrencyType(ipInfo, currencyIndex); })
+              .catch((err) => {
+                ipIndex = ipIndexList[0]; ipIndexList.splice(0, 1);
+                // call api(3)
+                this.commonService.getIpInfo(ipIndex)
+                  .then((ipInfo) => { this.getCurrencyType(ipInfo, currencyIndex); })
+                  .catch((err) => {
+                    console.log("-----err", err);
+                    this.commonService.ipBasedCurrency = false;
+                    this.setStoreCurrency(currencyIndex);
+                  });
+              });
           });
-        });
       }
       else {
-        if(localStorage.getItem("selected_currency")) {
+        if (localStorage.getItem("selected_currency")) {
           let selectedCurrency = this.commonService.decryptData(localStorage.getItem("selected_currency"));
-          let localIndex = this.commonService.currency_types.findIndex(obj => obj.country_code==selectedCurrency.country_code);
-          if(localIndex!=-1) { currencyIndex = localIndex; }
+          let localIndex = this.commonService.currency_types.findIndex(obj => obj.country_code == selectedCurrency.country_code);
+          if (localIndex != -1) { currencyIndex = localIndex; }
           this.setStoreCurrency(currencyIndex);
         }
         else this.setStoreCurrency(currencyIndex);
@@ -477,11 +508,11 @@ export class AppComponent {
     }
   }
   getCurrencyType(ipInfo, currencyIndex) {
-    if(ipInfo) {
-      let countryCurrency = this.commonService.store_properties.currency_list.filter(obj => obj.country_list.findIndex(el => this.optString(el.code)==this.optString(ipInfo.country_code) || this.optString(el.name)==this.optString(ipInfo.country_name))!=-1);
-      if(countryCurrency.length) {
-        let ipIndex = this.commonService.currency_types.findIndex(obj => obj.country_code==countryCurrency[0].currency_code);
-        if(ipIndex!=-1) { currencyIndex = ipIndex; }
+    if (ipInfo) {
+      let countryCurrency = this.commonService.store_properties.currency_list.filter(obj => obj.country_list.findIndex(el => this.optString(el.code) == this.optString(ipInfo.country_code) || this.optString(el.name) == this.optString(ipInfo.country_name)) != -1);
+      if (countryCurrency.length) {
+        let ipIndex = this.commonService.currency_types.findIndex(obj => obj.country_code == countryCurrency[0].currency_code);
+        if (ipIndex != -1) { currencyIndex = ipIndex; }
         this.setStoreCurrency(currencyIndex);
       }
       else this.setStoreCurrency(currencyIndex);
@@ -496,19 +527,19 @@ export class AppComponent {
   optString(str) {
     return str.replace(/[^A-Z0-9]/ig, "").toLowerCase();
   }
-  
+
   startAnnounceInterval(tillDate) {
     let distance = tillDate - new Date().getTime();
-    if(distance >= 0) {
+    if (distance >= 0) {
       let days = Math.floor(distance / (1000 * 60 * 60 * 24));
       let hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
       let minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
       let seconds = Math.floor((distance % (1000 * 60)) / 1000);
-      let timer = String(hours).padStart(2, '0')+"h:"+String(minutes).padStart(2, '0')+"m:"+String(seconds).padStart(2, '0')+"s";
-      if(days>0) { timer = String(days).padStart(2, '0')+"d:"+timer; }
-      if(this.document.getElementById("announceBar")) {
-        if(this.tempAnnounceBar.includes("TIMER")) this.document.getElementById("announceBar").innerHTML = this.tempAnnounceBar.replace("TIMER", timer);
-        else this.document.getElementById("announceBar").innerHTML = this.tempAnnounceBar+' '+timer;
+      let timer = String(hours).padStart(2, '0') + "h:" + String(minutes).padStart(2, '0') + "m:" + String(seconds).padStart(2, '0') + "s";
+      if (days > 0) { timer = String(days).padStart(2, '0') + "d:" + timer; }
+      if (this.document.getElementById("announceBar")) {
+        if (this.tempAnnounceBar.includes("TIMER")) this.document.getElementById("announceBar").innerHTML = this.tempAnnounceBar.replace("TIMER", timer);
+        else this.document.getElementById("announceBar").innerHTML = this.tempAnnounceBar + ' ' + timer;
       }
     }
     else {
@@ -516,11 +547,11 @@ export class AppComponent {
       this.subscription.unsubscribe();
     }
   }
-  
+
   moveNavigation() {
     let navigation = this.document.querySelector(".cd-nav");
-    if(navigation) {
-      if(this.commonService.screen_width >= 992) {
+    if (navigation) {
+      if (this.commonService.screen_width >= 992) {
         navigation.parentElement.removeChild(navigation);
         this.document.querySelector(".cd-header-buttons")?.after(navigation);
       } else {
@@ -549,7 +580,7 @@ export class AppComponent {
   setBodyMarginTop(timer: number) {
     setTimeout(() => {
       let mastHeight = this.document.getElementById("headroom-head")?.offsetHeight;
-      this.document.body.style.marginTop = mastHeight+'px';
+      this.document.body.style.marginTop = mastHeight + 'px';
     }, timer);
   }
 
@@ -557,9 +588,9 @@ export class AppComponent {
     let result = '';
     let characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
     let charactersLength = characters.length;
-    for(let i=0; i<length; i++) {
+    for (let i = 0; i < length; i++) {
       result += characters.charAt(Math.floor(Math.random() * charactersLength));
-    } 
+    }
     return result;
   }
 

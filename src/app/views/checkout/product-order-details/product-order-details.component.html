@@ -23,7 +23,9 @@
         <div *ngIf="template_setting?.breadcrumb" class="col-md-12">
           <div class="breadcrumb-navigation mt-3">
             <ul class="collapsed">
-              <li><a routerLink="/">Home</a></li>
+              <li>
+                <a routerLink="/">Home</a>
+              </li>
               <li *ngIf="!commonService?.customer_token || checkout_details?.order_type!='pickup'">
                 <a routerLink="/checkout/address-list/product">Address</a>
               </li>
@@ -35,7 +37,9 @@
               <li *ngIf="checkout_details?.order_type=='pickup'">
                 <a routerLink="/checkout/pickup-methods">Choose Pickup Method</a>
               </li>
-              <li><a class="active-page">Order Details</a></li>
+              <li>
+                <a class="active-page">Order Details</a>
+              </li>
             </ul>
           </div>
         </div>
@@ -79,19 +83,23 @@
                         <h4 class="checkout-pro-name">{{x.name}}</h4>
                         <ng-container *ngIf="x.variant_status">
                           <small *ngFor="let y of x.variant_types; let j=index;">
-                            <strong>{{y.name}}:</strong> {{y.value}}
+                            <strong>{{y.name}}:</strong>
+                            {{y.value}}
                           </small>
                         </ng-container>
                         <small *ngIf="x.addon_status && x.selected_addon">
                           <strong>Addon: </strong>
-                          <span>{{x.selected_addon?.name}}<ng-container *ngIf="x.customization_status"> - </ng-container></span>
+                          <span>{{x.selected_addon?.name}}
+                            <ng-container *ngIf="x.customization_status"> - </ng-container>
+                          </span>
                           <span *ngIf="x.customization_status" class="cursor" (click)=" commonService.onViewModel(x.customized_model);">
                             {{x.customized_model?.name}}
                           </span>
                         </small>
                         <p *ngIf="!x.allow_cod && orderForm.cod_alert" class="error-msg">COD not available</p>
                         <p class="error-msg" *ngIf="unique_product_list?.length && x.unavailable">
-                          <ng-container *ngIf="x.available_qty>0">Only {{ x.available_qty }} {{ x.unit }} available in stock</ng-container>
+                          <ng-container *ngIf="x.available_qty>0">Only {{ x.available_qty }}
+                            {{ x.unit }} available in stock</ng-container>
                           <ng-container *ngIf="x.available_qty==0">SOLD OUT</ng-container>
                         </p>
                       </td>
@@ -113,7 +121,8 @@
                             </div>
                             <span *ngIf="template_setting?.display_unit" class="ml-2">{{ x.unit }}</span>
                           </ng-container>
-                          <span *ngIf="!x.unavailable" class="ml-2">{{ x.quantity }} {{ (template_setting?.display_unit)? x.unit: '' }}</span>
+                          <span *ngIf="!x.unavailable" class="ml-2">{{ x.quantity }}
+                            {{ (template_setting?.display_unit)? x.unit: '' }}</span>
                         </div>
                         <!-- for cod -->
                         <div *ngIf="orderForm.cod_alert" class="d-flex justify-content-start align-items-center">
@@ -132,7 +141,8 @@
                             </div>
                             <span *ngIf="template_setting?.display_unit" class="ml-2">{{ x.unit }}</span>
                           </ng-container>
-                          <span *ngIf="x.allow_cod" class="ml-2">{{ x.quantity }} {{ (template_setting?.display_unit)? x.unit: '' }}</span>
+                          <span *ngIf="x.allow_cod" class="ml-2">{{ x.quantity }}
+                            {{ (template_setting?.display_unit)? x.unit: '' }}</span>
                         </div>
                         <!-- ## qty scale ## -->
                       </td>
@@ -172,14 +182,17 @@
                             </ng-container>
                             <small *ngIf="x.addon_status && x.selected_addon">
                               <strong>Addon: </strong>
-                              <span>{{x.selected_addon?.name}}<ng-container *ngIf="x.customization_status"> - </ng-container></span>
+                              <span>{{x.selected_addon?.name}}
+                                <ng-container *ngIf="x.customization_status"> - </ng-container>
+                              </span>
                               <span *ngIf="x.customization_status" class="cursor" (click)=" commonService.onViewModel(x.customized_model);">
                                 {{x.customized_model?.name}}
                               </span>
                             </small>
                             <p *ngIf="!x.allow_cod && orderForm.cod_alert" class="error-msg">COD not available</p>
                             <p class="error-msg" *ngIf="unique_product_list?.length && x.unavailable">
-                              <ng-container *ngIf="x.available_qty>0">Only {{ x.available_qty }} {{ x.unit }} available in stock</ng-container>
+                              <ng-container *ngIf="x.available_qty>0">Only {{ x.available_qty }}
+                                {{ x.unit }} available in stock</ng-container>
                               <ng-container *ngIf="x.available_qty==0">SOLD OUT</ng-container>
                             </p>
                           </div>
@@ -202,7 +215,8 @@
                                 </div>
                                 <span *ngIf="template_setting?.display_unit">{{ x.unit }}</span>
                               </ng-container>
-                              <span *ngIf="!x.unavailable">{{ x.quantity }} {{ (template_setting?.display_unit)? x.unit: '' }}</span>
+                              <span *ngIf="!x.unavailable">{{ x.quantity }}
+                                {{ (template_setting?.display_unit)? x.unit: '' }}</span>
                             </div>
                             <!-- for cod -->
                             <div *ngIf="orderForm.cod_alert" class="d-flex justify-content-start align-items-center">
@@ -221,7 +235,8 @@
                                 </div>
                                 <span *ngIf="template_setting?.display_unit">{{ x.unit }}</span>
                               </ng-container>
-                              <span *ngIf="x.allow_cod">{{ x.quantity }} {{ (template_setting?.display_unit)? x.unit: '' }}</span>
+                              <span *ngIf="x.allow_cod">{{ x.quantity }}
+                                {{ (template_setting?.display_unit)? x.unit: '' }}</span>
                             </div>
                           </div>
                           <!-- ## qty scale ## -->
@@ -309,7 +324,8 @@
                           <h6>Phone:</h6>
                         </div>
                         <div class="col-6  d-flex align-items-start justify-content-end">
-                          <span align="right">{{shipping_address?.dial_code}} {{shipping_address.mobile}}</span>
+                          <span align="right">{{shipping_address?.dial_code}}
+                            {{shipping_address.mobile}}</span>
                         </div>
                         <!-- address -->
                         <div class="col-6 d-flex align-items-center">
@@ -357,7 +373,8 @@
                           <h6>Phone:</h6>
                         </div>
                         <div class="col-6 d-flex align-items-start justify-content-end">
-                          <span align="right">{{billing_address?.dial_code}} {{billing_address.mobile}}</span>
+                          <span align="right">{{billing_address?.dial_code}}
+                            {{billing_address.mobile}}</span>
                         </div>
                         <!-- address -->
                         <div class="col-6 d-flex align-items-center">
@@ -372,7 +389,7 @@
                 </div>
               </div>
               <!-- #Billing Address# -->
-              
+
             </div>
 
             <!-- right section -->
@@ -382,7 +399,8 @@
                   <div class="col-md-12">
                     <div class="product-order-type pb-3">
                       <h4> Order Total
-                        <span class="total-items">({{cartQty}} {{ cartQty>1 ? 'Items' : 'Item' }})</span>
+                        <span class="total-items">({{cartQty}}
+                          {{ cartQty>1 ? 'Items' : 'Item' }})</span>
                       </h4>
                     </div>
                   </div>
@@ -465,7 +483,7 @@
                                 </button>
                               </div>
                               <input type="text" class="form-control" placeholder="Enter Your Code" name="code{{i}}" id="code" [(ngModel)]="x.code" #code="ngModel"
-                                (input)="x.status=null; x.price=0; onGcAmtCalc();" required appUppercase />
+                                (input)="x.status=null; x.price=0; onGcAmtCalc();" required appUppercase/>
                               <div class="input-group-append">
                                 <button class="primary-btn" *ngIf="!x.status" [disabled]="!x.code" type="submit">Apply</button>
                                 <span *ngIf="x.status=='valid'" class="sucess-bg smooth-fadein m-0 d-flex align-items-center justify-content-center">Valid</span>
@@ -503,7 +521,7 @@
                               </button>
                             </div>
                             <input type="text" class="form-control" placeholder="Enter Your Code" name="code" id="code" [(ngModel)]="offer_form.code" #code="ngModel"
-                              (input)="orderForm.offer_invalid_error=null; offer_form.alert_msg=null; offer_form.status=null; offerAmount=0; tempOfferAmount=0;" required appUppercase />
+                              (input)="orderForm.offer_invalid_error=null; offer_form.alert_msg=null; offer_form.status=null; offerAmount=0; tempOfferAmount=0;" required appUppercase/>
                             <div class="input-group-append">
                               <button *ngIf="!offer_form.status" class="primary-btn" [disabled]="!offer_form.code" type="submit">Apply</button>
                               <span *ngIf="offer_form.status" [ngClass]="(offer_form.status=='valid' && tempOfferAmount>0)? 'sucess-bg': 'error-bg'" class="smooth-fadein m-0 d-flex align-items-center justify-content-center">
@@ -559,6 +577,14 @@
                     </div>
 
                     <div class="col-md-12">
+                      <!-- USA Shipping Restriction Alert -->
+                      <div class="danger-alert smooth-fadein" *ngIf="isUSACustomer">
+                        <div class="alert-msg d-flex align-items-center justify-content-center p-2">
+                          <span class="material-icons"></span>
+                          <p class="m-0">We're currently experiencing technical issues and cannot process orders in your area at the moment.</p>
+                        </div>
+                      </div>
+
                       <div class="danger-alert smooth-fadein" *ngIf="orderForm?.cart_exceed_alert || orderForm?.offer_invalid_error || orderForm.errorMsg;">
                         <div class="alert-msg d-flex align-items-center justify-content-center p-2">
                           <span class="material-icons"></span>
@@ -576,17 +602,20 @@
                       <!-- payment list -->
                       <ng-container *ngFor="let x of commonService.payment_methods | orderAsc: 'rank'; let i=index;">
                         <!-- online payments -->
-                        <ng-container *ngIf="x.name!='COD'">
+                        <ng-container *ngIf="x.name != 'COD' && !isUSACustomer">
                           <button *ngIf="!x.supported_currrencies?.length || x.supported_currrencies?.indexOf(commonService.selected_currency?.country_code)!=-1"
-                          type="button" (click)="onMakePayment(x);" class="primary-btn w-100 mb-1" [disabled]="orderForm.submit">{{ x.btn_name }}<em></em></button>
+                          type="button" (click)="onMakePayment(x);" class="primary-btn w-100 mb-1" [disabled]="orderForm.submit">{{ x.btn_name }}
+                            <em></em>
+                          </button>
                         </ng-container>
                         <!-- COD -->
-                        <ng-container *ngIf="x.name=='COD' && shipping_address.country==commonService.store_details?.country">
+                        <ng-container *ngIf="x.name=='COD' && shipping_address.country==commonService.store_details?.country && !isUSACustomer">
                           <ng-container *ngIf="x.cod_config.max_amount===0 || x.cod_config.max_amount >= (((sub_total*1)+(shipping_method.shipping_price*1)+(orderForm.gift_wrapper*1))-((manualDiscAmount*1)+(discountAmount*1)+(offerAmount*1)))">
                             <ng-container *ngIf="!commonService.checkout_setting.disable_cod_custom_items || commonService.checkout_setting.disable_cod_custom_items && !existCustomItems">
                               <ng-container *ngIf="checkout_details?.order_type=='delivery' || commonService.checkout_setting.cod_store_pickup">
                                 <button *ngIf="commonService.customer_token || commonService.checkout_setting.cod_guest_checkout" type="button" (click)="accept_cod_tc=false; onMakePayment(x);" class="primary-btn w-100 mb-1" [disabled]="orderForm.submit">
-                                  {{ x.btn_name }}<em></em>
+                                  {{ x.btn_name }}
+                                  <em></em>
                                 </button>
                               </ng-container>
                             </ng-container>
@@ -608,8 +637,11 @@
                       </div>
                     </div>
                     <!-- place order -->
-                    <div *ngIf="(((sub_total*1)+(shipping_method.shipping_price*1)+(orderForm.gift_wrapper*1)+(orderForm.packaging_charges*1))-((manualDiscAmount*1)+(discountAmount*1)+(offerAmount*1))) == 0" class="col-md-12">
-                      <button type="button" (click)="onMakePayment({});" class="primary-btn w-100" [disabled]="orderForm.submit">Place Order<em></em></button>
+                    <div *ngIf="isUSACustomer !== null && isUSACustomer !== undefined &&
+           (((sub_total*1)+(shipping_method.shipping_price*1)+(orderForm.gift_wrapper*1)+(orderForm.packaging_charges*1)) - ((manualDiscAmount*1)+(discountAmount*1)+(offerAmount*1))) == 0 
+           && !isUSACustomer" class="col-md-12">
+                      <button type="button" (click)="onMakePayment({});" class="primary-btn w-100" [disabled]="orderForm.submit">Place Order<em></em>
+                      </button>
                     </div>
 
                   </div>
@@ -650,7 +682,7 @@
               </div>
             </div>
           </div>
-          
+
         </div>
         <!-- end col-12 -->
       </div>
@@ -758,7 +790,7 @@
               <p *ngIf="!otpForm?.sms_sent" class="mt-3">Sent to <span class="bold">{{otpForm.mobile}}</span></p>
               <div class="gray-card primary-card p-3">
                 <p>Enter OTP</p>
-                <input type="tel" class="w-100" name="cod_otp" [(ngModel)]="otpForm.otp" (input)="otpForm.err_msg=null;" appNumberOnly required />
+                <input type="tel" class="w-100" name="cod_otp" [(ngModel)]="otpForm.otp" (input)="otpForm.err_msg=null;" appNumberOnly required/>
               </div>
               <p *ngIf="codSeconds>=0 && codTimer">Resend OTP <span class="bold">({{ codTimer }})</span></p>
               <button *ngIf="codSeconds<0;" class="bold secondary-btn d-flex justify-content-center align-items-center" (click)="sendCodOtp();" type="button" style="color: red;" [disabled]="otpForm.submit">
@@ -831,9 +863,12 @@
                   <button id="sq-apple-pay" class="apple-pay-button apple-pay-button-black"></button>
                   <button id="sq-google-pay" class="button-google-pay"></button>
                   <div class="socaial-or-sec pt-3 pb-4">
-                    <h2><span>OR</span></h2>
+                    <h2>
+                      <span>OR</span></h2>
                   </div>
-                  <h6><strong>PAYMENT DETAILS</strong></h6>
+                  <h6>
+                    <strong>PAYMENT DETAILS</strong>
+                  </h6>
                   <div id="sq-card-number"></div>
                   <div class="third" id="sq-expiration-date"></div>
                   <div class="third" id="sq-cvv"></div>
@@ -981,7 +1016,7 @@
               </div>
               <div class="trans-id d-flex flex-column align-items-center justify-content-center mt-3">
                 <label class="w-auto">Input Reference/Transaction ID or your UPI ID</label>
-                <input type="text" name="payment_id" [(ngModel)]="payment_id" required />
+                <input type="text" name="payment_id" [(ngModel)]="payment_id" required/>
               </div>
               <div class="qr-pay-desc text-center mt-3">
                 <p>Click Confirm, only after amount deducted form your account, We will manually verify your transaction. Are you sure?</p>
@@ -1010,7 +1045,7 @@
             <i class="material-icons">close</i>
           </div>
         </div>
-        <div class="modal-body slim-scroll">       
+        <div class="modal-body slim-scroll">
           <div class="row">
             <div class="col-md-12">
               <div class="qr-pay-header">
@@ -1025,11 +1060,11 @@
                 </div>
                 <div *ngIf="payAppConfig?.pay_id_field_status" class="trans-id mt-3">
                   <label class="w-auto">Referrence ID or Transaction ID</label>
-                  <input class="w-100" type="text" name="payment_id" [(ngModel)]="payment_id" required />
+                  <input class="w-100" type="text" name="payment_id" [(ngModel)]="payment_id" required/>
                 </div>
               </div>
             </div>
-          </div>      
+          </div>
         </div>
         <div class="modal-footer">
           <div class="qr-proc-btn-sec d-flex justify-content-center">

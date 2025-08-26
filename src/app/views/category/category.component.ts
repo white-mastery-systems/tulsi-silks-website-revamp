@@ -6,6 +6,7 @@ import { environment } from './../../../environments/environment';
 import { StoreApiService } from '../../services/store-api.service';
 import { CommonService } from '../../services/common.service';
 import { CurrencyConversionService } from '../../services/currency-conversion.service';
+import { SwiperService } from '../../services/swiper.service'; // Add this import
 import { Options } from '@angular-slider/ngx-slider';
 
 @Component({
@@ -66,8 +67,13 @@ export class CategoryComponent implements OnInit {
   };
 
   constructor(
-    @Inject(PLATFORM_ID) private platformId: Object, private router: Router, private activeRoute: ActivatedRoute,
-    private storeApi: StoreApiService, public cc: CurrencyConversionService, public commonService: CommonService
+    @Inject(PLATFORM_ID) private platformId: Object, 
+    private router: Router, 
+    private activeRoute: ActivatedRoute,
+    private storeApi: StoreApiService, 
+    public cc: CurrencyConversionService, 
+    public commonService: CommonService,
+    public swiperService: SwiperService // Add this injection
   ) {
     this.subscription = this.commonService.currency_type.subscribe(currency => {
       this.findCurrency();
@@ -76,6 +82,9 @@ export class CategoryComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    // Initialize highlights first
+    this.initializeHighlights();
+    
     this.activeRoute.params.subscribe((params: Params) => {
       this.showMore = false; this.params = params; this.tag_list = []; this.randomProducts = [];
       if(this.router.url=='/recommended-products' || this.router.url=='/all-products' || this.router.url=='/new-arrivals' || this.router.url=='/on-sale'|| this.router.url=='/featured-products'|| this.router.url=='/best-sellers') {
@@ -256,6 +265,42 @@ export class CategoryComponent implements OnInit {
     });
   }
 
+  // Add this new method to handle highlights initialization
+  initializeHighlights() {
+    // Check if layout_list exists and has data
+    if(this.commonService.layout_list && this.commonService.layout_list.length) {
+      // Primary highlights logic
+      let phIndex = this.commonService.layout_list.findIndex(obj => obj.type=='highlights');
+      if(phIndex !== -1) {
+        // Check if swiperService and highlights config exist
+        if(this.swiperService && this.swiperService.highlights && this.swiperService.highlights.card_count) {
+          let cardCount = this.swiperService.highlights.card_count;
+          this.commonService.primary_highlights = this.commonService.layout_list[phIndex].image_list || [];
+          this.commonService.layout_list.splice(phIndex, 1);
+          
+          // Duplicate highlights if needed to meet card count requirement
+          if(this.commonService.primary_highlights.length && cardCount > this.commonService.primary_highlights.length) {
+            let remaining = cardCount - this.commonService.primary_highlights.length;
+            let originalHighlights = [...this.commonService.primary_highlights]; // Create a copy
+            
+            for(let i = 0; i < remaining; i++) {
+              this.commonService.primary_highlights = this.commonService.primary_highlights.concat(originalHighlights);
+              if(this.commonService.primary_highlights.length >= cardCount) {
+                this.commonService.primary_highlights.length = cardCount;
+                break;
+              }
+            }
+          }
+        }
+      }
+    }
+    
+    // Initialize primary_highlights as empty array if not set
+    if(!this.commonService.primary_highlights) {
+      this.commonService.primary_highlights = [];
+    }
+  }
+
   buildFAQSchema() {
     this.category_details.faqs.forEach(el => {
       this.categoryFAQSchema.mainEntity.push({
@@ -393,6 +438,7 @@ export class CategoryComponent implements OnInit {
       if(this.tag_list.length===1) this.collapseIndex = 0;
     }
   }
+
   onTagFilter(changeEvent) {
     let parentProducts: any = this.parent_list;
     this.tagSelected = false;
@@ -427,6 +473,7 @@ export class CategoryComponent implements OnInit {
     if(changeEvent) this.page = 1;
     this.findMinMax();
   }
+
   clearTagFilter() {
     this.list = this.parent_list;
     this.tag_list.forEach(tag => {

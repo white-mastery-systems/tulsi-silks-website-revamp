@@ -10,6 +10,37 @@
   </h1>
   <!-- #SEO h1 tag -->
 
+  <!-- Primary Highlights Section -->
+  <section *ngIf="commonService?.primary_highlights?.length>=swiperService?.highlights?.card_count" class="primary-section primary-highlighted-sec wow fadeInUp">
+    <div class="{{template_setting?.body_type}}">
+      <div class="row">
+        <div class="col-12">
+          <div class="swiper-container multi-slider product-slider featured-sections" [ngClass]="commonService.desktop_device? 'desktop_phls': 'phls'" appHomeHighlights>
+            <div class="swiper-wrapper">
+              <div *ngFor="let x of commonService?.primary_highlights; let i=index;" class="swiper-slide">
+                <div class="product-box cursor">
+                  <a (click)="commonService.onPageRedirect(x);" class="prod-div">
+                    <figure class="mb-0">
+                      <img width="100%" height="100%" appImgLazyLoad [ImagelazyLoad]="imgBaseUrl+x.desktop_img" alt="{{(x.img_alt)? x.img_alt: 'Image'}}">
+                      <div *ngIf="x?.content_status && x?.content_details?.heading" class="category-grid-text d-flex">
+                        <p class="mb-0 py-2">{{ x.content_details.heading }}</p>
+                      </div>
+                    </figure>
+                  </a>
+                </div>
+              </div>
+            </div>
+            <ng-container *ngIf="commonService?.desktop_device">
+              <div id="highlight_next" [hidden]="true" class="swiper-button swiper-button-next"></div>
+              <div id="highlight_prev" [hidden]="true" class="swiper-button swiper-button-prev"></div>
+            </ng-container>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- #Primary Highlights Section -->
+
   <!-- catalog image -->
   <!-- <section *ngIf="category_details?.image" class="category-banner-sec data-bg">
     <div class="category-banner">

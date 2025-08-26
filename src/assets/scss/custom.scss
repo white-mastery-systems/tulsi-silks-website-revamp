@@ -1895,6 +1895,7 @@ accordion-group.panel.panel-open {
   }
   span {
     margin-bottom: 1rem;
+    line-height: 23px;
   }
 }
 
@@ -2810,6 +2811,7 @@ a.active::after {
 .status_head p {
   opacity: 0.87 !important;
   font-size: 1rem;
+  line-height: 25px;
 }
 
 .live_order_card_inner h6,

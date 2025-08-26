@@ -55,6 +55,8 @@ export class ProductOrderDetailsComponent implements OnInit {
   qrvalue : string = "temp"; payment_id: string;
   orderDetails: any; payAppConfig: any;
 
+  isUSACustomer: boolean = false;
+
   constructor(
     @Inject(DOCUMENT) private document, private cartService: CartlistService, private api: ApiService, private router: Router, private assetLoader: DynamicAssetLoaderService,
     @Inject(PLATFORM_ID) private platformId: Object, public cc: CurrencyConversionService, private storeApi: StoreApiService, public commonService: CommonService
@@ -121,6 +123,7 @@ export class ProductOrderDetailsComponent implements OnInit {
     this.item_list = this.checkout_details.item_list;
     this.shipping_address = this.checkout_details.shipping_address;
     this.billing_address = this.checkout_details.billing_address;
+    this.checkUSAShippingRestriction();
     this.shipping_method = this.checkout_details.shipping_method;
     this.shipping_method.tempShippingPrice = this.cc.CALC_WO_AC(this.shipping_method.shipping_price);
     this.item_list.forEach((obj, index) => {
@@ -150,6 +153,15 @@ export class ProductOrderDetailsComponent implements OnInit {
     if(this.orderForm.offer_applied && this.autoDiscountDetails.code) {
       this.offer_form.code = this.autoDiscountDetails.code;
       this.onCalcOrderDicount();
+    }
+  }
+
+  checkUSAShippingRestriction() {
+    if (this.shipping_address && this.shipping_address.country) {
+      // Check if country is USA (you can adjust the condition based on how country is stored)
+      this.isUSACustomer = this.shipping_address.country.toLowerCase() === 'usa' || 
+                                    this.shipping_address.country.toLowerCase() === 'united states of america' ||
+                                    this.shipping_address.country.toLowerCase() === 'us';
     }
   }
 
@@ -197,6 +209,11 @@ export class ProductOrderDetailsComponent implements OnInit {
   }
 
   onMakePayment(paymentDetails) {
+    if (this.isUSACustomer) {
+      this.orderForm.submit = false;
+      this.orderForm.errorMsg = "We currently do not ship to USA. Please change your shipping address.";
+      return;
+    }
     let packDetails = this.commonService.store_details.package_details;
     if(packDetails && packDetails.billing_status)
     {
