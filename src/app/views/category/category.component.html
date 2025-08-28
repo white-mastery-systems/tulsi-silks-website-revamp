@@ -24,11 +24,11 @@
                       <div class="product-box cursor">
                         <a (click)="commonService.onPageRedirect(subCat);" class="prod-div">
                           <figure class="mb-0">
-                            <img width="100%" height="100%" appImgLazyLoad [ImagelazyLoad]="imgBaseUrl+subCat.image" alt="category">
-                            <div class="category-grid-text d-flex">
+                            <img width="100%" height="100%" appImgLazyLoad [ImagelazyLoad]="imgBaseUrl+subCat.image" alt="category">                           
+                          </figure>
+                           <div class="category-grid-text d-flex">
                               <p class="mb-0 py-2">{{ subCat.name }}</p>
                             </div>
-                          </figure>
                         </a>
                       </div>
                     </div>

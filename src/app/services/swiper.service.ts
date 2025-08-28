@@ -10,7 +10,7 @@ export class SwiperService {
     card_count: 6,
     auto_play: true,
     break_points: {
-      1024: { slidesPerView: 6, spaceBetween: 0 },
+      1024: { slidesPerView: 7.5, spaceBetween: 0 },
       768: { slidesPerView: 4, spaceBetween: 0 },
       640: { slidesPerView: 3, spaceBetween: 0 },
       320: { slidesPerView: 3, spaceBetween: 0 }

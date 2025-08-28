@@ -940,19 +940,31 @@ span{
 }
 
 .primary-highlighted-sec {
+  padding-top:20px;
   margin-bottom: 0!important;
+  figure{
+    width:100px;
+    height:100px;
+    margin: 0 auto;
+    border-radius: 50px;
+    // background: linear-gradient(45deg, #D99550, #D99550);
+    // padding: 4px;   
+    img{
+      border-radius: 50px;      
+    }
+  }
   .category-grid-text {
     position: relative!important;   
     width: 100%;
-    height: 100%;
+    height: auto;
     justify-content: center;
     p {
       width:100%;
-      font-size: 1rem;
+      font-size: 0.75rem;
       line-height: 1em;
       letter-spacing: 1px;
       text-align: center;
-      text-shadow: 0.75px 0.75px 1px rgba(0, 0, 0, 0.24);
+      text-shadow: none;
       color:$primary-text;
     }
   }
