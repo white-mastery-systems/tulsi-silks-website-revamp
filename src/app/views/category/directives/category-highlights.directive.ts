@@ -12,6 +12,7 @@ declare const $: any;
 export class CategoryHighlightsDirective {
 
   private observer = new MutationObserver(() => this.fetchSwipeElements());
+  loadedElements: any = [];
 
   constructor(
     @Inject(PLATFORM_ID) private platformId: Object, private _element: ElementRef,
@@ -37,10 +38,12 @@ export class CategoryHighlightsDirective {
     for(let i=0; i<classList.length; i++) {
       if(classList[i].includes("phls")) {
         let swipeElement = classList[i];
-        if(isPlatformBrowser(this.platformId)) {
+        if(this.loadedElements.indexOf(swipeElement) == -1 && isPlatformBrowser(this.platformId)) {
+          this.loadedElements.push(swipeElement);
           // swiper config
           let swipeConfig: any = {
             speed: 500,
+            loop: true,
             breakpoints: this.swiperService.highlights.break_points,
             navigation: {
               nextEl: '#highlight_next',
