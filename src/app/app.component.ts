@@ -317,6 +317,7 @@ export class AppComponent {
                               subCat.link_type = 'internal';
                               subCat.link = '/category/' + this.commonService.catalog_list[cInd]._id;
                               if (this.commonService.catalog_list[cInd].seo_status) subCat.link = '/category/' + this.commonService.catalog_list[cInd].seo_details?.page_url;
+                              if (this.commonService.catalog_list[cInd].image) subCat.image = this.commonService.catalog_list[cInd].image;
                             }
                           }
                         });

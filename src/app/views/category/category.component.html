@@ -11,48 +11,54 @@
   <!-- #SEO h1 tag -->
 
   <!-- Primary Highlights Section -->
-  <section *ngIf="commonService?.category_highlights?.length>=swiperService?.highlights?.card_count" class="primary-section primary-highlighted-sec">
-    <div class="{{template_setting?.body_type}}">
-      <div class="row">
-        <div class="col-12">
-          <div class="swiper-container multi-slider product-slider featured-sections" [ngClass]="commonService.desktop_device? 'desktop_phls': 'phls'" appCategoryHighlights>
-            <div class="swiper-wrapper">
-              <div *ngFor="let x of commonService?.category_highlights; let i=index;" class="swiper-slide">
-                <div class="product-box cursor">
-                  <a (click)="commonService.onPageRedirect(x);" class="prod-div">
-                    <figure class="mb-0">
-                      <img width="100%" height="100%" appImgLazyLoad [ImagelazyLoad]="imgBaseUrl+x.desktop_img" alt="{{(x.img_alt)? x.img_alt: 'Image'}}">
-                      <div *ngIf="x?.content_status && x?.content_details?.heading" class="category-grid-text d-flex">
-                        <p class="mb-0 py-2">{{ x.content_details.heading }}</p>
+  <ng-container *ngFor="let menu of commonService.menu_list;">
+    <ng-container *ngFor="let sec of menu.sections;">
+      <ng-container *ngFor="let cat of sec.categories;">
+        <section *ngIf="cat.link_status && cat.link_type=='internal' && cat.link==pageUrl && cat.sub_categories?.length>=6" class="primary-section primary-highlighted-sec">
+          <div class="{{template_setting?.body_type}}">
+            <div class="row">
+              <div class="col-12">
+                <div class="swiper-container multi-slider product-slider featured-sections" [ngClass]="commonService.desktop_device? 'desktop_phls': 'phls'" appCategoryHighlights>
+                  <div class="swiper-wrapper">
+                    <div *ngFor="let subCat of cat.sub_categories | orderAsc: 'rank'; let i=index;" class="swiper-slide">
+                      <div class="product-box cursor">
+                        <a (click)="commonService.onPageRedirect(subCat);" class="prod-div">
+                          <figure class="mb-0">
+                            <img width="100%" height="100%" appImgLazyLoad [ImagelazyLoad]="imgBaseUrl+subCat.image" alt="category">
+                            <div class="category-grid-text d-flex">
+                              <p class="mb-0 py-2">{{ subCat.name }}</p>
+                            </div>
+                          </figure>
+                        </a>
                       </div>
-                    </figure>
-                  </a>
+                    </div>
+                  </div>
+                  <ng-container *ngIf="commonService?.desktop_device">
+                    <div id="highlight_next" [hidden]="true" class="swiper-button swiper-button-next"></div>
+                    <div id="highlight_prev" [hidden]="true" class="swiper-button swiper-button-prev"></div>
+                  </ng-container>
                 </div>
               </div>
             </div>
-            <ng-container *ngIf="commonService?.desktop_device">
-              <div id="highlight_next" [hidden]="true" class="swiper-button swiper-button-next"></div>
-              <div id="highlight_prev" [hidden]="true" class="swiper-button swiper-button-prev"></div>
-            </ng-container>
           </div>
-        </div>
-      </div>
-    </div>
-  </section>
+        </section>
+      </ng-container>
+    </ng-container>
+  </ng-container>
   <!-- #Primary Highlights Section -->
 
-  <!-- catalog image -->
-  <!-- <section *ngIf="category_details?.image" class="category-banner-sec data-bg">
+  <!-- catalog Banner -->
+  <!-- <section *ngIf="category_details?.banner_image" class="category-banner-sec data-bg">
     <div class="category-banner">
-      <img width="100%" height="100%" appImgLazyLoad [ImagelazyLoad]="imgBaseUrl+category_details.image" alt="category-banner">
+      <img width="100%" height="100%" appImgLazyLoad [ImagelazyLoad]="imgBaseUrl+category_details.banner_image" alt="category-banner">
       <div *ngIf="!template_setting?.breadcrumb" class="category-banner-text">
         <h4>{{category_details.name}}</h4>
       </div>
     </div>
   </section> -->
-  <!-- #catalog image -->
+  <!-- #catalog Banner -->
 
-  <section *ngIf="!category_details?.image && !template_setting?.breadcrumb" class="category-banner-no-bg">
+  <section *ngIf="!category_details?.banner_image && !template_setting?.breadcrumb" class="category-banner-no-bg">
     <div class="category-banner-text pt-4">
       <h4 class="m-0">{{category_details.name}}</h4>
     </div>

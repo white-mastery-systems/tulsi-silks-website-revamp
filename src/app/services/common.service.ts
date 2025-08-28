@@ -99,9 +99,6 @@ export class CommonService {
   favicon: any; store_logo: any;
   social_logo: any; primary_main_slider: any = [];
   primary_highlights: any = [];
-  category_highlights: any = [
-    {},{},{},{},{},{},{},{},{},{},{},{}
-  ];
 
   selected_currency: any;
   public currency_type = new Subject<any>();

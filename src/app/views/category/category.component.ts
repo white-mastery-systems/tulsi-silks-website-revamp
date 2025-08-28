@@ -6,7 +6,6 @@ import { environment } from './../../../environments/environment';
 import { StoreApiService } from '../../services/store-api.service';
 import { CommonService } from '../../services/common.service';
 import { CurrencyConversionService } from '../../services/currency-conversion.service';
-import { SwiperService } from '../../services/swiper.service'; // Add this import
 import { Options } from '@angular-slider/ngx-slider';
 
 @Component({
@@ -37,7 +36,7 @@ export class CategoryComponent implements OnInit {
   range_disp: Options = { floor: 0, ceil: 0 };
   randomProducts: any = []; page: number = 1;
   pageSize: number = this.template_setting.products_per_page;
-  bcList: any = [];
+  bcList: any = []; pageUrl: string;
   IsBrowser: boolean;
   trendColorList = ["Black", "White/Off-White", "Beige", "Brown", "Grey", "Cream", "Blue", "Red", "Maroon", "Gold", "Silver"];
 
@@ -67,13 +66,8 @@ export class CategoryComponent implements OnInit {
   };
 
   constructor(
-    @Inject(PLATFORM_ID) private platformId: Object, 
-    private router: Router, 
-    private activeRoute: ActivatedRoute,
-    private storeApi: StoreApiService, 
-    public cc: CurrencyConversionService, 
-    public commonService: CommonService,
-    public swiperService: SwiperService // Add this injection
+    @Inject(PLATFORM_ID) private platformId: Object, private router: Router, private activeRoute: ActivatedRoute,
+    private storeApi: StoreApiService, public cc: CurrencyConversionService, public commonService: CommonService
   ) {
     this.subscription = this.commonService.currency_type.subscribe(currency => {
       this.findCurrency();
@@ -83,6 +77,7 @@ export class CategoryComponent implements OnInit {
 
   ngOnInit(): void {
     this.activeRoute.params.subscribe((params: Params) => {
+      this.pageUrl = this.router.url.split('?')[0];
       this.showMore = false; this.params = params; this.tag_list = []; this.randomProducts = [];
       if(this.router.url=='/recommended-products' || this.router.url=='/all-products' || this.router.url=='/new-arrivals' || this.router.url=='/on-sale'|| this.router.url=='/featured-products'|| this.router.url=='/best-sellers') {
         this.params = { category_id: this.router.url };
@@ -399,7 +394,6 @@ export class CategoryComponent implements OnInit {
       if(this.tag_list.length===1) this.collapseIndex = 0;
     }
   }
-
   onTagFilter(changeEvent) {
     let parentProducts: any = this.parent_list;
     this.tagSelected = false;
@@ -434,7 +428,6 @@ export class CategoryComponent implements OnInit {
     if(changeEvent) this.page = 1;
     this.findMinMax();
   }
-
   clearTagFilter() {
     this.list = this.parent_list;
     this.tag_list.forEach(tag => {
