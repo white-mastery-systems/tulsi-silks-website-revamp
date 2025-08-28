@@ -47,8 +47,9 @@
               <!-- mobile menu list -->
               <ng-container *ngIf="!commonService.desktop_device">
                 <li *ngFor="let menu of commonService.menu_list | orderAsc: 'rank'; let i=index;" [ngClass]="{ 'has-children mega-menu slim-scroll': menu?.sec_count, 'pos-relative': menu?.sec_count<=2 }">
-                  <a (mouseenter)="(!menu?.sec_count && commonService.desktop_device)? commonService.resetMegaMenu(): ''" (click)="(!menu?.sec_count)? commonService.onPageRedirect(menu): ''">
+                  <a class="sub-arrow-sec" (mouseenter)="(!menu?.sec_count && commonService.desktop_device)? commonService.resetMegaMenu(): ''" (click)="(!menu?.sec_count)? commonService.onPageRedirect(menu): ''">
                     {{menu.name}}
+                   <i *ngIf="menu?.sec_count"><lucide-icon name="chevron-right" [size]="18" class="ms-1 align-middle"></lucide-icon> </i>
                     <ng-container *ngIf="menu?.sec_count && commonService?.screen_width>=768">
                       <lucide-icon name="chevron-down" [size]="18" class="ms-1 align-middle"></lucide-icon>
                     </ng-container>
@@ -62,7 +63,12 @@
                     'menu-layout-five': menu?.sec_count>4
                   }">
                     <li class="go-back">
-                      <a>{{menu.name}}</a>
+                      <a>
+                        <i style="margin-right:15px;">
+                          <lucide-icon name="chevron-left" [size]="18" class="ms-1 align-middle"></lucide-icon>
+                        </i>
+                        <span>{{menu.name}}</span>
+                      </a>
                     </li>
                     <li class="see-all display-none">
                       <a>&nbsp;</a>
@@ -74,16 +80,32 @@
                     <!-- section with category -->
                     <ng-container *ngIf="!menu?.sections_in_one_col">
                       <li class="slim-scroll" *ngFor="let sec of menu.sections | orderAsc: 'rank';" [ngClass]="(sec?.categories?.length)? 'has-children' : ''">
-                        <a (click)="(sec?.categories?.length && commonService?.screen_width<=991)? '' :commonService.onPageRedirect(sec);">{{ sec.name }}</a>
+                        <a class="sub-arrow-sec" (click)="(sec?.categories?.length && commonService?.screen_width<=991)? '' :commonService.onPageRedirect(sec);">
+                          <span>{{ sec.name }}</span>
+                          <i *ngIf="sec?.categories?.length"><lucide-icon name="chevron-right" [size]="18" class="ms-1 align-middle"></lucide-icon> </i>                         
+                        </a>
                         <ul class="is-hidden">
-                          <li class="go-back">
-                            <a>{{sec.name}}</a>
+                          <li class="go-back">                            
+                            <a>
+                              <i style="margin-right:15px;">
+                                <lucide-icon name="chevron-left" [size]="18" class="ms-1 align-middle"></lucide-icon>
+                              </i>
+                              <span>{{sec.name}}</span>                              
+                            </a>                            
                           </li>
                           <li class="slim-scroll" *ngFor="let cat of sec.categories | orderAsc: 'rank';" [ngClass]="(cat?.sub_categories?.length)? 'has-children' : ''">
-                            <a (click)="(cat?.sub_categories?.length)? '' :commonService.onPageRedirect(cat);">{{ cat.name }}</a>
+                            <a class="sub-arrow-sec" (click)="(cat?.sub_categories?.length)? '' :commonService.onPageRedirect(cat);">
+                              <span>{{ cat.name }}</span>
+                              <i *ngIf="cat?.sub_categories?.length"><lucide-icon name="chevron-right" [size]="18" class="ms-1 align-middle"></lucide-icon> </i>
+                            </a>
                             <ul class="is-hidden">
                               <li class="go-back">
-                                <a>{{ cat.name }}</a>
+                                <a>
+                                  <i style="margin-right:15px;">
+                                    <lucide-icon name="chevron-left" [size]="18" class="ms-1 align-middle"></lucide-icon> 
+                                  </i>
+                                  <span>{{ cat.name }}</span>                                  
+                                </a>
                               </li>
                               <li class="see-all" *ngFor="let sub_cat of cat.sub_categories | orderAsc: 'rank';">
                                 <a (click)="commonService.onPageRedirect(sub_cat);">{{ sub_cat.name }}</a>
@@ -148,10 +170,16 @@
                           </li>
                           <li class="slim-scroll" *ngFor="let cat of sec.categories | orderAsc: 'rank';" [ngClass]="(cat?.sub_categories?.length)? 'has-children' : ''">
                             <a (click)="(!cat.sub_categories.length && cat.link_type!='internal')? commonService.onPageRedirect(cat): null;"
-                            [routerLink]="(!cat.sub_categories.length && cat.link_type=='internal')? cat.link: null">{{ cat.name }}</a>
+                            [routerLink]="(!cat.sub_categories.length && cat.link_type=='internal')? cat.link: null">
+                            <span class="cat-name">{{ cat.name }}</span>  
+                            <i *ngIf="cat?.sub_categories?.length"><lucide-icon name="chevron-right" [size]="18" class="ms-1 align-middle"></lucide-icon> </i>                         
+                            </a>
                             <ul class="is-hidden">
                               <li class="go-back">
-                                <a>{{ cat.name }}</a>
+                                <a>
+                                  <i *ngIf="cat?.sub_categories?.length"><lucide-icon name="chevron-left" [size]="18" class="ms-1 align-middle"></lucide-icon> </i> 
+                                  <span class="cat-name">{{ cat.name }}</span>                                                                
+                                </a>
                               </li>
                               <li class="see-all" *ngFor="let sub_cat of cat.sub_categories | orderAsc: 'rank';">
                                 <a [routerLink]="(sub_cat.link_type=='internal')? sub_cat.link: null" (click)="(sub_cat.link_type!='internal')? commonService.onPageRedirect(sub_cat): null;">{{ sub_cat.name }}</a>

@@ -9,6 +9,7 @@ export class SwiperService {
   highlights: any = {
     card_count: 6,
     auto_play: true,
+    loop:true,
     break_points: {
       1024: { slidesPerView: 7.5, spaceBetween: 0 },
       768: { slidesPerView: 4.5, spaceBetween: 0 },
