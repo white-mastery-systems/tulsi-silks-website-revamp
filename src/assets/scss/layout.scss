@@ -763,6 +763,18 @@
     }
   }
 }
+
+.primary-highlighted-sec{
+  figure{
+    width: 70px!important;
+    height: 70px!important;
+  }
+  .category-grid-text p{
+    font-size: 12px !important;
+    line-height: normal !important;
+    margin: 0px!important;
+  }
+}
 .category-grid-text h2{
   font-size: 26px !important;
   margin-bottom: 9px !important;
