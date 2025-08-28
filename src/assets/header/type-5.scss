@@ -811,7 +811,7 @@ $mobile-final-height: calc(74px + #{$mobile-announcement-bar-mh});
       float: left;
       list-style: none;
       margin-left: 20px;
-      position: relative;
+      // position: relative;
       // a:hover{
       //   color: #d99550 !important;
       // }
@@ -827,10 +827,10 @@ $mobile-final-height: calc(74px + #{$mobile-announcement-bar-mh});
       height: auto;
       line-height: 1;
       font-weight: 400;
-      font-size: 18px;
+      font-size: 14px;
       letter-spacing: 1px;
       padding: 0;
-      // color: #1f1b24;
+      color: #3d3d3d!important;
       overflow: visible;
       border-bottom: none;
       -webkit-transition: color 0.3s, box-shadow 0.3s;
@@ -875,7 +875,7 @@ $mobile-final-height: calc(74px + #{$mobile-announcement-bar-mh});
       right: 0px;
       top: 48px;
       /* width: 100vw; */
-      min-width: 1220px;
+      min-width: 1320px;
       // height: 400px;
       // height: calc(100vh - 300px);
       // overflow-y: auto;
@@ -905,9 +905,9 @@ $mobile-final-height: calc(74px + #{$mobile-announcement-bar-mh});
     .cd-primary-nav{
       li{
         a:hover span.cat-name{
-          color: #d99550 !important;
-          background-color: rgba(217, 149, 80, 0.06) !important;
-          border:1px solid #d99550 !important;
+          color: #D99550 !important;
+          background-color: #FCF5EE !important;
+          border:1px solid rgba(217, 149, 80, 0.2) !important;
         }
       }
     }
@@ -921,7 +921,7 @@ $mobile-final-height: calc(74px + #{$mobile-announcement-bar-mh});
       ul{
         li{
           a{
-            color: #000 !important;
+            color: #3d3d3d !important;
             white-space: pre-wrap;
              word-break: break-all;
           }
@@ -1013,7 +1013,7 @@ $mobile-final-height: calc(74px + #{$mobile-announcement-bar-mh});
   
     .cd-primary-nav .cd-secondary-nav > li > a {
       /* secondary nav title */
-      // color: #D99550 !important;
+      color: #D99550 !important;
       font-weight: 400;
       font-size: 1rem;
       line-height: 1;
@@ -1026,7 +1026,7 @@ $mobile-final-height: calc(74px + #{$mobile-announcement-bar-mh});
     }
   
     .cd-primary-nav .cd-secondary-nav a {
-      height: 40px;
+      height: 35px;
       font-size: 0.875rem;
       line-height: 2;
       letter-spacing: 1px;
@@ -1038,12 +1038,17 @@ $mobile-final-height: calc(74px + #{$mobile-announcement-bar-mh});
       align-items: center;
       justify-content: space-between;
       gap:5px;
+      margin-bottom: 5px;
       span.cat-name{
         width: 100%;
         height: 30px;
+        line-height: 30px;
         background-color: transparent;
         border:1px solid #ffffff;
-        padding: 0 4px;
+        padding: 0 6px;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
       }
       // i{
       //   border: 1px solid #ddd;
@@ -1208,12 +1213,14 @@ $mobile-final-height: calc(74px + #{$mobile-announcement-bar-mh});
   .has-children > a,
   .go-back a{
     i{
-        border: 1px solid rgba(0, 0, 0, 0.4);
+        border: 1px solid rgba(181, 181, 181, 0.5)!important;
         width: 30px;
         height: 30px;
         display: flex;
         align-items: center;
         justify-content: center;
+        flex-shrink: 0;
+        box-sizing: border-box;
         lucide-icon{
           margin-top: -4px;
         }
@@ -1540,7 +1547,7 @@ $mobile-final-height: calc(74px + #{$mobile-announcement-bar-mh});
   
     .menu-layout-five {
       min-width: 960px !important;
-      padding: 30px !important;
+      padding: 15px 20px !important;
       // height:400px!important;
       // overflow-y: auto!important;
     }
