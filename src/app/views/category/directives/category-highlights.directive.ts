@@ -1,25 +1,36 @@
 import { Directive, ElementRef, Inject, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
-import { SwiperService } from '../../../services/swiper.service';
 import { DynamicAssetLoaderService } from '../../../services/dynamic-asset-loader.service';
 declare const Swiper: any;
 declare const $: any;
-​
+
 @Directive({
   selector: '[appCategoryHighlights]'
 })
 
 export class CategoryHighlightsDirective {
 
-  private observer = new MutationObserver(() => this.fetchSwipeElements());
+  private observer: any;
   loadedElements: any = [];
+  highlights: any = {
+    card_count: 6,
+    auto_play: true,
+    loop:true,
+    break_points: {
+      1024: { slidesPerView: 7.5, spaceBetween: 0 },
+      768: { slidesPerView: 4.5, spaceBetween: 0 },
+      640: { slidesPerView: 3.5, spaceBetween: 0 },
+      320: { slidesPerView: 3.5, spaceBetween: 0 }
+    }
+  };
 
   constructor(
     @Inject(PLATFORM_ID) private platformId: Object, private _element: ElementRef,
-    private swiperService: SwiperService, private assetLoader: DynamicAssetLoaderService
+    private assetLoader: DynamicAssetLoaderService
   ) { }
 ​
   private registerListenerForDomChanges() {
+    this.observer = new MutationObserver(() => this.fetchSwipeElements());
     const attributes = false; const childList = true; const subtree = true;
     this.observer.observe(this._element.nativeElement, { attributes, childList, subtree });
   }
@@ -42,18 +53,18 @@ export class CategoryHighlightsDirective {
           this.loadedElements.push(swipeElement);
           // swiper config
           let swipeConfig: any = {
-            speed: 500,
+            speed: 700,
             loop: true,
-            breakpoints: this.swiperService.highlights.break_points,
+            breakpoints: this.highlights.break_points,
             navigation: {
               nextEl: '#highlight_next',
               prevEl: '#highlight_prev'
             }
           }
-          let autoPlay = this.swiperService.highlights.auto_play;
+          let autoPlay = this.highlights.auto_play;
           if(autoPlay) {
             swipeConfig.autoplay = {
-              delay: 3000,
+              delay: 500,
               disableOnInteraction: false
             }
           }
