@@ -232,8 +232,8 @@ isImageAtEnd: boolean = false;
             if(result.status)
             {
               this.category_details = result.category_details;
-              this.navigationImageList = this.category_details.navigationList[0].image_list;
-              console.log(this.category_details)
+              if(this.category_details.navigationList?.length)
+                this.navigationImageList = this.category_details.navigationList[0].image_list;
               if(this.category_details?.faqs?.length) this.buildFAQSchema();
               // seo
               this.updateMetaData();

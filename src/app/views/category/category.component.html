@@ -94,7 +94,7 @@
             <div class="swiper-container multi-slider product-slider featured-sections" id="navigationHighlights" [ngClass]="commonService.desktop_device? 'desktop_phls': 'phls'" style="visibility: hidden;" appCategoryHighlights>
               <div class="swiper-wrapper">
                 <div *ngFor="let x of navigationImageList | orderAsc: 'rank'; let i=index;" class="swiper-slide">
-                  <div (click)="commonService.onPageRedirect(x);" class="category-card">
+                  <div (click)="commonService.onPageRedirect(x);" class="category-card cursor">
                     <img width="100%" height="100%" appImgLazyLoad [ImagelazyLoad]="imgBaseUrl+x.image" alt="Image">
                     <p class="card-text">{{ x.heading }}</p>
                   </div>
@@ -113,7 +113,7 @@
   <!-- #navigations -->
 
   <!-- highlights -->
-  <section *ngIf="category_details.highlighted_sections.length" class="primary-section hot-swiper-section feature-sec-margin feature-slide-sec mt-5 mb-5">
+  <section *ngIf="category_details.highlighted_sections?.length" class="primary-section hot-swiper-section feature-sec-margin feature-slide-sec mt-5 mb-5">
     <div class="{{template_setting?.body_type}}">
       <div class="row">
         <div class="col-12 swipe_arrow">
