@@ -49,7 +49,7 @@
   <!-- #catalog Banner -->
 
   <!-- navigations -->
-  <ng-container *ngIf="navigationList.length">
+  <ng-container *ngIf="category_details.navigationList.length">
     <section class="primary-section primary-highlighted-sec color-slider-section">
   <div class="{{template_setting?.body_type}}">
     <div class="row">
@@ -57,7 +57,7 @@
         <div class="navigation-container">
           <!-- Navigation scroll wrapper -->
           <div class="navigation-scroll-wrapper" #navigationScroller>
-            <div *ngFor="let x of navigationList | orderAsc: 'rank'; let i=index;" 
+            <div *ngFor="let x of category_details.navigationList | orderAsc: 'rank'; let i=index;" 
                  class="navigation-item" 
                  [ngClass]="{'active': i === activeSlideIndex}"
                  (click)="onSelectNav(i)">
@@ -84,36 +84,7 @@
       </div>
     </div>
   </div>
-</section>
-    
-    <!--<section class="primary-section primary-highlighted-sec color-slider-section">
-      <div class="{{template_setting?.body_type}}">
-        <div class="row">
-          <div class="col-12 px-0">
-            <div class="swiper-container multi-slider product-slider featured-sections" [ngClass]="commonService.desktop_device? 'desktop_color_slider': 'color_slider'" appCategoryHighlights>
-              <div class="swiper-wrapper">
-<div *ngFor="let x of navigationList | orderAsc: 'rank'; let i=index;" 
-     class="swiper-slide" 
-     [ngClass]="{'swiper-slide-active': i === activeSlideIndex}"
-     (click)="onSelectNav(i)">
-  <div class="product-box cursor">
-    <div class="category-grid-text d-flex">
-      <p class="mb-0 py-0">{{ x.name }}</p>
-    </div>
-  </div>
-</div>
-              </div>
-              <div id="color_slider_next" class="swiper-button swiper-button-next">
-                <lucide-icon name="chevron-right" [size]="20" stroke="1" color="black"></lucide-icon>
-              </div>
-              <div id="color_slider_prev" class="swiper-button swiper-button-prev">
-                <lucide-icon name="chevron-left" [size]="20" stroke="1" color="black"></lucide-icon>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>-->
+</section>   
     
     <!-- navigation sections -->
     <section *ngIf="navigationImageList.length" class="primary-section category-filter-section">
@@ -142,7 +113,7 @@
   <!-- #navigations -->
 
   <!-- highlights -->
-  <section *ngIf="categoryHighlights.length" class="primary-section hot-swiper-section feature-sec-margin feature-slide-sec mt-5 mb-5">
+  <section *ngIf="category_details.highlighted_sections.length" class="primary-section hot-swiper-section feature-sec-margin feature-slide-sec mt-5 mb-5">
     <div class="{{template_setting?.body_type}}">
       <div class="row">
         <div class="col-12 swipe_arrow">
@@ -161,7 +132,7 @@
         <div class="col-12">
           <div class="swiper-container multi-slider product-slider featured-sections" [ngClass]="commonService.desktop_device? 'desktop_section_slider': 'section_slider'" appCategoryHighlights>
             <div class="swiper-wrapper">
-              <div *ngFor="let x of categoryHighlights | orderAsc: 'rank'; let i=index;" class="swiper-slide p-0">
+              <div *ngFor="let x of category_details.highlighted_sections | orderAsc: 'rank'; let i=index;" class="swiper-slide p-0">
                 <div (click)="commonService.onPageRedirect(x);" class="product-box cursor p-0">
                   <a class="prod-div">
                     <figure class="product-image">

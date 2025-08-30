@@ -65,56 +65,8 @@ export class CategoryComponent implements OnInit {
     "mainEntity": []
   };
 
-  navigationList: any = [
-    { name: "Kanjivaram Silk Sarees", rank: 1, image_list: [
-      { heading: "Heading", rank: 1, image: "uploads/5d30013a5c83a702392c4c8b/layouts/1749491145067-366528.webp" },
-      { heading: "Heading", rank: 2, image: "uploads/5d30013a5c83a702392c4c8b/layouts/1749491145199-178148.webp" },
-      { heading: "Heading", rank: 3, image: "uploads/5d30013a5c83a702392c4c8b/layouts/1749491145340-597134.webp" },
-      { heading: "Heading", rank: 4, image: "uploads/5d30013a5c83a702392c4c8b/layouts/1749554761428-474512.webp" },
-      { heading: "Heading", rank: 5, image: "uploads/5d30013a5c83a702392c4c8b/layouts/1748003775907-890189.webp" },
-      { heading: "Heading", rank: 6, image: "uploads/5d30013a5c83a702392c4c8b/layouts/1748003776082-345675.webp" },
-      { heading: "Heading", rank: 7, image: "uploads/5d30013a5c83a702392c4c8b/layouts/1748003776228-538806.webp" },
-      { heading: "Heading", rank: 8, image: "uploads/5d30013a5c83a702392c4c8b/layouts/1748003776947-18131.webp" }
-    ] },
-    { name: "Pattupettu", rank: 2, image_list: [
-      { heading: "Heading", rank: 1, image: "uploads/5d30013a5c83a702392c4c8b/layouts/1749491145067-366528.webp" },
-      { heading: "Heading", rank: 2, image: "uploads/5d30013a5c83a702392c4c8b/layouts/1749491145199-178148.webp" },
-      { heading: "Heading", rank: 3, image: "uploads/5d30013a5c83a702392c4c8b/layouts/1749491145340-597134.webp" },
-      { heading: "Heading", rank: 4, image: "uploads/5d30013a5c83a702392c4c8b/layouts/1749554761428-474512.webp" },
-      { heading: "Heading", rank: 5, image: "uploads/5d30013a5c83a702392c4c8b/layouts/1748003775907-890189.webp" },
-      { heading: "Heading", rank: 6, image: "uploads/5d30013a5c83a702392c4c8b/layouts/1748003776082-345675.webp" },
-      { heading: "Heading", rank: 7, image: "uploads/5d30013a5c83a702392c4c8b/layouts/1748003776228-538806.webp" },
-      { heading: "Heading", rank: 8, image: "uploads/5d30013a5c83a702392c4c8b/layouts/1748003776947-18131.webp" }
-    ] },
-    { name: "Korvai", rank: 3, image_list: [
-      { heading: "Heading", rank: 1, image: "uploads/5d30013a5c83a702392c4c8b/layouts/1749491145067-366528.webp" },
-      { heading: "Heading", rank: 2, image: "uploads/5d30013a5c83a702392c4c8b/layouts/1749491145199-178148.webp" },
-      { heading: "Heading", rank: 3, image: "uploads/5d30013a5c83a702392c4c8b/layouts/1749491145340-597134.webp" },
-      { heading: "Heading", rank: 4, image: "uploads/5d30013a5c83a702392c4c8b/layouts/1749554761428-474512.webp" },
-      { heading: "Heading", rank: 5, image: "uploads/5d30013a5c83a702392c4c8b/layouts/1748003775907-890189.webp" },
-      { heading: "Heading", rank: 6, image: "uploads/5d30013a5c83a702392c4c8b/layouts/1748003776082-345675.webp" },
-      { heading: "Heading", rank: 7, image: "uploads/5d30013a5c83a702392c4c8b/layouts/1748003776228-538806.webp" },
-      { heading: "Heading", rank: 8, image: "uploads/5d30013a5c83a702392c4c8b/layouts/1748003776947-18131.webp" }
-    ] },
-    { name: "Without Border", rank: 4, image_list: [] },
-    { name: "Checks", rank: 5, image_list: [] },
-    { name: "Traditional", rank: 6, image_list: [] },
-    { name: "Zari Brocade", rank: 7, image_list: [] },
-    { name: "Tissue Kanjivaram", rank: 8, image_list: [] },
-    { name: "Classic", rank: 9, image_list: [] },
-    { name: "Embroidery", rank: 10, image_list: [] }
-  ];
+
   navigationImageList = [];
-  categoryHighlights: any = [
-    { heading: "Heading", sub_heading: "dfdgfhdfh", btn_status: true, btn_text: "Click", rank: 1, image: "uploads/5d30013a5c83a702392c4c8b/layouts/1749491145067-366528.webp" },
-    { heading: "Heading", rank: 2, image: "uploads/5d30013a5c83a702392c4c8b/layouts/1749491145199-178148.webp" },
-    { heading: "Heading", rank: 3, image: "uploads/5d30013a5c83a702392c4c8b/layouts/1749491145340-597134.webp" },
-    { heading: "Heading", rank: 4, image: "uploads/5d30013a5c83a702392c4c8b/layouts/1749554761428-474512.webp" },
-    { heading: "Heading", rank: 5, image: "uploads/5d30013a5c83a702392c4c8b/layouts/1748003775907-890189.webp" },
-    { heading: "Heading", rank: 6, image: "uploads/5d30013a5c83a702392c4c8b/layouts/1748003776082-345675.webp" },
-    { heading: "Heading", rank: 7, image: "uploads/5d30013a5c83a702392c4c8b/layouts/1748003776228-538806.webp" },
-    { heading: "Heading", rank: 8, image: "uploads/5d30013a5c83a702392c4c8b/layouts/1748003776947-18131.webp" }
-  ];
 
   constructor(
     @Inject(PLATFORM_ID) private platformId: Object, private router: Router, private activeRoute: ActivatedRoute,
@@ -134,89 +86,13 @@ isAtEnd: boolean = false;
 isImageAtStart: boolean = true;
 isImageAtEnd: boolean = false;
 
-// Update your existing onSelectNav method
-onSelectNav(index: number) {
-  this.activeSlideIndex = index;
 
-  let el = this.document.getElementById('navigationHighlights');
-  if(el) el.style.visibility = "hidden";
-  this.navigationImageList = [];
-  
-  setTimeout(() => {
-    this.navigationImageList = this.navigationList[index].image_list;
-    
-    // Show the image section after content is loaded
-    if(el) el.style.visibility = "visible";
-    
-    // Scroll selected navigation item into view
-    this.scrollToSelectedNav(index);
-    
-    // Update navigation button visibility
-    setTimeout(() => this.updateNavigationButtonVisibility(), 100);
-  }, 0);
-}
-
-// Add these new methods
-scrollNav(direction: string) {
-  const scrollWrapper = this.navigationScroller.nativeElement;
-  const scrollAmount = 200;
-  
-  if (direction === 'left') {
-    scrollWrapper.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
-  } else {
-    scrollWrapper.scrollBy({ left: scrollAmount, behavior: 'smooth' });
-  }
-  
-  setTimeout(() => this.updateNavigationButtonVisibility(), 300);
-}
-
-scrollImages(direction: string) {
-  const scrollWrapper = this.imageScroller.nativeElement;
-  const scrollAmount = 270; // Slightly more than image width
-  
-  if (direction === 'left') {
-    scrollWrapper.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
-  } else {
-    scrollWrapper.scrollBy({ left: scrollAmount, behavior: 'smooth' });
-  }
-  
-  setTimeout(() => this.updateImageButtonVisibility(), 300);
-}
-
-scrollToSelectedNav(index: number) {
-  const scrollWrapper = this.navigationScroller.nativeElement;
-  const selectedItem = scrollWrapper.children[index] as HTMLElement;
-  
-  if (selectedItem) {
-    selectedItem.scrollIntoView({
-      behavior: 'smooth',
-      block: 'nearest',
-      inline: 'center'
-    });
-  }
-}
-
-updateNavigationButtonVisibility() {
-  if (this.navigationScroller) {
-    const scrollWrapper = this.navigationScroller.nativeElement;
-    this.isAtStart = scrollWrapper.scrollLeft <= 5;
-    this.isAtEnd = scrollWrapper.scrollLeft >= (scrollWrapper.scrollWidth - scrollWrapper.clientWidth - 5);
-  }
-}
-
-updateImageButtonVisibility() {
-  if (this.imageScroller) {
-    const scrollWrapper = this.imageScroller.nativeElement;
-    this.isImageAtStart = scrollWrapper.scrollLeft <= 5;
-    this.isImageAtEnd = scrollWrapper.scrollLeft >= (scrollWrapper.scrollWidth - scrollWrapper.clientWidth - 5);
-  }
-}
   
 
   ngOnInit(): void {
     this.activeRoute.params.subscribe((params: Params) => {
       this.pageUrl = this.router.url.split('?')[0];
-      this.navigationImageList = this.navigationList[0].image_list;
+
       this.showMore = false; this.params = params; this.tag_list = []; this.randomProducts = [];
       if(this.router.url=='/recommended-products' || this.router.url=='/all-products' || this.router.url=='/new-arrivals' || this.router.url=='/on-sale'|| this.router.url=='/featured-products'|| this.router.url=='/best-sellers') {
         this.params = { category_id: this.router.url };
@@ -356,6 +232,7 @@ updateImageButtonVisibility() {
             if(result.status)
             {
               this.category_details = result.category_details;
+              this.navigationImageList = this.category_details.navigationList[0].image_list;
               console.log(this.category_details)
               if(this.category_details?.faqs?.length) this.buildFAQSchema();
               // seo
@@ -395,13 +272,91 @@ updateImageButtonVisibility() {
       // JSON-LD
       this.commonService.createJsonLD("category-jsonld", this.categorySchema);
     });
-     if (this.navigationList.length > 0) {
+     if (this.category_details.navigationList?.length > 0) {
     this.activeSlideIndex = 0;
-    this.navigationImageList = this.navigationList[0].image_list;
+    this.navigationImageList = this.category_details.navigationList[0].image_list;
   }
   }
 
 activeSlideIndex: number = 0;
+
+// Update your existing onSelectNav method
+onSelectNav(index: number) {
+  this.activeSlideIndex = index;
+
+  let el = this.document.getElementById('navigationHighlights');
+  if(el) el.style.visibility = "hidden";
+  this.navigationImageList = [];
+  
+  setTimeout(() => {
+    this.navigationImageList = this.category_details.navigationList[index].image_list;
+    
+    // Show the image section after content is loaded
+    if(el) el.style.visibility = "visible";
+    
+    // Scroll selected navigation item into view
+    this.scrollToSelectedNav(index);
+    
+    // Update navigation button visibility
+    setTimeout(() => this.updateNavigationButtonVisibility(), 100);
+  }, 0);
+}
+
+// Add these new methods
+scrollNav(direction: string) {
+  const scrollWrapper = this.navigationScroller.nativeElement;
+  const scrollAmount = 200;
+  
+  if (direction === 'left') {
+    scrollWrapper.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+  } else {
+    scrollWrapper.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+  }
+  
+  setTimeout(() => this.updateNavigationButtonVisibility(), 300);
+}
+
+scrollImages(direction: string) {
+  const scrollWrapper = this.imageScroller.nativeElement;
+  const scrollAmount = 270; // Slightly more than image width
+  
+  if (direction === 'left') {
+    scrollWrapper.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+  } else {
+    scrollWrapper.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+  }
+  
+  setTimeout(() => this.updateImageButtonVisibility(), 300);
+}
+
+scrollToSelectedNav(index: number) {
+  const scrollWrapper = this.navigationScroller.nativeElement;
+  const selectedItem = scrollWrapper.children[index] as HTMLElement;
+  
+  if (selectedItem) {
+    selectedItem.scrollIntoView({
+      behavior: 'smooth',
+      block: 'nearest',
+      inline: 'center'
+    });
+  }
+}
+
+updateNavigationButtonVisibility() {
+  if (this.navigationScroller) {
+    const scrollWrapper = this.navigationScroller.nativeElement;
+    this.isAtStart = scrollWrapper.scrollLeft <= 5;
+    this.isAtEnd = scrollWrapper.scrollLeft >= (scrollWrapper.scrollWidth - scrollWrapper.clientWidth - 5);
+  }
+}
+
+updateImageButtonVisibility() {
+  if (this.imageScroller) {
+    const scrollWrapper = this.imageScroller.nativeElement;
+    this.isImageAtStart = scrollWrapper.scrollLeft <= 5;
+    this.isImageAtEnd = scrollWrapper.scrollLeft >= (scrollWrapper.scrollWidth - scrollWrapper.clientWidth - 5);
+  }
+}
 
 // onSelectNav(index: number) {
 //   this.activeSlideIndex = index;
