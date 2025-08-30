@@ -51,31 +51,23 @@
 .category-filter-section{
   .category-card{
     padding:8px;
+    img
+    {
+      width: 100%;
+      height: 200px; /* fixed height only for image */
+      object-fit: cover;
+    }
   }
-  .card-img {
-    width:100%;    
-    height: 100%;
-    object-fit: cover; 
-    object-position: top;
-  }
+  
   .card-text{
     width: 100%;
     text-align: left;   
-    font-size: 12px;
+    font-size: 16px;
     font-weight: 500;
     position: relative;
     display: inline-block;
     padding-top: 8px;
-    text-decoration: underline;
-  // &::after {
-  //     content: "";     
-  //     position: absolute;
-  //     left: 0;
-  //     bottom: 0;
-  //     width: 100%;
-  //     height: 2px; /* thickness of border */
-  //     background-color: #000;
-  //   }   
+    color:#3d3d3d;
   }
 }
 
@@ -92,4 +84,245 @@
       font-size: 0.875rem;
     }
   }
+}
+
+.product-image {
+  position: relative;
+  width: 100%;
+  height: 350px; /* Set your desired fixed height */
+  overflow: hidden;
+}
+
+.product-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; 
+  object-position: center;
+}
+
+.product-image .image-hover {
+  position: absolute;
+  top: 0;
+  left: 0;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.product-image:hover .image-hover {
+  opacity: 1;
+}
+
+.breadcrumb-navigation .active-page { width: 300px; }
+.multi-slider .swiper-slide { padding: 3px;}
+
+
+@media (max-width: 767px) {
+  .prod-div .product-image {
+  position: relative;
+  width: 100%;
+  height: 250px; /* Set your desired fixed height */
+  overflow: hidden;
+}
+
+.category-filter-section{
+  .category-card{
+    padding:4px;
+    img
+    {
+      width: 100%;
+      height: 100px; /* fixed height only for image */
+      object-fit: cover;
+    }
+  }
+}
+
+}
+
+/* Main navigation container */
+.navigation-container {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  padding: 10px 50px; /* Space for navigation buttons */
+}
+
+/* Scrollable navigation wrapper */
+.navigation-scroll-wrapper {
+  display: flex;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  gap: 15px;
+  padding: 10px 0;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE/Edge */
+}
+
+.navigation-scroll-wrapper::-webkit-scrollbar {
+  display: none; /* Chrome/Safari */
+}
+
+/* Individual navigation items */
+.navigation-item {
+  flex: 0 0 auto;
+  min-width: 90px;
+  max-width: 200px;
+  cursor: pointer;
+}
+
+.navigation-tab {
+  // padding: 12px 20px;
+  transition: all 0.3s ease;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  white-space: nowrap;
+  text-align: center;
+  min-height: 30px;
+  position: relative;
+  overflow: hidden;
+}
+
+.navigation-tab::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transition: left 0.5s ease;
+}
+
+.navigation-tab p {
+  font-weight: 500;
+  color: #333;
+  font-size: 14px;
+  margin: 0;
+  transition: color 0.3s ease;
+  z-index: 2;
+  position: relative;
+}
+
+/* Hover state */
+
+.navigation-tab:hover::before {
+  left: 100%;
+}
+
+/* Active state */
+.navigation-item.active .navigation-tab {
+  border-bottom: 2px solid #000000;
+  color: #000;
+}
+
+.navigation-item.active .navigation-tab p {
+  color: 000;
+  font-weight: 600;
+}
+
+/* Navigation buttons */
+.nav-button {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 30px;
+  height: 30px;
+  background: white;
+  border: none;
+  border-radius: 50%;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  z-index: 10;
+}
+
+.nav-button:hover {
+  background: #000;
+  transform: translateY(-50%) scale(1.1);
+}
+
+.nav-button:hover lucide-icon {
+  color: white;
+}
+
+.nav-button-prev {
+  left: 10px;
+}
+
+.nav-button-next {
+  right: 10px;
+}
+
+/* Hide buttons when not needed */
+.nav-button.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .navigation-container {
+    padding: 10px 40px;
+  }
+
+  .navigation-item {
+    min-width: 100px;
+    max-width: 150px;
+  }
+
+  .navigation-scroll-wrapper {
+    gap: 10px;
+  }
+
+  .navigation-tab {
+    padding: 10px 15px;
+    min-height: 40px;
+  }
+
+  .navigation-tab p {
+    font-size: 13px;
+  }
+
+  .nav-button {
+    width: 35px;
+    height: 35px;
+  }
+
+  .nav-button-prev {
+    left: 5px;
+  }
+
+  .nav-button-next {
+    right: 5px;
+  }
+}
+
+@media (max-width: 480px) {
+  .navigation-container {
+    padding: 10px 30px;
+  }
+  
+  .navigation-item {
+    min-width: 80px;
+    max-width: 140px;
+  }
+}
+
+.product-box .product-content h4
+{
+  font-size: 16px !important;
+  font-weight: 500;
+  opacity: 1;
+}
+
+.product-box .product-content p{
+  opacity: 0.7;
+}
+
+.primary-btn
+{
+  height: 30px;
 }

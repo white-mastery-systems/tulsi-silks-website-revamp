@@ -10,14 +10,39 @@
   </h1>
   <!-- #SEO h1 tag -->
 
-  <!-- catalog Banner -->
+<!-- catalog Banner -->
   <section *ngIf="category_details.banner_image" class="category-banner-sec data-bg">
-    <div class="category-banner">
-      <div class="banner_overlay"></div>
+    <div class="category-banner row">
+          <div class="col-12 col-md-6 category-banner-col">
+            
+            <div class="category-banner-text">
+                <!-- breadcrumb -->
+                <div *ngIf="template_setting?.breadcrumb" class="head-breadcrumb" style="text-align:left">
+                    <div class="{{template_setting?.body_type}}">
+                        <div class="row">
+                            <div class="col-md-12 d-flex align-items-left justify-content-between px-0">
+                            <div class="breadcrumb-navigation col-xl-12 col-12 px-0">
+                            <ul class="collapsed">
+                            <li><a routerLink="/">Home</a></li>
+                            <li *ngIf="category_details?.name">
+                            <span class="active-page">{{category_details.name}}</span>
+                            </li>
+                            </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                </div>
+                <!--# breadcrumb #-->
+
+            <h1>{{category_details.name}}</h1>
+            <div *ngIf="category_details.description" [innerHtml]="category_details.description" style="padding-right:50px;"></div>
+          </div>
+        </div>
+
+      <div class="col-12 col-md-6">
+       <div class="banner_overlay"></div> 
       <img width="100%" height="100%" appImgLazyLoad [ImagelazyLoad]="imgBaseUrl+category_details.banner_image" alt="category-banner">
-      <div class="category-banner-text">
-        <h1>{{category_details.name}}</h1>
-        <div *ngIf="category_details.description" [innerHtml]="category_details.description"></div>
       </div>
     </div>
   </section>
@@ -26,18 +51,57 @@
   <!-- navigations -->
   <ng-container *ngIf="navigationList.length">
     <section class="primary-section primary-highlighted-sec color-slider-section">
+  <div class="{{template_setting?.body_type}}">
+    <div class="row">
+      <div class="col-12 px-0">
+        <div class="navigation-container">
+          <!-- Navigation scroll wrapper -->
+          <div class="navigation-scroll-wrapper" #navigationScroller>
+            <div *ngFor="let x of navigationList | orderAsc: 'rank'; let i=index;" 
+                 class="navigation-item" 
+                 [ngClass]="{'active': i === activeSlideIndex}"
+                 (click)="onSelectNav(i)">
+              <div class="navigation-tab">
+                <p class="mb-0 py-0">{{ x.name }}</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Navigation buttons -->
+          <button class="nav-button nav-button-prev" 
+                  #navPrev
+                  (click)="scrollNav('left')"
+                  [ngClass]="{'hidden': isAtStart}">
+            <lucide-icon name="chevron-left" [size]="20" stroke="2"></lucide-icon>
+          </button>
+          <button class="nav-button nav-button-next" 
+                  #navNext
+                  (click)="scrollNav('right')"
+                  [ngClass]="{'hidden': isAtEnd}">
+            <lucide-icon name="chevron-right" [size]="20" stroke="2"></lucide-icon>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+    
+    <!--<section class="primary-section primary-highlighted-sec color-slider-section">
       <div class="{{template_setting?.body_type}}">
         <div class="row">
           <div class="col-12 px-0">
             <div class="swiper-container multi-slider product-slider featured-sections" [ngClass]="commonService.desktop_device? 'desktop_color_slider': 'color_slider'" appCategoryHighlights>
               <div class="swiper-wrapper">
-                <div *ngFor="let x of navigationList | orderAsc: 'rank'; let i=index;" class="swiper-slide">
-                  <div class="product-box cursor">
-                    <div (click)="onSelectNav(i);" class="category-grid-text d-flex">
-                      <p class="mb-0 py-2">{{ x.name }}</p>
-                    </div>
-                  </div>
-                </div>
+<div *ngFor="let x of navigationList | orderAsc: 'rank'; let i=index;" 
+     class="swiper-slide" 
+     [ngClass]="{'swiper-slide-active': i === activeSlideIndex}"
+     (click)="onSelectNav(i)">
+  <div class="product-box cursor">
+    <div class="category-grid-text d-flex">
+      <p class="mb-0 py-0">{{ x.name }}</p>
+    </div>
+  </div>
+</div>
               </div>
               <div id="color_slider_next" class="swiper-button swiper-button-next">
                 <lucide-icon name="chevron-right" [size]="20" stroke="1" color="black"></lucide-icon>
@@ -49,7 +113,7 @@
           </div>
         </div>
       </div>
-    </section>
+    </section>-->
     
     <!-- navigation sections -->
     <section *ngIf="navigationImageList.length" class="primary-section category-filter-section">
@@ -81,7 +145,7 @@
   <section *ngIf="categoryHighlights.length" class="primary-section hot-swiper-section feature-sec-margin feature-slide-sec mt-5 mb-5">
     <div class="{{template_setting?.body_type}}">
       <div class="row">
-        <div class="col-12 px-0 swipe_arrow">
+        <div class="col-12 swipe_arrow">
           <div class="titles custom-title">
             <h2>What's Hot Now</h2>
           </div>
@@ -94,7 +158,7 @@
             </div>
           </ng-container>
         </div>
-        <div class="col-12 px-0">
+        <div class="col-12">
           <div class="swiper-container multi-slider product-slider featured-sections" [ngClass]="commonService.desktop_device? 'desktop_section_slider': 'section_slider'" appCategoryHighlights>
             <div class="swiper-wrapper">
               <div *ngFor="let x of categoryHighlights | orderAsc: 'rank'; let i=index;" class="swiper-slide p-0">
@@ -153,11 +217,11 @@
   <!-- #header content -->
 
   <!-- breadcrumb -->
-  <section *ngIf="template_setting?.breadcrumb" class="head-breadcrumb">
+  <section *ngIf="template_setting?.breadcrumb" class="head-breadcrumb mt-3">
     <div class="{{template_setting?.body_type}}">
       <div class="row">
         <div class="col-md-12 d-flex align-items-center justify-content-between">
-          <div class="breadcrumb-navigation col-xl-6 col-12">
+          <div class="breadcrumb-navigation col-xl-6 col-12" *ngIf="!category_details.banner_image" >
             <ul class="collapsed">
               <li><a routerLink="/">Home</a></li>
               <li *ngIf="category_details?.name">
@@ -165,7 +229,7 @@
               </li>
             </ul>
           </div>
-          <div *ngIf="commonService?.screen_width>=992" class="col-xl-6 d-flex justify-content-end pr-0">
+          <div *ngIf="commonService?.screen_width>=992" class="d-flex justify-content-end pr-0" [ngClass]="category_details.banner_image? 'col-xl-12': 'col-xl-6'">
                     <span>
                       Sort by:
                       <select name="sort_list" [(ngModel)]="sort_value">

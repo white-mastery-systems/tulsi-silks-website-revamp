@@ -1161,14 +1161,17 @@ p.error-msg {
   border-radius: 5px;
   min-width: 100px;
 }
-
+.category-banner-col{
+  height:auto
+}
 .category-banner-sec {
   width: 100%;
   float: left;
   text-align: center;
+  z-index: -1;
   img {
     width: 100%;
-    height: auto;//150px
+    height: 400px;
     // opacity: 0.5;
     object-fit: cover;
     object-position: center;
@@ -1176,12 +1179,14 @@ p.error-msg {
   .category-banner-text {
     width: 100%;
     position: absolute;
-    color: #fff;
-    top: 50%;  
-    transform: translateY(-50%); 
+    color: #000;
+    bottom: 0;  
+    left: 5%;
+    transform: translateY(-15%); 
     z-index: 99;
     h1,p {
-      color:#fff!important;
+      color:#000!important;
+      text-align: left;
     }
   }
 }
@@ -1787,6 +1792,12 @@ accordion-group.panel.panel-open {
   padding-left: 20px;
 }
 @media only screen and (max-width: 768px) {
+  .category-banner-col{
+  height:250px
+}
+.category-banner-text{
+  padding: 0 3%;
+}
   .similar-products {
     padding-left: 0;
   }
@@ -3795,6 +3806,7 @@ input[type="tel"] {
 // CATEGORY GRID
 .cat-grid {
   transition: all ease 0.45s;
+  margin-bottom: 20px;
 }
 .category-grid-select-wrapper {
   display: flex;
@@ -4025,7 +4037,7 @@ input::-webkit-inner-spin-button {
 
 
 .color-slider-section{
-  padding:30px 0;
+  // padding:30px 0;
   .swiper-container{
     padding: 0 20px;
   }

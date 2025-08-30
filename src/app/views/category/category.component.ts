@@ -1,4 +1,4 @@
-import { Component, OnInit, Inject, PLATFORM_ID } from '@angular/core';
+import { Component, OnInit, Inject, PLATFORM_ID, ViewChild,ElementRef } from '@angular/core';
 import { Router, ActivatedRoute, Params } from '@angular/router';
 import { isPlatformBrowser, DOCUMENT } from '@angular/common';
 import { Subscription } from 'rxjs';
@@ -106,7 +106,7 @@ export class CategoryComponent implements OnInit {
   ];
   navigationImageList = [];
   categoryHighlights: any = [
-    { heading: "Heading", rank: 1, image: "uploads/5d30013a5c83a702392c4c8b/layouts/1749491145067-366528.webp" },
+    { heading: "Heading", sub_heading: "dfdgfhdfh", btn_status: true, btn_text: "Click", rank: 1, image: "uploads/5d30013a5c83a702392c4c8b/layouts/1749491145067-366528.webp" },
     { heading: "Heading", rank: 2, image: "uploads/5d30013a5c83a702392c4c8b/layouts/1749491145199-178148.webp" },
     { heading: "Heading", rank: 3, image: "uploads/5d30013a5c83a702392c4c8b/layouts/1749491145340-597134.webp" },
     { heading: "Heading", rank: 4, image: "uploads/5d30013a5c83a702392c4c8b/layouts/1749554761428-474512.webp" },
@@ -126,6 +126,92 @@ export class CategoryComponent implements OnInit {
     });
     if(isPlatformBrowser(this.platformId)) this.IsBrowser = true;
   }
+@ViewChild('navigationScroller') navigationScroller!: ElementRef;
+@ViewChild('imageScroller') imageScroller!: ElementRef;
+
+isAtStart: boolean = true;
+isAtEnd: boolean = false;
+isImageAtStart: boolean = true;
+isImageAtEnd: boolean = false;
+
+// Update your existing onSelectNav method
+onSelectNav(index: number) {
+  this.activeSlideIndex = index;
+
+  let el = this.document.getElementById('navigationHighlights');
+  if(el) el.style.visibility = "hidden";
+  this.navigationImageList = [];
+  
+  setTimeout(() => {
+    this.navigationImageList = this.navigationList[index].image_list;
+    
+    // Show the image section after content is loaded
+    if(el) el.style.visibility = "visible";
+    
+    // Scroll selected navigation item into view
+    this.scrollToSelectedNav(index);
+    
+    // Update navigation button visibility
+    setTimeout(() => this.updateNavigationButtonVisibility(), 100);
+  }, 0);
+}
+
+// Add these new methods
+scrollNav(direction: string) {
+  const scrollWrapper = this.navigationScroller.nativeElement;
+  const scrollAmount = 200;
+  
+  if (direction === 'left') {
+    scrollWrapper.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+  } else {
+    scrollWrapper.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+  }
+  
+  setTimeout(() => this.updateNavigationButtonVisibility(), 300);
+}
+
+scrollImages(direction: string) {
+  const scrollWrapper = this.imageScroller.nativeElement;
+  const scrollAmount = 270; // Slightly more than image width
+  
+  if (direction === 'left') {
+    scrollWrapper.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+  } else {
+    scrollWrapper.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+  }
+  
+  setTimeout(() => this.updateImageButtonVisibility(), 300);
+}
+
+scrollToSelectedNav(index: number) {
+  const scrollWrapper = this.navigationScroller.nativeElement;
+  const selectedItem = scrollWrapper.children[index] as HTMLElement;
+  
+  if (selectedItem) {
+    selectedItem.scrollIntoView({
+      behavior: 'smooth',
+      block: 'nearest',
+      inline: 'center'
+    });
+  }
+}
+
+updateNavigationButtonVisibility() {
+  if (this.navigationScroller) {
+    const scrollWrapper = this.navigationScroller.nativeElement;
+    this.isAtStart = scrollWrapper.scrollLeft <= 5;
+    this.isAtEnd = scrollWrapper.scrollLeft >= (scrollWrapper.scrollWidth - scrollWrapper.clientWidth - 5);
+  }
+}
+
+updateImageButtonVisibility() {
+  if (this.imageScroller) {
+    const scrollWrapper = this.imageScroller.nativeElement;
+    this.isImageAtStart = scrollWrapper.scrollLeft <= 5;
+    this.isImageAtEnd = scrollWrapper.scrollLeft >= (scrollWrapper.scrollWidth - scrollWrapper.clientWidth - 5);
+  }
+}
+  
 
   ngOnInit(): void {
     this.activeRoute.params.subscribe((params: Params) => {
@@ -309,16 +395,24 @@ export class CategoryComponent implements OnInit {
       // JSON-LD
       this.commonService.createJsonLD("category-jsonld", this.categorySchema);
     });
+     if (this.navigationList.length > 0) {
+    this.activeSlideIndex = 0;
+    this.navigationImageList = this.navigationList[0].image_list;
+  }
   }
 
-  onSelectNav(index: number) {
-    let el = this.document.getElementById('navigationHighlights');
-    if(el) el.style.visibility = "hidden";
-    this.navigationImageList = [];
-    setTimeout(() => {
-      this.navigationImageList = this.navigationList[index].image_list;
-    }, 0);
-  }
+activeSlideIndex: number = 0;
+
+// onSelectNav(index: number) {
+//   this.activeSlideIndex = index;
+
+//   let el = this.document.getElementById('navigationHighlights');
+//   if(el) el.style.visibility = "hidden";
+//   this.navigationImageList = [];
+//   setTimeout(() => {
+//     this.navigationImageList = this.navigationList[index].image_list;
+//   }, 0);
+// }
 
   buildFAQSchema() {
     this.category_details.faqs.forEach(el => {
@@ -538,6 +632,26 @@ export class CategoryComponent implements OnInit {
     let shuffled = [...arr].sort(() => 0.5 - Math.random());
     return shuffled.slice(0, num);
   }
+  ngAfterViewInit() {
+  // Initialize button visibility
+  setTimeout(() => {
+    this.updateNavigationButtonVisibility();
+    this.updateImageButtonVisibility();
+    
+    // Listen to scroll events
+    if (this.navigationScroller) {
+      this.navigationScroller.nativeElement.addEventListener('scroll', () => {
+        this.updateNavigationButtonVisibility();
+      });
+    }
+    
+    if (this.imageScroller) {
+      this.imageScroller.nativeElement.addEventListener('scroll', () => {
+        this.updateImageButtonVisibility();
+      });
+    }
+  }, 100);
+}
 
   ngOnDestroy() {
     this.subscription.unsubscribe();
