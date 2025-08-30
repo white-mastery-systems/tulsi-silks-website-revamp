@@ -58,7 +58,7 @@
       </div>
     </div>
   </section>
-   <!-- <section *ngIf="category_details?.banner_image" class="category-banner-sec data-bg">
+  <!-- <section *ngIf="category_details?.banner_image" class="category-banner-sec data-bg">
     <div class="category-banner">
       <img width="100%" height="100%" appImgLazyLoad [ImagelazyLoad]="imgBaseUrl+category_details.banner_image" alt="category-banner">
       <div *ngIf="!template_setting?.breadcrumb" class="category-banner-text">
@@ -132,41 +132,29 @@
   </section>
   <!--# breadcrumb #-->
 
-  <section>
+  <section class="primary-section primary-highlighted-sec">
     <div class="{{template_setting?.body_type}}">
-        <div class="row">
-            <!-- color-code-swiper -->          
-            <div class="col-md-12 px-sm-1 mb-2">
-              <div class="related-products">
-                <div class="swiper-container multi-slider product-slider"
-                  [ngClass]="cs.desktop_device? 'desktop_color_slider': 'color_slider'"
-                  appCategoryHighlights style="visibility: hidden;">
-                  <div class="swiper-wrapper">
-                    <!-- <ng-container *ngFor="let x of tag_list; let i=index;">
-                      <ng-container *ngIf="x.name==='Color'"> -->
-                        <div class="swiper-slide" style="padding: 5px;">
-                          <label appMouseHover class="product-box cursor mb-0" style="padding: 6px 12px;height: 35px;display: flex;align-items: center;justify-content: center;">
-                            <div class="color-variants">                             
-                              <div class="color-card">                              
-                                <div class="color-round"></div>
-                                <div class="color-name">
-                                  <p class="mb-0 pl-1">Blue</p>
-                                  <input class="option-input checkbox d-none" type="checkbox" name="color1"
-                                  [checked]="checked">                              
-                                </div>                          
-                              </div>
-                            </div>
-                          </label>
-                        </div>
-                      <!-- </ng-container>
-                    </ng-container> -->
-                  </div>
-                  <div id="color_slider_next" class="swiper-button swiper-button-next"></div>
-                  <div id="color_slider_prev" class="swiper-button swiper-button-prev"></div>
+      <div class="row">
+        <div class="col-12">
+          <div class="swiper-container multi-slider product-slider featured-sections" [ngClass]="commonService.desktop_device? 'desktop_color_slider': 'color_slider'" appCategoryHighlights>
+            <div class="swiper-wrapper">
+              <div *ngFor="let subCat of navigationList; let i=index;" class="swiper-slide">
+                <div class="product-box cursor">
+                  <a (click)="commonService.onPageRedirect(subCat);" class="prod-div">
+                      <div class="category-grid-text d-flex">
+                        <p class="mb-0 py-2">{{ subCat.name }}</p>
+                      </div>
+                  </a>
                 </div>
               </div>
             </div>
+            <ng-container *ngIf="commonService?.desktop_device">
+              <div id="color_slider_next" [hidden]="true" class="swiper-button swiper-button-next"></div>
+              <div id="color_slider_next" [hidden]="true" class="swiper-button swiper-button-prev"></div>
+            </ng-container>
+          </div>
         </div>
+      </div>
     </div>
   </section>
 

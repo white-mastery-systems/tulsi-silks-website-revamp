@@ -64,6 +64,18 @@ export class CategoryComponent implements OnInit {
     "@type": "FAQPage",
     "mainEntity": []
   };
+  navigationList: any = [
+    { name: "Kanjivaram Silk Sarees" },
+    { name: "Pattupettu" },
+    { name: "Korvai" },
+    { name: "Without Border" },
+    { name: "Checks" },
+    { name: "Traditional" },
+    { name: "Zari Brocade" },
+    { name: "Tissue Kanjivaram" },
+    { name: "Classic" },
+    { name: "Embroidery" }
+  ]
 
   constructor(
     @Inject(PLATFORM_ID) private platformId: Object, private router: Router, private activeRoute: ActivatedRoute,

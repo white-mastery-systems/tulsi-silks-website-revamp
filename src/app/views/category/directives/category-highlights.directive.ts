@@ -22,7 +22,7 @@ export class CategoryHighlightsDirective {
       320: { slidesPerView: 3.5, spaceBetween: 2 }
     }
   };
-
+  
   highlights: any = {
     card_count: 6,
     auto_play: true,
@@ -39,15 +39,6 @@ export class CategoryHighlightsDirective {
     @Inject(PLATFORM_ID) private platformId: Object, private _element: ElementRef,
     private assetLoader: DynamicAssetLoaderService
   ) { }
-
-  ngOnInit() {
-    if(isPlatformBrowser(this.platformId)) {
-      this.assetLoader.load('swiper-css', 'swiper-js').then(() => {
-        this.registerListenerForDomChanges();
-        this.fetchSwipeElements();
-      }).catch(error => console.log("err", error));
-    }
-  }
 ​
   private registerListenerForDomChanges() {
     this.observer = new MutationObserver(() => this.fetchSwipeElements());
@@ -69,44 +60,45 @@ export class CategoryHighlightsDirective {
     for(let i=0; i<classList.length; i++) {
       if(classList[i].includes("phls") || classList[i].includes("color_slider")) {
         let swipeElement = classList[i];
-
-        if(this.loadedElements.indexOf(swipeElement) == -1 && isPlatformBrowser(this.platformId)) {
-          this.loadedElements.push(swipeElement);
-          // swiper config
-          let swipeConfig: any = {
-            speed: 700,
-            loop: true,
-            breakpoints: this.highlights.break_points,
-            navigation: {
-              nextEl: '#highlight_next',
-              prevEl: '#highlight_prev'
+        if(classList[i].includes("phls") && isPlatformBrowser(this.platformId)) {
+          if(this.loadedElements.indexOf(swipeElement) == -1) {
+            this.loadedElements.push(swipeElement);
+            // swiper config
+            let swipeConfig: any = {
+              speed: 700,
+              loop: true,
+              breakpoints: this.highlights.break_points,
+              navigation: {
+                nextEl: '#highlight_next',
+                prevEl: '#highlight_prev'
+              }
             }
-          }
-          let autoPlay = this.highlights.auto_play;
-          if(autoPlay) {
-            swipeConfig.autoplay = {
-              delay: 500,
-              disableOnInteraction: false
+            let autoPlay = this.highlights.auto_play;
+            if(autoPlay) {
+              swipeConfig.autoplay = {
+                delay: 500,
+                disableOnInteraction: false
+              }
             }
-          }
-          // initialize swiper
-          new Swiper('.'+swipeElement, swipeConfig);
-          // hover event
-          if(autoPlay && swipeElement.includes("desktop")) {
-            $('.'+swipeElement).hover(function () {
-              (this).swiper.autoplay.stop();
-            }, function () {
-              (this).swiper.autoplay.start();
-            });
+            // initialize swiper
+            new Swiper('.'+swipeElement, swipeConfig);
+            // hover event
+            if(autoPlay && swipeElement.includes("desktop")) {
+              $('.'+swipeElement).hover(function () {
+                (this).swiper.autoplay.stop();
+              }, function () {
+                (this).swiper.autoplay.start();
+              });
+            }
           }
         }
-
-        else if(classList[i].includes("color_slider")) {
+        else if(classList[i].includes("color_slider") && isPlatformBrowser(this.platformId)) {
           if(this.loadedElements.indexOf(swipeElement) == -1) {
             this.loadedElements.push(swipeElement);
             // swiper config
             let swipeConfig: any = {
               speed: 500,
+              loop: true,
               breakpoints: this.color_swiper.break_points,
               navigation: {
                 nextEl: '#color_slider_next',
@@ -116,7 +108,7 @@ export class CategoryHighlightsDirective {
             let autoPlay = this.color_swiper.auto_play;
             if(autoPlay) {
               swipeConfig.autoplay = {
-                delay: 3000,
+                delay: 500,
                 disableOnInteraction: false
               }
             }
@@ -140,5 +132,5 @@ export class CategoryHighlightsDirective {
       swipeInit.autoplay.start();
     });
   }
-​
+
 }
