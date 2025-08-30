@@ -11,13 +11,13 @@
   <!-- #SEO h1 tag -->
 
   <!-- catalog Banner -->
-  <section class="category-banner-sec data-bg">
+  <section *ngIf="category_details.banner_image" class="category-banner-sec data-bg">
     <div class="category-banner">
       <div class="banner_overlay"></div>
       <img width="100%" height="100%" appImgLazyLoad [ImagelazyLoad]="imgBaseUrl+category_details.banner_image" alt="category-banner">
       <div class="category-banner-text">
         <h1>{{category_details.name}}</h1>
-        <p>Shop new handbags, ready-to-wear, and accessories from the women's collection.</p>
+        <div *ngIf="category_details.description" [innerHtml]="category_details.description"></div>
       </div>
     </div>
   </section>
@@ -31,26 +31,20 @@
           <div class="col-12 px-0">
             <div class="swiper-container multi-slider product-slider featured-sections" [ngClass]="commonService.desktop_device? 'desktop_color_slider': 'color_slider'" appCategoryHighlights>
               <div class="swiper-wrapper">
-                <div *ngFor="let subCat of navigationList | orderAsc: 'rank'; let i=index;" class="swiper-slide">
+                <div *ngFor="let x of navigationList | orderAsc: 'rank'; let i=index;" class="swiper-slide">
                   <div class="product-box cursor">
-                    <a (click)="commonService.onPageRedirect(subCat);" class="prod-div">
-                        <div class="category-grid-text d-flex">
-                          <p class="mb-0 py-2">{{ subCat.name }}</p>
-                        </div>
-                    </a>
+                    <div (click)="onSelectNav(i);" class="category-grid-text d-flex">
+                      <p class="mb-0 py-2">{{ x.name }}</p>
+                    </div>
                   </div>
                 </div>
               </div>
-              <ng-container>
-                <div id="color_slider_next" class="swiper-button swiper-button-next">
-                  <lucide-icon name="chevron-right" [size]="20" stroke="1" color="black"></lucide-icon>
-                </div>
-                <div id="color_slider_prev" class="swiper-button swiper-button-prev">
-                  <lucide-icon name="chevron-left" [size]="20" stroke="1" color="black"></lucide-icon>
-                </div>
-                <!-- <div id="color_slider_next" [hidden]="false" class="swiper-button swiper-button-next"></div>
-                <div id="color_slider_next" [hidden]="flase" class="swiper-button swiper-button-prev"></div> -->
-              </ng-container>
+              <div id="color_slider_next" class="swiper-button swiper-button-next">
+                <lucide-icon name="chevron-right" [size]="20" stroke="1" color="black"></lucide-icon>
+              </div>
+              <div id="color_slider_prev" class="swiper-button swiper-button-prev">
+                <lucide-icon name="chevron-left" [size]="20" stroke="1" color="black"></lucide-icon>
+              </div>
             </div>
           </div>
         </div>
@@ -58,16 +52,16 @@
     </section>
     
     <!-- navigation sections -->
-    <section class="primary-section category-filter-section">
+    <section *ngIf="navigationImageList.length" class="primary-section category-filter-section">
       <div class="container">
         <div class="row">
           <div class="col-12">
-            <div class="swiper-container multi-slider product-slider featured-sections" [ngClass]="commonService.desktop_device? 'desktop_phls': 'phls'" appCategoryHighlights>
+            <div class="swiper-container multi-slider product-slider featured-sections" id="navigationHighlights" [ngClass]="commonService.desktop_device? 'desktop_phls': 'phls'" style="visibility: hidden;" appCategoryHighlights>
               <div class="swiper-wrapper">
-                <div *ngFor="let subCat of navigationList[0].image_list | orderAsc: 'rank'; let i=index;" class="swiper-slide">
-                  <div class="category-card">
-                    <img width="100%" height="100%" appImgLazyLoad [ImagelazyLoad]="imgBaseUrl+subCat.image" alt="Image">
-                    <p class="card-text">{{ subCat.heading }}</p>
+                <div *ngFor="let x of navigationImageList | orderAsc: 'rank'; let i=index;" class="swiper-slide">
+                  <div (click)="commonService.onPageRedirect(x);" class="category-card">
+                    <img width="100%" height="100%" appImgLazyLoad [ImagelazyLoad]="imgBaseUrl+x.image" alt="Image">
+                    <p class="card-text">{{ x.heading }}</p>
                   </div>
                 </div>
               </div>
@@ -83,7 +77,7 @@
   </ng-container>
   <!-- #navigations -->
 
-  <!--Swiper What's Hot Now-->
+  <!-- highlights -->
   <section *ngIf="categoryHighlights.length" class="primary-section hot-swiper-section feature-sec-margin feature-slide-sec mt-5 mb-5">
     <div class="{{template_setting?.body_type}}">
       <div class="row">
@@ -104,18 +98,18 @@
           <div class="swiper-container multi-slider product-slider featured-sections" [ngClass]="commonService.desktop_device? 'desktop_section_slider': 'section_slider'" appCategoryHighlights>
             <div class="swiper-wrapper">
               <div *ngFor="let x of categoryHighlights | orderAsc: 'rank'; let i=index;" class="swiper-slide p-0">
-                <div class="product-box cursor p-0">
+                <div (click)="commonService.onPageRedirect(x);" class="product-box cursor p-0">
                   <a class="prod-div">
                     <figure class="product-image">
                       <img width="100%" height="100%" appImgLazyLoad [ImagelazyLoad]="imgBaseUrl+x.image" alt="Image">
                     </figure>
                     <div class="product-content">
-                      <h4>
-                        {{x.heading}}
-                      </h4>
-                      <p>Save big on Free People, AllSaints, Steve Madden and more.</p>
-                      <button class="primary-btn">Women's Sale</button>
-                  </div>
+                      <h4>{{x.heading}}</h4>
+                      <p *ngIf="x.sub_heading">{{x.sub_heading}}</p>
+                      <button *ngIf="x.btn_status" class="primary-btn">
+                        {{x.btn_text}}
+                      </button>
+                    </div>
                   </a>
                 </div>
               </div>
@@ -125,12 +119,7 @@
       </div>
     </div>
   </section>
-
-  <section *ngIf="!category_details?.banner_image && !template_setting?.breadcrumb" class="category-banner-no-bg">
-    <div class="category-banner-text pt-4">
-      <h4 class="m-0">{{category_details.name}}</h4>
-    </div>
-  </section>
+  <!-- #highlights -->
 
   <!-- header content -->
   <section class="category-banner-content mt-3" *ngIf="category_details?.hc_status">
@@ -434,36 +423,23 @@
   <!-- #no items -->
 
   <!-- profile section -->
-  <section class="primary-section content-section">
-    <div class="container">
+  <section *ngIf="category_details.profile_status && category_details.profile_details?.image" class="primary-section content-section">
+    <div class="{{template_setting?.body_type}}">
       <div class="row">
-          <div class="col-md-9">
-            <div class="left-content">
-              <p>
-                Max is a furniture and object designer from Barcelona. His work is defined both as design and art, 
-                in fact most of the pieces he creates could actually work as sculptures.
-              </p>
-              <p>
-                What we like about his work is how he plays with the materials. Iron, stone, plaster, marble or wood 
-                are some of his favorites. Some of his pieces are self-produced as an exercise of experimentation, 
-                although most of them are made in local workshops in Barcelona.
-              </p>
-              <p>
-                We’ve gathered some limited edition pieces, like his iconic Stabile table in a unique electric blue color 
-                or the 3-Planes side table, amongst others. All in exclusiveness for us.
-              </p>       
-              
+        <div class="col-md-9">
+          <div class="left-content">
+            <div class="text" style="max-height: 100%;" [innerHtml]="category_details.profile_details.description"></div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="right-profile">
+            <p class="pro-name mb-2">{{category_details.profile_details.name}}</p>
+            <a href="#">{{category_details.profile_details.designation}}</a>
+            <div class="profile-img mt-2">
+              <img width="100%" height="100%" appImgLazyLoad [ImagelazyLoad]="imgBaseUrl+category_details.profile_details.image" alt="Image">
             </div>
           </div>
-          <div class="col-md-3">
-            <div class="right-profile">
-              <p class="pro-name mb-2">Max Enrich</p>
-              <a href="#">maxenrich.com</a>
-              <div class="profile-img mt-2">
-                <img src="assets/images/banner-mob.png" alt="image">
-              </div>
-            </div>
-          </div>
+        </div>
       </div>
     </div> 
   </section>

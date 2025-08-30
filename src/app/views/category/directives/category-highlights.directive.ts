@@ -92,6 +92,8 @@ export class CategoryHighlightsDirective {
             }
             // initialize swiper
             new Swiper('.'+swipeElement, swipeConfig);
+            let ele: any = document.getElementsByClassName(swipeElement)[0];
+            ele.style.visibility = "unset";
             // hover event
             if(autoPlay && swipeElement.includes("desktop")) {
               $('.'+swipeElement).hover(function () {
@@ -125,14 +127,11 @@ export class CategoryHighlightsDirective {
             // initialize swiper
             let swipeInit = new Swiper('.'+swipeElement, swipeConfig);
             if(swipeConfig.auto_play && swipeElement.includes("desktop")) this.autoPlayEvt(swipeInit);
-            let ele:any = document.getElementsByClassName(swipeElement)[0];
-            ele.style.visibility = "unset";
           }
         }
         else if(classList[i].includes("section_slider") && isPlatformBrowser(this.platformId)) {
           if(this.loadedElements.indexOf(swipeElement) == -1) {
             this.loadedElements.push(swipeElement);
-            console.log(swipeElement)
             // swiper config
             let swipeConfig: any = {
               speed: 500,
@@ -152,14 +151,7 @@ export class CategoryHighlightsDirective {
             // initialize swiper
             let swipeInit = new Swiper('.'+swipeElement, swipeConfig);
             // hover event
-            if(autoPlay && swipeElement.includes("desktop")) {
-              swipeInit.el.addEventListener("mouseover", () => {  
-                swipeInit.autoplay.stop();
-              });
-              swipeInit.el.addEventListener("mouseout", () => {   
-                swipeInit.autoplay.start();
-              });
-            }
+            if(autoPlay && swipeElement.includes("desktop")) this.autoPlayEvt(swipeInit);
           }
         }
         break;

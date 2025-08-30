@@ -1,6 +1,6 @@
 import { Component, OnInit, Inject, PLATFORM_ID } from '@angular/core';
 import { Router, ActivatedRoute, Params } from '@angular/router';
-import { isPlatformBrowser } from '@angular/common';
+import { isPlatformBrowser, DOCUMENT } from '@angular/common';
 import { Subscription } from 'rxjs';
 import { environment } from './../../../environments/environment';
 import { StoreApiService } from '../../services/store-api.service';
@@ -76,8 +76,26 @@ export class CategoryComponent implements OnInit {
       { heading: "Heading", rank: 7, image: "uploads/5d30013a5c83a702392c4c8b/layouts/1748003776228-538806.webp" },
       { heading: "Heading", rank: 8, image: "uploads/5d30013a5c83a702392c4c8b/layouts/1748003776947-18131.webp" }
     ] },
-    { name: "Pattupettu", rank: 2, image_list: [] },
-    { name: "Korvai", rank: 3, image_list: [] },
+    { name: "Pattupettu", rank: 2, image_list: [
+      { heading: "Heading", rank: 1, image: "uploads/5d30013a5c83a702392c4c8b/layouts/1749491145067-366528.webp" },
+      { heading: "Heading", rank: 2, image: "uploads/5d30013a5c83a702392c4c8b/layouts/1749491145199-178148.webp" },
+      { heading: "Heading", rank: 3, image: "uploads/5d30013a5c83a702392c4c8b/layouts/1749491145340-597134.webp" },
+      { heading: "Heading", rank: 4, image: "uploads/5d30013a5c83a702392c4c8b/layouts/1749554761428-474512.webp" },
+      { heading: "Heading", rank: 5, image: "uploads/5d30013a5c83a702392c4c8b/layouts/1748003775907-890189.webp" },
+      { heading: "Heading", rank: 6, image: "uploads/5d30013a5c83a702392c4c8b/layouts/1748003776082-345675.webp" },
+      { heading: "Heading", rank: 7, image: "uploads/5d30013a5c83a702392c4c8b/layouts/1748003776228-538806.webp" },
+      { heading: "Heading", rank: 8, image: "uploads/5d30013a5c83a702392c4c8b/layouts/1748003776947-18131.webp" }
+    ] },
+    { name: "Korvai", rank: 3, image_list: [
+      { heading: "Heading", rank: 1, image: "uploads/5d30013a5c83a702392c4c8b/layouts/1749491145067-366528.webp" },
+      { heading: "Heading", rank: 2, image: "uploads/5d30013a5c83a702392c4c8b/layouts/1749491145199-178148.webp" },
+      { heading: "Heading", rank: 3, image: "uploads/5d30013a5c83a702392c4c8b/layouts/1749491145340-597134.webp" },
+      { heading: "Heading", rank: 4, image: "uploads/5d30013a5c83a702392c4c8b/layouts/1749554761428-474512.webp" },
+      { heading: "Heading", rank: 5, image: "uploads/5d30013a5c83a702392c4c8b/layouts/1748003775907-890189.webp" },
+      { heading: "Heading", rank: 6, image: "uploads/5d30013a5c83a702392c4c8b/layouts/1748003776082-345675.webp" },
+      { heading: "Heading", rank: 7, image: "uploads/5d30013a5c83a702392c4c8b/layouts/1748003776228-538806.webp" },
+      { heading: "Heading", rank: 8, image: "uploads/5d30013a5c83a702392c4c8b/layouts/1748003776947-18131.webp" }
+    ] },
     { name: "Without Border", rank: 4, image_list: [] },
     { name: "Checks", rank: 5, image_list: [] },
     { name: "Traditional", rank: 6, image_list: [] },
@@ -86,6 +104,7 @@ export class CategoryComponent implements OnInit {
     { name: "Classic", rank: 9, image_list: [] },
     { name: "Embroidery", rank: 10, image_list: [] }
   ];
+  navigationImageList = [];
   categoryHighlights: any = [
     { heading: "Heading", rank: 1, image: "uploads/5d30013a5c83a702392c4c8b/layouts/1749491145067-366528.webp" },
     { heading: "Heading", rank: 2, image: "uploads/5d30013a5c83a702392c4c8b/layouts/1749491145199-178148.webp" },
@@ -99,7 +118,8 @@ export class CategoryComponent implements OnInit {
 
   constructor(
     @Inject(PLATFORM_ID) private platformId: Object, private router: Router, private activeRoute: ActivatedRoute,
-    private storeApi: StoreApiService, public cc: CurrencyConversionService, public commonService: CommonService
+    private storeApi: StoreApiService, public cc: CurrencyConversionService, public commonService: CommonService,
+    @Inject(DOCUMENT) private document
   ) {
     this.subscription = this.commonService.currency_type.subscribe(currency => {
       this.findCurrency();
@@ -110,6 +130,7 @@ export class CategoryComponent implements OnInit {
   ngOnInit(): void {
     this.activeRoute.params.subscribe((params: Params) => {
       this.pageUrl = this.router.url.split('?')[0];
+      this.navigationImageList = this.navigationList[0].image_list;
       this.showMore = false; this.params = params; this.tag_list = []; this.randomProducts = [];
       if(this.router.url=='/recommended-products' || this.router.url=='/all-products' || this.router.url=='/new-arrivals' || this.router.url=='/on-sale'|| this.router.url=='/featured-products'|| this.router.url=='/best-sellers') {
         this.params = { category_id: this.router.url };
@@ -249,6 +270,7 @@ export class CategoryComponent implements OnInit {
             if(result.status)
             {
               this.category_details = result.category_details;
+              console.log(this.category_details)
               if(this.category_details?.faqs?.length) this.buildFAQSchema();
               // seo
               this.updateMetaData();
@@ -287,6 +309,15 @@ export class CategoryComponent implements OnInit {
       // JSON-LD
       this.commonService.createJsonLD("category-jsonld", this.categorySchema);
     });
+  }
+
+  onSelectNav(index: number) {
+    let el = this.document.getElementById('navigationHighlights');
+    if(el) el.style.visibility = "hidden";
+    this.navigationImageList = [];
+    setTimeout(() => {
+      this.navigationImageList = this.navigationList[index].image_list;
+    }, 0);
   }
 
   buildFAQSchema() {
