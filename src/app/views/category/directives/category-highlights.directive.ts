@@ -28,10 +28,20 @@ export class CategoryHighlightsDirective {
     auto_play: true,
     loop:true,
     break_points: {
-      1024: { slidesPerView: 7.5, spaceBetween: 0 },
+      1024: { slidesPerView: 5.5, spaceBetween: 0 },
       768: { slidesPerView: 4.5, spaceBetween: 0 },
       640: { slidesPerView: 3.5, spaceBetween: 0 },
       320: { slidesPerView: 3.5, spaceBetween: 0 }
+    }
+  };
+
+  swiperInfo: any = {
+    auto_play: false,
+    break_points: {
+      1024: { slidesPerView: 4.2, spaceBetween: 15 },
+      768: { slidesPerView: 3, spaceBetween: 15 },
+      640: { slidesPerView: 2, spaceBetween: 15 },
+      320: { slidesPerView: 1.5, spaceBetween: 15 }
     }
   };
 
@@ -58,7 +68,7 @@ export class CategoryHighlightsDirective {
   fetchSwipeElements() {
     let classList: any = this._element.nativeElement.classList;
     for(let i=0; i<classList.length; i++) {
-      if(classList[i].includes("phls") || classList[i].includes("color_slider")) {
+      if(classList[i].includes("phls") || classList[i].includes("color_slider") || classList[i].includes("section_slider")) {
         let swipeElement = classList[i];
         if(classList[i].includes("phls") && isPlatformBrowser(this.platformId)) {
           if(this.loadedElements.indexOf(swipeElement) == -1) {
@@ -76,7 +86,7 @@ export class CategoryHighlightsDirective {
             let autoPlay = this.highlights.auto_play;
             if(autoPlay) {
               swipeConfig.autoplay = {
-                delay: 500,
+                delay: 1000,
                 disableOnInteraction: false
               }
             }
@@ -117,6 +127,39 @@ export class CategoryHighlightsDirective {
             if(swipeConfig.auto_play && swipeElement.includes("desktop")) this.autoPlayEvt(swipeInit);
             let ele:any = document.getElementsByClassName(swipeElement)[0];
             ele.style.visibility = "unset";
+          }
+        }
+        else if(classList[i].includes("section_slider") && isPlatformBrowser(this.platformId)) {
+          if(this.loadedElements.indexOf(swipeElement) == -1) {
+            this.loadedElements.push(swipeElement);
+            console.log(swipeElement)
+            // swiper config
+            let swipeConfig: any = {
+              speed: 500,
+              breakpoints: this.swiperInfo.break_points,
+              navigation: {
+                nextEl: '#section_next',
+                prevEl: '#section_prev'
+              }
+            }
+            let autoPlay = this.swiperInfo.auto_play;
+            if(autoPlay) {
+              swipeConfig.autoplay = {
+                delay: 3000,
+                disableOnInteraction: false
+              }
+            }
+            // initialize swiper
+            let swipeInit = new Swiper('.'+swipeElement, swipeConfig);
+            // hover event
+            if(autoPlay && swipeElement.includes("desktop")) {
+              swipeInit.el.addEventListener("mouseover", () => {  
+                swipeInit.autoplay.stop();
+              });
+              swipeInit.el.addEventListener("mouseout", () => {   
+                swipeInit.autoplay.start();
+              });
+            }
           }
         }
         break;

@@ -64,18 +64,38 @@ export class CategoryComponent implements OnInit {
     "@type": "FAQPage",
     "mainEntity": []
   };
+
   navigationList: any = [
-    { name: "Kanjivaram Silk Sarees" },
-    { name: "Pattupettu" },
-    { name: "Korvai" },
-    { name: "Without Border" },
-    { name: "Checks" },
-    { name: "Traditional" },
-    { name: "Zari Brocade" },
-    { name: "Tissue Kanjivaram" },
-    { name: "Classic" },
-    { name: "Embroidery" }
-  ]
+    { name: "Kanjivaram Silk Sarees", rank: 1, image_list: [
+      { heading: "Heading", rank: 1, image: "uploads/5d30013a5c83a702392c4c8b/layouts/1749491145067-366528.webp" },
+      { heading: "Heading", rank: 2, image: "uploads/5d30013a5c83a702392c4c8b/layouts/1749491145199-178148.webp" },
+      { heading: "Heading", rank: 3, image: "uploads/5d30013a5c83a702392c4c8b/layouts/1749491145340-597134.webp" },
+      { heading: "Heading", rank: 4, image: "uploads/5d30013a5c83a702392c4c8b/layouts/1749554761428-474512.webp" },
+      { heading: "Heading", rank: 5, image: "uploads/5d30013a5c83a702392c4c8b/layouts/1748003775907-890189.webp" },
+      { heading: "Heading", rank: 6, image: "uploads/5d30013a5c83a702392c4c8b/layouts/1748003776082-345675.webp" },
+      { heading: "Heading", rank: 7, image: "uploads/5d30013a5c83a702392c4c8b/layouts/1748003776228-538806.webp" },
+      { heading: "Heading", rank: 8, image: "uploads/5d30013a5c83a702392c4c8b/layouts/1748003776947-18131.webp" }
+    ] },
+    { name: "Pattupettu", rank: 2, image_list: [] },
+    { name: "Korvai", rank: 3, image_list: [] },
+    { name: "Without Border", rank: 4, image_list: [] },
+    { name: "Checks", rank: 5, image_list: [] },
+    { name: "Traditional", rank: 6, image_list: [] },
+    { name: "Zari Brocade", rank: 7, image_list: [] },
+    { name: "Tissue Kanjivaram", rank: 8, image_list: [] },
+    { name: "Classic", rank: 9, image_list: [] },
+    { name: "Embroidery", rank: 10, image_list: [] }
+  ];
+  categoryHighlights: any = [
+    { heading: "Heading", rank: 1, image: "uploads/5d30013a5c83a702392c4c8b/layouts/1749491145067-366528.webp" },
+    { heading: "Heading", rank: 2, image: "uploads/5d30013a5c83a702392c4c8b/layouts/1749491145199-178148.webp" },
+    { heading: "Heading", rank: 3, image: "uploads/5d30013a5c83a702392c4c8b/layouts/1749491145340-597134.webp" },
+    { heading: "Heading", rank: 4, image: "uploads/5d30013a5c83a702392c4c8b/layouts/1749554761428-474512.webp" },
+    { heading: "Heading", rank: 5, image: "uploads/5d30013a5c83a702392c4c8b/layouts/1748003775907-890189.webp" },
+    { heading: "Heading", rank: 6, image: "uploads/5d30013a5c83a702392c4c8b/layouts/1748003776082-345675.webp" },
+    { heading: "Heading", rank: 7, image: "uploads/5d30013a5c83a702392c4c8b/layouts/1748003776228-538806.webp" },
+    { heading: "Heading", rank: 8, image: "uploads/5d30013a5c83a702392c4c8b/layouts/1748003776947-18131.webp" }
+  ];
 
   constructor(
     @Inject(PLATFORM_ID) private platformId: Object, private router: Router, private activeRoute: ActivatedRoute,
