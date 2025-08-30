@@ -68,6 +68,172 @@
   </section> -->
   <!-- #catalog Banner -->
 
+  <!--Color Filter-->
+  <section class="primary-section primary-highlighted-sec color-slider-section">
+    <div class="{{template_setting?.body_type}}">
+      <div class="row">
+        <div class="col-12 px-0">
+          <div class="swiper-container multi-slider product-slider featured-sections" [ngClass]="commonService.desktop_device? 'desktop_color_slider': 'color_slider'" appCategoryHighlights>
+            <div class="swiper-wrapper">
+              <div *ngFor="let subCat of navigationList; let i=index;" class="swiper-slide">
+                <div class="product-box cursor">
+                  <a (click)="commonService.onPageRedirect(subCat);" class="prod-div">
+                      <div class="category-grid-text d-flex">
+                        <p class="mb-0 py-2">{{ subCat.name }}</p>
+                      </div>
+                  </a>
+                </div>
+              </div>
+            </div>
+            <ng-container>
+              <div id="color_slider_next" class="swiper-button swiper-button-next">
+                <lucide-icon name="chevron-right" [size]="20" stroke="1" color="black"></lucide-icon>
+              </div>
+              <div id="color_slider_prev" class="swiper-button swiper-button-prev">
+                <lucide-icon name="chevron-left" [size]="20" stroke="1" color="black"></lucide-icon>
+              </div>
+              <!-- <div id="color_slider_next" [hidden]="false" class="swiper-button swiper-button-next"></div>
+              <div id="color_slider_next" [hidden]="flase" class="swiper-button swiper-button-prev"></div> -->
+            </ng-container>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+<!--Color Filter Data section-->
+<section class="primary-section category-filter-section">
+  <div class="container">
+    <div class="row">    
+      <div class="col-6 col-md-4 col-lg-2 px-0">
+        <div class="category-card">
+          <img src="assets/images/insta1.png" class="card-img" alt="New Arrivals">
+          <p class="card-text">New Arrivals</p>
+        </div>
+      </div>
+  
+      <div class="col-6 col-md-4 col-lg-2 px-0">
+        <div class="category-card">
+          <img src="assets/images/insta2.png" class="card-img" alt="Shoes">
+          <p class="card-text">Shoes</p>
+        </div>
+      </div>
+  
+      <div class="col-6 col-md-4 col-lg-2 px-0">
+        <div class="category-card">
+          <img src="assets/images/insta3.png" class="card-img" alt="Clothing">
+          <p class="card-text">Clothing</p>
+        </div>
+      </div>
+
+      <div class="col-6 col-md-4 col-lg-2 px-0">
+        <div class="category-card">
+          <img src="assets/images/insta1.png" class="card-img" alt="Handbags">
+          <p class="card-text">Handbags</p>
+        </div>
+      </div>
+
+      <div class="col-6 col-md-4 col-lg-2 px-0">
+        <div class="category-card">
+          <img src="assets/images/insta2.png" class="card-img" alt="Designer">
+          <p class="card-text">Designer</p>
+        </div>
+      </div>    
+      
+      <div class="col-6 col-md-4 col-lg-2 px-0">
+        <div class="category-card">
+          <img src="assets/images/insta2.png" class="card-img" alt="Beauty & Fragrance">
+          <p class="card-text">Beauty & Fragrance</p>
+        </div>
+      </div>        
+      
+  
+    </div>
+  </div>
+  
+</section>
+
+<!--Swiper What's Hot Now-->
+<!-- <section class="primary-section hot-swiper-section feature-sec-margin feature-slide-sec">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-12 px-0 swipe_arrow">
+        <div class="titles custom-title">
+          <h2>What's Hot Now</h2>
+          <p *ngIf="segment.sub_heading" [innerHTML]="segment.sub_heading"></p>         
+        </div>
+         <ng-container *ngIf="commonService?.desktop_device">
+            <div id="swipe_next_1" class="swiper-button swiper-button-next">
+              <lucide-icon name="chevron-right" [size]="20" stroke="1" color="white"></lucide-icon>
+            </div>
+            <div id="swipe_prev_1" class="swiper-button swiper-button-prev">
+              <lucide-icon name="chevron-left" [size]="20" stroke="1" color="black"></lucide-icon>
+            </div>
+          </ng-container>
+      </div>
+      <div class="col-12 px-0">
+        <div class="swiper-container multi-slider product-slider featured-sections">
+          <div class="swiper-wrapper">
+            <div class="swiper-slide p-0">
+              <div class="product-box cursor p-0">
+                <a class="prod-div">
+                  <figure class="product-image">
+                    <img loading="lazy" width="100%" height="100%" src="assets/images/insta1.png">
+                  </figure>
+                  <div class="product-content">
+                    <h4>
+                      Hot New Markdowns on Top Brands
+                    </h4>
+                    <p>Save big on Free People, AllSaints, Steve Madden and more.</p>
+                    <button class="primary-btn">Women's Sale</button>
+                 </div>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>       -->
+
+
+<!--Content Section-->
+<section class="primary-section content-section">
+  <div class="container">
+    <div class="row">
+        <div class="col-md-9">
+          <div class="left-content">
+            <p>
+              Max is a furniture and object designer from Barcelona. His work is defined both as design and art, 
+              in fact most of the pieces he creates could actually work as sculptures.
+            </p>
+            <p>
+              What we like about his work is how he plays with the materials. Iron, stone, plaster, marble or wood 
+              are some of his favorites. Some of his pieces are self-produced as an exercise of experimentation, 
+              although most of them are made in local workshops in Barcelona.
+            </p>
+            <p>
+              We’ve gathered some limited edition pieces, like his iconic Stabile table in a unique electric blue color 
+              or the 3-Planes side table, amongst others. All in exclusiveness for us.
+            </p>       
+            
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="right-profile">
+            <p class="pro-name mb-2">Max Enrich</p>
+            <a href="#">maxenrich.com</a>
+            <div class="profile-img mt-2">
+              <img src="assets/images/banner-mob.png" alt="image">
+            </div>
+          </div>
+        </div>
+    </div>
+  </div> 
+</section>
+
+
   <section *ngIf="!category_details?.banner_image && !template_setting?.breadcrumb" class="category-banner-no-bg">
     <div class="category-banner-text pt-4">
       <h4 class="m-0">{{category_details.name}}</h4>
@@ -131,32 +297,6 @@
     </div>
   </section>
   <!--# breadcrumb #-->
-
-  <section class="primary-section primary-highlighted-sec">
-    <div class="{{template_setting?.body_type}}">
-      <div class="row">
-        <div class="col-12">
-          <div class="swiper-container multi-slider product-slider featured-sections" [ngClass]="commonService.desktop_device? 'desktop_color_slider': 'color_slider'" appCategoryHighlights>
-            <div class="swiper-wrapper">
-              <div *ngFor="let subCat of navigationList; let i=index;" class="swiper-slide">
-                <div class="product-box cursor">
-                  <a (click)="commonService.onPageRedirect(subCat);" class="prod-div">
-                      <div class="category-grid-text d-flex">
-                        <p class="mb-0 py-2">{{ subCat.name }}</p>
-                      </div>
-                  </a>
-                </div>
-              </div>
-            </div>
-            <ng-container *ngIf="commonService?.desktop_device">
-              <div id="color_slider_next" [hidden]="true" class="swiper-button swiper-button-next"></div>
-              <div id="color_slider_next" [hidden]="true" class="swiper-button swiper-button-prev"></div>
-            </ng-container>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
 
   <!-- product list -->
   <section *ngIf="list.length" class="common-site-section product-list pt-2">

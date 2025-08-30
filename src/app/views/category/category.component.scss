@@ -47,3 +47,49 @@
 //     color: #313131;
 // }
 // }
+
+.category-filter-section{
+  .category-card{
+    padding:8px;
+  }
+  .card-img {
+    width:100%;    
+    height: 100%;
+    object-fit: cover; 
+    object-position: top;
+  }
+  .card-text{
+    width: 100%;
+    text-align: left;   
+    font-size: 12px;
+    font-weight: 500;
+    position: relative;
+    display: inline-block;
+    padding-top: 8px;
+    text-decoration: underline;
+  // &::after {
+  //     content: "";     
+  //     position: absolute;
+  //     left: 0;
+  //     bottom: 0;
+  //     width: 100%;
+  //     height: 2px; /* thickness of border */
+  //     background-color: #000;
+  //   }   
+  }
+}
+
+.content-section{
+  padding:60px 0;
+  .left-content{
+    p{
+      font-size: 0.875rem;
+      line-height: 1.5;
+    }
+  }
+  .right-profile{
+    .pro-name{
+      font-size: 0.875rem;
+    }
+  }
+}

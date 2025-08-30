@@ -4022,3 +4022,39 @@ input::-webkit-inner-spin-button {
   border-style: solid;
   border-color:  transparent transparent #000 transparent;
 }
+
+
+.color-slider-section{
+  padding:30px 0;
+  .swiper-container{
+    padding: 0 20px;
+  }
+  .multi-slider .swiper-slide{
+    padding: 0;
+    border-bottom: 1px solid #eee;   
+    .product-box{
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      *{
+        transition: none;
+      }
+    }
+    &.swiper-slide-active{
+      border-bottom: 2px solid #000000;
+      p{
+        font-weight: 600;
+      }
+    }
+  }
+  .swiper-button-prev:after, 
+  .swiper-button-next:after{
+    display: none;
+  }
+  .swiper-button-next{
+    right:-10px;
+  }
+  .swiper-button-prev{
+    left:-10px;
+  }
+}

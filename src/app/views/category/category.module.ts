@@ -10,6 +10,7 @@ import { RangeFilterPipe } from './pipes/range-filter.pipe';
 import { ProductSortPipe } from './pipes/product-sort.pipe';
 import { AccordionModule } from 'ngx-bootstrap/accordion';
 import { CategoryHighlightsDirective } from './directives/category-highlights.directive';
+import { LucideAngularModule, ChevronLeft, ChevronRight } from 'lucide-angular';
 
 @NgModule({
   declarations: [CategoryComponent, RangeFilterPipe, ProductSortPipe, CategoryHighlightsDirective],
@@ -19,7 +20,8 @@ import { CategoryHighlightsDirective } from './directives/category-highlights.di
     NgxPaginationModule,
     NgxSliderModule,
     CollapseModule.forRoot(),
-    AccordionModule.forRoot()
+    AccordionModule.forRoot(),
+    LucideAngularModule.pick({ ChevronLeft, ChevronRight })
   ]
 })
 
