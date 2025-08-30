@@ -12,6 +12,17 @@ export class CategoryHighlightsDirective {
 
   private observer: any;
   loadedElements: any = [];
+
+  color_swiper: any ={
+    auto_play: false,
+    break_points: {
+      1024: { slidesPerView: 7, spaceBetween: 0 },
+      768: { slidesPerView: 3, spaceBetween: 0 },
+      640: { slidesPerView: 3, spaceBetween: 0 },
+      320: { slidesPerView: 3.5, spaceBetween: 2 }
+    }
+  };
+
   highlights: any = {
     card_count: 6,
     auto_play: true,
@@ -28,6 +39,15 @@ export class CategoryHighlightsDirective {
     @Inject(PLATFORM_ID) private platformId: Object, private _element: ElementRef,
     private assetLoader: DynamicAssetLoaderService
   ) { }
+
+  ngOnInit() {
+    if(isPlatformBrowser(this.platformId)) {
+      this.assetLoader.load('swiper-css', 'swiper-js').then(() => {
+        this.registerListenerForDomChanges();
+        this.fetchSwipeElements();
+      }).catch(error => console.log("err", error));
+    }
+  }
 ​
   private registerListenerForDomChanges() {
     this.observer = new MutationObserver(() => this.fetchSwipeElements());
@@ -47,8 +67,9 @@ export class CategoryHighlightsDirective {
   fetchSwipeElements() {
     let classList: any = this._element.nativeElement.classList;
     for(let i=0; i<classList.length; i++) {
-      if(classList[i].includes("phls")) {
+      if(classList[i].includes("phls") || classList[i].includes("color_slider")) {
         let swipeElement = classList[i];
+
         if(this.loadedElements.indexOf(swipeElement) == -1 && isPlatformBrowser(this.platformId)) {
           this.loadedElements.push(swipeElement);
           // swiper config
@@ -79,9 +100,45 @@ export class CategoryHighlightsDirective {
             });
           }
         }
+
+        else if(classList[i].includes("color_slider")) {
+          if(this.loadedElements.indexOf(swipeElement) == -1) {
+            this.loadedElements.push(swipeElement);
+            // swiper config
+            let swipeConfig: any = {
+              speed: 500,
+              breakpoints: this.color_swiper.break_points,
+              navigation: {
+                nextEl: '#color_slider_next',
+                prevEl: '#color_slider_prev'
+              }
+            }
+            let autoPlay = this.color_swiper.auto_play;
+            if(autoPlay) {
+              swipeConfig.autoplay = {
+                delay: 3000,
+                disableOnInteraction: false
+              }
+            }
+            // initialize swiper
+            let swipeInit = new Swiper('.'+swipeElement, swipeConfig);
+            if(swipeConfig.auto_play && swipeElement.includes("desktop")) this.autoPlayEvt(swipeInit);
+            let ele:any = document.getElementsByClassName(swipeElement)[0];
+            ele.style.visibility = "unset";
+          }
+        }
         break;
       }
     }
+  }
+
+  autoPlayEvt(swipeInit) {
+    swipeInit.el.addEventListener("mouseover", () => {  
+      swipeInit.autoplay.stop();
+    });
+    swipeInit.el.addEventListener("mouseout", () => {   
+      swipeInit.autoplay.start();
+    });
   }
 ​
 }

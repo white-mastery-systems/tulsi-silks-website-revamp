@@ -48,7 +48,17 @@
   <!-- #Primary Highlights Section -->
 
   <!-- catalog Banner -->
-  <!-- <section *ngIf="category_details?.banner_image" class="category-banner-sec data-bg">
+  <section class="category-banner-sec data-bg">
+    <div class="category-banner">
+      <div class="banner_overlay"></div>
+      <img width="100%" height="100%" src="assets/images/category-banner.jpg" alt="category-banner">
+      <div class="category-banner-text">
+        <h1>FALL WINTER 2025</h1>
+        <p>Shop new handbags, ready-to-wear, and accessories from the women's collection.</p>
+      </div>
+    </div>
+  </section>
+   <!-- <section *ngIf="category_details?.banner_image" class="category-banner-sec data-bg">
     <div class="category-banner">
       <img width="100%" height="100%" appImgLazyLoad [ImagelazyLoad]="imgBaseUrl+category_details.banner_image" alt="category-banner">
       <div *ngIf="!template_setting?.breadcrumb" class="category-banner-text">
@@ -121,6 +131,44 @@
     </div>
   </section>
   <!--# breadcrumb #-->
+
+  <section>
+    <div class="{{template_setting?.body_type}}">
+        <div class="row">
+            <!-- color-code-swiper -->          
+            <div class="col-md-12 px-sm-1 mb-2">
+              <div class="related-products">
+                <div class="swiper-container multi-slider product-slider"
+                  [ngClass]="cs.desktop_device? 'desktop_color_slider': 'color_slider'"
+                  appCategoryHighlights style="visibility: hidden;">
+                  <div class="swiper-wrapper">
+                    <!-- <ng-container *ngFor="let x of tag_list; let i=index;">
+                      <ng-container *ngIf="x.name==='Color'"> -->
+                        <div class="swiper-slide" style="padding: 5px;">
+                          <label appMouseHover class="product-box cursor mb-0" style="padding: 6px 12px;height: 35px;display: flex;align-items: center;justify-content: center;">
+                            <div class="color-variants">                             
+                              <div class="color-card">                              
+                                <div class="color-round"></div>
+                                <div class="color-name">
+                                  <p class="mb-0 pl-1">Blue</p>
+                                  <input class="option-input checkbox d-none" type="checkbox" name="color1"
+                                  [checked]="checked">                              
+                                </div>                          
+                              </div>
+                            </div>
+                          </label>
+                        </div>
+                      <!-- </ng-container>
+                    </ng-container> -->
+                  </div>
+                  <div id="color_slider_next" class="swiper-button swiper-button-next"></div>
+                  <div id="color_slider_prev" class="swiper-button swiper-button-prev"></div>
+                </div>
+              </div>
+            </div>
+        </div>
+    </div>
+  </section>
 
   <!-- product list -->
   <section *ngIf="list.length" class="common-site-section product-list pt-2">
