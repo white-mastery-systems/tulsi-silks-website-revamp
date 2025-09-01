@@ -184,6 +184,20 @@
     $(document).on('click', '.has-children > a', function (e) {
       if(!checkWindowWidth()) e.preventDefault();
       let selected = $(this);
+      if(e.currentTarget.className.indexOf('has-link') == -1) {
+        menuChange(selected);
+      }
+      toggleSearch('close');
+    });
+    
+    $(document).on('click', '.last-sec > i', function (e) {
+      if(!checkWindowWidth()) e.preventDefault();
+      let selected = $(this).parent();
+      menuChange(selected);
+      toggleSearch('close');
+    });
+
+    function menuChange(selected) {
       if(selected.next('ul').hasClass('is-hidden')) {
         selected.addClass('selected').next('ul').removeClass('is-hidden').end().parent('.has-children').parent('ul').addClass('moves-out');
         selected.parent('.has-children').siblings('.has-children').children('ul').addClass('is-hidden').end().children('a').removeClass('selected');
@@ -192,8 +206,7 @@
         selected.removeClass('selected').next('ul').addClass('is-hidden').end().parent('.has-children').parent('ul').removeClass('moves-out');
         $('.cd-overlay').removeClass('is-visible');
       }
-      toggleSearch('close');
-    });
+    }
 
     //submenu items - go back link
     $(document).on('click', '.go-back', function (e) {

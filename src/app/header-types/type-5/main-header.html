@@ -98,7 +98,7 @@
                               <span>{{ cat.name }}</span>
                               <i *ngIf="cat?.sub_categories?.length"><lucide-icon name="chevron-right" [size]="16" class="ms-1 align-middle"></lucide-icon> </i>
                             </a> -->
-                            <a class="sub-arrow-sec">
+                            <a class="sub-arrow-sec last-sec" [ngClass]="(cat.link_status)? 'has-link': null">
                               <a (click)="(cat.link_status && cat.link_type!='internal')? commonService.onPageRedirect(cat): null;"
                               [routerLink]="(cat.link_type=='internal')? cat.link: null" style="height: auto; margin-bottom: 0; gap: unset; width: 100%;">
                                 <span class="cat-name">{{ cat.name }}</span> 
@@ -178,7 +178,7 @@
                             <a>{{sec.name}}</a>
                           </li>
                           <li class="slim-scroll" *ngFor="let cat of sec.categories | orderAsc: 'rank';" [ngClass]="(cat?.sub_categories?.length)? 'has-children' : ''">
-                            <a>
+                            <a class="last-sec" [ngClass]="(cat.link_status)? 'has-link': null">
                               <a (click)="(cat.link_status && cat.link_type!='internal')? commonService.onPageRedirect(cat): null;"
                               [routerLink]="(cat.link_type=='internal')? cat.link: null" style="height: auto; margin-bottom: 0; gap: unset; width: 100%;">
                                 <span class="cat-name">{{ cat.name }}</span> 
