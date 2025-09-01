@@ -38,7 +38,7 @@ export class CategoryComponent implements OnInit {
   pageSize: number = this.template_setting.products_per_page;
   bcList: any = []; pageUrl: string;
   IsBrowser: boolean;
-  trendColorList = ["Black", "White/Off-White", "Beige", "Brown", "Grey", "Cream", "Blue", "Red", "Maroon", "Gold", "Silver"];
+  navigationImageList = [];
 
   categorySchema: any = {
     "@context": "https://schema.org",
@@ -65,8 +65,13 @@ export class CategoryComponent implements OnInit {
     "mainEntity": []
   };
 
-
-  navigationImageList = [];
+  @ViewChild('navigationScroller') navigationScroller!: ElementRef;
+  @ViewChild('imageScroller') imageScroller!: ElementRef;
+  isAtStart: boolean = true;
+  isAtEnd: boolean = false;
+  isImageAtStart: boolean = true;
+  isImageAtEnd: boolean = false;
+  activeSlideIndex: number = 0;
 
   constructor(
     @Inject(PLATFORM_ID) private platformId: Object, private router: Router, private activeRoute: ActivatedRoute,
@@ -78,21 +83,31 @@ export class CategoryComponent implements OnInit {
     });
     if(isPlatformBrowser(this.platformId)) this.IsBrowser = true;
   }
-@ViewChild('navigationScroller') navigationScroller!: ElementRef;
-@ViewChild('imageScroller') imageScroller!: ElementRef;
 
-isAtStart: boolean = true;
-isAtEnd: boolean = false;
-isImageAtStart: boolean = true;
-isImageAtEnd: boolean = false;
-
-
-  
+  ngAfterViewInit() {
+    // Initialize button visibility
+    setTimeout(() => {
+      this.updateNavigationButtonVisibility();
+      this.updateImageButtonVisibility();
+      
+      // Listen to scroll events
+      if (this.navigationScroller) {
+        this.navigationScroller.nativeElement.addEventListener('scroll', () => {
+          this.updateNavigationButtonVisibility();
+        });
+      }
+      
+      if (this.imageScroller) {
+        this.imageScroller.nativeElement.addEventListener('scroll', () => {
+          this.updateImageButtonVisibility();
+        });
+      }
+    }, 100);
+  }
 
   ngOnInit(): void {
     this.activeRoute.params.subscribe((params: Params) => {
       this.pageUrl = this.router.url.split('?')[0];
-
       this.showMore = false; this.params = params; this.tag_list = []; this.randomProducts = [];
       if(this.router.url=='/recommended-products' || this.router.url=='/all-products' || this.router.url=='/new-arrivals' || this.router.url=='/on-sale'|| this.router.url=='/featured-products'|| this.router.url=='/best-sellers') {
         this.params = { category_id: this.router.url };
@@ -272,102 +287,89 @@ isImageAtEnd: boolean = false;
       // JSON-LD
       this.commonService.createJsonLD("category-jsonld", this.categorySchema);
     });
-     if (this.category_details.navigationList?.length > 0) {
-    this.activeSlideIndex = 0;
-    this.navigationImageList = this.category_details.navigationList[0].image_list;
+    if (this.category_details.navigationList?.length > 0) {
+      this.activeSlideIndex = 0;
+      this.navigationImageList = this.category_details.navigationList[0].image_list;
+    }
   }
-  }
 
-activeSlideIndex: number = 0;
+  // Update your existing onSelectNav method
+  onSelectNav(index: number) {
+    this.activeSlideIndex = index;
 
-// Update your existing onSelectNav method
-onSelectNav(index: number) {
-  this.activeSlideIndex = index;
-
-  let el = this.document.getElementById('navigationHighlights');
-  if(el) el.style.visibility = "hidden";
-  this.navigationImageList = [];
-  
-  setTimeout(() => {
-    this.navigationImageList = this.category_details.navigationList[index].image_list;
+    let el = this.document.getElementById('navigationHighlights');
+    if(el) el.style.visibility = "hidden";
+    this.navigationImageList = [];
     
-    // Show the image section after content is loaded
-    if(el) el.style.visibility = "visible";
-    
-    // Scroll selected navigation item into view
-    this.scrollToSelectedNav(index);
-    
-    // Update navigation button visibility
-    setTimeout(() => this.updateNavigationButtonVisibility(), 100);
-  }, 0);
-}
-
-// Add these new methods
-scrollNav(direction: string) {
-  const scrollWrapper = this.navigationScroller.nativeElement;
-  const scrollAmount = 200;
-  
-  if (direction === 'left') {
-    scrollWrapper.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
-  } else {
-    scrollWrapper.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+    setTimeout(() => {
+      this.navigationImageList = this.category_details.navigationList[index].image_list;
+      
+      // Show the image section after content is loaded
+      if(el) el.style.visibility = "visible";
+      
+      // Scroll selected navigation item into view
+      this.scrollToSelectedNav(index);
+      
+      // Update navigation button visibility
+      setTimeout(() => this.updateNavigationButtonVisibility(), 100);
+    }, 0);
   }
-  
-  setTimeout(() => this.updateNavigationButtonVisibility(), 300);
-}
 
-scrollImages(direction: string) {
-  const scrollWrapper = this.imageScroller.nativeElement;
-  const scrollAmount = 270; // Slightly more than image width
-  
-  if (direction === 'left') {
-    scrollWrapper.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
-  } else {
-    scrollWrapper.scrollBy({ left: scrollAmount, behavior: 'smooth' });
-  }
-  
-  setTimeout(() => this.updateImageButtonVisibility(), 300);
-}
-
-scrollToSelectedNav(index: number) {
-  const scrollWrapper = this.navigationScroller.nativeElement;
-  const selectedItem = scrollWrapper.children[index] as HTMLElement;
-  
-  if (selectedItem) {
-    selectedItem.scrollIntoView({
-      behavior: 'smooth',
-      block: 'nearest',
-      inline: 'center'
-    });
-  }
-}
-
-updateNavigationButtonVisibility() {
-  if (this.navigationScroller) {
+  // Add these new methods
+  scrollNav(direction: string) {
     const scrollWrapper = this.navigationScroller.nativeElement;
-    this.isAtStart = scrollWrapper.scrollLeft <= 5;
-    this.isAtEnd = scrollWrapper.scrollLeft >= (scrollWrapper.scrollWidth - scrollWrapper.clientWidth - 5);
+    const scrollAmount = 200;
+    
+    if (direction === 'left') {
+      scrollWrapper.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+    } else {
+      scrollWrapper.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+    }
+    
+    setTimeout(() => this.updateNavigationButtonVisibility(), 300);
   }
-}
 
-updateImageButtonVisibility() {
-  if (this.imageScroller) {
+  scrollImages(direction: string) {
     const scrollWrapper = this.imageScroller.nativeElement;
-    this.isImageAtStart = scrollWrapper.scrollLeft <= 5;
-    this.isImageAtEnd = scrollWrapper.scrollLeft >= (scrollWrapper.scrollWidth - scrollWrapper.clientWidth - 5);
+    const scrollAmount = 270; // Slightly more than image width
+    
+    if (direction === 'left') {
+      scrollWrapper.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+    } else {
+      scrollWrapper.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+    }
+    
+    setTimeout(() => this.updateImageButtonVisibility(), 300);
   }
-}
 
-// onSelectNav(index: number) {
-//   this.activeSlideIndex = index;
+  scrollToSelectedNav(index: number) {
+    const scrollWrapper = this.navigationScroller.nativeElement;
+    const selectedItem = scrollWrapper.children[index] as HTMLElement;
+    
+    if (selectedItem) {
+      selectedItem.scrollIntoView({
+        behavior: 'smooth',
+        block: 'nearest',
+        inline: 'center'
+      });
+    }
+  }
 
-//   let el = this.document.getElementById('navigationHighlights');
-//   if(el) el.style.visibility = "hidden";
-//   this.navigationImageList = [];
-//   setTimeout(() => {
-//     this.navigationImageList = this.navigationList[index].image_list;
-//   }, 0);
-// }
+  updateNavigationButtonVisibility() {
+    if (this.navigationScroller) {
+      const scrollWrapper = this.navigationScroller.nativeElement;
+      this.isAtStart = scrollWrapper.scrollLeft <= 5;
+      this.isAtEnd = scrollWrapper.scrollLeft >= (scrollWrapper.scrollWidth - scrollWrapper.clientWidth - 5);
+    }
+  }
+
+  updateImageButtonVisibility() {
+    if (this.imageScroller) {
+      const scrollWrapper = this.imageScroller.nativeElement;
+      this.isImageAtStart = scrollWrapper.scrollLeft <= 5;
+      this.isImageAtEnd = scrollWrapper.scrollLeft >= (scrollWrapper.scrollWidth - scrollWrapper.clientWidth - 5);
+    }
+  }
 
   buildFAQSchema() {
     this.category_details.faqs.forEach(el => {
@@ -488,23 +490,6 @@ updateImageButtonVisibility() {
       }
     });
     if(this.tag_list.length && !click) this.gridType = "three";
-    if(this.tag_list.length) {
-      let trendingColors = this.tag_list[0].option_list.filter(el => this.trendColorList.indexOf(el.name)!=-1);
-      let classicColors = this.tag_list[0].option_list.filter(el => this.trendColorList.indexOf(el.name)==-1);
-      let newtagList = [];
-      if(trendingColors.length) {
-        newtagList.push(
-          { _id: this.tag_list[0]._id, name: "Trending Colors", rank: 1, option_list: trendingColors }
-        )
-      }
-      if(classicColors.length) {
-        newtagList.push(
-          { _id: this.tag_list[0]._id, name: "Classic Colors", rank: 2, option_list: classicColors }
-        )
-      }
-      this.tag_list = newtagList;
-      if(this.tag_list.length===1) this.collapseIndex = 0;
-    }
   }
   onTagFilter(changeEvent) {
     let parentProducts: any = this.parent_list;
@@ -587,26 +572,6 @@ updateImageButtonVisibility() {
     let shuffled = [...arr].sort(() => 0.5 - Math.random());
     return shuffled.slice(0, num);
   }
-  ngAfterViewInit() {
-  // Initialize button visibility
-  setTimeout(() => {
-    this.updateNavigationButtonVisibility();
-    this.updateImageButtonVisibility();
-    
-    // Listen to scroll events
-    if (this.navigationScroller) {
-      this.navigationScroller.nativeElement.addEventListener('scroll', () => {
-        this.updateNavigationButtonVisibility();
-      });
-    }
-    
-    if (this.imageScroller) {
-      this.imageScroller.nativeElement.addEventListener('scroll', () => {
-        this.updateImageButtonVisibility();
-      });
-    }
-  }, 100);
-}
 
   ngOnDestroy() {
     this.subscription.unsubscribe();
