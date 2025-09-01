@@ -48,9 +48,13 @@
 // }
 // }
 
+.color-slider-section{
+  padding-top: 56px;
+}
+
 .category-filter-section{
   .category-card{
-    padding:8px;
+    // padding:8px;
     img
     {
       width: 100%;
@@ -113,7 +117,7 @@
 }
 
 .breadcrumb-navigation .active-page { width: 300px; }
-.multi-slider .swiper-slide { padding: 3px;}
+.multi-slider .swiper-slide { padding: 0px;}
 
 
 @media (max-width: 767px) {
@@ -126,7 +130,7 @@
 
 .category-filter-section{
   .category-card{
-    padding:4px;
+    // padding:4px;
     img
     {
       width: 100%;
@@ -143,7 +147,7 @@
   position: relative;
   width: 100%;
   overflow: hidden;
-  padding: 10px 50px; /* Space for navigation buttons */
+  padding: 20px 0px; /* Space for navigation buttons */
 }
 
 /* Scrollable navigation wrapper */
@@ -152,9 +156,11 @@
   overflow-x: auto;
   scroll-behavior: smooth;
   gap: 15px;
-  padding: 10px 0;
+  padding: 0;
   scrollbar-width: none; /* Firefox */
   -ms-overflow-style: none; /* IE/Edge */
+  border-bottom: 1px solid #b5b5b5;
+  
 }
 
 .navigation-scroll-wrapper::-webkit-scrollbar {
@@ -177,9 +183,10 @@
   align-items: center;
   white-space: nowrap;
   text-align: center;
-  min-height: 30px;
+  min-height: 35px;
   position: relative;
   overflow: hidden;
+  // border-bottom: 2px solid #fff;
 }
 
 .navigation-tab::before {
@@ -195,7 +202,7 @@
 
 .navigation-tab p {
   font-weight: 500;
-  color: #333;
+  color: #3d3d3d;
   font-size: 14px;
   margin: 0;
   transition: color 0.3s ease;
@@ -210,14 +217,23 @@
 }
 
 /* Active state */
-.navigation-item.active .navigation-tab {
-  border-bottom: 2px solid #000000;
-  color: #000;
+// .navigation-item.active .navigation-tab {
+//   border-bottom: 2px solid #D99550;    
+// }
+
+.navigation-item.active .navigation-tab::after{
+    content: "";
+    position: absolute;
+    height: 2px;
+    width: 100%;
+    background-color: #D99550;
+    left: 0;
+    bottom:0;
 }
 
 .navigation-item.active .navigation-tab p {
-  color: 000;
   font-weight: 600;
+  color:#D99550;
 }
 
 /* Navigation buttons */
@@ -227,10 +243,10 @@
   transform: translateY(-50%);
   width: 30px;
   height: 30px;
-  background: white;
+  background: #F2F2F2;
   border: none;
   border-radius: 50%;
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+  // box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -239,14 +255,14 @@
   z-index: 10;
 }
 
-.nav-button:hover {
-  background: #000;
-  transform: translateY(-50%) scale(1.1);
-}
+// .nav-button:hover {
+//   background: #000;
+//   transform: translateY(-50%) scale(1.1);
+// }
 
-.nav-button:hover lucide-icon {
-  color: white;
-}
+// .nav-button:hover lucide-icon {
+//   color: white;
+// }
 
 .nav-button-prev {
   left: 10px;
@@ -302,7 +318,7 @@
 
 @media (max-width: 480px) {
   .navigation-container {
-    padding: 10px 30px;
+    padding: 20px 15px;
   }
   
   .navigation-item {
@@ -340,7 +356,7 @@
 // }
 
 /* Prevent layout shift during updates */
-.category-filter-section .swiper-container {
-  min-height: 300px; /* Adjust based on your content */
-  height:300px;
-}
+// .category-filter-section .swiper-container {
+//   min-height: 300px;
+//   height:300px;
+// }

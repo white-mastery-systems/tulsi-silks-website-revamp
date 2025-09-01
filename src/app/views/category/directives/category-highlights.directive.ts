@@ -16,9 +16,9 @@ export class CategoryHighlightsDirective {
   color_swiper: any ={
     auto_play: false,
     break_points: {
-      1024: { slidesPerView: 7, spaceBetween: 0 },
-      768: { slidesPerView: 3, spaceBetween: 0 },
-      640: { slidesPerView: 3, spaceBetween: 0 },
+      1024: { slidesPerView: 7, spaceBetween: 15 },
+      768: { slidesPerView: 3, spaceBetween: 15 },
+      640: { slidesPerView: 3, spaceBetween: 15 },
       320: { slidesPerView: 3.5, spaceBetween: 2 }
     }
   };
@@ -28,10 +28,10 @@ export class CategoryHighlightsDirective {
     auto_play: true,
     loop:true,
     break_points: {
-      1024: { slidesPerView: 5.5, spaceBetween: 0 },
-      768: { slidesPerView: 4.5, spaceBetween: 0 },
-      640: { slidesPerView: 3.5, spaceBetween: 0 },
-      320: { slidesPerView: 3.5, spaceBetween: 0 }
+      1024: { slidesPerView: 5.5, spaceBetween: 15 },
+      768: { slidesPerView: 4.5, spaceBetween: 15 },
+      640: { slidesPerView: 3.5, spaceBetween: 15 },
+      320: { slidesPerView: 3.5, spaceBetween: 15 }
     }
   };
 

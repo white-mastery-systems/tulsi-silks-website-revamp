@@ -285,6 +285,16 @@ small,
 		-ms-flex-pack: end !important;
 		justify-content: flex-end !important;
 	}	
+
+	.pr-md-5,
+	.px-md-5 {
+		padding-right: 3rem !important;
+	}
+
+	.pl-md-5,
+	.px-md-5 {
+		padding-left: 3rem !important;
+	}
 }
 @media (min-width: 992px) {
 	.container {

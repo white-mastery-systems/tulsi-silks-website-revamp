@@ -370,7 +370,7 @@ ngui-in-view {
   word-wrap: break-word;
   background-clip: border-box;
   border: 1px solid $primary-border;
-  border-radius: 10px;
+  border-radius: 0px;
 }
 
 .secondary-card {
@@ -378,7 +378,7 @@ ngui-in-view {
   word-wrap: break-word;
   background-clip: border-box;
   border: 1px solid $primary-border;
-  border-radius: 10px;
+  border-radius: 0px;
 }
 
 .gray-card {
@@ -1165,6 +1165,9 @@ p.error-msg {
   height:auto
 }
 .category-banner-sec {
+  .container-fluid{
+    max-width:100%;
+  }
   width: 100%;
   float: left;
   text-align: center;
@@ -1178,11 +1181,11 @@ p.error-msg {
   }
   .category-banner-text {
     width: 100%;
-    position: absolute;
+    position: relative;
     color: #000;
-    bottom: 0;  
-    left: 5%;
-    transform: translateY(-15%); 
+    // bottom: 0;  
+    // left: 5%;
+    // transform: translateY(-15%); 
     z-index: 99;
     h1,p {
       color:#000!important;
@@ -1792,12 +1795,12 @@ accordion-group.panel.panel-open {
   padding-left: 20px;
 }
 @media only screen and (max-width: 768px) {
-  .category-banner-col{
-  height:250px
-}
-.category-banner-text{
-  padding: 0 3%;
-}
+//   .category-banner-col{
+//   height:250px
+// }
+// .category-banner-text{
+//   padding: 0 3%;
+// }
   .similar-products {
     padding-left: 0;
   }
