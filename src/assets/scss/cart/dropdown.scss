@@ -2,6 +2,9 @@
 	.mini-cart .cart-box {
 		top: 45px;
 	}
+	.mini-cart {
+		order: 2;
+	}
 }
 @media only screen and (max-width: 575px) {
 	.mini-cart {

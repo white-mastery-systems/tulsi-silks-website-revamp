@@ -50,7 +50,7 @@
                   <a class="sub-arrow-sec" (mouseenter)="(!menu?.sec_count && commonService.desktop_device)? commonService.resetMegaMenu(): ''" (click)="(!menu?.sec_count)? commonService.onPageRedirect(menu): ''">
                     {{menu.name}}
                    <i *ngIf="menu?.sec_count"><lucide-icon name="chevron-right" [size]="16" class="ms-1 align-middle"></lucide-icon> </i>
-                    <ng-container *ngIf="menu?.sec_count && commonService?.screen_width>=768">
+                    <ng-container *ngIf="menu?.sec_count && commonService?.screen_width>=992">
                       <lucide-icon name="chevron-down" [size]="18" class="ms-1 align-middle"></lucide-icon>
                     </ng-container>
                   </a>
@@ -146,7 +146,7 @@
                   [routerLink]="(!menu?.sec_count && menu.link_type=='internal')? menu.link: null"
                   (click)="(!menu?.sec_count && menu.link_type!='internal')? commonService.onPageRedirect(menu): null;">
                     {{menu.name}}
-                    <ng-container *ngIf="menu?.sec_count && commonService?.screen_width>=768">
+                    <ng-container *ngIf="menu?.sec_count && commonService?.screen_width>=992">
                       <lucide-icon name="chevron-down" [size]="18" class="ms-1 align-middle"></lucide-icon>
                     </ng-container>
                   </a>

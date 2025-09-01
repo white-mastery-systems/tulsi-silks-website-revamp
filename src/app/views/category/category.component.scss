@@ -58,7 +58,7 @@
     img
     {
       width: 100%;
-      height: 250px; /* fixed height only for image */
+      height: 320px; /* fixed height only for image */
       object-fit: cover;
     }
   }
@@ -120,7 +120,7 @@
 .multi-slider .swiper-slide { padding: 0px;}
 
 
-@media (max-width: 767px) {
+@media (max-width: 768px) {
   .prod-div .product-image {
   position: relative;
   width: 100%;
@@ -134,7 +134,7 @@
     img
     {
       width: 100%;
-      height: 100px; /* fixed height only for image */
+      height: 200px; /* fixed height only for image */
       object-fit: cover;
     }
   }

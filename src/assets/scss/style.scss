@@ -363,6 +363,15 @@ article, aside, footer, header, nav, section { width: 100%; float: left; positio
 .footer ul{ float: left;}
 .footer ul li{ float: left;}
 
+.product__slider{
+    .product-box .product-image{
+      height:450px;
+      &.product-image-sec2{
+        height:600px;
+      }
+    }
+  }
+
 /* RESPONSIVE MEDIUM  FIXES */
 @media only screen and (max-width: 1199px), only screen and (max-device-width: 1199px) {
 	.about-intro .experience{padding-right: 0;}
@@ -425,4 +434,30 @@ article, aside, footer, header, nav, section { width: 100%; float: left; positio
     .yourstore-band .yourstore-inner{text-align: center;}
 	.footer .terms small a{margin:0!important;padding: 5px;}	
   .color-slider-section{padding-top:40px!important;}
+   .yourstore--band{
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 10px !important;
+  }
+  .product__slider{
+    .product-box .product-image{
+      height:300px!important;
+      &.product-image-sec2{
+        height:300px!important;
+      }
+    }
+  }
+}
+
+@media only screen and (max-width:768px){
+  .product__slider{
+    .product-box .product-image{
+      height:220px;
+      &.product-image-sec2{
+        height:300px;
+      }
+    }
+  }
+  .footer{padding:50px 25px}
 }

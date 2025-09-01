@@ -616,7 +616,12 @@
   .home-section .primary-section{
     margin-bottom: 40px !important;
   }
-  .testimonial-sec .testimonial-container{
+  .background-grey{
+    padding:40px 0!important;
+  }
+  .testimonial-sec{
+    padding-top:40px;
+    .testimonial-container{
     padding-left: 0px !important;
     .testimonial-desc{
       p{
@@ -633,6 +638,7 @@
       top:unset !important;
     }
   }  
+  }
   .slider--{
     left: 15;
     top:24%;
@@ -651,7 +657,7 @@
     }
   }
   .testimonial-sec .custom-title{
-    padding: 20px 0 0px 15px !important;
+    padding: 0px 0 0px 15px !important;
   } 
   .instagram_sec .custom-title{
     padding-left: 15px;
@@ -677,11 +683,7 @@
       object-position: top;
     }
   }
-  .yourstore--band{
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-  }
+ 
   .copyrights{
     padding-top: 5px;
   }
@@ -860,6 +862,8 @@ span{
       img {
         width: 100%;
         height: 100%;
+        object-fit: cover;
+        object-position: top;
       }
     }
     .product-content {
@@ -2088,6 +2092,14 @@ span{
   }
   .masonry-grid8 {
     grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  }
+   .product__slider{
+    .product-box .product-image{
+      height:300px!important;
+      &.product-image-sec2{
+        height:380px!important;
+      }
+    }
   }
 }
 /* ###(Grid 8, 10) ### */
