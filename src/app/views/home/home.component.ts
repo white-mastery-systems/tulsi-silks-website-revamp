@@ -2,7 +2,7 @@ import { Component, OnInit, Inject, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser, DOCUMENT } from '@angular/common';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
-import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+import { DomSanitizer } from '@angular/platform-browser';
 import { environment } from '../../../environments/environment';
 import { StoreApiService } from '../../services/store-api.service';
 import { CommonService } from '../../services/common.service';
@@ -10,7 +10,6 @@ import { SwiperService } from '../../services/swiper.service';
 import { CurrencyConversionService } from '../../services/currency-conversion.service';
 import { DynamicAssetLoaderService } from '../../services/dynamic-asset-loader.service';
 declare const Plyr: any;
-declare const Swiper;
 
 @Component({
   selector: 'app-home',
@@ -25,9 +24,7 @@ export class HomeComponent implements OnInit {
   template_setting = environment.template_setting;
   plyrLoaded: boolean; subscription: Subscription;
   storeSubscription: Subscription; pageLoader: boolean;
-  currType: string;  
-  activeIndex = 0;
-  totalSlides = 0;
+  currType: string; activeIndex = 0;
 
   homeSchema: any = {
     "@context": "https://schema.org",
@@ -83,13 +80,6 @@ export class HomeComponent implements OnInit {
     }
     
   }
-
-  onSwiperInit(swiper: any) {
-  this.totalSlides = swiper.slides.length;
-  swiper.on('slideChange', () => {
-    this.activeIndex = swiper.activeIndex;
-  });
-}
 
   ngAfterContentInit() {
     if(this.commonService.storeLoaded) this.loadHomeContent();

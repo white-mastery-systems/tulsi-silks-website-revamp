@@ -23,18 +23,18 @@ export class CategoryHighlightsDirective {
     }
   };
   
-  // highlights: any = {
-  //   card_count: 6,
-  //   auto_play: true,
-  //   loop:true,
-  //   break_points: {
-  //     1024: { slidesPerView: 5.5, spaceBetween: 15 },
-  //     768: { slidesPerView: 4.5, spaceBetween: 15 },
-  //     640: { slidesPerView: 2.15, spaceBetween: 15 },
-  //     320: { slidesPerView: 2.15, spaceBetween: 15 }
-  //   }
-  // };
-    highlights: any = {
+  highlights: any = {
+    card_count: 6,
+    auto_play: true,
+    loop:true,
+    break_points: {
+      1024: { slidesPerView: 5.5, spaceBetween: 15 },
+      768: { slidesPerView: 4.5, spaceBetween: 15 },
+      640: { slidesPerView: 2.15, spaceBetween: 15 },
+      320: { slidesPerView: 2.15, spaceBetween: 15 }
+    }
+  };
+  groupHighlights: any = {
     card_count: 6,
     auto_play: true,
     loop:true,
@@ -79,7 +79,7 @@ export class CategoryHighlightsDirective {
   fetchSwipeElements() {
     let classList: any = this._element.nativeElement.classList;
     for(let i=0; i<classList.length; i++) {
-      if(classList[i].includes("phls") || classList[i].includes("color_slider") || classList[i].includes("section_slider")) {
+      if(classList[i].includes("phls") || classList[i].includes("ghls") || classList[i].includes("color_slider") || classList[i].includes("section_slider")) {
         let swipeElement = classList[i];
         if(classList[i].includes("phls") && isPlatformBrowser(this.platformId)) {
           if(this.loadedElements.indexOf(swipeElement) == -1) {
@@ -98,6 +98,40 @@ export class CategoryHighlightsDirective {
             if(autoPlay) {
               swipeConfig.autoplay = {
                 delay: 1000,
+                disableOnInteraction: false
+              }
+            }
+            // initialize swiper
+            new Swiper('.'+swipeElement, swipeConfig);
+            let ele: any = document.getElementsByClassName(swipeElement)[0];
+            ele.style.visibility = "unset";
+            // hover event
+            if(autoPlay && swipeElement.includes("desktop")) {
+              $('.'+swipeElement).hover(function () {
+                (this).swiper.autoplay.stop();
+              }, function () {
+                (this).swiper.autoplay.start();
+              });
+            }
+          }
+        }
+        else if(classList[i].includes("ghls") && isPlatformBrowser(this.platformId)) {
+          if(this.loadedElements.indexOf(swipeElement) == -1) {
+            this.loadedElements.push(swipeElement);
+            // swiper config
+            let swipeConfig: any = {
+              speed: 700,
+              loop: true,
+              breakpoints: this.groupHighlights.break_points,
+              navigation: {
+                nextEl: '#group_highlight_next',
+                prevEl: '#group_highlight_prev'
+              }
+            }
+            let autoPlay = this.groupHighlights.auto_play;
+            if(autoPlay) {
+              swipeConfig.autoplay = {
+                delay: 2000,
                 disableOnInteraction: false
               }
             }

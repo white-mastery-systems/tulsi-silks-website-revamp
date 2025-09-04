@@ -246,9 +246,10 @@ export class CategoryComponent implements OnInit {
             setTimeout(() => { this.pageLoader = false; }, 500);
             if(result.status)
             {
+              this.activeSlideIndex = 0;
               this.category_details = result.category_details;
               if(this.category_details.navigationList?.length)
-                this.navigationImageList = this.category_details.navigationList[0].image_list;
+                this.navigationImageList = this.category_details.navigationList[this.activeSlideIndex].image_list;
               if(this.category_details?.faqs?.length) this.buildFAQSchema();
               // seo
               this.updateMetaData();
@@ -289,7 +290,7 @@ export class CategoryComponent implements OnInit {
     });
     if (this.category_details.navigationList?.length > 0) {
       this.activeSlideIndex = 0;
-      this.navigationImageList = this.category_details.navigationList[0].image_list;
+      this.navigationImageList = this.category_details.navigationList[this.activeSlideIndex].image_list;
     }
   }
 
