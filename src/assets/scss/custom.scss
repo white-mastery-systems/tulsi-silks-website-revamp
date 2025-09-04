@@ -1164,17 +1164,19 @@ p.error-msg {
 .category-banner-col{
   height:auto
 }
-.category-banner-sec {
-  .container-fluid{
-    max-width:100%;
-  }
+.category-banner-sec {  
+  // .container-fluid{
+  //   max-width:100%;
+  // }
+  background:#f2f2f2;
   width: 100%;
   float: left;
   text-align: center;
   z-index: -1;
+  padding:40px 0;
   img {
     width: 100%;
-    height: 400px;
+    height: 450px;
     // opacity: 0.5;
     object-fit: cover;
     object-position: center;

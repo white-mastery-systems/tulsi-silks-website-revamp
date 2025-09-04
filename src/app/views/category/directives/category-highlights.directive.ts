@@ -23,15 +23,26 @@ export class CategoryHighlightsDirective {
     }
   };
   
-  highlights: any = {
+  // highlights: any = {
+  //   card_count: 6,
+  //   auto_play: true,
+  //   loop:true,
+  //   break_points: {
+  //     1024: { slidesPerView: 5.5, spaceBetween: 15 },
+  //     768: { slidesPerView: 4.5, spaceBetween: 15 },
+  //     640: { slidesPerView: 2.15, spaceBetween: 15 },
+  //     320: { slidesPerView: 2.15, spaceBetween: 15 }
+  //   }
+  // };
+    highlights: any = {
     card_count: 6,
     auto_play: true,
     loop:true,
     break_points: {
-      1024: { slidesPerView: 5.5, spaceBetween: 15 },
-      768: { slidesPerView: 4.5, spaceBetween: 15 },
-      640: { slidesPerView: 2.15, spaceBetween: 15 },
-      320: { slidesPerView: 2.15, spaceBetween: 15 }
+      1024: { slidesPerView: 3, spaceBetween: 15 },
+      768: { slidesPerView: 3, spaceBetween: 15 },
+      640: { slidesPerView: 1.5, spaceBetween: 15 },
+      320: { slidesPerView: 1.5, spaceBetween: 15 }
     }
   };
 

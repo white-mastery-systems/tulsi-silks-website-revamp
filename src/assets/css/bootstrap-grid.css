@@ -295,6 +295,16 @@ small,
 	.px-md-5 {
 		padding-left: 3rem !important;
 	}
+
+	.pr-md-0,
+	.px-md-0 {
+		padding-right: 0 !important;
+	}
+
+	.pl-md-0,
+	.px-md-0 {
+		padding-left: 0!important;
+	}
 }
 @media (min-width: 992px) {
 	.container {
