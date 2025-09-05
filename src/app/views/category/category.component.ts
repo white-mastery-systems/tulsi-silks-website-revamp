@@ -246,10 +246,11 @@ export class CategoryComponent implements OnInit {
             setTimeout(() => { this.pageLoader = false; }, 500);
             if(result.status)
             {
-              this.activeSlideIndex = 0;
               this.category_details = result.category_details;
-              if(this.category_details.navigationList?.length)
-                this.navigationImageList = this.category_details.navigationList[this.activeSlideIndex].image_list;
+              if(this.category_details.navigationList?.length) {
+                this.category_details.navigationList = this.category_details.navigationList.sort((a, b) => 0 - (a.rank > b.rank ? -1 : 1))
+                this.onSelectNav(0);
+              }
               if(this.category_details?.faqs?.length) this.buildFAQSchema();
               // seo
               this.updateMetaData();
@@ -288,29 +289,21 @@ export class CategoryComponent implements OnInit {
       // JSON-LD
       this.commonService.createJsonLD("category-jsonld", this.categorySchema);
     });
-    if (this.category_details.navigationList?.length > 0) {
-      this.activeSlideIndex = 0;
-      this.navigationImageList = this.category_details.navigationList[this.activeSlideIndex].image_list;
-    }
+    if (this.category_details.navigationList?.length) this.onSelectNav(0);
   }
 
   // Update your existing onSelectNav method
   onSelectNav(index: number) {
     this.activeSlideIndex = index;
-
     let el = this.document.getElementById('navigationHighlights');
     if(el) el.style.visibility = "hidden";
     this.navigationImageList = [];
-    
     setTimeout(() => {
       this.navigationImageList = this.category_details.navigationList[index].image_list;
-      
       // Show the image section after content is loaded
-      if(el) el.style.visibility = "visible";
-      
+      if(el) el.style.visibility = "visible";   
       // Scroll selected navigation item into view
       this.scrollToSelectedNav(index);
-      
       // Update navigation button visibility
       setTimeout(() => this.updateNavigationButtonVisibility(), 100);
     }, 0);
@@ -344,15 +337,17 @@ export class CategoryComponent implements OnInit {
   }
 
   scrollToSelectedNav(index: number) {
-    const scrollWrapper = this.navigationScroller.nativeElement;
-    const selectedItem = scrollWrapper.children[index] as HTMLElement;
-    
-    if (selectedItem) {
-      selectedItem.scrollIntoView({
-        behavior: 'smooth',
-        block: 'nearest',
-        inline: 'center'
-      });
+    if(this.navigationScroller?.nativeElement) {
+      const scrollWrapper = this.navigationScroller.nativeElement;
+      const selectedItem = scrollWrapper.children[index] as HTMLElement;
+      
+      if (selectedItem) {
+        selectedItem.scrollIntoView({
+          behavior: 'smooth',
+          block: 'nearest',
+          inline: 'center'
+        });
+      }
     }
   }
 

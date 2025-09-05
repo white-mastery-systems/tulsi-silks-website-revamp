@@ -108,16 +108,16 @@
               id="navigationHighlights" [ngClass]="commonService.desktop_device? 'desktop_ghls': 'ghls'" style="visibility: hidden;" appCategoryHighlights>
               <div class="swiper-wrapper">
                 <div *ngFor="let x of navigationImageList | orderAsc: 'rank'; let i=index;" class="swiper-slide">
-                  <div class="category-card-two">
+                  <div (click)="commonService.onPageRedirect(x);" class="category-card-two">
                     <h3>{{ x.heading }}</h3>
                     <div *ngIf="x.images?.length" class="avatars">
                       <ng-container *ngFor="let y of x.images;">
                         <img width="100%" height="100%" [src]="imgBaseUrl+y.image" alt="Image">
                       </ng-container>
-                      <span class="more">+3</span>
+                      <span *ngIf="x.totalSections" class="more">+{{x.totalSections}}</span>
                     </div>
                     <p *ngIf="x.sub_heading">{{x.sub_heading}}</p>
-                    <button (click)="commonService.onPageRedirect(x);" class="primary-btn">View All</button>
+                    <button class="primary-btn">View All</button>
                   </div>
                 </div>
               </div>
