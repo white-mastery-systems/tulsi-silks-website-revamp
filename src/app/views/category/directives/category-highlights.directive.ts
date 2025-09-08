@@ -41,8 +41,8 @@ export class CategoryHighlightsDirective {
     break_points: {
       1024: { slidesPerView: 3, spaceBetween: 15 },
       768: { slidesPerView: 3, spaceBetween: 15 },
-      640: { slidesPerView: 1.5, spaceBetween: 15 },
-      320: { slidesPerView: 1.5, spaceBetween: 15 }
+      640: { slidesPerView: 1.15, spaceBetween: 15 },
+      320: { slidesPerView: 1.15, spaceBetween: 15 }
     }
   };
 

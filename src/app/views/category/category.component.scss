@@ -194,6 +194,18 @@
 
 }
 
+@media(max-width:767px){
+ .category-card-two{
+  padding:20px!important;
+  .avatars{
+    img, .more{
+      width:46px!important;
+      height:46px!important;
+    }
+  }
+ }
+}
+
 /* Main navigation container */
 .navigation-container {
   position: relative;
