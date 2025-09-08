@@ -107,10 +107,12 @@ export class CategoryComponent implements OnInit {
       }
 
       // Listen to window resize events
-      window.addEventListener('resize', () => {
-        this.checkNavigationOverflow();
-        this.updateNavigationButtonVisibility();
-      });
+      if(isPlatformBrowser(this.platformId)) {
+        window.addEventListener('resize', () => {
+          this.checkNavigationOverflow();
+          this.updateNavigationButtonVisibility();
+        });
+      }
     }, 100);
   }
 
@@ -145,7 +147,9 @@ export class CategoryComponent implements OnInit {
           this.tag_list = this.commonService.category_page_attr.tag_list;
           this.onTagFilter(false);
           let scrollPos = this.commonService.category_page_attr.scroll_y_pos;
-          setTimeout(() => { window.scrollTo({ top: scrollPos, behavior: 'smooth' }); }, 500);
+          if(isPlatformBrowser(this.platformId)) {
+            setTimeout(() => { window.scrollTo({ top: scrollPos, behavior: 'smooth' }); }, 500);
+          }
           this.commonService.category_page_attr = {};
         }
         else {
@@ -252,7 +256,9 @@ export class CategoryComponent implements OnInit {
           this.tag_list = this.commonService.category_page_attr.tag_list;
           this.onTagFilter(false);
           let scrollPos = this.commonService.category_page_attr.scroll_y_pos;
-          setTimeout(() => { window.scrollTo({ top: scrollPos, behavior: 'smooth' }); }, 500);
+          if(isPlatformBrowser(this.platformId)) {
+            setTimeout(() => { window.scrollTo({ top: scrollPos, behavior: 'smooth' }); }, 500);
+          }
           this.commonService.category_page_attr = {};
         }
         else {
@@ -603,10 +609,12 @@ export class CategoryComponent implements OnInit {
     this.commonService.removeElement('category-faq-jsonld');
 
     // Remove event listeners
-    window.removeEventListener('resize', () => {
-      this.checkNavigationOverflow();
-      this.updateNavigationButtonVisibility();
-    });
+    if(isPlatformBrowser(this.platformId)) {
+      window.removeEventListener('resize', () => {
+        this.checkNavigationOverflow();
+        this.updateNavigationButtonVisibility();
+      });
+    }
   }
 
 }
