@@ -192,7 +192,7 @@
     
     $(document).on('click', '.last-sec > i', function (e) {
       if(!checkWindowWidth()) e.preventDefault();
-      let selected = $(this).parent();
+      let selected = $(this);
       menuChange(selected);
       toggleSearch('close');
     });
