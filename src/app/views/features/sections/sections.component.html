@@ -1,0 +1,61 @@
+<section *ngIf="!commonService.menu_list.length">
+  <app-loading-spinner></app-loading-spinner>
+</section>
+
+<section class="over-all smooth-fadein" *ngIf="commonService.menu_list.length">
+
+  <!-- breadcrumb -->
+  <section class="head-breadcrumb">
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="breadcrumb-navigation mt-3">
+            <ul class="collapsed">
+              <li><a routerLink="/">Home</a></li>
+              <li><span class="active-page">{{ (params.type=='by-fabrics')? 'By Fabrics': 'By Crafts' }}</span></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!--# breadcrumb #-->
+
+  <section class="common-site-section">
+    <div class="container-fluid">
+      <div class="row">
+        <ng-container *ngFor="let menu of commonService.menu_list;">
+          <ng-container *ngFor="let section of menu.sections;">
+            <!-- By Fabrics -->
+            <ng-container *ngIf="params.type=='by-fabrics' && section.name=='By Fabrics'">
+              <div *ngFor="let x of section.categories | orderAsc: 'rank';" class="col-lg-3 col-md-6 col-sm-6 col-12 d-flex">
+                <div class="team-member gift-card cursor">
+                  <figure class="mb-0" (click)="!x.btn_status? onSelectDiscount(x): ''">
+                    <img class="mb-1" width="100%" height="100%" [src]="imgBaseUrl+x.image" alt="fabric">
+                  </figure>
+                  <div class="gift-card-values">
+                    <h4 class="text-uppercase">{{x.name}}</h4>
+                  </div>
+                </div>
+              </div>
+            </ng-container>
+            <!-- By Crafts -->
+            <ng-container *ngIf="params.type=='by-crafts' && section.name=='By Crafts'">
+              <div *ngFor="let x of section.categories | orderAsc: 'rank';" class="col-lg-3 col-md-6 col-sm-6 col-12 d-flex">
+                <div class="team-member gift-card cursor">
+                  <figure class="mb-0" (click)="!x.btn_status? onSelectDiscount(x): ''">
+                    <img class="mb-1" width="100%" height="100%" [src]="imgBaseUrl+x.image" alt="craft">
+                  </figure>
+                  <div class="gift-card-values">
+                    <h4 class="text-uppercase">{{x.name}}</h4>
+                  </div>
+                </div>
+              </div>
+            </ng-container>
+          </ng-container>
+        </ng-container>
+      </div>
+    </div>
+  </section>
+
+</section>

@@ -7,12 +7,15 @@ import { HomeComponent } from './home.component';
 import { HomeSwiperDirective } from './directives/home-swiper.directive';
 import { HomeHighlightsDirective } from './directives/home-highlights.directive';
 
+import { LucideAngularModule, ChevronLeft, ChevronRight } from 'lucide-angular';
+
 @NgModule({
   declarations: [HomeComponent, HomeSwiperDirective, HomeHighlightsDirective],
   imports: [
     TabsModule.forRoot(),
     SharedModule,
-    HomeRoutingModule
+    HomeRoutingModule,
+    LucideAngularModule.pick({ ChevronLeft, ChevronRight })
   ]
 })
 

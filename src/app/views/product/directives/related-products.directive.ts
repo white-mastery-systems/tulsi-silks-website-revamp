@@ -10,13 +10,24 @@ declare const Swiper: any;
 export class RelatedProductsDirective {
 
   private observer: any;
+  loadedElements: any = [];
+  
   private swiperInfo: any = {
-    auto_play: true,
+    auto_play: false,
     break_points: {
-      1024: { slidesPerView: 4, spaceBetween: 0 },
-      768: { slidesPerView: 3, spaceBetween: 0 },
-      640: { slidesPerView: 2, spaceBetween: 0 },
-      320: { slidesPerView: 1.5, spaceBetween: 0 }
+      1024: { slidesPerView: 4.2, spaceBetween: 15 },
+      768: { slidesPerView: 3, spaceBetween: 15 },
+      640: { slidesPerView: 2, spaceBetween: 15 },
+      320: { slidesPerView: 1.5, spaceBetween: 15 }
+    }
+  };
+  private blogSwiperInfo: any = {
+    auto_play: false,
+    break_points: {
+      1024: { slidesPerView: 4.2, spaceBetween: 15 },
+      768: { slidesPerView: 3, spaceBetween: 15 },
+      640: { slidesPerView: 2, spaceBetween: 15 },
+      320: { slidesPerView: 1.5, spaceBetween: 15 }
     }
   };
 
@@ -40,36 +51,104 @@ export class RelatedProductsDirective {
   fetchSwipeElements() {
     let classList: any = this._element.nativeElement.classList;
     for(let i=0; i<classList.length; i++) {
-      if(classList[i].includes("related_prod_slider")) {
+      if(classList[i].includes("related_prod_slider1")) {
         let swipeElement = classList[i];
-        // swiper config
-        let swipeConfig: any = {
-          speed: 500,
-          breakpoints: this.swiperInfo.break_points,
-          navigation: {
-            nextEl: '#related_prod_next',
-            prevEl: '#related_prod_prev'
+        if(this.loadedElements.indexOf(swipeElement) == -1) {
+          this.loadedElements.push(swipeElement);
+          // swiper config
+          let swipeConfig: any = {
+            speed: 500,
+            breakpoints: this.swiperInfo.break_points,
+            navigation: {
+              nextEl: '#related_prod_next1',
+              prevEl: '#related_prod_prev1'
+            }
+          }
+          let autoPlay = this.swiperInfo.auto_play;
+          if(autoPlay) {
+            swipeConfig.autoplay = {
+              delay: 3000,
+              disableOnInteraction: false
+            }
+          }
+          // initialize swiper
+          let swipeInit = new Swiper('.'+swipeElement, swipeConfig);
+          // hover event
+          if(autoPlay && swipeElement.includes("desktop")) {
+            swipeInit.el.addEventListener("mouseover", () => {  
+              swipeInit.autoplay.stop();
+            });
+            swipeInit.el.addEventListener("mouseout", () => {   
+              swipeInit.autoplay.start();
+            });
           }
         }
-        let autoPlay = this.swiperInfo.auto_play;
-        if(autoPlay) {
-          swipeConfig.autoplay = {
-            delay: 3000,
-            disableOnInteraction: false
+      }
+      else if(classList[i].includes("related_prod_slider2")) {
+        let swipeElement = classList[i];
+        if(this.loadedElements.indexOf(swipeElement) == -1) {
+          this.loadedElements.push(swipeElement);
+          // swiper config
+          let swipeConfig: any = {
+            speed: 500,
+            breakpoints: this.swiperInfo.break_points,
+            navigation: {
+              nextEl: '#related_prod_next2',
+              prevEl: '#related_prod_prev2'
+            }
+          }
+          let autoPlay = this.swiperInfo.auto_play;
+          if(autoPlay) {
+            swipeConfig.autoplay = {
+              delay: 3000,
+              disableOnInteraction: false
+            }
+          }
+          // initialize swiper
+          let swipeInit = new Swiper('.'+swipeElement, swipeConfig);
+          // hover event
+          if(autoPlay && swipeElement.includes("desktop")) {
+            swipeInit.el.addEventListener("mouseover", () => {  
+              swipeInit.autoplay.stop();
+            });
+            swipeInit.el.addEventListener("mouseout", () => {   
+              swipeInit.autoplay.start();
+            });
           }
         }
-        // initialize swiper
-        let swipeInit = new Swiper('.'+swipeElement, swipeConfig);
-        // hover event
-        if(autoPlay && swipeElement.includes("desktop")) {
-          swipeInit.el.addEventListener("mouseover", () => {  
-            swipeInit.autoplay.stop();
-          });
-          swipeInit.el.addEventListener("mouseout", () => {   
-            swipeInit.autoplay.start();
-          });
+      }
+      else if(classList[i].includes("blogslider1")) {
+        let swipeElement = classList[i];
+        if(this.loadedElements.indexOf(swipeElement) == -1) {
+          this.loadedElements.push(swipeElement);
+          // swiper config
+          let swipeConfig: any = {
+            speed: 500,
+            // breakpoints: this.blogSwiperInfo.break_points,
+            navigation: {
+              nextEl: '#blog_next2',
+              prevEl: '#blog_prev2'
+            }
+          }
+          let autoPlay = this.blogSwiperInfo.auto_play;
+          if(autoPlay) {
+            swipeConfig.autoplay = {
+              delay: 3000,
+              disableOnInteraction: false
+            }
+          }
+          // initialize swiper
+          let swipeInit = new Swiper('.'+swipeElement, swipeConfig);
+          // hover event
+          if(autoPlay && swipeElement.includes("desktop")) {
+            swipeInit.el.addEventListener("mouseover", () => {  
+              swipeInit.autoplay.stop();
+            });
+            swipeInit.el.addEventListener("mouseout", () => {   
+              swipeInit.autoplay.start();
+            });
+          }
         }
-        break;
       }
     }
   }

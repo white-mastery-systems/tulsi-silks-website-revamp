@@ -41,7 +41,6 @@ export class MainHeaderComponent {
     this.cartService.findCurrency();
     localStorage.setItem("selected_currency", this.commonService.encryptData(this.commonService.temp_currency));
   }
-
   // updateCartList(autoCheckout) {
   //   this.list = []; this.unique_product_list = [];
   //   // run in browser side(for overcome ssr 504 Gateway Error)

@@ -26,13 +26,14 @@
 /* .accordion .card [aria-expanded="true"]{ color: #485cc7;} */
 
 /* TABS */
-.tabs{ width:100%; float:left; margin-bottom:0px; overflow: hidden; position: relative}
+.tabs{ width:100%; float:left; margin-bottom:0px; overflow: unset; position: relative}
 .tabs .in{ opacity: 1;}
 .tabs .nav-tabs{ float:left; display: flex; margin: 0; padding: 0; border-bottom:none; position: relative;}
 .tabs .nav-tabs:after{content: ""; width: 1000px; height: 1px; background: #eee; position: absolute; left: 100%; bottom: 0;}
 .tabs .nav-tabs li{ float: left; }
 .tabs .nav-tabs li a{ float: left; border-radius:0; font-weight:500; border:1px solid #eee; margin-right:-1px; } 
-.tabs .nav-tabs li a span{ float: left; padding:15px 20px;}
+.tabs .nav-tabs li a span{ float: left; padding:10px 15px 20px;font-size: 22px;}
+// .tabs .nav-tabs li a span:first-child{padding-left: 0 !important;}
 .tabs .nav-tabs li a:hover{text-decoration: none; }
 .tabs .nav-tabs li .active {border:1px solid #eee;  border-bottom-color:transparent;}
 .tabs .nav-tabs li .active:focus{border:1px solid #eee;  border-bottom-color:transparent;}

@@ -2,7 +2,7 @@ import { Component, OnInit, Inject, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser, DOCUMENT } from '@angular/common';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
-import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+import { DomSanitizer } from '@angular/platform-browser';
 import { environment } from '../../../environments/environment';
 import { StoreApiService } from '../../services/store-api.service';
 import { CommonService } from '../../services/common.service';
@@ -23,7 +23,8 @@ export class HomeComponent implements OnInit {
   imgBaseUrl: string = environment.img_baseurl;
   template_setting = environment.template_setting;
   plyrLoaded: boolean; subscription: Subscription;
-  storeSubscription: Subscription;
+  storeSubscription: Subscription; pageLoader: boolean;
+  currType: string; activeIndex = 0;
 
   homeSchema: any = {
     "@context": "https://schema.org",
@@ -54,12 +55,30 @@ export class HomeComponent implements OnInit {
     this.storeSubscription = this.commonService.storeDetailsReceived.subscribe(() => {
       this.loadHomeContent();
     });
+    
   }
 
   ngOnInit(): void {
     this.setSliderHeight();
     // JSON-LD
     this.commonService.createJsonLD("home-jsonld", this.homeSchema);
+    if(!this.commonService.contact_page_info) {
+      this.pageLoader = true;
+      this.storeApi.CONTACT_PAGE_INFO().subscribe(result => {
+        setTimeout(() => { this.pageLoader = false; }, 500);
+        if(result.status) {
+          this.commonService.contact_page_info = result.data;
+          if(this.commonService.contact_page_info.map_url) {
+            this.commonService.contact_page_info.map_url = this.sanitizer.bypassSecurityTrustResourceUrl(this.commonService.contact_page_info.map_url);
+          }
+        }
+        else {
+          console.log("response", result);
+          this.commonService.contact_page_info = {};
+        }
+      });
+    }
+    
   }
 
   ngAfterContentInit() {
@@ -73,6 +92,42 @@ export class HomeComponent implements OnInit {
       this.storeApi.LAYOUT_LIST().subscribe(result => {
         if(result.status) {
           let layoutList = JSON.parse(result.list).sort((a, b) => 0 - (a.rank > b.rank ? -1 : 1));
+          layoutList.push({
+            type: 'instagram',
+            image_list: [
+              { permalink: 'https://www.instagram.com/tulsisilks', media_url: 'assets/images/insta1.png' },
+              { permalink: 'https://www.instagram.com/tulsisilks', media_url: 'assets/images/insta2.png' },
+              { permalink: 'https://www.instagram.com/tulsisilks', media_url: 'assets/images/insta3.png' },
+              { permalink: 'https://www.instagram.com/tulsisilks', media_url: 'assets/images/insta1.png' },
+              { permalink: 'https://www.instagram.com/tulsisilks', media_url: 'assets/images/insta2.png' },
+              { permalink: 'https://www.instagram.com/tulsisilks', media_url: 'assets/images/insta3.png' },
+              { permalink: 'https://www.instagram.com/tulsisilks', media_url: 'assets/images/insta1.png' },
+              { permalink: 'https://www.instagram.com/tulsisilks', media_url: 'assets/images/insta2.png' },
+              { permalink: 'https://www.instagram.com/tulsisilks', media_url: 'assets/images/insta3.png' }
+            ],
+            heading: "Connect With Us",
+            sub_heading: "See how our silks shine in real life",
+            blogs_type: "slider",
+            rank: layoutList.length+1
+          });
+          let occasionList = layoutList.filter(el => el.heading=='occasion');
+          layoutList = layoutList.filter(el => el.heading!='occasion' && el.type!='multiple_featured_product');
+          if(occasionList.length) {
+            layoutList.push({
+              "active_status": true,
+              "_id": occasionList[0]._id,
+              "rank": occasionList[0].rank,
+              "type": "multiple_featured_section",
+              "name": "Our Occasion",
+              "heading": "Shop by Occasion",
+              "sub_heading": "From everyday to occasion wear",
+              "store_id": occasionList[0].store_id,
+              "image_list": [],
+              "created_on": occasionList[0].created_on,
+              "updated_on": occasionList[0].updated_on,
+              "multitab_list": occasionList
+            });
+          }
           this.updateLayoutList(layoutList);
           this.findCurrency();
           setTimeout(() => { this.initializeSwiper(layoutList); }, 100);
@@ -151,6 +206,9 @@ export class HomeComponent implements OnInit {
     let blogIndex = layoutList.findIndex(obj => obj.type=='blogs');
     if(blogIndex!=-1 && this.commonService.ys_features.indexOf('blogs')!=-1) {
       let blogData = layoutList[blogIndex];
+      if(!this.commonService?.desktop_device && blogData.blogs_type=='grid') {
+        blogData.blogs_type = 'slider';
+      }
       this.storeApi.HOME_PAGE_BLOG_LIST(this.template_setting.blog_count).subscribe(result => {
         if(result.status) {
           let blogList = JSON.parse(result.list);
@@ -241,6 +299,14 @@ export class HomeComponent implements OnInit {
         }
       }
       else if(segment.type=="featured_product") {
+        if(!this.commonService?.desktop_device && segment.blogs_type=='grid') {
+          segment.blogs_type = 'slider';
+        }
+        if(!segment.slider_type && segment.blogs_type=='slider') {
+          if(!this.currType) this.currType = 'two';
+          segment.slider_type = (this.currType==='one')? 'two': 'one';
+          this.currType = segment.slider_type;
+        }
         let cardCount = this.swiperService.featured_products.card_count;
         segment.product_list.forEach(obj => {
           obj.created_on = new Date(new Date(new Date(obj.created_on).setHours(23,59,59,59)).setDate(new Date(obj.created_on).getDate() + 30));
@@ -294,6 +360,9 @@ export class HomeComponent implements OnInit {
       else if(segment.type=="multiple_featured_product") {
         let cardCount = this.swiperService.multi_tab_featured_products.card_count;
         for(let tab of segment.multitab_list) {
+          tab.blogs_type = 'slider';
+          tab.activeIndex = 0;
+          if(this.commonService?.desktop_device) tab.blogs_type = 'grid';
           tab.product_list.forEach(obj => {
             obj.created_on = new Date(new Date(new Date(obj.created_on).setHours(23,59,59,59)).setDate(new Date(obj.created_on).getDate() + 30));
             if(obj.badge_list?.length) obj.badge_list = this.commonService.buildTags(obj.badge_list);
@@ -385,6 +454,7 @@ export class HomeComponent implements OnInit {
       else if(segment.featured_category_id=="new_arrivals") this.router.navigate(['/new-arrivals']);
       else if(segment.featured_category_id=="on_sale") this.router.navigate(['/on-sale']);
       else if(segment.featured_category_id=="featured_products") this.router.navigate(['/featured-products']);
+      else if(segment.featured_category_id=="best_sellers") this.router.navigate(['/best-sellers']);
       else this.getCatalogInfo(segment.featured_category_id);
     }
     else if(segment.type=="featured") this.router.navigate(['/featured-products']);

@@ -36,7 +36,7 @@ $primary-theme-color: #1f1b24;
 
 .add-to-cart {
   display: flex;
-  justify-content: center;
+  justify-content: start;
   align-items: center;
   a{
     font-weight: 400;
@@ -51,3 +51,21 @@ $primary-theme-color: #1f1b24;
 .product-box .product-content .add-to-cart a:after { content: ''; display: block; position: absolute; right: 0; bottom: 0%; height: 2px; width: 0; background: #1f1b24; transition: width .25s ease; }
 .product-box .product-content .add-to-cart a:hover:before { width: 100%; background: #1f1b24; transition: width .25s ease; }
 .product-box .product-content .add-to-cart a:hover:after { width: 100%; background: transparent; transition: all 0s ease; }
+
+.swiper-button-next, .swiper-container-rtl .swiper-button-prev {
+    right: -2%;
+    left: auto;
+}
+.swiper-button-prev, .swiper-container-rtl .swiper-button-next {
+    left: -2%;
+    right: auto;
+}
+.swiper-button-prev, .swiper-button-next{
+  top: 41%;
+}
+.swiper-container .swiper-button-next:after{
+  content: none !important;
+}
+.swiper-container .swiper-button-prev:after{
+  content: none !important;
+}

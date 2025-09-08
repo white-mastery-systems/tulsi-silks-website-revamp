@@ -69,7 +69,7 @@
                           </span>
                         </div>
                         <div class="mt-2 mb-2">
-                          <button class="primary-btn w-100" routerLink="{{ x.seo_status ? '/product/'+x.seo_details.page_url+'/1' : '/product/'+x.product_id+'/1' }}">PURCHASE</button>
+                          <button class="primary-btn w-100" routerLink="{{ x.seo_status ? '/product/'+x.seo_details.page_url+'/1' : '/product/'+x.product_id+'/1' }}">Purchase</button>
                         </div>
                         <div class="d-flex justify-content-end mt-2 mb-2" (click)="removeFromWishList(i);">
                           <i class="material-icons delete-icon">delete</i>
@@ -112,7 +112,7 @@
                     </span>
                   </td>
                   <td>
-                    <button class="primary-btn" routerLink="{{ x.seo_status ? '/product/'+x.seo_details.page_url+'/1' : '/product/'+x.product_id+'/1' }}">PURCHASE</button>
+                    <button class="primary-btn" routerLink="{{ x.seo_status ? '/product/'+x.seo_details.page_url+'/1' : '/product/'+x.product_id+'/1' }}">Purchase</button>
                   </td>
                   <td class="text-center">
                     <a (click)="removeFromWishList(i);">

@@ -8,16 +8,20 @@ import { SharedModule } from '../../shared/shared.module';
 import { CustomizationModule } from '../../shared/modules/customization/customization.module';
 import { ProductComponent } from './product.component';
 import { RelatedProductsDirective } from './directives/related-products.directive';
+import { LucideAngularModule, ChevronLeft, ChevronRight, XCircle, Heart, Share2 } from 'lucide-angular';
+import { ButtonFlipDirective } from './directives/button-flip.directive';
+import { StickyFooterDirective } from './directives/sticky-footer.directive';
 
 @NgModule({
-  declarations: [ProductComponent, RelatedProductsDirective],
+  declarations: [ProductComponent, RelatedProductsDirective, ButtonFlipDirective, StickyFooterDirective],
   imports: [
     SharedModule,
     CustomizationModule,
     ProductRoutingModule,
     YouTubePlayerModule,
     NgxPaginationModule,
-    AccordionModule.forRoot()
+    AccordionModule.forRoot(),
+    LucideAngularModule.pick({ ChevronLeft, ChevronRight, XCircle, Heart, Share2 })
   ]
 })
 

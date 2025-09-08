@@ -20,6 +20,7 @@ export class CheckoutHeaderComponent implements OnInit {
     if(environment.header_type=='type-1' || environment.header_type=='type-6' || environment.header_type=='type-7') {
       this.leftLogo = true;
     }
+    if(this.commonService.desktop_device) this.leftLogo = true;
   }
 
 }

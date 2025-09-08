@@ -20,6 +20,7 @@ const mainRoutes: Routes = [
   { path: 'recommended-products', loadChildren: () => import('./views/category/category.module').then(m => m.CategoryModule) },
   { path: 'on-sale', loadChildren: () => import('./views/category/category.module').then(m => m.CategoryModule) },
   { path: 'featured-products', loadChildren: () => import('./views/category/category.module').then(m => m.CategoryModule) },
+  { path: 'best-sellers', loadChildren: () => import('./views/category/category.module').then(m => m.CategoryModule) },
   { path: 'all-products', loadChildren: () => import('./views/category/category.module').then(m => m.CategoryModule) },
   { path: 'new-arrivals', loadChildren: () => import('./views/category/category.module').then(m => m.CategoryModule) },
 
@@ -28,6 +29,7 @@ const mainRoutes: Routes = [
   { path: 'gift-cards', loadChildren: () => import('./views/features/gift-cards/gift-cards.module').then(m => m.GiftCardsModule) },
   { path: 'blogs', loadChildren: () => import('./views/features/blogs/blogs.module').then(m => m.BlogsModule) },
   { path: 'catalog-page', loadChildren: () => import('./views/features/discounts/discounts.module').then(m => m.DiscountsModule) },
+  { path: 'sections/:type', loadChildren: () => import('./views/features/sections/sections.module').then(m => m.SectionsModule) },
   { path: 'brands', loadChildren: () => import('./views/features/collections/collections.module').then(m => m.CollectionsModule) },
   { path: 'services', loadChildren: () => import('./views/features/appointment/appointment.module').then(m => m.AppointmentModule) },
   { path: 'service-confirmed/:id', loadChildren: () => import('./views/features/appointment/service-placed/service-placed.module').then(m => m.ServicePlacedModule), canActivate: [AccountGuard] },
@@ -35,6 +37,7 @@ const mainRoutes: Routes = [
   { path: 'order-review/:id', loadChildren: () => import('./views/features/order-review/order-review.module').then(m => m.OrderReviewModule) },
   
   { path: 'contact-us', loadChildren: () => import('./views/properties/contact-us/contact-us.module').then(m => m.ContactUsModule) },
+  { path: 'about-us', loadChildren: () => import('./views/properties/about-us/about-us.module').then(m => m.AboutUsModule) },
   { path: 'store-locator', loadChildren: () => import('./views/properties/store-locator/store-locator.module').then(m => m.StoreLocatorModule) },
   { path: 'privacy-policy', loadChildren: () => import('./views/properties/policy/policy.module').then(m => m.PolicyModule) },
   { path: 'shipping-policy', loadChildren: () => import('./views/properties/policy/policy.module').then(m => m.PolicyModule) },

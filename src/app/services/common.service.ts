@@ -19,6 +19,7 @@ export class CommonService {
   footer: string = environment.footer;
   currDate: Date = new Date();
   storeLoaded: boolean;
+  isUSACustomer: boolean = false;
   wowjsLoaded: boolean; jsLoaded: boolean;
   public storeDetailsReceived = new Subject<any>();
 
@@ -111,6 +112,49 @@ export class CommonService {
     "https://ipapi.co/json",
     "https://freegeoip.app/json/",
     "https://api.db-ip.com/v2/free/self"
+  ];
+
+  reviewerList = [
+    { name: "Preethi", rating: 4 },
+    { name: "Savitha Muralidhar", rating: 4 },
+    { name: "Gautham Prabhu", rating: 5 },
+    { name: "Hemanth Kumar", rating: 5 },
+    { name: "Pragati", rating: 4 },
+    { name: "Ajay Sreedharan", rating: 4 },
+    { name: "Swathi", rating: 5 },
+    { name: "Bhavana", rating: 5 },
+    { name: "Dhiwakar", rating: 4 },
+    { name: "Manimegalai", rating: 4 },
+    { name: "Swetha", rating: 5 },
+    { name: "Bhagya", rating: 5 },
+    { name: "Swarnalatha", rating: 4 },
+    { name: "Sivakumar", rating: 4 },
+    { name: "Aishwarya", rating: 5 },
+    { name: "Saravana Kumar", rating: 5 },
+    { name: "Santhosh", rating: 5 },
+    { name: "Sundar", rating: 4 },
+    { name: "Archana", rating: 4 },
+    { name: "Ashok Kumar", rating: 5 }
+  ];
+  ratingList = [
+    { rating: 4.9, count: 220 },
+    { rating: 4.8, count: 240 },
+    { rating: 4.7, count: 270 },
+    { rating: 4.9, count: 290 },
+    { rating: 4.8, count: 210 },
+    { rating: 4.7, count: 170 },
+    { rating: 4.9, count: 120 },
+    { rating: 4.8, count: 340 },
+    { rating: 4.7, count: 225 },
+    { rating: 4.9, count: 267 },
+    { rating: 4.8, count: 204 },
+    { rating: 4.7, count: 160 },
+    { rating: 4.9, count: 180 },
+    { rating: 4.8, count: 175 },
+    { rating: 4.7, count: 312 },
+    { rating: 4.9, count: 255 },
+    { rating: 4.8, count: 278 },
+    { rating: 4.7, count: 292 }
   ];
 
   constructor(

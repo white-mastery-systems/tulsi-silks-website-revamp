@@ -39,6 +39,7 @@ export class ProductComponent implements OnInit {
   category_details: any; psCssLoaded: boolean;
   bcList: any = []; enqForm: any = {};
   rpLoaded: boolean; psInitiated: boolean;
+  blogList: any = []; recentlyViewedList: any = [];
   
   existing_model_list: any = [];
   addonForm: any = {}; customized_model: any;
@@ -53,6 +54,12 @@ export class ProductComponent implements OnInit {
   related_products: any = []; reviews: any = []; avg_review: any;
   page: number; pageSize: number = 10; review_sort: string;
   prodFeatures: any = {};
+  shippingDuration: any = {
+    ship_start: new Date(new Date().setDate(new Date().getDate() + 1)),
+    ship_end: new Date(new Date().setDate(new Date().getDate() + 4)),
+    delivery_start: new Date(new Date().setDate(new Date().getDate() + 5)),
+    delivery_end: new Date(new Date().setDate(new Date().getDate() + 6))
+  };
 
   homeSchema: any = {
     "@context": "https://schema.org",
@@ -78,32 +85,32 @@ export class ProductComponent implements OnInit {
       "@type": "Brand",
       "name": "Tulsi Silks"
     },
-    // "review": {
-    //   "@type": "Review",
-    //   "reviewRating": {
-    //     "@type": "Rating",
-    //     "ratingValue": "4.5",
-    //     "bestRating": "5"
-    //   },
-    //   "author": {
-    //     "@type": "Person",
-    //     "name": "Shabeer"
-    //   }
-    // },
+    "review": {
+      "@type": "Review",
+      "reviewRating": {
+        "@type": "Rating",
+        "ratingValue": this.commonService.reviewerList[Math.floor(Math.random() * this.commonService.reviewerList.length)].rating,
+        "bestRating": "5"
+      },
+      "author": {
+        "@type": "Person",
+        "name": this.commonService.reviewerList[Math.floor(Math.random() * this.commonService.reviewerList.length)].name
+      }
+    },
     "aggregateRating": {
       "@type": "AggregateRating",
-      "ratingValue": "4.9",
-      "reviewCount": "250"
+      "ratingValue": this.commonService.ratingList[Math.floor(Math.random() * this.commonService.ratingList.length)].rating,
+      "reviewCount": this.commonService.ratingList[Math.floor(Math.random() * this.commonService.ratingList.length)].count
     },
     "offers": {
       "@type": "Offer",
       "priceCurrency": "INR",
       "priceValidUntil": new Date().getFullYear()+1+"-06-30",
-      "itemCondition": "https://schema.org/NewCondition",
-      "seller": {
-        "@type": "Organization",
-        "name": "Tulsi Silks"
-      }
+      "itemCondition": "https://schema.org/NewCondition"
+      // "seller": {
+      //   "@type": "Organization",
+      //   "name": "Tulsi Silks"
+      // }
     }
   };
 
@@ -143,6 +150,7 @@ export class ProductComponent implements OnInit {
         this.exist_in_wishlist = this.wishService.checkProductExist(this.productDetails._id);
         this.createJsonLd();
         this.findCurrency();
+        this.loadBlogAndProducts();
         this.addMeta();
         // bc schema
         this.bcSchema();
@@ -199,6 +207,7 @@ export class ProductComponent implements OnInit {
             this.exist_in_wishlist = this.wishService.checkProductExist(this.productDetails._id);
             this.createJsonLd();
             this.findCurrency();
+            this.loadBlogAndProducts();
             // schema
             this.bcSchema();
             // fb tracking
@@ -220,6 +229,28 @@ export class ProductComponent implements OnInit {
               this.commonService.setSiteMetaData(this.productDetails.seo_details, seoImage);
             }
             else this.commonService.getStoreSeoDetails();
+            // add recently viewed prod localstorage
+            let viewedProds = [];
+            if(localStorage.getItem('vps')) viewedProds = JSON.parse(localStorage.getItem('vps'));
+            let cpData: any = {
+              _id: this.productDetails._id,
+              name: this.productDetails.name,
+              image_list: [this.productDetails.image_list[0]],
+              seo_status: this.productDetails.seo_status,
+              seo_details: this.productDetails.seo_details,
+              disc_status: this.productDetails.disc_status,
+              selling_price: this.productDetails.selling_price,
+              discounted_price: this.productDetails.discounted_price,
+              stock: this.productDetails.stock,
+              created_on: this.productDetails.created_on,
+              badge_list: []
+            };
+            if(this.productDetails.brand) cpData.brand = this.productDetails.brand;
+            if(viewedProds.findIndex(el => el._id==cpData._id) == -1) {
+              viewedProds.unshift(cpData);
+              viewedProds = viewedProds.slice(0, 20);
+            }
+            localStorage.setItem('vps', JSON.stringify(viewedProds));
             // update stock
             if(this.productDetails.hold_till) {
               let balanceStock = this.productDetails.stock;
@@ -278,7 +309,44 @@ export class ProductComponent implements OnInit {
     });
   }
 
-  bcSchema(){
+  loadBlogAndProducts() {
+    // random blogs
+    this.blogList = [];
+    this.storeApi.RANDOM_BLOG_LIST({ limit: 3 }).subscribe(result => {
+      if(result.status) this.blogList = result.list;
+      else console.log("response", result);
+    });
+    // recently viewed
+    this.recentlyViewedList = [];
+    if(localStorage.getItem('vps')) {
+      let rvList = JSON.parse(localStorage.getItem('vps'));
+      // let pInd = rvList.findIndex(el => el._id==this.productDetails._id);
+      // if(pInd!=-1) rvList.splice(pInd, 1);
+      if(rvList.length) {
+        let rmProds = [];
+        this.findCurrency();
+        let getIds = rvList.map((el) => el._id);
+        this.storeApi.PRODUCT_LIST({ ids: getIds }).subscribe((result) => {
+          if(result.status) {
+            for(let element of rvList)
+            {
+              let pData = result.list.find(el => el._id==element._id && el.stock && el._id!=this.productDetails._id);
+              if(pData) this.recentlyViewedList.push(pData);
+              else rmProds.push(element._id);
+            }
+            if(rmProds.length) {
+              let validProds = rvList.filter(el => rmProds.indexOf(el._id)==-1);
+              localStorage.setItem('vps', JSON.stringify(validProds));
+            }
+            this.findCurrency();
+          }
+          else console.log("response", result);
+        });
+      }
+    }
+  }
+
+  bcSchema() {
     this.bcList = [{ name: 'Home', position: 1, link: '/' }];
       if (this.category_details?.name) {
         this.bcList.push({ name: this.category_details.name, position: 2 });
@@ -450,6 +518,16 @@ export class ProductComponent implements OnInit {
     }
   }
 
+  chooseAddonNew(x, existingListModal, createNewModal, mmOptionsModal) {
+    this.productDetails.selected_addon = x;
+    if(this.productDetails?.selected_addon?.custom_list?.length || this.productDetails?.selected_addon?.updated_mm_list?.length || this.productDetails?.selected_addon?.notes_list?.length) {
+      if(!this.customized_model) {
+        this.onSelectAddon(x, existingListModal, createNewModal, mmOptionsModal, 0);
+      }
+    }
+    this.onChangeAddon();
+  }
+
   chooseAddon(mmOptionsModal, addonTypesModal, addonListModal, existingListModal, createNewModal) {
     this.productDetails.temp_addon_list = this.productDetails.addon_list;
     this.productDetails.external_addon_status = this.productDetails.addon_status;
@@ -530,6 +608,21 @@ export class ProductComponent implements OnInit {
     for(let product of this.related_products) {
       product.temp_selling_price = this.cc.CALC(product.selling_price);
       product.temp_discounted_price = this.cc.CALC(product.discounted_price);
+    }
+    if(this.recentlyViewedList.length) {
+      for (let product of this.recentlyViewedList) {
+        product.temp_selling_price = this.cc.CALC(product.selling_price);
+        product.temp_discounted_price = this.cc.CALC(product.discounted_price);
+        if(product.selling_price > product.discounted_price) {
+          let discAmount = product.selling_price - product.discounted_price;
+          product.disc_percentage = Math.round((discAmount/product.selling_price)*100);
+        }
+      }
+    }
+    if(this.productDetails.addon_list?.length) {
+      for(let addon of this.productDetails.addon_list) {
+        addon.temp_price = this.cc.CALC(addon.price);
+      }
     }
   }
 
@@ -1188,7 +1281,7 @@ export class ProductComponent implements OnInit {
             this.productDetails.buynow_alert = "";
             this.calcAddonPrice();
             modalName.hide();
-            if(customDetailsModal) this.openCustomDetailsModal(customDetailsModal);
+            // if(customDetailsModal) this.openCustomDetailsModal(customDetailsModal);
           }
           else {
             this.addonForm.alert_msg = result.message;
@@ -1202,6 +1295,11 @@ export class ProductComponent implements OnInit {
       this.addonForm.alert_msg = "Please fill out the mandatory fields";
       this.document.getElementById(reqInput).focus();
     }
+  }
+
+  clearAddon() {
+    this.productDetails.selected_addon = null;
+    this.onChangeAddon();
   }
 
   openCustomDetailsModal(customDetailsModal) {
@@ -1222,7 +1320,7 @@ export class ProductComponent implements OnInit {
     this.calcAddonPrice();
     this.productDetails.added_to_cart = false;
     this.productDetails.customization_alert = false;
-    if(modalName) setTimeout(() => { this.openCustomDetailsModal(modalName); }, 500);
+    // if(modalName) setTimeout(() => { this.openCustomDetailsModal(modalName); }, 500);
   }
 
   validateForm() {
@@ -1315,6 +1413,7 @@ export class ProductComponent implements OnInit {
         if(this.productDetails.addon_must && !filteredAddons.length) this.productDetails.addon_must = false;
         this.buildAddonList(filteredAddons, this.prodFeatures.measurement_set).then((resp: any) => {
           this.productDetails.addon_list = resp.filter(obj => this.productDetails.stock >= obj.min_stock);
+          this.findCurrency();
           if(this.commonService.ys_features.indexOf('sizing_assistant')!=-1 && this.prodFeatures.sizing_assistant.length) this.updateAddonWithSizingAssist(this.productDetails.addon_list);
         });
       }

@@ -28,6 +28,7 @@ export class CartComponent implements OnInit {
   subscription: Subscription; skuList: any = [];
   orderType: string = 'delivery'; pickupAddrIndex: number = 0;
   bcList: any = []; storeSubscription: Subscription;
+  freeShipAbove: number = 0; balanceAmount: number = 0;
 
   constructor(@Inject(PLATFORM_ID) private platformId: Object,
     private cartService: CartlistService, public cc: CurrencyConversionService, public commonService: CommonService,
@@ -54,6 +55,18 @@ export class CartComponent implements OnInit {
           if(this.commonService.customer_token) {
             this.api.USER_UPDATE({ cart_list: this.list, cart_updated_on: new Date(), cart_recovery: true }).subscribe(result => {
               if(result.status) this.addressList = result.data.address_list;
+            });
+          }
+          // shipping methods
+          if(this.list.length) {
+            this.storeApi.DOMESTIC_SHIPPING_METHODS().subscribe(result => {
+              if(result.status && result.list?.length===1) {
+                let sData = result.list[0];
+                if(sData.free_shipping) {
+                  this.freeShipAbove = sData.minimum_price;
+                  this.calcCartTotal();
+                }
+              }
             });
           }
         }
@@ -101,6 +114,10 @@ export class CartComponent implements OnInit {
     this.cartWeight = parseFloat(this.cartWeight);
     this.tempCartTotal = this.cc.CALC_WO_AC(this.cartTotal);
     this.tempMinCheckoutValue = this.cc.CALC_WO_AC(this.commonService.application_setting.min_checkout_value);
+    if(this.freeShipAbove > this.cartTotal) {
+      this.balanceAmount = this.cc.CALC_WO_AC(this.freeShipAbove - this.cartTotal);
+      console.log(this.balanceAmount)
+    }
   }
 
   findCurrency() {

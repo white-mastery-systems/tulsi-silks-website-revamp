@@ -248,19 +248,19 @@
             <div class="w-100">
               <div *ngIf="details.shipping_method?.tracking_link && details.order_status=='dispatched'" class="live_orders-btn">
                 <a [href]="details.shipping_method?.tracking_link" target="_blank">
-                  <button class="primary-btn w-100" type="button">TRACK ORDER</button>
+                  <button class="primary-btn w-100" type="button">Track Order</button>
                 </a>
               </div>
               <div class="live_orders-btn">
-                <button class="primary-btn w-100" type="button" (click)="onViewInvoice();">VIEW INVOICE</button>
+                <button class="primary-btn w-100" type="button" (click)="onViewInvoice();">View Invoice</button>
               </div>
               <div *ngIf="!params.vendor_id && params?.type=='live' && commonService.application_setting?.cancel_order_email" class="live_orders-btn">
                 <a href="mailto:{{commonService.application_setting.cancel_order_email}}?Subject=Request for order cancellation - Order ID: {{details?.order_number}}">
-                  <button class="primary-btn w-100" type="button">CANCEL</button>
+                  <button class="primary-btn w-100" type="button">Cancel</button>
                 </a>
               </div>
               <div *ngIf="params.vendor_id && params?.type=='live' && cancellationExist" class="live_orders-btn">
-                <button class="primary-btn w-100" (click)="cancelForm={ title: '' }; cancelOrderModal.show();" type="button">CANCEL</button>
+                <button class="primary-btn w-100" (click)="cancelForm={ title: '' }; cancelOrderModal.show();" type="button">Cancel</button>
               </div>
             </div>
           </div>
@@ -347,9 +347,9 @@
         </div>
         <div class="modal-footer" style="display: block;">
           <div class="col-12 px-0 d-flex justify-content-end">
-            <button type="button" class="secondary-btn mr-2" (click)="cancelOrderModal.hide();">CLOSE</button>
+            <button type="button" class="secondary-btn mr-2" (click)="cancelOrderModal.hide();">Close</button>
             <button class="primary-btn d-flex justify-content-center align-items-center" type="submit" [disabled]="cancelForm.submit">
-              SUBMIT
+              Submit
               <div class="box" *ngIf="cancelForm.submit">
                 <div class="spinner"></div>
               </div>
@@ -394,7 +394,7 @@
       </div>
       <div class="modal-footer" style="display: block;">
         <div class="col-12 px-0 d-flex justify-content-end">
-          <button type="button" class="secondary-btn mr-2" (click)="cancelInfoModal.hide();">CLOSE</button>
+          <button type="button" class="secondary-btn mr-2" (click)="cancelInfoModal.hide();">Close</button>
         </div>
       </div>
     </div>

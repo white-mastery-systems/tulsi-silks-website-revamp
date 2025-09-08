@@ -70,21 +70,21 @@
               <div *ngIf="!x?.custom_list?.length" class="col-lg-4 col-md-6"></div>
               <div class="col-lg-4 col-md-12">
                 <div class="dropdown" dropdown>
-                  <button class="primary-btn dropdown-toggle edit-dropdown w-100" type="button" id="button-model" dropdownToggle aria-controls="dropdown-model">EDIT</button>
+                  <button class="primary-btn dropdown-toggle edit-dropdown w-100" type="button" id="button-model" dropdownToggle aria-controls="dropdown-model">Edit</button>
                   <ul id="dropdown-model" *dropdownMenu class="dropdown-menu edit-drop" role="menu" aria-labelledby="button-model">
                     <li *ngIf="x.custom_list?.length" role="menuitem">
-                      <a class="dropdown-item edit-a text_center" (click)="onEdit('custom', x._id, customModal);">CUSTOMIZATION</a>
+                      <a class="dropdown-item edit-a text_center" (click)="onEdit('custom', x._id, customModal);">Customization</a>
                     </li>
                     <li *ngIf="x.mm_sets?.length" role="menuitem">
-                      <a class="dropdown-item edit-a text_center" (click)="onEdit('measurement', x._id, measurementModal);">MEASUREMENTS</a>
+                      <a class="dropdown-item edit-a text_center" (click)="onEdit('measurement', x._id, measurementModal);">Measurements</a>
                     </li>
                     <li *ngIf="x.notes_list?.length" role="menuitem">
-                      <a class="dropdown-item edit-a text_center" (click)="onEdit('notes', x._id, notesModal);">NOTES</a>
+                      <a class="dropdown-item edit-a text_center" (click)="onEdit('notes', x._id, notesModal);">Notes</a>
                     </li>
                   </ul>
                 </div>
-                <button class="primary-btn w-100 mt-2" type="button" (click)="commonService.onViewModel(x);">VIEW</button>
-                <button class="secondary-btn w-100 mt-2" type="button" (click)="deleteForm=x; removeModal.show();">REMOVE</button>
+                <button class="primary-btn w-100 mt-2" type="button" (click)="commonService.onViewModel(x);">View</button>
+                <button class="secondary-btn w-100 mt-2" type="button" (click)="deleteForm=x; removeModal.show();">Remove</button>
               </div>
             </div>
           </div>
@@ -173,14 +173,14 @@
         </div>
         <div class="proceed-sec d-flex justify-content-between w-100 m-0">
           <!-- left btn -->
-          <button *ngIf="customIndex==0" (click)="customModal.hide();" class="primary-btn">CLOSE</button>
-          <button *ngIf="customIndex>0" (click)="addonForm.alert_msg=null; customIndex=customIndex-1; commonService?.scrollModalTop(0);" class="primary-btn">PREVIOUS</button>
+          <button *ngIf="customIndex==0" (click)="customModal.hide();" class="primary-btn">Close</button>
+          <button *ngIf="customIndex>0" (click)="addonForm.alert_msg=null; customIndex=customIndex-1; commonService?.scrollModalTop(0);" class="primary-btn">Previous</button>
           <!-- #left btn -->
           <!-- right btn -->
-          <button *ngIf="custom_list[customIndex+1]?.filtered_option_list?.length" (click)="onCustomNext();" class="primary-btn">NEXT</button>
+          <button *ngIf="custom_list[customIndex+1]?.filtered_option_list?.length" (click)="onCustomNext();" class="primary-btn">Next</button>
           <button *ngIf="!custom_list[customIndex+1]?.filtered_option_list?.length" (click)="onUpdateCustom(customModal);" [disabled]="addonForm.submit"
             class="primary-btn d-flex justify-content-center align-items-center">
-            UPDATE
+            Update
             <div class="box" *ngIf="addonForm.submit">
               <div class="spinner"></div>
             </div>
@@ -290,14 +290,14 @@
         <!-- alert end -->
         <div class="proceed-sec d-flex justify-content-between w-100 m-0">
           <!-- left btn -->
-          <button *ngIf="mmIndex==0" (click)="measurementModal.hide();" class="primary-btn">CLOSE</button>
-          <button *ngIf="mmIndex>0" (click)="mmIndex=mmIndex-1; commonService?.scrollModalTop(0);" class="primary-btn">PREVIOUS</button>
+          <button *ngIf="mmIndex==0" (click)="measurementModal.hide();" class="primary-btn">Close</button>
+          <button *ngIf="mmIndex>0" (click)="mmIndex=mmIndex-1; commonService?.scrollModalTop(0);" class="primary-btn">Previous</button>
           <!-- #left btn -->
           <!-- right btn -->
-          <button *ngIf="(addonForm?.mm_sets?.length-1)>mmIndex" (click)="onMmNext();" class="primary-btn">NEXT</button>
+          <button *ngIf="(addonForm?.mm_sets?.length-1)>mmIndex" (click)="onMmNext();" class="primary-btn">Next</button>
           <button *ngIf="(addonForm?.mm_sets?.length-1)==mmIndex" (click)="onUpdateMeasurement(measurementModal);" [disabled]="addonForm.submit"
             class="primary-btn d-flex justify-content-center align-items-center">
-            UPDATE
+            Update
             <div class="box" *ngIf="addonForm.submit">
               <div class="spinner"></div>
             </div>
@@ -360,9 +360,9 @@
         </div>
         <!-- alert end -->
         <div class="proceed-sec d-flex justify-content-between w-100 m-0">
-          <button (click)="notesModal.hide();" class="primary-btn">CLOSE</button>
+          <button (click)="notesModal.hide();" class="primary-btn">Close</button>
           <button (click)="onUpdateNotes(notesModal);" [disabled]="addonForm.submit" class="primary-btn d-flex justify-content-center align-items-center">
-            UPDATE
+            Update
             <div class="box" *ngIf="addonForm.submit">
               <div class="spinner"></div>
             </div>
@@ -381,9 +381,9 @@
         <p>Are you sure to remove this model?</p>
       </div>
       <div class="modal-footer">
-        <button class="secondary-btn" type="button" (click)="removeModal.hide();">NO</button>
+        <button class="secondary-btn" type="button" (click)="removeModal.hide();">No</button>
         <button class="primary-btn d-flex justify-content-center align-items-center" type="button" (click)="onDelete(removeModal);" [disabled]="deleteForm.submit">
-          YES
+          Yes
           <div class="box" *ngIf="deleteForm.submit">
             <div class="spinner"></div>
           </div>

@@ -1,6 +1,7 @@
 import { Directive, ElementRef, Inject, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { DynamicAssetLoaderService } from '../../../services/dynamic-asset-loader.service';
+import { delay } from 'rxjs';
 declare const Swiper: any;
 ​
 @Directive({
@@ -13,7 +14,7 @@ export class HomeSwiperDirective {
   loadedElements: any = [];
   
   highlights: any = {
-    auto_play: true,
+    auto_play: false,
     break_points: {
       1024: { slidesPerView: 6, spaceBetween: 0 },
       768: { slidesPerView: 4, spaceBetween: 0 },
@@ -23,72 +24,62 @@ export class HomeSwiperDirective {
   };
 
   featured_section: any = {
-    auto_play: true,
+    auto_play: false,
     break_points: {
-      1024: { slidesPerView: 4, spaceBetween: 0 },
-      768: { slidesPerView: 3, spaceBetween: 0 },
-      640: { slidesPerView: 2, spaceBetween: 0 },
-      320: { slidesPerView: 1.5, spaceBetween: 0 }
+      1024: { slidesPerView: 3, spaceBetween: 15 },
+      768: { slidesPerView: 3, spaceBetween: 15 },
+      640: { slidesPerView: 2, spaceBetween: 15 },
+      320: { slidesPerView: 1.5, spaceBetween: 15 }
     }
   };
 
   featured_products: any = {
-    auto_play: true,
+    auto_play: false,
+    spaceBetween: 15,
     break_points: {
-      1024: { slidesPerView: 4, spaceBetween: 0 },
-      768: { slidesPerView: 3, spaceBetween: 0 },
-      640: { slidesPerView: 2, spaceBetween: 0 },
-      320: { slidesPerView: 1.5, spaceBetween: 0 }
+      1024: { slidesPerView: 3, spaceBetween: 15 },
+      768: { slidesPerView: 3, spaceBetween: 15 },
+      640: { slidesPerView: 2, spaceBetween: 15 },
+      320: { slidesPerView: 1.5, spaceBetween: 15 }
     }
   };
 
   multi_tab_featured_products: any = {
-    auto_play: true,
+    auto_play: false,
     break_points: {
-      1024: { slidesPerView: 4, spaceBetween: 0 },
-      768: { slidesPerView: 3, spaceBetween: 0 },
-      640: { slidesPerView: 2, spaceBetween: 0 },
-      320: { slidesPerView: 1.5, spaceBetween: 0 }
+      1024: { slidesPerView: 4, spaceBetween: 15 },
+      768: { slidesPerView: 3, spaceBetween: 15 },
+      640: { slidesPerView: 2, spaceBetween: 15 },
+      320: { slidesPerView: 1.5, spaceBetween: 15 }
     }
   };
 
   testimonial: any = {
-    auto_play: true,
+    auto_play: false,
     break_points: {
-      1024: { slidesPerView: 4, spaceBetween: 0 },
-      768: { slidesPerView: 3, spaceBetween: 0 },
-      640: { slidesPerView: 2, spaceBetween: 0 },
-      320: { slidesPerView: 1, spaceBetween: 0 }
+      1024: { slidesPerView: 1, spaceBetween: 15 },
+      768: { slidesPerView: 1, spaceBetween: 15 },
+      640: { slidesPerView: 1, spaceBetween: 15 },
+      320: { slidesPerView: 1, spaceBetween: 15 }
     }
   };
   
   blogs: any = {
-    auto_play: true,
+    auto_play: false,
     break_points: {
-      1024: { slidesPerView: 4, spaceBetween: 0 },
-      768: { slidesPerView: 3, spaceBetween: 0 },
-      640: { slidesPerView: 2, spaceBetween: 0 },
-      320: { slidesPerView: 1, spaceBetween: 0 }
+      1024: { slidesPerView: 4, spaceBetween: 15 },
+      768: { slidesPerView: 2, spaceBetween: 15 },
+      640: { slidesPerView: 2, spaceBetween: 15 },
+      320: { slidesPerView: 1.5, spaceBetween: 15 }
     }
   };
-
   shop_look: any = {
-    auto_play: true,
+    auto_play: false,
     break_points: {
       1024: { slidesPerView: 4, spaceBetween: 0 },
       768: { slidesPerView: 3, spaceBetween: 0 },
       640: { slidesPerView: 2, spaceBetween: 0 },
       320: { slidesPerView: 1.5, spaceBetween: 0 }
-    }
-  };
-
-  instagram: any = {
-    auto_play: true,
-    break_points: {
-      1024: { slidesPerView: 4, spaceBetween: 0 },
-      768: { slidesPerView: 3, spaceBetween: 0 },
-      640: { slidesPerView: 2, spaceBetween: 0 },
-      320: { slidesPerView: 1, spaceBetween: 0 }
     }
   };
 
@@ -168,7 +159,26 @@ export class HomeSwiperDirective {
           else if(swipeElement.includes("blog")) this.initializeSwiper(swipeElement, this.blogs);
           else if(swipeElement.includes("feasec")) this.initializeSwiper(swipeElement, this.featured_section);
           else if(swipeElement.includes("shoplook")) this.initializeSwiper(swipeElement, this.shop_look);
-          else if(swipeElement.includes("insta")) this.initializeSwiper(swipeElement, this.instagram);
+          // else if(swipeElement.includes("insta")) this.initializeSwiper(swipeElement, this.instagram);
+          else if(swipeElement.includes("insta")) {
+            if(this.loadedElements.indexOf(swipeElement) == -1) {
+              this.loadedElements.push(swipeElement);
+              // swiper config
+              let swipeConfig: any = {
+                speed: 3000,
+                navigation: {
+                  nextEl: '#swipe_next_'+swipeElement.split("_")[1],
+                  prevEl: '#swipe_prev_'+swipeElement.split("_")[1]
+                },  
+                slidesPerView: 'auto',  
+                loop: true,        
+                allowTouchMove: false,              
+                autoplay: { delay: 0, disableOnInteraction: false }   
+              }
+              let swipeInit = new Swiper('.'+swipeElement, swipeConfig);              
+              if(swipeElement.includes("desktop")) this.autoPlayEvt(swipeInit); 
+            }
+          }
           else this.initializeSwiper(swipeElement, this.featured_products);
         }
         break;
@@ -177,19 +187,26 @@ export class HomeSwiperDirective {
   }
 
   initializeSwiper(swipeElement: any, configData: any) {
-    // swiper config
-    let swipeConfig: any = {
-      speed: 500,
-      breakpoints: configData.break_points,
-      navigation: {
-        nextEl: '#swipe_next_'+swipeElement.split("_")[1],
-        prevEl: '#swipe_prev_'+swipeElement.split("_")[1]
+    if(this.loadedElements.indexOf(swipeElement) == -1) {
+      this.loadedElements.push(swipeElement);
+      // swiper config
+      let swipeConfig: any = {
+        speed: 500,
+        breakpoints: configData.break_points,
+        navigation: {
+          nextEl: '#swipe_next_'+swipeElement.split("_")[1],
+          prevEl: '#swipe_prev_'+swipeElement.split("_")[1]
+        }
       }
+      if(configData.loop) swipeConfig.loop = true;
+      if(configData.auto_play) swipeConfig.autoplay = { delay: 3000, disableOnInteraction: false };
+      if(swipeElement.includes("insta")) {
+      swipeConfig.speed = 3000;
+      if(configData.auto_play) swipeConfig.autoplay = { delay: 0, disableOnInteraction: false };
     }
-    if(configData.loop) swipeConfig.loop = true;
-    if(configData.auto_play) swipeConfig.autoplay = { delay: 3000, disableOnInteraction: false };
-    let swipeInit = new Swiper('.'+swipeElement, swipeConfig);
-    if(configData.auto_play && swipeElement.includes("desktop")) this.autoPlayEvt(swipeInit);
+      let swipeInit = new Swiper('.'+swipeElement, swipeConfig);
+      if(configData.auto_play && swipeElement.includes("desktop")) this.autoPlayEvt(swipeInit);
+    }
   }
 
   autoPlayEvt(swipeInit) {
@@ -204,5 +221,5 @@ export class HomeSwiperDirective {
   ngOnDestroy() {
     if(isPlatformBrowser(this.platformId) && this.observer) this.observer.disconnect();
   }
-​
+
 }
