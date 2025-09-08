@@ -91,10 +91,10 @@
     </section>
 
     <!-- navigation sections -->
-    <section *ngIf="navigationImageList.length" class="primary-section category-filter-section">
+    <section class="primary-section category-filter-section">
       <div class="container-fluid">
-        <div class="row">
-          <div class="col-12 px-0">
+        <div class="row" style="min-height:220px; max-height:350px">
+          <div *ngIf="navigationImageList.length" class="col-12 px-0">
             <!-- single image slider -->
             <div *ngIf="!category_details?.navigationList[activeSlideIndex]?.isMultiImages" 
                class="swiper-container multi-slider product-slider featured-sections px-max"

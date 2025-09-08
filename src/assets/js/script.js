@@ -193,6 +193,9 @@
     $(document).on('click', '.last-sec > i', function (e) {
       if(!checkWindowWidth()) e.preventDefault();
       let selected = $(this);
+      if(e.currentTarget.className.indexOf('has-link') != -1) {
+        selected = $(this).parent();
+      }
       menuChange(selected);
       toggleSearch('close');
     });

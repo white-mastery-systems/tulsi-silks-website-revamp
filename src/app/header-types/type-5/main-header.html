@@ -103,7 +103,7 @@
                               [routerLink]="(cat.link_type=='internal')? cat.link: null" style="height: auto; margin-bottom: 0; gap: unset; width: 100%;">
                                 <span class="cat-name">{{ cat.name }}</span> 
                               </a>
-                              <i *ngIf="cat?.sub_categories?.length">
+                              <i *ngIf="cat?.sub_categories?.length" [ngClass]="(cat.link_status)? 'has-link': null">
                                 <lucide-icon name="chevron-right" [size]="16" class="ms-1 align-middle"></lucide-icon>
                               </i>
                             </a>
@@ -183,7 +183,7 @@
                               [routerLink]="(cat.link_type=='internal')? cat.link: null" style="height: auto; margin-bottom: 0; gap: unset; width: 100%;">
                                 <span class="cat-name">{{ cat.name }}</span> 
                               </a>
-                              <i *ngIf="cat?.sub_categories?.length">
+                              <i *ngIf="cat?.sub_categories?.length" [ngClass]="(cat.link_status)? 'has-link': null">
                                 <lucide-icon name="chevron-right" [size]="16" class="ms-1 align-middle"></lucide-icon>
                               </i>
                             </a>
