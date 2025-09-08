@@ -1,4 +1,4 @@
-import { Component, OnInit, Inject, PLATFORM_ID, ViewChild,ElementRef } from '@angular/core';
+import { Component, OnInit, Inject, PLATFORM_ID, ViewChild, ElementRef } from '@angular/core';
 import { Router, ActivatedRoute, Params } from '@angular/router';
 import { isPlatformBrowser, DOCUMENT } from '@angular/common';
 import { Subscription } from 'rxjs';
@@ -39,6 +39,7 @@ export class CategoryComponent implements OnInit {
   bcList: any = []; pageUrl: string;
   IsBrowser: boolean;
   navigationImageList = [];
+  showNavigationButtons: boolean = false;
 
   categorySchema: any = {
     "@context": "https://schema.org",
@@ -81,37 +82,52 @@ export class CategoryComponent implements OnInit {
     this.subscription = this.commonService.currency_type.subscribe(currency => {
       this.findCurrency();
     });
-    if(isPlatformBrowser(this.platformId)) this.IsBrowser = true;
+    if (isPlatformBrowser(this.platformId)) this.IsBrowser = true;
   }
 
+  // Update your ngAfterViewInit method
   ngAfterViewInit() {
     // Initialize button visibility
     setTimeout(() => {
+      this.checkNavigationOverflow();
       this.updateNavigationButtonVisibility();
       this.updateImageButtonVisibility();
-      
+
       // Listen to scroll events
       if (this.navigationScroller) {
         this.navigationScroller.nativeElement.addEventListener('scroll', () => {
           this.updateNavigationButtonVisibility();
         });
       }
-      
+
       if (this.imageScroller) {
         this.imageScroller.nativeElement.addEventListener('scroll', () => {
           this.updateImageButtonVisibility();
         });
       }
+
+      // Listen to window resize events
+      window.addEventListener('resize', () => {
+        this.checkNavigationOverflow();
+        this.updateNavigationButtonVisibility();
+      });
     }, 100);
+  }
+
+  checkNavigationOverflow() {
+    if (this.navigationScroller) {
+      const scrollWrapper = this.navigationScroller.nativeElement;
+      this.showNavigationButtons = scrollWrapper.scrollWidth > scrollWrapper.clientWidth;
+    }
   }
 
   ngOnInit(): void {
     this.activeRoute.params.subscribe((params: Params) => {
       this.pageUrl = this.router.url.split('?')[0];
       this.showMore = false; this.params = params; this.tag_list = []; this.randomProducts = [];
-      if(this.router.url=='/recommended-products' || this.router.url=='/all-products' || this.router.url=='/new-arrivals' || this.router.url=='/on-sale'|| this.router.url=='/featured-products'|| this.router.url=='/best-sellers') {
+      if (this.router.url == '/recommended-products' || this.router.url == '/all-products' || this.router.url == '/new-arrivals' || this.router.url == '/on-sale' || this.router.url == '/featured-products' || this.router.url == '/best-sellers') {
         this.params = { category_id: this.router.url };
-        if(this.commonService.category_page_attr.category_id == this.router.url) {
+        if (this.commonService.category_page_attr.category_id == this.router.url) {
           this.page = this.commonService.category_page_attr.page;
           this.gridType = this.commonService.category_page_attr.grid_type;
           this.sort_value = this.commonService.category_page_attr.sort_value;
@@ -135,13 +151,13 @@ export class CategoryComponent implements OnInit {
         else {
           this.page = 1; this.sort_value = "latest";
           this.pageLoader = true; this.collapseIndex = 0;
-          if(this.router.url=='/recommended-products') {
+          if (this.router.url == '/recommended-products') {
             this.category_details = { name: "Specially curated for you", route: this.router.url };
-            if(isPlatformBrowser(this.platformId) && sessionStorage.getItem("ai_styles")) {
+            if (isPlatformBrowser(this.platformId) && sessionStorage.getItem("ai_styles")) {
               let filterList = this.commonService.decryptData(sessionStorage.getItem("ai_styles"));
-              this.storeApi.AI_STYLES_FILTER({styles: filterList}).subscribe(result => {
+              this.storeApi.AI_STYLES_FILTER({ styles: filterList }).subscribe(result => {
                 setTimeout(() => { this.pageLoader = false; }, 500);
-                if(result.status) this.filterProducts(result.list);
+                if (result.status) this.filterProducts(result.list);
                 else console.log("response", result);
               });
             }
@@ -149,28 +165,28 @@ export class CategoryComponent implements OnInit {
           }
           else {
             let categoryName = ""; let filterType = "";
-            if(this.router.url == "/all-products") {
+            if (this.router.url == "/all-products") {
               categoryName = "All Products"; filterType = "all";
             }
-            else if(this.router.url == "/new-arrivals") {
+            else if (this.router.url == "/new-arrivals") {
               categoryName = "New Arrivals"; filterType = "new_arrivals";
             }
-            else if(this.router.url == "/on-sale") {
+            else if (this.router.url == "/on-sale") {
               categoryName = "On Sale"; filterType = "discount";
             }
-            else if(this.router.url == "/featured-products") {
+            else if (this.router.url == "/featured-products") {
               categoryName = "Featured Products"; filterType = "featured";
             }
-            else if(this.router.url == "/best-sellers") {
+            else if (this.router.url == "/best-sellers") {
               categoryName = "Best Sellers"; filterType = "best_sellers";
             }
             this.category_details = { name: categoryName, route: this.router.url };
             // seo details
             let metaInfo = {
               "all": {
-                h1_tag: "All Products - "+this.commonService.store_details?.name,
-                page_title: "All Products - Extensive Collection for Every Need | "+this.commonService.store_details?.name,
-                meta_desc: "Browse our extensive collection of products at "+this.commonService.store_details?.name+", catering to a wide range of needs. You can find everything you're looking for here. Start exploring now.",
+                h1_tag: "All Products - " + this.commonService.store_details?.name,
+                page_title: "All Products - Extensive Collection for Every Need | " + this.commonService.store_details?.name,
+                meta_desc: "Browse our extensive collection of products at " + this.commonService.store_details?.name + ", catering to a wide range of needs. You can find everything you're looking for here. Start exploring now.",
                 meta_keywords: []
               },
               "new_arrivals": {
@@ -180,25 +196,25 @@ export class CategoryComponent implements OnInit {
                 meta_keywords: []
               },
               "discount": {
-                h1_tag: "On Sale - "+this.commonService.store_details?.name,
-                page_title: "On Sale - Great Deals and Discounts | "+this.commonService.store_details?.name,
-                meta_desc: "Explore the on-sale items at "+this.commonService.store_details?.name+" and enjoy great deals and discounts. Find high-quality products at affordable prices and make the most of your shopping experience.",
+                h1_tag: "On Sale - " + this.commonService.store_details?.name,
+                page_title: "On Sale - Great Deals and Discounts | " + this.commonService.store_details?.name,
+                meta_desc: "Explore the on-sale items at " + this.commonService.store_details?.name + " and enjoy great deals and discounts. Find high-quality products at affordable prices and make the most of your shopping experience.",
                 meta_keywords: []
               },
               "featured": {
-                h1_tag: "Featured Products - "+this.commonService.store_details?.name,
-                page_title: "Featured Products - Handpicked Selection of Must-Haves | "+this.commonService.store_details?.name,
-                meta_desc: "Check out our handpicked selection of featured products at "+this.commonService.store_details?.name+". Discover the trending and highly recommended must-haves from "+this.commonService.store_details?.name+".",
+                h1_tag: "Featured Products - " + this.commonService.store_details?.name,
+                page_title: "Featured Products - Handpicked Selection of Must-Haves | " + this.commonService.store_details?.name,
+                meta_desc: "Check out our handpicked selection of featured products at " + this.commonService.store_details?.name + ". Discover the trending and highly recommended must-haves from " + this.commonService.store_details?.name + ".",
                 meta_keywords: []
               },
               "best_sellers": {
-                h1_tag: "Featured Products - "+this.commonService.store_details?.name,
-                page_title: "Featured Products - Handpicked Selection of Must-Haves | "+this.commonService.store_details?.name,
-                meta_desc: "Check out our handpicked selection of featured products at "+this.commonService.store_details?.name+". Discover the trending and highly recommended must-haves from "+this.commonService.store_details?.name+".",
+                h1_tag: "Featured Products - " + this.commonService.store_details?.name,
+                page_title: "Featured Products - Handpicked Selection of Must-Haves | " + this.commonService.store_details?.name,
+                meta_desc: "Check out our handpicked selection of featured products at " + this.commonService.store_details?.name + ". Discover the trending and highly recommended must-haves from " + this.commonService.store_details?.name + ".",
                 meta_keywords: []
               }
             };
-            if(metaInfo[filterType]) {
+            if (metaInfo[filterType]) {
               this.category_details.seo_status = true;
               this.category_details.seo_details = metaInfo[filterType];
             }
@@ -206,7 +222,7 @@ export class CategoryComponent implements OnInit {
             this.updateMetaData();
             this.storeApi.FILTERED_PRODUCT_LIST({ type: filterType }).subscribe(result => {
               setTimeout(() => { this.pageLoader = false; }, 500);
-              if(result.status) this.filterProducts(result.list);
+              if (result.status) this.filterProducts(result.list);
               else console.log("response", result);
             });
           }
@@ -214,9 +230,9 @@ export class CategoryComponent implements OnInit {
           this.updateMetaData();
         }
       }
-      else if(this.params.category_id) {
+      else if (this.params.category_id) {
         // product list
-        if(this.commonService.category_page_attr.category_id == this.params.category_id) {
+        if (this.commonService.category_page_attr.category_id == this.params.category_id) {
           this.page = this.commonService.category_page_attr.page;
           this.gridType = this.commonService.category_page_attr.grid_type;
           this.sort_value = this.commonService.category_page_attr.sort_value;
@@ -226,7 +242,7 @@ export class CategoryComponent implements OnInit {
           this.rangeMax = this.commonService.category_page_attr.range_max;
           this.range_disp = this.commonService.category_page_attr.range_disp;
           this.randomProducts = this.commonService.category_page_attr.random_products;
-          if(this.category_details?.faqs?.length) this.buildFAQSchema();
+          if (this.category_details?.faqs?.length) this.buildFAQSchema();
           // seo
           this.updateMetaData();
           this.parent_list = this.commonService.category_page_attr.parent_list;
@@ -244,36 +260,35 @@ export class CategoryComponent implements OnInit {
           this.pageLoader = true; this.collapseIndex = 0;
           this.storeApi.PRODUCT_LIST({ category_id: this.params.category_id }).subscribe(result => {
             setTimeout(() => { this.pageLoader = false; }, 500);
-            if(result.status)
-            {
+            if (result.status) {
               this.category_details = result.category_details;
-              if(this.category_details.navigationList?.length) {
+              if (this.category_details.navigationList?.length) {
                 this.category_details.navigationList = this.category_details.navigationList.sort((a, b) => 0 - (a.rank > b.rank ? -1 : 1))
                 this.onSelectNav(0);
               }
-              if(this.category_details?.faqs?.length) this.buildFAQSchema();
+              if (this.category_details?.faqs?.length) this.buildFAQSchema();
               // seo
               this.updateMetaData();
               // filter products
               this.parent_list = [];
               result.list.forEach(object => {
-                object.created_on = new Date(new Date(new Date(object.created_on).setHours(23,59,59,59)).setDate(new Date(object.created_on).getDate() + 30));
-                if(object.badge_list?.length) object.badge_list = this.commonService.buildTags(object.badge_list);
-                if(object.hold_till) {
+                object.created_on = new Date(new Date(new Date(object.created_on).setHours(23, 59, 59, 59)).setDate(new Date(object.created_on).getDate() + 30));
+                if (object.badge_list?.length) object.badge_list = this.commonService.buildTags(object.badge_list);
+                if (object.hold_till) {
                   let balanceStock = object.stock;
-                  if(new Date() < new Date(object.hold_till)) balanceStock = object.stock - object.hold_qty;
+                  if (new Date() < new Date(object.hold_till)) balanceStock = object.stock - object.hold_qty;
                   object.stock = balanceStock;
                 }
-                if(this.commonService.store_details?.additional_features?.disp_all_products) {
-                  if(object.stock < this.commonService.min_qty[object.unit]) object.stock = 0;
+                if (this.commonService.store_details?.additional_features?.disp_all_products) {
+                  if (object.stock < this.commonService.min_qty[object.unit]) object.stock = 0;
                   this.parent_list.push(object);
                 }
                 else {
-                  if(object.stock >= this.commonService.min_qty[object.unit] || object.allow_preorder) this.parent_list.push(object);
+                  if (object.stock >= this.commonService.min_qty[object.unit] || object.allow_preorder) this.parent_list.push(object);
                 }
               });
               this.list = this.parent_list;
-              if(this.list.length > this.pageSize && this.category_details.prod_list_status) {
+              if (this.list.length > this.pageSize && this.category_details.prod_list_status) {
                 this.randomProducts = this.getRandomProds(this.list, 15);
               }
               this.findCurrency();
@@ -292,55 +307,67 @@ export class CategoryComponent implements OnInit {
     if (this.category_details.navigationList?.length) this.onSelectNav(0);
   }
 
-  // Update your existing onSelectNav method
   onSelectNav(index: number) {
     this.activeSlideIndex = index;
     let el = this.document.getElementById('navigationHighlights');
-    if(el) el.style.visibility = "hidden";
+    if (el) el.style.visibility = "hidden";
     this.navigationImageList = [];
+
+    // Check overflow immediately
+    setTimeout(() => {
+      this.checkNavigationOverflow();
+    }, 0);
+
     setTimeout(() => {
       this.navigationImageList = this.category_details.navigationList[index].image_list;
       // Show the image section after content is loaded
-      if(el) el.style.visibility = "visible";   
+      if (el) el.style.visibility = "visible";
       // Scroll selected navigation item into view
       this.scrollToSelectedNav(index);
-      // Update navigation button visibility
-      setTimeout(() => this.updateNavigationButtonVisibility(), 100);
-    }, 0);
+      // Check navigation overflow and update button visibility
+      this.checkNavigationOverflow();
+      this.updateNavigationButtonVisibility();
+    }, 50);
+
+    // Additional check after a longer delay
+    setTimeout(() => {
+      this.checkNavigationOverflow();
+      this.updateNavigationButtonVisibility();
+    }, 200);
   }
 
   // Add these new methods
   scrollNav(direction: string) {
     const scrollWrapper = this.navigationScroller.nativeElement;
     const scrollAmount = 200;
-    
+
     if (direction === 'left') {
       scrollWrapper.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
     } else {
       scrollWrapper.scrollBy({ left: scrollAmount, behavior: 'smooth' });
     }
-    
+
     setTimeout(() => this.updateNavigationButtonVisibility(), 300);
   }
 
   scrollImages(direction: string) {
     const scrollWrapper = this.imageScroller.nativeElement;
     const scrollAmount = 270; // Slightly more than image width
-    
+
     if (direction === 'left') {
       scrollWrapper.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
     } else {
       scrollWrapper.scrollBy({ left: scrollAmount, behavior: 'smooth' });
     }
-    
+
     setTimeout(() => this.updateImageButtonVisibility(), 300);
   }
 
   scrollToSelectedNav(index: number) {
-    if(this.navigationScroller?.nativeElement) {
+    if (this.navigationScroller?.nativeElement) {
       const scrollWrapper = this.navigationScroller.nativeElement;
       const selectedItem = scrollWrapper.children[index] as HTMLElement;
-      
+
       if (selectedItem) {
         selectedItem.scrollIntoView({
           behavior: 'smooth',
@@ -352,12 +379,13 @@ export class CategoryComponent implements OnInit {
   }
 
   updateNavigationButtonVisibility() {
-    if (this.navigationScroller) {
+    if (this.navigationScroller && this.showNavigationButtons) {
       const scrollWrapper = this.navigationScroller.nativeElement;
       this.isAtStart = scrollWrapper.scrollLeft <= 5;
       this.isAtEnd = scrollWrapper.scrollLeft >= (scrollWrapper.scrollWidth - scrollWrapper.clientWidth - 5);
     }
   }
+
 
   updateImageButtonVisibility() {
     if (this.imageScroller) {
@@ -379,14 +407,14 @@ export class CategoryComponent implements OnInit {
   }
 
   getProductTags() {
-    if(isPlatformBrowser(this.platformId)) {
-      if(sessionStorage.getItem('pt')) {
+    if (isPlatformBrowser(this.platformId)) {
+      if (sessionStorage.getItem('pt')) {
         this.store_tags = this.commonService.decryptData(sessionStorage.getItem('pt'));
         this.onCreateTagList(this.list, false);
       }
       else {
         this.storeApi.PRODUCT_TAGS().subscribe(result => {
-          if(result.status) {
+          if (result.status) {
             this.store_tags = JSON.parse(result.list);
             sessionStorage.setItem('pt', this.commonService.encryptData(this.store_tags));
             this.onCreateTagList(this.list, false);
@@ -401,19 +429,19 @@ export class CategoryComponent implements OnInit {
   filterProducts(productList) {
     this.parent_list = [];
     productList.forEach(object => {
-      object.created_on = new Date(new Date(new Date(object.created_on).setHours(23,59,59,59)).setDate(new Date(object.created_on).getDate() + 30));
-      if(object.badge_list?.length) object.badge_list = this.commonService.buildTags(object.badge_list);
-      if(object.hold_till) {
+      object.created_on = new Date(new Date(new Date(object.created_on).setHours(23, 59, 59, 59)).setDate(new Date(object.created_on).getDate() + 30));
+      if (object.badge_list?.length) object.badge_list = this.commonService.buildTags(object.badge_list);
+      if (object.hold_till) {
         let balanceStock = object.stock;
-        if(new Date() < new Date(object.hold_till)) balanceStock = object.stock - object.hold_qty;
+        if (new Date() < new Date(object.hold_till)) balanceStock = object.stock - object.hold_qty;
         object.stock = balanceStock;
       }
-      if(this.commonService.store_details?.additional_features?.disp_all_products) {
-        if(object.stock < this.commonService.min_qty[object.unit]) object.stock = 0;
+      if (this.commonService.store_details?.additional_features?.disp_all_products) {
+        if (object.stock < this.commonService.min_qty[object.unit]) object.stock = 0;
         this.parent_list.push(object);
       }
       else {
-        if(object.stock >= this.commonService.min_qty[object.unit] || object.allow_preorder) this.parent_list.push(object);
+        if (object.stock >= this.commonService.min_qty[object.unit] || object.allow_preorder) this.parent_list.push(object);
       }
     });
     this.list = this.parent_list;
@@ -422,7 +450,7 @@ export class CategoryComponent implements OnInit {
   }
 
   findCurrency() {
-    for(let product of this.parent_list) {
+    for (let product of this.parent_list) {
       product.temp_selling_price = this.cc.CALC(product.selling_price);
       product.temp_discounted_price = this.cc.CALC(product.discounted_price);
     }
@@ -438,12 +466,12 @@ export class CategoryComponent implements OnInit {
       parent_list: this.parent_list, page_url: this.router.url, grid_type: this.gridType, random_products: this.randomProducts,
       range_min: this.rangeMin, range_max: this.rangeMax, range_disp: this.range_disp
     }
-    if(isPlatformBrowser(this.platformId)) {
+    if (isPlatformBrowser(this.platformId)) {
       sessionStorage.setItem("category_details", this.commonService.encryptData(this.category_details));
-      if(this.template_setting.product_swiper) {
+      if (this.template_setting.product_swiper) {
         let swipeProList: any = [];
         this.list.forEach(obj => {
-          if(obj.seo_status) swipeProList.push(obj.seo_details.page_url);
+          if (obj.seo_status) swipeProList.push(obj.seo_details.page_url);
           else swipeProList.push(obj._id);
         });
         sessionStorage.setItem("swipe_product_list", this.commonService.encryptData(swipeProList));
@@ -455,28 +483,28 @@ export class CategoryComponent implements OnInit {
     let duplicateTagList: any = this.tag_list;
     this.tag_list = [];
     list.forEach(prod => {
-      if(prod.tag_status) {
+      if (prod.tag_status) {
         prod.tag_list.forEach(tagObj => {
           let tagId = Object.keys(tagObj)[0];
-          let existingTagIndex = duplicateTagList.findIndex(x => x._id == tagId && x.option_list.findIndex(obj => obj.checked)!=-1);
-          if(existingTagIndex!=-1) {
+          let existingTagIndex = duplicateTagList.findIndex(x => x._id == tagId && x.option_list.findIndex(obj => obj.checked) != -1);
+          if (existingTagIndex != -1) {
             let tagIndex = this.tag_list.findIndex(x => x._id == tagId);
-            if(tagIndex == -1) this.tag_list.push(duplicateTagList[existingTagIndex]);
+            if (tagIndex == -1) this.tag_list.push(duplicateTagList[existingTagIndex]);
           }
           else {
             let tagIndex = this.tag_list.findIndex(x => x._id == tagId);
-            if(tagIndex == -1) {
-              let tIndex = this.store_tags.findIndex(element => element._id==tagId);
-              if(tIndex!=-1) {
+            if (tagIndex == -1) {
+              let tIndex = this.store_tags.findIndex(element => element._id == tagId);
+              if (tIndex != -1) {
                 let optionArray = [];
-                tagObj[tagId].forEach(element => { optionArray.push({name: element}) });
-                if(optionArray.length) this.tag_list.push({ _id: tagId, name: this.store_tags[tIndex].name, rank: this.store_tags[tIndex].rank, option_list: optionArray });
+                tagObj[tagId].forEach(element => { optionArray.push({ name: element }) });
+                if (optionArray.length) this.tag_list.push({ _id: tagId, name: this.store_tags[tIndex].name, rank: this.store_tags[tIndex].rank, option_list: optionArray });
               }
             }
             else {
               tagObj[tagId].forEach(element => {
                 let optionIndex = this.tag_list[tagIndex].option_list.findIndex(x => x.name == element);
-                if(optionIndex == -1) {
+                if (optionIndex == -1) {
                   this.tag_list[tagIndex].option_list.push({ name: element });
                 }
               });
@@ -485,7 +513,7 @@ export class CategoryComponent implements OnInit {
         });
       }
     });
-    if(this.tag_list.length && !click) this.gridType = "three";
+    if (this.tag_list.length && !click) this.gridType = "three";
   }
   onTagFilter(changeEvent) {
     let parentProducts: any = this.parent_list;
@@ -493,19 +521,19 @@ export class CategoryComponent implements OnInit {
     let dummyList = [];
     this.tag_list.forEach(tag => {
       let tagId = tag._id;
-      if(dummyList.length) { parentProducts = dummyList; dummyList = []; }
+      if (dummyList.length) { parentProducts = dummyList; dummyList = []; }
       tag.option_list.forEach(tagOption => {
-        if(tagOption.checked) {
+        if (tagOption.checked) {
           this.tagSelected = true;
           let optionName = tagOption.name;
           parentProducts.forEach(prod => {
             prod.tag_list.forEach(prodTag => {
-              if(Object.keys(prodTag)[0] == tagId) {
+              if (Object.keys(prodTag)[0] == tagId) {
                 let tagIndex = prodTag[tagId].findIndex(x => x == optionName);
-                if(tagIndex != -1) {
+                if (tagIndex != -1) {
                   // push product
                   let index = dummyList.findIndex(x => x._id == prod._id);
-                  if(index == -1) dummyList.push(prod);
+                  if (index == -1) dummyList.push(prod);
                 }
               }
             });
@@ -513,12 +541,12 @@ export class CategoryComponent implements OnInit {
         }
       });
     });
-    if(this.tagSelected) {
-      if(dummyList.length) parentProducts = dummyList;
+    if (this.tagSelected) {
+      if (dummyList.length) parentProducts = dummyList;
       this.list = parentProducts;
     }
     else this.list = this.parent_list;
-    if(changeEvent) this.page = 1;
+    if (changeEvent) this.page = 1;
     this.findMinMax();
   }
   clearTagFilter() {
@@ -532,25 +560,25 @@ export class CategoryComponent implements OnInit {
   }
 
   findMinMax() {
-    if(this.commonService.category_page_attr.category_id == this.router.url) {
+    if (this.commonService.category_page_attr.category_id == this.router.url) {
 
     }
-    else if(this.params.category_id && this.commonService.category_page_attr.category_id == this.params.category_id) {
+    else if (this.params.category_id && this.commonService.category_page_attr.category_id == this.params.category_id) {
 
     }
     else {
-      let minPrice = this.list.reduce((min, p) => parseFloat(p?.temp_discounted_price)<min ? parseFloat(p?.temp_discounted_price) : min, parseFloat(this.list[0]?.temp_discounted_price));
-      let maxPrice = this.list.reduce((max, p) => parseFloat(p?.temp_discounted_price)>max ? parseFloat(p?.temp_discounted_price) : max, parseFloat(this.list[0]?.temp_discounted_price));
+      let minPrice = this.list.reduce((min, p) => parseFloat(p?.temp_discounted_price) < min ? parseFloat(p?.temp_discounted_price) : min, parseFloat(this.list[0]?.temp_discounted_price));
+      let maxPrice = this.list.reduce((max, p) => parseFloat(p?.temp_discounted_price) > max ? parseFloat(p?.temp_discounted_price) : max, parseFloat(this.list[0]?.temp_discounted_price));
       this.rangeMin = minPrice; this.rangeMax = maxPrice;
-      if(!isNaN(minPrice) && !isNaN(maxPrice)) this.range_disp = { floor: minPrice, ceil: maxPrice };
+      if (!isNaN(minPrice) && !isNaN(maxPrice)) this.range_disp = { floor: minPrice, ceil: maxPrice };
     }
   }
 
   updateMetaData() {
-    if(this.category_details.seo_status) this.commonService.setSiteMetaData(this.category_details.seo_details, null);
+    if (this.category_details.seo_status) this.commonService.setSiteMetaData(this.category_details.seo_details, null);
     else this.commonService.getStoreSeoDetails();
     // schema
-    if(this.category_details?.name) {
+    if (this.category_details?.name) {
       this.bcList = [
         { name: 'Home', position: 1, link: '/' },
         {
@@ -573,6 +601,12 @@ export class CategoryComponent implements OnInit {
     this.subscription.unsubscribe();
     this.commonService.removeElement('category-jsonld');
     this.commonService.removeElement('category-faq-jsonld');
+
+    // Remove event listeners
+    window.removeEventListener('resize', () => {
+      this.checkNavigationOverflow();
+      this.updateNavigationButtonVisibility();
+    });
   }
 
 }

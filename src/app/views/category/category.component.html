@@ -24,7 +24,9 @@
                   <div class="col-md-12 d-flex align-items-left justify-content-between px-0">
                     <div class="breadcrumb-navigation col-xl-12 col-12 px-0">
                       <ul class="collapsed mb-2">
-                        <li><a routerLink="/">Home</a></li>
+                        <li>
+                          <a routerLink="/">Home</a>
+                        </li>
                         <li *ngIf="category_details?.name">
                           <span class="active-page">{{category_details.name}}</span>
                         </li>
@@ -60,20 +62,26 @@
               <!-- Navigation scroll wrapper -->
               <div class="navigation-scroll-wrapper" #navigationScroller>
                 <div *ngFor="let x of category_details.navigationList | orderAsc: 'rank'; let i=index;"
-                  class="navigation-item" [ngClass]="{'active': i === activeSlideIndex}" (click)="onSelectNav(i)">
+                class="navigation-item" [ngClass]="{'active': i === activeSlideIndex}" (click)="onSelectNav(i)">
                   <div class="navigation-tab">
                     <p class="mb-0 py-0">{{ x.name }}</p>
                   </div>
                 </div>
               </div>
 
-              <!-- Navigation buttons -->
-              <button class="nav-button nav-button-prev" #navPrev (click)="scrollNav('left')"
-                [ngClass]="{'hidden': isAtStart}">
+              <!-- Navigation buttons - Only show when navigation items overflow -->
+              <button *ngIf="showNavigationButtons" 
+                    class="nav-button nav-button-prev" 
+                    #navPrev 
+                    (click)="scrollNav('left')"
+                    [ngClass]="{'hidden': isAtStart}">
                 <lucide-icon name="chevron-left" [size]="20" stroke="2"></lucide-icon>
               </button>
-              <button class="nav-button nav-button-next" #navNext (click)="scrollNav('right')"
-                [ngClass]="{'hidden': isAtEnd}">
+              <button *ngIf="showNavigationButtons" 
+                    class="nav-button nav-button-next" 
+                    #navNext 
+                    (click)="scrollNav('right')"
+                    [ngClass]="{'hidden': isAtEnd}">
                 <lucide-icon name="chevron-right" [size]="20" stroke="2"></lucide-icon>
               </button>
             </div>
@@ -88,8 +96,12 @@
         <div class="row">
           <div class="col-12 px-0">
             <!-- single image slider -->
-            <div *ngIf="!category_details?.navigationList[activeSlideIndex]?.isMultiImages" class="swiper-container multi-slider product-slider featured-sections px-max"
-              id="navigationHighlights" [ngClass]="commonService.desktop_device? 'desktop_phls': 'phls'" style="visibility: hidden;" appCategoryHighlights>
+            <div *ngIf="!category_details?.navigationList[activeSlideIndex]?.isMultiImages" 
+               class="swiper-container multi-slider product-slider featured-sections px-max"
+               id="navigationHighlights" 
+               [ngClass]="commonService.desktop_device? 'desktop_phls': 'phls'" 
+               style="visibility: hidden;" 
+               appCategoryHighlights>
               <div class="swiper-wrapper">
                 <div *ngFor="let x of navigationImageList | orderAsc: 'rank'; let i=index;" class="swiper-slide">
                   <div (click)="commonService.onPageRedirect(x);" class="category-card cursor">
@@ -103,9 +115,14 @@
                 <div id="highlight_prev" [hidden]="true" class="swiper-button swiper-button-prev"></div>
               </ng-container>
             </div>
+
             <!-- group-image slider -->
-            <div *ngIf="category_details?.navigationList[activeSlideIndex]?.isMultiImages" class="swiper-container multi-slider product-slider featured-sections px-max"
-              id="navigationHighlights" [ngClass]="commonService.desktop_device? 'desktop_ghls': 'ghls'" style="visibility: hidden;" appCategoryHighlights>
+            <div *ngIf="category_details?.navigationList[activeSlideIndex]?.isMultiImages" 
+               class="swiper-container multi-slider product-slider featured-sections px-max"
+               id="navigationHighlights" 
+               [ngClass]="commonService.desktop_device? 'desktop_ghls': 'ghls'" 
+               style="visibility: hidden;" 
+               appCategoryHighlights>
               <div class="swiper-wrapper">
                 <div *ngFor="let x of navigationImageList | orderAsc: 'rank'; let i=index;" class="swiper-slide">
                   <div (click)="commonService.onPageRedirect(x);" class="category-card-two">
@@ -193,8 +210,7 @@
               <ng-container *ngIf="category_details?.header_content?.length">
                 <div class="acc-body">
                   <div class="text" [ngClass]="{'collapsed': !showMore, 'expanded': showMore}"
-                    [innerHtml]="category_details.header_content">
-                  </div>
+                    [innerHtml]="category_details.header_content"></div>
                 </div>
                 <div class="acc-read-more mt-1 d-flex justify-content-end">
                   <button class="show-more-btn acc-more" (click)="showMore = !showMore">
@@ -217,7 +233,9 @@
         <div class="col-md-12 d-flex align-items-center justify-content-between">
           <div class="breadcrumb-navigation col-xl-6 col-12" *ngIf="!category_details.banner_image">
             <ul class="collapsed">
-              <li><a routerLink="/">Home</a></li>
+              <li>
+                <a routerLink="/">Home</a>
+              </li>
               <li *ngIf="category_details?.name">
                 <span class="active-page">{{category_details.name}}</span>
               </li>
@@ -270,7 +288,8 @@
               <div class="card color-card" *ngFor="let x of tag_list | orderAsc: 'rank'; let i=index;">
                 <div class="card-header">
                   <a class="tab-label" (click)="collapseIndex=i; onCreateTagList(list, true);"
-                    [attr.aria-expanded]="collapseIndex==i" aria-controls="collapseBasic"> {{x.name}}</a>
+                    [attr.aria-expanded]="collapseIndex==i" aria-controls="collapseBasic">
+                    {{x.name}}</a>
                 </div>
                 <div id="collapseBasic" [collapse]="collapseIndex!=i" [isAnimated]="true">
                   <div class="product-filter card-body">
@@ -339,7 +358,8 @@
                   <div class="col-6 d-flex flex-column justify-content-center">
                     <div>
                       <p *ngIf="template_setting?.display_products_count" class="m-0">
-                        Total <b>{{list.length}}</b> {{ list.length>1 ? 'products' : 'product' }}
+                        Total <b>{{list.length}}</b>
+                        {{ list.length>1 ? 'products' : 'product' }}
                       </p>
                     </div>
                     <!-- grid icons -->
@@ -402,7 +422,8 @@
                 <div *ngIf="template_setting?.display_products_count" class="d-flex align-items-center pr-0"
                   [ngClass]="(tag_list?.length)? 'col-12 justify-content-center': 'col-6 justify-content-end'">
                   <p class="m-0">
-                    Total <b>{{list.length}}</b> {{ list.length>1 ? 'products' : 'product' }}
+                    Total <b>{{list.length}}</b>
+                    {{ list.length>1 ? 'products' : 'product' }}
                   </p>
                 </div>
               </div>
@@ -516,8 +537,7 @@
       <div class="row">
         <div class="col-md-9">
           <div class="left-content">
-            <div class="text" style="max-height: 100%;" [innerHtml]="category_details.profile_details.description">
-            </div>
+            <div class="text" style="max-height: 100%;" [innerHtml]="category_details.profile_details.description"></div>
           </div>
         </div>
         <div class="col-md-3">
@@ -664,7 +684,8 @@
               <div class="card color-card" *ngFor="let x of tag_list | orderAsc: 'rank'; let i=index;">
                 <div class="card-header">
                   <a class="tab-label" (click)="collapseIndex=i; onCreateTagList(list, true);"
-                    [attr.aria-expanded]="collapseIndex==i" aria-controls="collapseBasic"> {{x.name}}</a>
+                    [attr.aria-expanded]="collapseIndex==i" aria-controls="collapseBasic">
+                    {{x.name}}</a>
                 </div>
                 <div id="collapseBasic" [collapse]="collapseIndex!=i" [isAnimated]="true">
                   <div class="product-filter card-body">
@@ -742,7 +763,7 @@
           <div class="col-md-12">
             <label *ngFor="let x of sort_list;" class="store-label d-flex align-items-center m-0 mt-2 mb-4">
               <input type="radio" class="option-input radio" name="sort_list" [(ngModel)]="sort_value"
-                value="{{x.value}}" (change)="sortModal.hide();" />
+                value="{{x.value}}" (change)="sortModal.hide();"/>
               <span>{{x.name}}</span>
             </label>
           </div>
