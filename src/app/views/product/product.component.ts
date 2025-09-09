@@ -301,7 +301,7 @@ export class ProductComponent implements OnInit {
             }
           }
           else {
-            console.log("response", result);
+            console.log("p1-response", result, this.router.url);
             this.router.navigate(["/"]);
           }
         });
@@ -314,7 +314,7 @@ export class ProductComponent implements OnInit {
     this.blogList = [];
     this.storeApi.RANDOM_BLOG_LIST({ limit: 3 }).subscribe(result => {
       if(result.status) this.blogList = result.list;
-      else console.log("response", result);
+      else console.log("p2-response", result, this.router.url);
     });
     // recently viewed
     this.recentlyViewedList = [];
@@ -340,7 +340,7 @@ export class ProductComponent implements OnInit {
             }
             this.findCurrency();
           }
-          else console.log("response", result);
+          else console.log("p3-response", result, this.router.url);
         });
       }
     }
@@ -936,7 +936,7 @@ export class ProductComponent implements OnInit {
           }
           else {
             this.productDetails.buynow_loader = false;
-            console.log("response", result);
+            console.log("p4-response", result, this.router.url);
           }
         });
       }
@@ -1000,7 +1000,7 @@ export class ProductComponent implements OnInit {
       this.productDetails.buynow_loader = false;
       if(result.status) this.router.navigate([redirect]);
       else {
-        console.log("response", result);
+        console.log("p5-response", result, this.router.url);
         this.router.navigate(["/"]);
       }
     });
@@ -1055,7 +1055,7 @@ export class ProductComponent implements OnInit {
                 else createNewModal.show();
                 this.commonService.scrollModalTop(500);
               }
-              else console.log("response", result);
+              else console.log("p6-response", result, this.router.url);
             });
           }
           else {
@@ -1285,7 +1285,7 @@ export class ProductComponent implements OnInit {
           }
           else {
             this.addonForm.alert_msg = result.message;
-            console.log("response", result);
+            console.log("p7-response", result, this.router.url);
           }
         });
       }

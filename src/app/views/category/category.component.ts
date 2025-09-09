@@ -162,7 +162,7 @@ export class CategoryComponent implements OnInit {
               this.storeApi.AI_STYLES_FILTER({ styles: filterList }).subscribe(result => {
                 setTimeout(() => { this.pageLoader = false; }, 500);
                 if (result.status) this.filterProducts(result.list);
-                else console.log("response", result);
+                else console.log("c1-response", result, this.router.url);
               });
             }
             else this.pageLoader = false;
@@ -227,7 +227,7 @@ export class CategoryComponent implements OnInit {
             this.storeApi.FILTERED_PRODUCT_LIST({ type: filterType }).subscribe(result => {
               setTimeout(() => { this.pageLoader = false; }, 500);
               if (result.status) this.filterProducts(result.list);
-              else console.log("response", result);
+              else console.log("c2-response", result, this.router.url);
             });
           }
           // seo
@@ -301,7 +301,7 @@ export class CategoryComponent implements OnInit {
               this.getProductTags();
             }
             else {
-              console.log("response", result);
+              console.log("c3-response", result, this.router.url);
               this.router.navigate(["/"]);
             }
           });
@@ -425,7 +425,7 @@ export class CategoryComponent implements OnInit {
             sessionStorage.setItem('pt', this.commonService.encryptData(this.store_tags));
             this.onCreateTagList(this.list, false);
           }
-          else console.log("response", result);
+          else console.log("c4-response", result, this.router.url);
         });
       }
     }
