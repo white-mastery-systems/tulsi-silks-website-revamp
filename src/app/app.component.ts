@@ -199,12 +199,12 @@ export class AppComponent {
       /* STORE DETAILS */
       this.storeApi.STORE_DETAILS().subscribe(result => {
         if (result.status) {
-          let storeDetails = JSON.parse(result.store_details);
+          let storeDetails = result.store_details;
           if (storeDetails.status == 'active') {
-            let liveCurrencies = JSON.parse(result.live_currencies);
+            let liveCurrencies = result.live_currencies;
             let storeProperties = storeDetails.store_properties[0];
             // ys features
-            this.commonService.ys_features = JSON.parse(result.ys_features);
+            this.commonService.ys_features = result.ys_features;
             localStorage.setItem("ys_features", this.commonService.encryptData(this.commonService.ys_features));
             // ip-based currency
             this.commonService.ipBasedCurrency = false;

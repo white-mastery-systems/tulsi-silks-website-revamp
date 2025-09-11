@@ -91,7 +91,7 @@ export class HomeComponent implements OnInit {
     if(!this.commonService.layout_list.length) {
       this.storeApi.LAYOUT_LIST().subscribe(result => {
         if(result.status) {
-          let layoutList = JSON.parse(result.list).sort((a, b) => 0 - (a.rank > b.rank ? -1 : 1));
+          let layoutList = result.list.sort((a, b) => 0 - (a.rank > b.rank ? -1 : 1));
           layoutList.push({
             type: 'instagram',
             image_list: [
@@ -211,7 +211,7 @@ export class HomeComponent implements OnInit {
       }
       this.storeApi.HOME_PAGE_BLOG_LIST(this.template_setting.blog_count).subscribe(result => {
         if(result.status) {
-          let blogList = JSON.parse(result.list);
+          let blogList = result.list;
           if(blogList.length) {
             let bCount = this.swiperService.blogs.card_count;
             if(blogData.blogs_type=='grid') {

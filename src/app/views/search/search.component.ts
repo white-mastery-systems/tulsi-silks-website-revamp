@@ -35,7 +35,7 @@ export class SearchComponent implements OnInit {
         else {
           this.storeApi.STORE_DETAILS().subscribe(result => {
             if(result.status) {
-              let storeDetails = JSON.parse(result.store_details);
+              let storeDetails = result.store_details;
               this.commonService.menu_list = storeDetails.menu_list;
               this.createSearchCategoryList();
             }

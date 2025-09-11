@@ -13,10 +13,10 @@ export class StoreApiService {
   constructor(private http: HttpClient) { }
 
   IP_INFO(url) { return this.http.get<any>(url); }
-  STORE_DETAILS() { return this.http.get<any>(environment.ws_url+'/store_details/details_v3?store_id='+this.store_id); }
+  STORE_DETAILS() { return this.http.get<any>(environment.ws_url+'/store_details/details_v3?json=1&store_id='+this.store_id); }
   
-  LAYOUT_LIST() { return this.http.get<any>(environment.ws_url+'/store_details/layouts?store_id='+this.store_id); }
-  HOME_PAGE_BLOG_LIST(limit) { return this.http.get<any>(environment.ws_url+'/store_details/blogs?limit='+limit+'&store_id='+this.store_id); }
+  LAYOUT_LIST() { return this.http.get<any>(environment.ws_url+'/store_details/layouts?json=1&store_id='+this.store_id); }
+  HOME_PAGE_BLOG_LIST(limit) { return this.http.get<any>(environment.ws_url+'/store_details/blogs?json=1&limit='+limit+'&store_id='+this.store_id); }
   INSTAGRAM(x) { return this.http.get<any>('https://graph.instagram.com/me/media?limit=15&fields=id,caption,media_url,media_type,permalink,thumbnail_url,timestamp&access_token='+x); }
 
   AI_STYLES() { return this.http.get<any>(environment.ws_url+'/store_details/ai_styles?store_id='+this.store_id); }
