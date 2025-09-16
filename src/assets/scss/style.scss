@@ -448,16 +448,37 @@ article, aside, footer, header, nav, section { width: 100%; float: left; positio
       }
     }
   }
+
+  .common-site-section .blog-details{
+    .product-slider{
+        .product-box{
+          .product-image{
+            height:300px!important;
+          }
+        }
+      }
+  }   
 }
 
 @media only screen and (max-width:768px){
   .product__slider{
     .product-box .product-image{
-      height:220px;
+      height:230px;
       &.product-image-sec2{
-        height:300px;
+        height:260px;
       }
     }
   }
+
+  .common-site-section .blog-details{
+   .product-slider{
+      .product-box{
+        .product-image{
+          height:260px;
+        }
+      }
+    }
+  }
+
   .footer{padding:50px 25px}
 }
