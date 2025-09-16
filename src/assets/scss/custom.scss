@@ -1176,7 +1176,7 @@ p.error-msg {
   padding:40px 0;
   img {
     width: 100%;
-    height: 450px;
+    height: 500px;
     // opacity: 0.5;
     object-fit: cover;
     object-position: center;
@@ -1192,6 +1192,12 @@ p.error-msg {
     h1,p {
       color:#000!important;
       text-align: left;
+    }
+    p{
+      font-size: 18px;
+      opacity: 1;
+      font-weight: 400;
+      line-height: 1.5em;
     }
   }
 }
@@ -1246,17 +1252,17 @@ p.error-msg {
     }
   }
   h1{ font-size: 22px !important; }
-  h2{ font-size: 18px !important; }
-  h3{ font-size: 16px !important; }
-  h4{ font-size: 14px !important; }
-  h5{ font-size: 12px !important; }
-  h6{ font-size: 10px !important; }
+  h2{ font-size: 20px !important; }
+  h3{ font-size: 18px !important; }
+  h4{ font-size: 16px !important; }
+  h5{ font-size: 14px !important; }
+  h6{ font-size: 12px !important; }
   p {
     color: $primary-text !important;
     margin-bottom: 15px;
     transition: all 2s ease;
     line-height: 1.5;
-    font-size: 13px !important;
+    font-size: 16px !important;
     margin-bottom: 0;
     text-align: center;
   }

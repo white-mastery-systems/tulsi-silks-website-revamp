@@ -85,11 +85,11 @@
   align-items: flex-start;
   h3 {
     margin-bottom:12px;
-    font-size: 20px;
+    font-size: 26px;
     font-weight: 500;
   }
   p {
-    font-size: 14px;   
+    font-size: 18px;   
     margin: 0 0 16px;
     line-height: 1.6;
   }
@@ -211,7 +211,7 @@
   position: relative;
   width: 100%;
   overflow: hidden;
-  padding: 20px 0px; /* Space for navigation buttons */
+  padding: 20px 0px 30px; /* Space for navigation buttons */
 }
 
 /* Scrollable navigation wrapper */
@@ -219,7 +219,7 @@
   display: flex;
   overflow-x: auto;
   scroll-behavior: smooth;
-  gap: 15px;
+  gap: 30px;
   padding: 0;
   scrollbar-width: none; /* Firefox */
   -ms-overflow-style: none; /* IE/Edge */
@@ -250,6 +250,8 @@
   min-height: 35px;
   position: relative;
   overflow: hidden;
+  padding: 10px 15px 22px;
+  font-size: 22px;
   // border-bottom: 2px solid #fff;
 }
 
@@ -267,7 +269,7 @@
 .navigation-tab p {
   font-weight: 500;
   color: #3d3d3d;
-  font-size: 14px;
+  font-size: 22px;
   margin: 0;
   transition: color 0.3s ease;
   z-index: 2;
@@ -346,7 +348,7 @@
 /* Mobile responsive */
 @media (max-width: 768px) {
   .navigation-container {
-    padding: 10px 40px;
+    padding: 10px 15px;
   }
 
   .navigation-item {
@@ -355,7 +357,8 @@
   }
 
   .navigation-scroll-wrapper {
-    gap: 10px;
+    margin-bottom: 15px !important;
+    gap: 12px;
   }
 
   .navigation-tab {
@@ -364,7 +367,7 @@
   }
 
   .navigation-tab p {
-    font-size: 13px;
+    font-size: 16px;
   }
 
   .nav-button {
@@ -379,6 +382,16 @@
   .nav-button-next {
     right: 5px;
   }
+
+  .category-card-two{
+    h3 {    
+    font-size: 20px!important;   
+  }
+  p {
+    font-size: 16px!important;      
+  }
+  }
+
 }
 
 @media (max-width: 480px) {
@@ -392,16 +405,16 @@
   }
 }
 
-.product-box .product-content h4
-{
-  font-size: 16px !important;
-  font-weight: 500;
-  opacity: 1;
-}
+// .product-box .product-content h4
+// {
+//   font-size: 16px !important;
+//   font-weight: 500;
+//   opacity: 1;
+// }
 
-.product-box .product-content p{
-  opacity: 0.7;
-}
+// .product-box .product-content p{
+//   opacity: 0.7;
+// }
 
 .primary-btn
 {

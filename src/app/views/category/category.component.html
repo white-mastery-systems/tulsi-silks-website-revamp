@@ -13,7 +13,7 @@
   <!-- catalog Banner -->
   <section *ngIf="category_details.banner_image" class="category-banner-sec data-bg">
     <div class="container-fluid">
-      <div class="category-banner row align-items-center">
+      <div class="category-banner row align-items-end">
         <div class="col-md-6 category-banner-col pl-md-0">
 
           <div class="category-banner-text">
@@ -38,7 +38,7 @@
             </div>
             <!--# breadcrumb #-->
             <h1 class="mb-2">{{category_details.seo_details.h1_tag}}</h1>
-            <div *ngIf="category_details.description" [innerHtml]="category_details.description" class="pr-md-5"></div>
+            <div *ngIf="category_details.description" [innerHtml]="category_details.description" class="pr-md-3"></div>
           </div>
         </div>
 
