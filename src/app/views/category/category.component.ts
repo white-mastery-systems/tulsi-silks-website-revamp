@@ -371,10 +371,10 @@ export class CategoryComponent implements OnInit {
 
   scrollToSelectedNav(index: number) {
     if (this.navigationScroller?.nativeElement) {
-      const scrollWrapper = this.navigationScroller.nativeElement;
-      const selectedItem = scrollWrapper.children[index] as HTMLElement;
+      const scrollWrapper = this.navigationScroller.nativeElement as HTMLElement;
+      const selectedItem = scrollWrapper.children.item(index);
 
-      if (selectedItem) {
+      if (selectedItem instanceof HTMLElement) {
         selectedItem.scrollIntoView({
           behavior: 'smooth',
           block: 'nearest',

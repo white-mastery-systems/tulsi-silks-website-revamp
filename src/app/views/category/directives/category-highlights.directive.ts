@@ -87,7 +87,7 @@ export class CategoryHighlightsDirective {
             // swiper config
             let swipeConfig: any = {
               speed: 700,
-              loop: true,
+              loop: false,
               breakpoints: this.highlights.break_points,
               navigation: {
                 nextEl: '#highlight_next',
@@ -121,7 +121,7 @@ export class CategoryHighlightsDirective {
             // swiper config
             let swipeConfig: any = {
               speed: 700,
-              loop: true,
+              loop: false,
               breakpoints: this.groupHighlights.break_points,
               navigation: {
                 nextEl: '#group_highlight_next',
