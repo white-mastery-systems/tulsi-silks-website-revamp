@@ -13,36 +13,44 @@ export class CategoryHighlightsDirective {
   private observer: any;
   loadedElements: any = [];
 
-  color_swiper: any ={
-    auto_play: false,
-    break_points: {
-      1024: { slidesPerView: 7, spaceBetween: 15 },
-      768: { slidesPerView: 3, spaceBetween: 15 },
-      640: { slidesPerView: 3, spaceBetween: 15 },
-      320: { slidesPerView: 3.5, spaceBetween: 2 }
-    }
-  };
-  
-  highlights: any = {
-    card_count: 6,
-    auto_play: true,
-    loop:true,
-    break_points: {
-      1024: { slidesPerView: 5.5, spaceBetween: 15 },
-      768: { slidesPerView: 4.5, spaceBetween: 15 },
-      640: { slidesPerView: 2.15, spaceBetween: 15 },
-      320: { slidesPerView: 2.15, spaceBetween: 15 }
-    }
-  };
   groupHighlights: any = {
-    card_count: 6,
     auto_play: true,
-    loop:true,
+    loop: true,
+    break_points: {
+      1024: { slidesPerView: 3.5, spaceBetween: 15 },
+      768: { slidesPerView: 3.5, spaceBetween: 15 },
+      640: { slidesPerView: 1.15, spaceBetween: 15 },
+      320: { slidesPerView: 1.15, spaceBetween: 15 }
+    }
+  };
+  highlights: any = {
+    auto_play: true,
+    loop: true,
+    break_points: {
+      1024: { slidesPerView: 4.5, spaceBetween: 15 },
+      768: { slidesPerView: 3.5, spaceBetween: 15 },
+      640: { slidesPerView: 1.15, spaceBetween: 15 },
+      320: { slidesPerView: 1.15, spaceBetween: 15 }
+    }
+  };
+  materialHighlights: any = {
+    auto_play: true,
+    loop: true,
+    break_points: {
+      1024: { slidesPerView: 3.5, spaceBetween: 15 },
+      768: { slidesPerView: 3.5, spaceBetween: 15 },
+      640: { slidesPerView: 1.15, spaceBetween: 15 },
+      320: { slidesPerView: 1.15, spaceBetween: 15 }
+    }
+  };
+  weaveHighlights: any = {
+    auto_play: true,
+    loop: true,
     break_points: {
       1024: { slidesPerView: 3, spaceBetween: 15 },
       768: { slidesPerView: 3, spaceBetween: 15 },
-      640: { slidesPerView: 1.15, spaceBetween: 15 },
-      320: { slidesPerView: 1.15, spaceBetween: 15 }
+      640: { slidesPerView: 1.05, spaceBetween: 15 },
+      320: { slidesPerView: 1.05, spaceBetween: 15 }
     }
   };
 
@@ -79,7 +87,7 @@ export class CategoryHighlightsDirective {
   fetchSwipeElements() {
     let classList: any = this._element.nativeElement.classList;
     for(let i=0; i<classList.length; i++) {
-      if(classList[i].includes("phls") || classList[i].includes("ghls") || classList[i].includes("color_slider") || classList[i].includes("section_slider")) {
+      if(classList[i].includes("phls") || classList[i].includes("whls") || classList[i].includes("mhls") || classList[i].includes("ghls") || classList[i].includes("color_slider") || classList[i].includes("section_slider")) {
         let swipeElement = classList[i];
         if(classList[i].includes("phls") && isPlatformBrowser(this.platformId)) {
           if(this.loadedElements.indexOf(swipeElement) == -1) {
@@ -95,6 +103,74 @@ export class CategoryHighlightsDirective {
               }
             }
             let autoPlay = this.highlights.auto_play;
+            if(autoPlay) {
+              swipeConfig.autoplay = {
+                delay: 1000,
+                disableOnInteraction: false
+              }
+            }
+            // initialize swiper
+            new Swiper('.'+swipeElement, swipeConfig);
+            let ele: any = document.getElementsByClassName(swipeElement)[0];
+            ele.style.visibility = "unset";
+            // hover event
+            if(autoPlay && swipeElement.includes("desktop")) {
+              $('.'+swipeElement).hover(function () {
+                (this).swiper.autoplay.stop();
+              }, function () {
+                (this).swiper.autoplay.start();
+              });
+            }
+          }
+        }
+        else if(classList[i].includes("whls") && isPlatformBrowser(this.platformId)) {
+          if(this.loadedElements.indexOf(swipeElement) == -1) {
+            this.loadedElements.push(swipeElement);
+            // swiper config
+            let swipeConfig: any = {
+              speed: 700,
+              loop: false,
+              breakpoints: this.weaveHighlights.break_points,
+              navigation: {
+                nextEl: '#highlight_next',
+                prevEl: '#highlight_prev'
+              }
+            }
+            let autoPlay = this.weaveHighlights.auto_play;
+            if(autoPlay) {
+              swipeConfig.autoplay = {
+                delay: 1000,
+                disableOnInteraction: false
+              }
+            }
+            // initialize swiper
+            new Swiper('.'+swipeElement, swipeConfig);
+            let ele: any = document.getElementsByClassName(swipeElement)[0];
+            ele.style.visibility = "unset";
+            // hover event
+            if(autoPlay && swipeElement.includes("desktop")) {
+              $('.'+swipeElement).hover(function () {
+                (this).swiper.autoplay.stop();
+              }, function () {
+                (this).swiper.autoplay.start();
+              });
+            }
+          }
+        }
+        else if(classList[i].includes("mhls") && isPlatformBrowser(this.platformId)) {
+          if(this.loadedElements.indexOf(swipeElement) == -1) {
+            this.loadedElements.push(swipeElement);
+            // swiper config
+            let swipeConfig: any = {
+              speed: 700,
+              loop: false,
+              breakpoints: this.materialHighlights.break_points,
+              navigation: {
+                nextEl: '#highlight_next',
+                prevEl: '#highlight_prev'
+              }
+            }
+            let autoPlay = this.materialHighlights.auto_play;
             if(autoPlay) {
               swipeConfig.autoplay = {
                 delay: 1000,
@@ -147,31 +223,6 @@ export class CategoryHighlightsDirective {
                 (this).swiper.autoplay.start();
               });
             }
-          }
-        }
-        else if(classList[i].includes("color_slider") && isPlatformBrowser(this.platformId)) {
-          if(this.loadedElements.indexOf(swipeElement) == -1) {
-            this.loadedElements.push(swipeElement);
-            // swiper config
-            let swipeConfig: any = {
-              speed: 500,
-              loop: true,
-              breakpoints: this.color_swiper.break_points,
-              navigation: {
-                nextEl: '#color_slider_next',
-                prevEl: '#color_slider_prev'
-              }
-            }
-            let autoPlay = this.color_swiper.auto_play;
-            if(autoPlay) {
-              swipeConfig.autoplay = {
-                delay: 500,
-                disableOnInteraction: false
-              }
-            }
-            // initialize swiper
-            let swipeInit = new Swiper('.'+swipeElement, swipeConfig);
-            if(swipeConfig.auto_play && swipeElement.includes("desktop")) this.autoPlayEvt(swipeInit);
           }
         }
         else if(classList[i].includes("section_slider") && isPlatformBrowser(this.platformId)) {
