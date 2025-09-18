@@ -878,7 +878,8 @@ span{
   }
 }
 
-.highlighted-sec {
+.highlighted-sec,
+.highlighted-sec.content-section {
   .landing-highlighted {
     figure {
       width: 100%;
@@ -989,6 +990,22 @@ span{
   }
 }
 
+.highlighted-sec.content-section{
+   .highlighted-text-width {
+    padding-left: 40px;    
+    p {
+      opacity: 1;
+      margin-bottom: 16px;
+      font-size: 18px;
+      line-height:2;
+      font-weight: 400;
+    }
+    button {
+      height: 48px!important;
+    }
+  }
+}
+
 @media only screen and (max-width: 768px) {
   .highlighted-sec {
     .landing-highlighted {
@@ -1008,6 +1025,14 @@ span{
       }
     }
   }    
+  .highlighted-sec.content-section .highlighted-text-width {
+      padding-left: 0!important;
+      padding-right: 0!important;
+    }
+
+  .highlighted-sec.content-section .landing-highlighted figure img{
+    padding:15px 0;
+  }
 }
 
 

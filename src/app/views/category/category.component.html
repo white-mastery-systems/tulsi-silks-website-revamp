@@ -574,24 +574,23 @@
 
   <!-- profile section -->
   <section *ngIf="category_details.profile_status && category_details.profile_details?.image"
-    class="primary-section content-section">
-    <div class="{{template_setting?.body_type}}">
+    class="primary-section highlight-sec-margin single-highlighted-sec highlighted-sec content-section">
+    <div class="container-fluid">
       <div class="row">
-        <div class="col-md-3">
-          <div class="right-profile">
-            <!-- <p class="pro-name mb-2">{{category_details.profile_details.name}}</p>
-            <a href="#">{{category_details.profile_details.designation}}</a> -->
-            <div class="profile-img mt-2">
-              <img width="100%" height="100%" appImgLazyLoad
-                [ImagelazyLoad]="imgBaseUrl+category_details.profile_details.image" alt="Image">
+          <div class="col-md-5 d-flex flex-column align-items-start justify-content-center">
+            <div class="landing-highlighted w-100">
+              <figure>
+                <img width="100%" height="100%" appImgLazyLoad [ImagelazyLoad]="imgBaseUrl+category_details.profile_details.image" alt="Image">
+              </figure>
             </div>
           </div>
-        </div>
-        <div class="col-md-9">
-          <div class="left-content">
-            <div class="text" style="max-height: 100%;" [innerHtml]="category_details.profile_details.description"></div>
-          </div>
-        </div>
+          <div class="col-md-7 d-flex flex-column align-items-start justify-content-center">
+            <div class="highlighted-text-width">
+              <div class="landing-highlighted-text d-flex flex-column text-left" [innerHtml]="category_details.profile_details.description">                
+              </div>
+              <button class="primary-btn">Read More</button>
+            </div>
+          </div>       
       </div>
     </div>
   </section>
