@@ -82,16 +82,16 @@ export function app(): express.Express {
     res.redirect('/category/view-all-six-yards');
   });
   server.use('/category/5d38185edf972007f663040e', function(req, res) {
-    res.redirect('/category/traditional');
+    res.redirect('/category/traditional-kanjivaram-silk-sarees');
   });
   server.use('/category/tissue-kanjivaram', function(req, res) {
     res.redirect('/category/kanjivaram-tissue-silk-sarees');
   });
   server.use('/category/5d32c0fcc3fd167a10dcfca2', function(req, res) {
-    res.redirect('/category/bridal-kanjivaram');
+    res.redirect('/category/bridal-kanjivaram-silk-sarees');
   });
   server.use('/category/5d381824df972007f6630409', function(req, res) {
-    res.redirect('/category/checks');
+    res.redirect('/category/checked-kanjivaram-silk-sarees');
   });
   server.use('/category/5d38596cdf972007f6630528', function(req, res) {
     res.redirect('/category/chiffon');
@@ -109,7 +109,7 @@ export function app(): express.Express {
     res.redirect('/category/kani-silk');
   });
   server.use('/category/5d381801df972007f6630402', function(req, res) {
-    res.redirect('/category/korvai');
+    res.redirect('/category/korvai-kanjivaram-silk-sarees');
   });
   server.use('/category/5d38341bdf972007f6630477', function(req, res) {
     res.redirect('/category/linen-embroidery');
@@ -128,6 +128,42 @@ export function app(): express.Express {
   });
   server.use('/blogs/12-different-types-of-silk-and-sarees-made-from-them', function(req, res) {
     res.redirect('/blogs/12-different-types-of-silk-sarees-made-for-every-indian-women');
+  });
+  server.use('/category/view-all-kanjivaram', function(req, res) {
+    res.redirect('/category/kanjivaram-silk-sarees');
+  });
+  server.use('/category/kanjivaram-saree', function(req, res) {
+    res.redirect('/category/kanjivaram-silk-sarees');
+  });
+  server.use('/category/pattupettu', function(req, res) {
+    res.redirect('/category/kanjivaram-pattu-silk-sarees');
+  });
+  server.use('/category/korvai', function(req, res) {
+    res.redirect('/category/korvai-kanjivaram-silk-sarees');
+  });
+  server.use('/category/without-border', function(req, res) {
+    res.redirect('/category/borderless-kanjivaram-silk-sarees');
+  });
+  server.use('/category/checks', function(req, res) {
+    res.redirect('/category/checked-kanjivaram-silk-sarees');
+  });
+  server.use('/category/traditional', function(req, res) {
+    res.redirect('/category/traditional-kanjivaram-silk-sarees');
+  });
+  server.use('/category/zari-brocade', function(req, res) {
+    res.redirect('/category/brocade-kanjivaram-silk-sarees');
+  });
+  server.use('/category/classic', function(req, res) {
+    res.redirect('/category/kanjivaram-classic-silk-sarees');
+  });
+  server.use('/category/bridal-kanjivaram', function(req, res) {
+    res.redirect('/category/bridal-kanjivaram-silk-sarees');
+  });
+  server.use('/category/engagement-sarees', function(req, res) {
+    res.redirect('/category/engagement-kanjivaram-silk-sarees');
+  });
+  server.use('/category/embroidery', function(req, res) {
+    res.redirect('/category/embroidery-kanjivaram-silk-sarees');
   });
   
   // Example Express Rest API endpoints
