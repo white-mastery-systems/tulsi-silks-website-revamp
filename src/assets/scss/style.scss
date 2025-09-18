@@ -400,6 +400,20 @@ article, aside, footer, header, nav, section { width: 100%; float: left; positio
 }
 
 /* MOBILE RESPONSIVE FIXES */
+@media screen and (min-width: 768px) and (max-width: 1024px) and (orientation: portrait) {
+.category-banner-sec img{
+  height: 400px!important;
+}
+.category-filter-section{
+  .category-card img,
+  .category-card-two,
+  .category-second-card,
+  .category-third-card{
+    height: 280px!important;
+  }
+}
+}
+
 @media only screen and (max-width: 767px), only screen and (max-device-width: 767px) {
 	.topbar .shopping-menu{display: none;}
 	.side-menu-open{ transform: translateX(-280px); overflow: hidden;}

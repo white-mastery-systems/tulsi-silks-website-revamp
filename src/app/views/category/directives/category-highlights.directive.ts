@@ -18,9 +18,9 @@ export class CategoryHighlightsDirective {
     loop: true,
     break_points: {
       1024: { slidesPerView: 3.5, spaceBetween: 15 },
-      768: { slidesPerView: 3.5, spaceBetween: 15 },
-      640: { slidesPerView: 1.15, spaceBetween: 15 },
-      320: { slidesPerView: 1.15, spaceBetween: 15 }
+      768: { slidesPerView: 2.15, spaceBetween: 15 },
+      640: { slidesPerView: 1, spaceBetween: 15 },
+      320: { slidesPerView: 1, spaceBetween: 15 }
     }
   };
   highlights: any = {
@@ -28,9 +28,9 @@ export class CategoryHighlightsDirective {
     loop: true,
     break_points: {
       1024: { slidesPerView: 4.5, spaceBetween: 15 },
-      768: { slidesPerView: 3.5, spaceBetween: 15 },
-      640: { slidesPerView: 1.15, spaceBetween: 15 },
-      320: { slidesPerView: 1.15, spaceBetween: 15 }
+      768: { slidesPerView: 2.15, spaceBetween: 15 },
+      640: { slidesPerView: 1, spaceBetween: 15 },
+      320: { slidesPerView: 1, spaceBetween: 15 }
     }
   };
   materialHighlights: any = {
@@ -38,9 +38,9 @@ export class CategoryHighlightsDirective {
     loop: true,
     break_points: {
       1024: { slidesPerView: 3.5, spaceBetween: 15 },
-      768: { slidesPerView: 3.5, spaceBetween: 15 },
-      640: { slidesPerView: 1.15, spaceBetween: 15 },
-      320: { slidesPerView: 1.15, spaceBetween: 15 }
+      768: { slidesPerView: 2.15, spaceBetween: 15 },
+      640: { slidesPerView: 1, spaceBetween: 15 },
+      320: { slidesPerView: 1, spaceBetween: 15 }
     }
   };
   weaveHighlights: any = {
@@ -48,9 +48,9 @@ export class CategoryHighlightsDirective {
     loop: true,
     break_points: {
       1024: { slidesPerView: 3, spaceBetween: 15 },
-      768: { slidesPerView: 3, spaceBetween: 15 },
-      640: { slidesPerView: 1.05, spaceBetween: 15 },
-      320: { slidesPerView: 1.05, spaceBetween: 15 }
+      768: { slidesPerView: 2.15, spaceBetween: 15 },
+      640: { slidesPerView: 1, spaceBetween: 15 },
+      320: { slidesPerView: 1, spaceBetween: 15 }
     }
   };
 
