@@ -447,7 +447,7 @@ article, aside, footer, header, nav, section { width: 100%; float: left; positio
     .footer .logo{float: none;}
     .yourstore-band .yourstore-inner{text-align: center;}
 	.footer .terms small a{margin:0!important;padding: 5px;}	
-  .color-slider-section{padding-top:40px!important;}
+  .color-slider-section{padding-top:10px!important;}
    .yourstore--band{
     flex-direction: column;
     justify-content: center;
@@ -507,6 +507,15 @@ article, aside, footer, header, nav, section { width: 100%; float: left; positio
   }
 
   .footer{padding:50px 25px}
+
+  .category-banner-sec{
+    padding:20px 0!important;
+  }
+
+  .category-banner-accordion{
+    margin-top:10px!important;
+  }
+  
 }
 
 @media only screen and (max-width:360px){

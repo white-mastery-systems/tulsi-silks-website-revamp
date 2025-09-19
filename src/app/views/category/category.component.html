@@ -290,36 +290,57 @@
       </div>
     </div>
   </section>
-  <!-- #header content -->
 
-  <!-- breadcrumb -->
-  <section *ngIf="template_setting?.breadcrumb" class="head-breadcrumb mt-3">
-    <div class="container-fluid">
+  <section class="category-banner-content mt-3" *ngIf="!category_details?.hc_status && category_details.description && category_details?.seo_details?.h1_tag">
+    <div class="{{template_setting?.body_type}}">
       <div class="row">
-        <div class="col-md-12 d-flex align-items-center justify-content-between">
-          <div class="breadcrumb-navigation col-xl-6 col-12" *ngIf="!category_details.banner_image">
-            <ul class="collapsed">
-              <li>
-                <a routerLink="/">Home</a>
-              </li>
-              <li *ngIf="category_details?.name">
-                <span class="active-page">{{category_details.name}}</span>
-              </li>
-            </ul>
-          </div>
-          <div *ngIf="commonService.screen_width>=992 && list.length" class="d-flex justify-content-end pr-0"
-            [ngClass]="category_details.banner_image? 'col-xl-12': 'col-xl-6'">
-            <span>
-              Sort by:
-              <select name="sort_list" [(ngModel)]="sort_value">
-                <option *ngFor="let x of sort_list;" [ngValue]="x.value">{{x.name}}</option>
-              </select>
-            </span>
+        <div class="col-md-12">
+          <div class="category-banner-accordion">
+            <div class="custom-accordion">
+              <div class="acc-head">
+                <h1>{{category_details.seo_details.h1_tag}}</h1>
+              </div>
+              <div class="acc-body">
+                <div class="text expanded" [innerHtml]="category_details.description"></div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
     </div>
   </section>
+  <!-- #header content -->
+
+  <!-- breadcrumb -->
+  <ng-container *ngIf="template_setting?.breadcrumb">
+    <section *ngIf="!category_details.banner_image || commonService.screen_width>=992 && list.length" class="head-breadcrumb mt-3">
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-md-12 d-flex align-items-center justify-content-between">
+            <div class="breadcrumb-navigation col-xl-6 col-12" *ngIf="!category_details.banner_image">
+              <ul class="collapsed">
+                <li>
+                  <a routerLink="/">Home</a>
+                </li>
+                <li *ngIf="category_details?.name">
+                  <span class="active-page">{{category_details.name}}</span>
+                </li>
+              </ul>
+            </div>
+            <div *ngIf="commonService.screen_width>=992 && list.length" class="d-flex justify-content-end pr-0"
+              [ngClass]="category_details.banner_image? 'col-xl-12': 'col-xl-6'">
+              <span>
+                Sort by:
+                <select name="sort_list" [(ngModel)]="sort_value">
+                  <option *ngFor="let x of sort_list;" [ngValue]="x.value">{{x.name}}</option>
+                </select>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </ng-container>
   <!--# breadcrumb #-->
 
   <!-- product list -->
@@ -808,7 +829,7 @@
         </div>
       </div>
       <div class="modal-footer">
-        <button *ngIf="tagSelected" type="button" class="secondary-btn" (click)="clearTagFilter();">Clear All</button>
+        <button *ngIf="tagSelected" type="button" class="clear-all-btn" (click)="clearTagFilter();">Clear All</button>
         <button type="button" class="primary-btn" (click)="filterModal.hide();">Apply</button>
       </div>
     </div>
