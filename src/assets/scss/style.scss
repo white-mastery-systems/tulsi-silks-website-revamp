@@ -409,7 +409,7 @@ article, aside, footer, header, nav, section { width: 100%; float: left; positio
   .category-card-two,
   .category-second-card,
   .category-third-card{
-    height: 280px!important;
+    height: 320px!important;
   }
 }
 }
@@ -471,7 +471,11 @@ article, aside, footer, header, nav, section { width: 100%; float: left; positio
           }
         }
       }
-  }   
+  }  
+  
+  .category-banner-sec img{
+    height: 300px!important;
+  }
 }
 
 @media only screen and (max-width:768px){
@@ -494,5 +498,19 @@ article, aside, footer, header, nav, section { width: 100%; float: left; positio
     }
   }
 
+  .related-products{
+    .product-box{
+      .product-image{
+        height:250px;
+      }
+    }
+  }
+
   .footer{padding:50px 25px}
+}
+
+@media only screen and (max-width:360px){
+  .breadcrumb-navigation .active-page{   
+    width:auto!important;   
+  }
 }

@@ -93,9 +93,9 @@
     <!-- navigation sections -->
     <section class="primary-section category-filter-section">
       <div class="container-fluid">
-        <div class="row" [ngStyle]="{
-          'min-height': commonService.desktop_device ? '300px' : '250px',
-          'max-height': commonService.desktop_device ? '300px' : '250px'
+        <div class="row section-height-big" [ngStyle]="{
+          'min-height': commonService.desktop_device ? '350px' : '340px',
+          'max-height': commonService.desktop_device ? '350px' : '340px'
         }">
           <div *ngIf="navigationImageList.length" class="col-12 px-0">
             <!-- single image slider -->
@@ -168,15 +168,19 @@
               <div class="swiper-wrapper">
                 <div *ngFor="let x of navigationImageList | orderAsc: 'rank'; let i=index;" class="swiper-slide">
                   <div (click)="commonService.onPageRedirect(x);" class="category-card-two">
-                    <h3>{{ x.heading }}</h3>
-                    <div *ngIf="x.images?.length" class="avatars">
-                      <ng-container *ngFor="let y of x.images;">
-                        <img width="100%" height="100%" [src]="imgBaseUrl+y.image" alt="Image">
-                      </ng-container>
-                      <span *ngIf="x.totalSections" class="more">+{{x.totalSections}}</span>
+                    <div>
+                      <h3>{{ x.heading }}</h3>
+                      <div *ngIf="x.images?.length" class="avatars">
+                        <ng-container *ngFor="let y of x.images;">
+                          <img width="100%" height="100%" [src]="imgBaseUrl+y.image" alt="Image">
+                        </ng-container>
+                        <span *ngIf="x.totalSections" class="more">+{{x.totalSections}}</span>
+                      </div>
+                      <p *ngIf="x.sub_heading">{{x.sub_heading}}</p>
                     </div>
-                    <p *ngIf="x.sub_heading">{{x.sub_heading}}</p>
-                    <button class="view-all">View All</button>
+                    <div class="pt-2">
+                      <button class="view-all" style="margin-top:auto">View All</button>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -802,7 +806,7 @@
       <div class="modal-body slim-scroll">
         <div class="row">
           <div class="col-md-12">
-            <label *ngFor="let x of sort_list;" class="store-label d-flex align-items-center m-0 mt-2 mb-4">
+            <label *ngFor="let x of sort_list;" class="store-label d-flex align-items-center m-0 mb-3">
               <input type="radio" class="option-input radio" name="sort_list" [(ngModel)]="sort_value"
                 value="{{x.value}}" (change)="sortModal.hide();"/>
               <span>{{x.name}}</span>

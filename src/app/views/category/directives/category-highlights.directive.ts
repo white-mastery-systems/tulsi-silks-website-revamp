@@ -14,43 +14,43 @@ export class CategoryHighlightsDirective {
   loadedElements: any = [];
 
   groupHighlights: any = {
-    auto_play: true,
-    loop: true,
-    break_points: {
-      1024: { slidesPerView: 3.5, spaceBetween: 15 },
-      768: { slidesPerView: 2.15, spaceBetween: 15 },
-      640: { slidesPerView: 1, spaceBetween: 15 },
-      320: { slidesPerView: 1, spaceBetween: 15 }
-    }
-  };
-  highlights: any = {
-    auto_play: true,
+    auto_play: false,
     loop: true,
     break_points: {
       1024: { slidesPerView: 4.5, spaceBetween: 15 },
       768: { slidesPerView: 2.15, spaceBetween: 15 },
-      640: { slidesPerView: 1, spaceBetween: 15 },
-      320: { slidesPerView: 1, spaceBetween: 15 }
+      640: { slidesPerView: 1.15, spaceBetween: 15 },
+      320: { slidesPerView: 1.15, spaceBetween: 15 }
+    }
+  };
+  highlights: any = {
+    auto_play: false,
+    loop: true,
+    break_points: {
+      1024: { slidesPerView: 4.5, spaceBetween: 15 },
+      768: { slidesPerView: 2.15, spaceBetween: 15 },
+      640: { slidesPerView: 1.15, spaceBetween: 15 },
+      320: { slidesPerView: 1.15, spaceBetween: 15 }
     }
   };
   materialHighlights: any = {
-    auto_play: true,
+    auto_play: false,
     loop: true,
     break_points: {
-      1024: { slidesPerView: 3.5, spaceBetween: 15 },
+      1024: { slidesPerView: 4.5, spaceBetween: 15 },
       768: { slidesPerView: 2.15, spaceBetween: 15 },
-      640: { slidesPerView: 1, spaceBetween: 15 },
-      320: { slidesPerView: 1, spaceBetween: 15 }
+      640: { slidesPerView: 1.15, spaceBetween: 15 },
+      320: { slidesPerView: 1.15, spaceBetween: 15 }
     }
   };
   weaveHighlights: any = {
-    auto_play: true,
+    auto_play: false,
     loop: true,
     break_points: {
       1024: { slidesPerView: 3, spaceBetween: 15 },
       768: { slidesPerView: 2.15, spaceBetween: 15 },
-      640: { slidesPerView: 1, spaceBetween: 15 },
-      320: { slidesPerView: 1, spaceBetween: 15 }
+      640: { slidesPerView: 1.15, spaceBetween: 15 },
+      320: { slidesPerView: 1.15, spaceBetween: 15 }
     }
   };
 
