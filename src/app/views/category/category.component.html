@@ -112,8 +112,12 @@
                   </div>
                 </div>
                 <ng-container *ngIf="commonService?.desktop_device">
-                  <div id="highlight_next" [hidden]="true" class="swiper-button swiper-button-next"></div>
-                  <div id="highlight_prev" [hidden]="true" class="swiper-button swiper-button-prev"></div>
+                  <div id="highlight_next" class="swiper-button swiper-button-next">
+                    <lucide-icon name="chevron-right" [size]="20" stroke="1" color="black"></lucide-icon>
+                  </div>
+                  <div id="highlight_prev" class="swiper-button swiper-button-prev">
+                    <lucide-icon name="chevron-left" [size]="20" stroke="1" color="black"></lucide-icon>
+                  </div>
                 </ng-container>
               </div>
               <!-- Material -->
@@ -132,8 +136,12 @@
                   </div>
                 </div>
                 <ng-container *ngIf="commonService?.desktop_device">
-                  <div id="highlight_next" [hidden]="true" class="swiper-button swiper-button-next"></div>
-                  <div id="highlight_prev" [hidden]="true" class="swiper-button swiper-button-prev"></div>
+                  <div id="highlight_next" class="swiper-button swiper-button-next">
+                    <lucide-icon name="chevron-right" [size]="20" stroke="1" color="black"></lucide-icon>
+                  </div>
+                  <div id="highlight_prev" class="swiper-button swiper-button-prev">
+                    <lucide-icon name="chevron-left" [size]="20" stroke="1" color="black"></lucide-icon>
+                  </div>
                 </ng-container>
               </div>
               <!-- Weave -->
@@ -141,19 +149,27 @@
                 id="navigationHighlights" [ngClass]="commonService.desktop_device? 'desktop_whls': 'whls'" style="visibility: hidden;" appCategoryHighlights>
                 <div class="swiper-wrapper">
                   <div *ngFor="let x of navigationImageList | orderAsc: 'rank'; let i=index;" class="swiper-slide">
-                    <div (click)="commonService.onPageRedirect(x);" class="category-third-card cursor">
-                      <img width="100%" height="100%" appImgLazyLoad [ImagelazyLoad]="imgBaseUrl+x.image" alt="Image">
-                      <div class="card-body">
-                        <h3>{{ x.heading }}</h3>
-                        <p *ngIf="x.sub_heading">{{x.sub_heading}}</p>
-                        <button class="view-all">View All</button>
+                    <div (click)="commonService.onPageRedirect(x);" class="category-third-card row m-0 cursor">
+                      <div class="col-6 px-0 h-100">
+                        <img width="100%" height="100%" appImgLazyLoad [ImagelazyLoad]="imgBaseUrl+x.image" alt="Image">
                       </div>
+                      <div class="col-6 px-0">
+                        <div class="card-body">
+                          <h3>{{ x.heading }}</h3>
+                          <p *ngIf="x.sub_heading">{{x.sub_heading}}</p>
+                          <button class="view-all">View All</button>
+                        </div>
+                      </div>  
                     </div>
                   </div>
                 </div>
                 <ng-container *ngIf="commonService?.desktop_device">
-                  <div id="highlight_next" [hidden]="true" class="swiper-button swiper-button-next"></div>
-                  <div id="highlight_prev" [hidden]="true" class="swiper-button swiper-button-prev"></div>
+                  <div id="highlight_next" class="swiper-button swiper-button-next">
+                    <lucide-icon name="chevron-right" [size]="20" stroke="1" color="black"></lucide-icon>
+                  </div>
+                  <div id="highlight_prev" class="swiper-button swiper-button-prev">
+                    <lucide-icon name="chevron-left" [size]="20" stroke="1" color="black"></lucide-icon>
+                  </div>
                 </ng-container>
               </div>
             </ng-container>
@@ -185,8 +201,12 @@
                 </div>
               </div>
               <ng-container *ngIf="commonService?.desktop_device">
-                <div id="group_highlight_next" [hidden]="true" class="swiper-button swiper-button-next"></div>
-                <div id="group_highlight_prev" [hidden]="true" class="swiper-button swiper-button-prev"></div>
+                <div id="group_highlight_next" class="swiper-button swiper-button-next">
+                  <lucide-icon name="chevron-right" [size]="20" stroke="1" color="black"></lucide-icon>
+                </div>
+                <div id="group_highlight_prev" class="swiper-button swiper-button-prev">
+                  <lucide-icon name="chevron-left" [size]="20" stroke="1" color="black"></lucide-icon>
+                </div>
               </ng-container>
             </div>
           </div>
@@ -207,7 +227,7 @@
           </div>
           <ng-container *ngIf="commonService?.desktop_device">
             <div id="section_next" class="swiper-button swiper-button-next">
-              <lucide-icon name="chevron-right" [size]="20" stroke="1" color="white"></lucide-icon>
+              <lucide-icon name="chevron-right" [size]="20" stroke="1" color="black"></lucide-icon>
             </div>
             <div id="section_prev" class="swiper-button swiper-button-prev">
               <lucide-icon name="chevron-left" [size]="20" stroke="1" color="black"></lucide-icon>

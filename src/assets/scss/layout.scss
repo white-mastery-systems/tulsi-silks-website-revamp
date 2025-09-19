@@ -2400,3 +2400,39 @@ span{
     }
   }
 }
+
+.category-filter-section{
+  .swiper-container{
+      position: unset;
+      .swiper-button-next, .swiper-container-rtl .swiper-button-prev{
+        right: -20px;
+        top: 45%;
+      }
+      .swiper-button-prev{
+        left: -2%;
+        top: 45%;
+      }
+
+      .swiper-button {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 40px;
+        height: 40px;
+        transition: background 0.15s ease-in-out, opacity 0.15s ease-in-out, transform 0.2s ease-in-out,
+          color 0.2s ease-in-out, -webkit-transform 0.2s ease-in-out;     
+        border: none;
+        border-radius: 50%;  
+        box-shadow: 0 2px 10px rgba(54, 54, 54, 0.15) !important;   
+      }
+
+    }
+ 
+  .swiper-button-prev,
+  .swiper-button-next {
+    background-color: #fff;
+      &::after {
+        display: none;
+      }
+    } 
+}

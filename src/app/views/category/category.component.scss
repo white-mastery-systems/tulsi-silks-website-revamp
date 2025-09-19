@@ -101,11 +101,11 @@
     height: 320px;
     h3 {
       margin-bottom:12px;
-      font-size: 24px;
+      font-size: 22px;
       font-weight: 500;
     }
     p {
-      font-size: 18px;   
+      font-size: 16px;   
       margin: 0 0 16px;
       line-height: 1.6;
     }
@@ -497,9 +497,10 @@
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 .category-third-card img {
-  width: 50%;
+  width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: top;
 }
 
 .card-body h3 {
@@ -508,7 +509,7 @@
   font-weight: 500;
 }
 .card-body p {
-  font-size: 14px; 
+  font-size: 16px; 
   margin: 0 0 10px;
 }
 .card-body a {
@@ -556,24 +557,24 @@
 
 @media screen and (min-width:1600px){
   .section-height-big{
-    min-height:450px!important;
-    max-height:450px!important;
+    min-height:400px!important;
+    max-height:400px!important;
   }
   .category-card {
     img {
-      height: 420px !important;
+      height: 380px !important;
     }
   }
 
   .category-third-card,
   .category-card-two {
-    height: 420px !important;
+    height: 380px !important;
   }
 
   .category-second-card {
-    height:420px !important;   
+    height:380px !important;   
     img {
-      height: 200px !important;
+      height: 230px !important;
     }
   }
 
