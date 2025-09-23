@@ -1001,7 +1001,7 @@ $mobile-final-height: calc(74px + #{$mobile-announcement-bar-mh});
       float: left;
       margin-right: 2.5%;
       // border-right: 1px solid #e2e3df;
-      overflow-y: auto;
+      overflow: hidden;
       overflow-x: hidden;
       // overflow-y: auto;
       -webkit-overflow-scrolling: touch;
@@ -1506,7 +1506,7 @@ $mobile-final-height: calc(74px + #{$mobile-announcement-bar-mh});
   @media only screen and (min-width: 992px) {
     .menu-layout-one {
       min-width: 285px !important;
-      padding: 30px !important;
+      padding: 20px !important;
     }
     .menu-layout-one > li {
       width: 100% !important;
