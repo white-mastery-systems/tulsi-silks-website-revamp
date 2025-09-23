@@ -268,14 +268,14 @@ $mobile-final-height: calc(74px + #{$mobile-announcement-bar-mh});
   @media only screen and (max-width: 991px) {
     .cd-main-content.nav-is-visible,
     .cd-main-header.nav-is-visible {
-      -webkit-transform: translateX(260px);
-      transform: translateX(260px);
+      -webkit-transform: translateX(280px);
+      transform: translateX(280px);
     }
   
     .nav-on-left .cd-main-content.nav-is-visible,
     .nav-on-left .cd-main-header.nav-is-visible {
-      -webkit-transform: translateX(260px);
-      transform: translateX(260px);
+      -webkit-transform: translateX(280px);
+      transform: translateX(280px);
     }
   }
   
@@ -738,9 +738,14 @@ $mobile-final-height: calc(74px + #{$mobile-announcement-bar-mh});
     .cd-primary-nav > li > a,
     .cd-primary-nav a,
     .cd-primary-nav ul a {
-      height: 50px;
-      line-height: 50px;
+      // height: 50px;
+      // line-height: 50px;
+      height: auto;
+      line-height: 2;
       display: block;
+      margin-bottom: 15px;  
+      overflow: visible;    
+      white-space: normal;
     }
     .cd-primary-nav .go-back a {
       margin-left: 0px;
@@ -753,6 +758,8 @@ $mobile-final-height: calc(74px + #{$mobile-announcement-bar-mh});
       left: 0 !important;
       position: fixed;
       left: unset;
+      padding-right:25px;
+      width:280px;
     }
   }
   
@@ -1456,13 +1463,13 @@ $mobile-final-height: calc(74px + #{$mobile-announcement-bar-mh});
   }
   @media only screen and (max-width: 991px) {
     .cd-overlay.is-visible {
-      -webkit-transform: translateX(260px);
-      transform: translateX(260px);
+      -webkit-transform: translateX(280px);
+      transform: translateX(280px);
     }
   
     .nav-on-left .cd-overlay.is-visible {
-      -webkit-transform: translateX(260px);
-      transform: translateX(260px);
+      -webkit-transform: translateX(280px);
+      transform: translateX(280px);
     }
   
     .cd-overlay.is-visible.search-is-visible,
@@ -1492,7 +1499,7 @@ $mobile-final-height: calc(74px + #{$mobile-announcement-bar-mh});
     align-items: center;
     justify-content: space-between;
     gap:5px;
-    padding-right: 25px!important;
+    padding-right: 0px!important;
   }
   }
   
