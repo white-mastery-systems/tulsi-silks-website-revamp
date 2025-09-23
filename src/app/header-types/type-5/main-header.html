@@ -182,7 +182,7 @@
                       <li class="slim-scroll" *ngFor="let sec of menu.sections | orderAsc: 'rank';" [ngClass]="(sec?.categories?.length)? 'has-children' : ''">
                         <a (click)="(!sec.categories.length && sec.link_type!='internal')? commonService.onPageRedirect(sec): null;"
                         [routerLink]="(sec.link_type=='internal')? sec.link: null">{{ sec.name }}</a>
-                        <ul class="is-hidden">
+                        <ul class="is-hidden slim-scroll" style="overflow-y:scroll!important;min-height: 300px;max-height:75vh;overflow-x:hidden">
                           <li class="go-back">
                             <a>{{sec.name}}</a>
                           </li>
@@ -196,7 +196,7 @@
                                 <lucide-icon name="chevron-right" [size]="16" class="ms-1 align-middle"></lucide-icon>
                               </i>
                             </a>
-                            <ul class="is-hidden">
+                            <ul class="is-hidden slim-scroll" style="overflow-y:scroll!important;height: 300px;">
                               <li class="go-back">
                                 <a>
                                   <i *ngIf="cat?.sub_categories?.length"><lucide-icon name="chevron-left" [size]="16" class="ms-1 align-middle"></lucide-icon> </i> 
