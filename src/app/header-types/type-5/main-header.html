@@ -190,7 +190,7 @@
                             <a class="last-sec" [ngClass]="(cat.link_status)? 'has-link': null">
                               <a (click)="(cat.link_status && cat.link_type!='internal')? commonService.onPageRedirect(cat): null;"
                               [routerLink]="(cat.link_type=='internal')? cat.link: null" style="height: auto; margin-bottom: 0; gap: unset; width: 100%;">
-                                <span class="cat-name">{{ cat.name }}bbbb</span> 
+                                <span class="cat-name">{{ cat.name }}</span> 
                               </a>
                               <i *ngIf="cat?.sub_categories?.length" [ngClass]="(cat.link_status)? 'has-link': null">
                                 <lucide-icon name="chevron-right" [size]="16" class="ms-1 align-middle"></lucide-icon>
@@ -200,11 +200,11 @@
                               <li class="go-back">
                                 <a>
                                   <i *ngIf="cat?.sub_categories?.length"><lucide-icon name="chevron-left" [size]="16" class="ms-1 align-middle"></lucide-icon> </i> 
-                                  <span class="cat-name">{{ cat.name }}cccc</span>                                                                
+                                  <span class="cat-name">{{ cat.name }}</span>                                                                
                                 </a>
                               </li>
                               <li class="see-all" *ngFor="let sub_cat of cat.sub_categories | orderAsc: 'rank';">
-                                <a [routerLink]="(sub_cat.link_type=='internal')? sub_cat.link: null" (click)="(sub_cat.link_type!='internal')? commonService.onPageRedirect(sub_cat): null;">{{ sub_cat.name }}ddd</a>
+                                <a [routerLink]="(sub_cat.link_type=='internal')? sub_cat.link: null" (click)="(sub_cat.link_type!='internal')? commonService.onPageRedirect(sub_cat): null;">{{ sub_cat.name }}</a>
                               </li>
                             </ul>
                           </li>
