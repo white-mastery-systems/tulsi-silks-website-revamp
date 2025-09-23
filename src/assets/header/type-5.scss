@@ -994,12 +994,14 @@ $mobile-final-height: calc(74px + #{$mobile-announcement-bar-mh});
     .cd-primary-nav .cd-secondary-nav > li {
       /* change the height according to your needs - you can even set height: auto */
       // height: 340px;
+      min-height: 340px;
+      max-height: 100%;
       /* here you set the number of columns - use width percentage */
       width: 22%;
       float: left;
       margin-right: 2.5%;
       // border-right: 1px solid #e2e3df;
-      overflow: hidden;
+      overflow-y: auto;
       overflow-x: hidden;
       // overflow-y: auto;
       -webkit-overflow-scrolling: touch;
