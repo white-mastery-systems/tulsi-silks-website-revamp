@@ -19,7 +19,6 @@ export class CommonService {
   footer: string = environment.footer;
   currDate: Date = new Date();
   storeLoaded: boolean;
-  isUSACustomer: boolean = false;
   wowjsLoaded: boolean; jsLoaded: boolean;
   public storeDetailsReceived = new Subject<any>();
 

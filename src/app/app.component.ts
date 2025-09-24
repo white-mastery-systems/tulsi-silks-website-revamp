@@ -118,34 +118,6 @@ export class AppComponent {
     }
   }
 
-  checkCountryByIp(ipIndexList: string[]) {
-    if (!ipIndexList.length) {
-      this.commonService.isUSACustomer = false; // default if all fail
-      return;
-    }
-
-    const ipIndex = ipIndexList[0];
-    ipIndexList.splice(0, 1);
-
-    this.commonService.getIpInfo(ipIndex)
-      .then((ipInfo: any) => {
-        // Check if API returned country as US
-        if (
-          ipInfo?.country?.toLowerCase() === 'united states' ||
-          ipInfo?.country_code === 'US'
-        ) {
-          this.commonService.isUSACustomer = true;
-        } else {
-          this.commonService.isUSACustomer = false;
-        }
-      })
-      .catch(() => {
-        // Retry next IP index if current one fails
-        this.checkCountryByIp(ipIndexList);
-      });
-
-  }
-
   onInteract() {
     if (this.commonService.storeDataLoaded && !this.intracted) {
       this.intracted = true;
@@ -403,11 +375,6 @@ export class AppComponent {
         }
         else console.log("store response", result);
       });
-      let ipIndexList = [];
-      this.commonService.ip_urls.forEach((element, index) => {
-        ipIndexList.push(index.toString());
-      });
-      this.checkCountryByIp(ipIndexList);
       /* ROUTER EVENT */
       let currentUrl = this.router.url;
       this.router.events.subscribe(event => {

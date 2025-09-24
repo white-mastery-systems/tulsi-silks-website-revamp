@@ -24,6 +24,7 @@ export class ExtraPageComponent implements OnInit {
       if(this.commonService.extra_pages[params['type']]) {
         this.details = this.commonService.extra_pages[params['type']];
         if(this.details.seo_status) this.commonService.setSiteMetaData(this.details.seo_details, null);
+        this.setBreadCrumbSchema();
       }
       else if(this.commonService.ys_features.indexOf('extra_pages')!=-1) {
         this.pageLoader = true;
@@ -34,6 +35,7 @@ export class ExtraPageComponent implements OnInit {
             this.details.content = this.sanitizer.bypassSecurityTrustHtml(this.details.content);
             this.commonService.extra_pages[params['type']] = this.details;
             if(this.details.seo_status) this.commonService.setSiteMetaData(this.details.seo_details, null);
+            this.setBreadCrumbSchema();
           }
           else {
             console.log("response", result);
@@ -43,7 +45,9 @@ export class ExtraPageComponent implements OnInit {
       }
       else this.router.navigate(['/']);
     });
-    // schema
+  }
+
+  setBreadCrumbSchema() {
     this.bcList = [
       { name: "Home", position: 1, link: "/" },
       { name: this.details.name, position: 2, link: this.router.url.split('?')[0] }

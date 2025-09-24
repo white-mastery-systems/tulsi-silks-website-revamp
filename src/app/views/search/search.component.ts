@@ -1,5 +1,5 @@
 import { Component, OnInit, Inject, PLATFORM_ID } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute, Params } from '@angular/router';
 import { isPlatformBrowser, Location } from '@angular/common';
 import { StoreApiService } from '../../services/store-api.service';
 import { CommonService } from '../../services/common.service';
@@ -25,7 +25,8 @@ export class SearchComponent implements OnInit {
 
   constructor(
     @Inject(PLATFORM_ID) private platformId: Object, private storeApi: StoreApiService,
-    public commonService: CommonService, private router: Router, public location: Location
+    public commonService: CommonService, private router: Router, public location: Location,
+    private activeRoute: ActivatedRoute
   ) {
     if(this.commonService.ys_features.indexOf('product_search')!=-1) {
       if(!this.commonService.search_category_list.length) {
@@ -47,36 +48,52 @@ export class SearchComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.afterSearchEvent = false; this.searchLoader = false;
-    if(this.commonService.search_page_attr.search_form) {
-      this.afterSearchEvent = true;
-      this.searchForm = this.commonService.search_page_attr.search_form;
-      this.product_list = this.commonService.search_page_attr.product_list;
-      let scrollPos = this.commonService.search_page_attr.scroll_y_pos;
-      setTimeout(() => { window.scrollTo({ top: scrollPos, behavior: 'smooth' }); }, 500);
-      this.commonService.search_page_attr = {};
+    this.activeRoute.queryParams.subscribe((params: Params) => {
+      this.afterSearchEvent = false; this.searchLoader = false;
+      if(this.commonService.search_page_attr.search_form) {
+        this.afterSearchEvent = true;
+        this.searchForm = this.commonService.search_page_attr.search_form;
+        this.product_list = this.commonService.search_page_attr.product_list;
+        let scrollPos = this.commonService.search_page_attr.scroll_y_pos;
+        setTimeout(() => { window.scrollTo({ top: scrollPos, behavior: 'smooth' }); }, 500);
+        this.commonService.search_page_attr = {};
+      }
+      else {
+        this.searchForm = { category_id: '', name: params['q'] };
+        this.onSearch();
+      }
+      // schema
+      this.commonService.breadCrumbList(this.bcList);
+    });
+  }
+  
+  onSearch() {
+    if(this.searchForm?.name?.length >= 3) {
+      this.afterSearchEvent = true; this.searchLoader = true;
+      this.storeApi.SEARCH_PRODUCT(this.searchForm).subscribe(result => {
+        setTimeout(() => { this.searchLoader = false; }, 500);
+        if(result.status) {
+          this.product_list = result.list;
+          this.product_list.forEach(obj => {
+            if(obj.hold_till) {
+              let balanceStock = obj.stock;
+              if(new Date() < new Date(obj.hold_till)) balanceStock = obj.stock - obj.hold_qty;
+              obj.stock = balanceStock;
+            }
+          });
+        }
+        else console.log("response", result);
+      });
     }
-    else this.searchForm = { category_id: '' };
-    // schema
-    this.commonService.breadCrumbList(this.bcList);
   }
 
   onSubmit() {
-    this.afterSearchEvent = true; this.searchLoader = true;
-    this.storeApi.SEARCH_PRODUCT(this.searchForm).subscribe(result => {
-      setTimeout(() => { this.searchLoader = false; }, 500);
-      if(result.status) {
-        this.product_list = result.list;
-        this.product_list.forEach(obj => {
-          if(obj.hold_till) {
-            let balanceStock = obj.stock;
-            if(new Date() < new Date(obj.hold_till)) balanceStock = obj.stock - obj.hold_qty;
-            obj.stock = balanceStock;
-          }
-        });
-      }
-      else console.log("response", result);
-    });
+    if(this.searchForm?.name?.length >= 3) {
+      this.router.navigate(
+        ['/search'],
+        { queryParams: { q: this.searchForm.name } }
+      );
+    }
   }
   
   createSearchCategoryList() {

@@ -41,7 +41,7 @@
                     <input type="text" placeholder="Search all products" (input)="afterSearchEvent=false;" name="name" [(ngModel)]="searchForm.name">
                     <ng-container *ngIf="commonService.search_category_list.length">
                       <span>//</span>
-                      <select name="category" [(ngModel)]="searchForm.category_id" (change)="afterSearchEvent=false;">
+                      <select name="category" [(ngModel)]="searchForm.category_id" (change)="afterSearchEvent=false; onSearch();">
                         <option value="" selected hidden>Select Category</option>
                         <option *ngFor="let x of commonService.search_category_list | orderAsc: 'rank';" [ngValue]="x._id">{{x.name}}</option>
                       </select>

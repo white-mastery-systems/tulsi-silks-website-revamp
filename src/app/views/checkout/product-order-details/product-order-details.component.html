@@ -373,7 +373,7 @@
                           <h6>Phone:</h6>
                         </div>
                         <div class="col-6 d-flex align-items-start justify-content-end">
-                          <span align="right">{{billing_address?.dial_code}}
+                          <span align="right">{{billing_address?.dial_code}} 
                             {{billing_address.mobile}}</span>
                         </div>
                         <!-- address -->
@@ -389,7 +389,7 @@
                 </div>
               </div>
               <!-- #Billing Address# -->
-
+              
             </div>
 
             <!-- right section -->
@@ -399,7 +399,7 @@
                   <div class="col-md-12">
                     <div class="product-order-type pb-3">
                       <h4> Order Total
-                        <span class="total-items">({{cartQty}}
+                        <span class="total-items">({{cartQty}} 
                           {{ cartQty>1 ? 'Items' : 'Item' }})</span>
                       </h4>
                     </div>
@@ -577,14 +577,6 @@
                     </div>
 
                     <div class="col-md-12">
-                      <!-- USA Shipping Restriction Alert -->
-                      <div class="danger-alert smooth-fadein" *ngIf="isUSACustomer">
-                        <div class="alert-msg d-flex align-items-center justify-content-center p-2">
-                          <span class="material-icons"></span>
-                          <p class="m-0">We're currently experiencing technical issues and cannot process orders in your area at the moment.</p>
-                        </div>
-                      </div>
-
                       <div class="danger-alert smooth-fadein" *ngIf="orderForm?.cart_exceed_alert || orderForm?.offer_invalid_error || orderForm.errorMsg;">
                         <div class="alert-msg d-flex align-items-center justify-content-center p-2">
                           <span class="material-icons"></span>
@@ -602,14 +594,14 @@
                       <!-- payment list -->
                       <ng-container *ngFor="let x of commonService.payment_methods | orderAsc: 'rank'; let i=index;">
                         <!-- online payments -->
-                        <ng-container *ngIf="x.name != 'COD' && !isUSACustomer">
+                        <ng-container *ngIf="x.name != 'COD'">
                           <button *ngIf="!x.supported_currrencies?.length || x.supported_currrencies?.indexOf(commonService.selected_currency?.country_code)!=-1"
                           type="button" (click)="onMakePayment(x);" class="primary-btn w-100 mb-1" [disabled]="orderForm.submit">{{ x.btn_name }}
-                            <em></em>
-                          </button>
+                          <em></em>
+                        </button>
                         </ng-container>
                         <!-- COD -->
-                        <ng-container *ngIf="x.name=='COD' && shipping_address.country==commonService.store_details?.country && !isUSACustomer">
+                        <ng-container *ngIf="x.name=='COD' && shipping_address.country==commonService.store_details?.country">
                           <ng-container *ngIf="x.cod_config.max_amount===0 || x.cod_config.max_amount >= (((sub_total*1)+(shipping_method.shipping_price*1)+(orderForm.gift_wrapper*1))-((manualDiscAmount*1)+(discountAmount*1)+(offerAmount*1)))">
                             <ng-container *ngIf="!commonService.checkout_setting.disable_cod_custom_items || commonService.checkout_setting.disable_cod_custom_items && !existCustomItems">
                               <ng-container *ngIf="checkout_details?.order_type=='delivery' || commonService.checkout_setting.cod_store_pickup">
@@ -622,6 +614,13 @@
                           </ng-container>
                         </ng-container>
                       </ng-container>
+
+                      <div *ngIf="shipping_address?.country != 'India'" class="alert-msg d-flex align-items-center justify-content-center mt-2">
+                        <!-- <span class="material-icons"></span> -->
+                        <p style="color: red; font-weight: bold;" class="m-0">
+                          All applicable customs duties and import charges, if any, will be borne by the customer.
+                        </p>
+                      </div>
                       <!-- COD alerts -->
                       <div class="danger-alert smooth-fadein" *ngIf="offerAmount>0 && orderForm.cod_offer_alert">
                         <div class="alert-msg d-flex align-items-center justify-content-center p-2">
@@ -637,9 +636,7 @@
                       </div>
                     </div>
                     <!-- place order -->
-                    <div *ngIf="isUSACustomer !== null && isUSACustomer !== undefined &&
-           (((sub_total*1)+(shipping_method.shipping_price*1)+(orderForm.gift_wrapper*1)+(orderForm.packaging_charges*1)) - ((manualDiscAmount*1)+(discountAmount*1)+(offerAmount*1))) == 0 
-           && !isUSACustomer" class="col-md-12">
+                    <div *ngIf="(((sub_total*1)+(shipping_method.shipping_price*1)+(orderForm.gift_wrapper*1)+(orderForm.packaging_charges*1))-((manualDiscAmount*1)+(discountAmount*1)+(offerAmount*1))) == 0" class="col-md-12">
                       <button type="button" (click)="onMakePayment({});" class="primary-btn w-100" [disabled]="orderForm.submit">Place Order<em></em>
                       </button>
                     </div>
@@ -682,7 +679,7 @@
               </div>
             </div>
           </div>
-
+          
         </div>
         <!-- end col-12 -->
       </div>
@@ -1045,7 +1042,7 @@
             <i class="material-icons">close</i>
           </div>
         </div>
-        <div class="modal-body slim-scroll">
+        <div class="modal-body slim-scroll">       
           <div class="row">
             <div class="col-md-12">
               <div class="qr-pay-header">
@@ -1064,7 +1061,7 @@
                 </div>
               </div>
             </div>
-          </div>
+          </div>      
         </div>
         <div class="modal-footer">
           <div class="qr-proc-btn-sec d-flex justify-content-center">

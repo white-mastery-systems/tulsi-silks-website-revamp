@@ -2,14 +2,9 @@
 <header class="sticky-header" id="headroom-head">
 
   <!-- announcement bar -->
-  <div class="top-news" *ngIf="!commonService.isUSACustomer">
+  <div class="top-news">
     <p class="mb-0" [ngClass]="(commonService.application_setting?.announcebar_config?.link_status)? 'cursor': ''"
     (click)="commonService.onPageRedirect(commonService.application_setting?.announcebar_config);" id="announceBar">{{commonService.announcementBar}}</p>
-  </div>
-
-  <div class="top-news" *ngIf="commonService.isUSACustomer">
-    <p class="mb-0" [ngClass]="(commonService.application_setting?.announcebar_config?.link_status)? 'cursor': ''"
-    (click)="commonService.onPageRedirect(commonService.application_setting?.announcebar_config);" id="announceBar">Important: US orders are on hold due to a 50% customs duty. We’ll resume once charges are clarified. Thank you for understanding.</p>
   </div>
 
   <header class="cd-main-header">
