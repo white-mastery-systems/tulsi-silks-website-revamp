@@ -553,6 +553,32 @@
       }
     }
   }
+
+  .category-banner-sec2 {
+    margin-top: 0!important;
+    padding: 0 !important;
+    .category-image-sec-main {
+      .category-banner-col {
+        flex-direction: column;
+        img {
+          width:100%!important;
+          height:auto!important;
+          padding-bottom: 16px;
+        }
+      }
+      .category-image-sec {
+        flex:auto!important;
+        max-width: 100%!important;
+      padding: 0 16px;
+      }
+      .category-banner-text {
+        padding:16px!important;   
+      }
+      p {
+        margin-bottom: 0!important;
+      }
+    }
+  }
 }
 
 @media screen and (min-width:1600px){
@@ -578,4 +604,15 @@
     }
   }
 
+}
+
+.category-image-sec {
+  flex: 0 0 300px;
+  max-width: 300px;
+  justify-content: flex-end;
+  display: flex;
+  img {
+    height: 250px !important;
+    width: auto !important;
+  }
 }
