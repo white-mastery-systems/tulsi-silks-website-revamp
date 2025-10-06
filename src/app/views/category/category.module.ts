@@ -1,4 +1,5 @@
 import { NgModule } from '@angular/core';
+import { DecimalPipe } from '@angular/common';
 import { NgxPaginationModule } from 'ngx-pagination';
 import { CollapseModule } from 'ngx-bootstrap/collapse';
 import { NgxSliderModule } from '@angular-slider/ngx-slider';
@@ -22,7 +23,8 @@ import { LucideAngularModule, ChevronLeft, ChevronRight } from 'lucide-angular';
     CollapseModule.forRoot(),
     AccordionModule.forRoot(),
     LucideAngularModule.pick({ ChevronLeft, ChevronRight })
-  ]
+  ],
+  providers: [DecimalPipe]
 })
 
 export class CategoryModule { }

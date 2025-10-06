@@ -1,6 +1,6 @@
 import { Component, OnInit, Inject, PLATFORM_ID, ViewChild, ElementRef } from '@angular/core';
 import { Router, ActivatedRoute, Params } from '@angular/router';
-import { isPlatformBrowser, DOCUMENT } from '@angular/common';
+import { isPlatformBrowser, DOCUMENT, DecimalPipe } from '@angular/common';
 import { Subscription } from 'rxjs';
 import { environment } from './../../../environments/environment';
 import { StoreApiService } from '../../services/store-api.service';
@@ -43,20 +43,133 @@ export class CategoryComponent implements OnInit {
 
   categorySchema: any = {
     "@context": "https://schema.org",
-    "@type": "Organization",
-    "name": "Tulsi Silks",
-    "url": "https://tulsisilks.co.in/",
-    "logo": "https://yourstore.io/api/uploads/5d30013a5c83a702392c4c8b/logo.png",
-    "contactPoint": {
-      "@type": "ContactPoint",
-      "telephone": "+91 44 24991086",
-      "contactType": "sales",
-      "areaServed": "IN",
-      "availableLanguage": "en"
-    },
-    "sameAs": [
-      "https://www.facebook.com/TulsiSilks/",
-      "https://www.instagram.com/tulsisilks/"
+    "@graph": [
+      {
+        "@type": "Organization",
+        "@id": "https://tulsisilks.co.in/#organization",
+        "name": "Tulsi Silks",
+        "url": "https://tulsisilks.co.in/",
+        "logo": "https://tulsisilks.co.in/assets/images/logo.png",
+        "contactPoint": [
+          {
+            "@type": "ContactPoint",
+            "contactType": "customer service",
+            "telephone": "+91-9791019822",
+            "availableLanguage": [
+              "en",
+              "ta",
+              "hi",
+              "te",
+              "mwr"
+            ]
+          }
+        ],
+        "sameAs": [
+          "https://www.instagram.com/tulsisilks/",
+          "https://www.facebook.com/TulsiSilks/"
+        ]
+      },
+      {
+        "@type": "WebSite",
+        "@id": "https://tulsisilks.co.in/#website",
+        "url": "https://tulsisilks.co.in/",
+        "name": "Tulsi Silks",
+        "inLanguage": "en-IN",
+        "publisher": {
+          "@id": "https://tulsisilks.co.in/#organization"
+        },
+        "potentialAction": {
+          "@type": "SearchAction",
+          "target": "https://tulsisilks.co.in/search?q={search_term_string}",
+          "query-input": "required name=search_term_string"
+        }
+      },
+      {
+        "@type": "BreadcrumbList"
+      },
+      {
+        "@type": "CollectionPage",
+        "inLanguage": "en-IN",
+        "mainEntity": {
+          "@type": "ItemList",
+          "itemListElement": []
+        }
+      },
+      {
+        "@type": "LocalBusiness",
+        "@id": "https://tulsisilks.co.in/#localbusiness",
+        "name": "Tulsi Silks",
+        "url": "https://tulsisilks.co.in/",
+        "logo": "https://tulsisilks.co.in/assets/images/logo.png",
+        "telephone": "+91-9791019822",
+        "email": "orders@tulsisilks.com",
+        "sameAs": [
+          "https://www.instagram.com/tulsisilks/",
+          "https://www.facebook.com/TulsiSilks/",
+          "https://www.google.com/maps?cid=5155564344403189918"
+        ],
+        "address": {
+          "@type": "PostalAddress",
+          "streetAddress": "68, Luz Church Rd, Kapali Thottam, Mylapore",
+          "addressLocality": "Chennai",
+          "addressRegion": "Tamil Nadu",
+          "postalCode": "600004",
+          "addressCountry": "IN"
+        },
+        "geo": {
+          "@type": "GeoCoordinates",
+          "latitude": 13.0377511,
+          "longitude": 80.260277
+        },
+        "openingHoursSpecification": [
+          {
+            "@type": "OpeningHoursSpecification",
+            "dayOfWeek": [
+              "Monday",
+              "Tuesday",
+              "Wednesday",
+              "Thursday",
+              "Friday",
+              "Saturday"
+            ],
+            "opens": "09:30",
+            "closes": "19:30"
+          },
+          {
+            "@type": "OpeningHoursSpecification",
+            "dayOfWeek": "Sunday",
+            "opens": "10:00",
+            "closes": "19:00"
+          }
+        ],
+        "hasMap": "https://www.google.com/maps/search/?api=1&query=13.0377511,80.260277",
+        "areaServed": [
+          {
+            "@type": "Country",
+            "name": "India"
+          },
+          {
+            "@type": "Country",
+            "name": "United States"
+          },
+          {
+            "@type": "Country",
+            "name": "United Kingdom"
+          },
+          {
+            "@type": "Country",
+            "name": "United Arab Emirates"
+          }
+        ],
+        "additionalProperty": [
+          {
+            "@type": "PropertyValue",
+            "name": "internationalShipping",
+            "value": true
+          }
+        ],
+        "description": "Free delivery within India. Estimated delivery: 4 business days — Free Delivery by Friday. International shipping available (charges apply)."
+      }
     ]
   };
 
@@ -73,11 +186,12 @@ export class CategoryComponent implements OnInit {
   isImageAtStart: boolean = true;
   isImageAtEnd: boolean = false;
   activeSlideIndex: number = 0;
+  expiryData: string = new Date().getFullYear()+1+"-06-30";
 
   constructor(
     @Inject(PLATFORM_ID) private platformId: Object, private router: Router, private activeRoute: ActivatedRoute,
     private storeApi: StoreApiService, public cc: CurrencyConversionService, public commonService: CommonService,
-    @Inject(DOCUMENT) private document
+    @Inject(DOCUMENT) private document, private decimalPipe: DecimalPipe
   ) {
     this.subscription = this.commonService.currency_type.subscribe(currency => {
       this.findCurrency();
@@ -127,9 +241,9 @@ export class CategoryComponent implements OnInit {
     this.activeRoute.params.subscribe((params: Params) => {
       this.pageUrl = this.router.url.split('?')[0];
       this.showMore = false; this.params = params; this.tag_list = []; this.randomProducts = [];
-      if (this.router.url == '/recommended-products' || this.router.url == '/all-products' || this.router.url == '/new-arrivals' || this.router.url == '/on-sale' || this.router.url == '/featured-products' || this.router.url == '/best-sellers') {
-        this.params = { category_id: this.router.url };
-        if (this.commonService.category_page_attr.category_id == this.router.url) {
+      if (this.pageUrl == '/recommended-products' || this.pageUrl == '/all-products' || this.pageUrl == '/new-arrivals' || this.pageUrl == '/on-sale' || this.pageUrl == '/featured-products' || this.pageUrl == '/best-sellers') {
+        this.params = { category_id: this.pageUrl };
+        if (this.commonService.category_page_attr.category_id == this.pageUrl) {
           this.page = this.commonService.category_page_attr.page;
           this.gridType = this.commonService.category_page_attr.grid_type;
           this.sort_value = this.commonService.category_page_attr.sort_value;
@@ -155,36 +269,36 @@ export class CategoryComponent implements OnInit {
         else {
           this.page = 1; this.sort_value = "latest";
           this.pageLoader = true; this.collapseIndex = 0;
-          if (this.router.url == '/recommended-products') {
-            this.category_details = { name: "Specially curated for you", route: this.router.url };
+          if (this.pageUrl == '/recommended-products') {
+            this.category_details = { name: "Specially curated for you", route: this.pageUrl };
             if (isPlatformBrowser(this.platformId) && sessionStorage.getItem("ai_styles")) {
               let filterList = this.commonService.decryptData(sessionStorage.getItem("ai_styles"));
               this.storeApi.AI_STYLES_FILTER({ styles: filterList }).subscribe(result => {
                 setTimeout(() => { this.pageLoader = false; }, 500);
                 if (result.status) this.filterProducts(result.list);
-                else console.log("c1-response", result, this.router.url);
+                else console.log("c1-response", result, this.pageUrl);
               });
             }
             else this.pageLoader = false;
           }
           else {
             let categoryName = ""; let filterType = "";
-            if (this.router.url == "/all-products") {
+            if (this.pageUrl == "/all-products") {
               categoryName = "All Products"; filterType = "all";
             }
-            else if (this.router.url == "/new-arrivals") {
+            else if (this.pageUrl == "/new-arrivals") {
               categoryName = "New Arrivals"; filterType = "new_arrivals";
             }
-            else if (this.router.url == "/on-sale") {
+            else if (this.pageUrl == "/on-sale") {
               categoryName = "On Sale"; filterType = "discount";
             }
-            else if (this.router.url == "/featured-products") {
+            else if (this.pageUrl == "/featured-products") {
               categoryName = "Featured Products"; filterType = "featured";
             }
-            else if (this.router.url == "/best-sellers") {
+            else if (this.pageUrl == "/best-sellers") {
               categoryName = "Best Sellers"; filterType = "best_sellers";
             }
-            this.category_details = { name: categoryName, route: this.router.url };
+            this.category_details = { name: categoryName, route: this.pageUrl };
             // seo details
             let metaInfo = {
               "all": {
@@ -227,7 +341,7 @@ export class CategoryComponent implements OnInit {
             this.storeApi.FILTERED_PRODUCT_LIST({ type: filterType }).subscribe(result => {
               setTimeout(() => { this.pageLoader = false; }, 500);
               if (result.status) this.filterProducts(result.list);
-              else console.log("c2-response", result, this.router.url);
+              else console.log("c2-response", result, this.pageUrl);
             });
           }
           // seo
@@ -297,18 +411,17 @@ export class CategoryComponent implements OnInit {
               if (this.list.length > this.pageSize && this.category_details.prod_list_status) {
                 this.randomProducts = this.getRandomProds(this.list, 15);
               }
+              this.setCategorySchema();
               this.findCurrency();
               this.getProductTags();
             }
             else {
-              console.log("c3-response", result, this.router.url);
+              console.log("c3-response", result, this.pageUrl);
               this.router.navigate(["/"]);
             }
           });
         }
       }
-      // JSON-LD
-      this.commonService.createJsonLD("category-jsonld", this.categorySchema);
     });
     if (this.category_details.navigationList?.length) this.onSelectNav(0);
   }
@@ -425,7 +538,7 @@ export class CategoryComponent implements OnInit {
             sessionStorage.setItem('pt', this.commonService.encryptData(this.store_tags));
             this.onCreateTagList(this.list, false);
           }
-          else console.log("c4-response", result, this.router.url);
+          else console.log("c4-response", result, this.pageUrl);
         });
       }
     }
@@ -469,7 +582,7 @@ export class CategoryComponent implements OnInit {
     this.commonService.category_page_attr = {
       category_id: this.params.category_id, page: this.page, sort_value: this.sort_value, tag_list: this.tag_list,
       collapse_index: this.collapseIndex, scroll_y_pos: this.commonService.scroll_y_pos, category_details: this.category_details,
-      parent_list: this.parent_list, page_url: this.router.url, grid_type: this.gridType, random_products: this.randomProducts,
+      parent_list: this.parent_list, page_url: this.pageUrl, grid_type: this.gridType, random_products: this.randomProducts,
       range_min: this.rangeMin, range_max: this.rangeMax, range_disp: this.range_disp
     }
     if (isPlatformBrowser(this.platformId)) {
@@ -566,7 +679,7 @@ export class CategoryComponent implements OnInit {
   }
 
   findMinMax() {
-    if (this.commonService.category_page_attr.category_id == this.router.url) {
+    if (this.commonService.category_page_attr.category_id == this.pageUrl) {
 
     }
     else if (this.params.category_id && this.commonService.category_page_attr.category_id == this.params.category_id) {
@@ -584,18 +697,138 @@ export class CategoryComponent implements OnInit {
     if (this.category_details.seo_status) this.commonService.setSiteMetaData(this.category_details.seo_details, null);
     else this.commonService.getStoreSeoDetails();
     // schema
-    if (this.category_details?.name) {
-      this.bcList = [
-        { name: 'Home', position: 1, link: '/' },
+    // if (this.category_details?.name) {
+    //   this.bcList = [
+    //     { name: 'Home', position: 1, link: '/' },
+    //     {
+    //       name: this.category_details.name,
+    //       position: 2,
+    //       link: this.pageUrl,
+    //     }
+    //   ];
+    // }
+    // else this.bcList = [{ name: 'Home', position: 1, link: '/' }];
+    // this.commonService.breadCrumbList(this.bcList);
+  }
+
+  setCategorySchema() {
+    // breadcrumb
+    this.categorySchema['@graph'][2]['@id'] = "https://tulsisilks.co.in"+this.pageUrl+"#breadcrumbs";
+    this.categorySchema['@graph'][2]['itemListElement'] = [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Home",
+        "item": "https://tulsisilks.co.in/"
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": this.category_details.name,
+        "item": "https://tulsisilks.co.in"+this.pageUrl
+      }
+    ];
+    // item list
+    this.categorySchema['@graph'][3]['@id'] = "https://tulsisilks.co.in"+this.pageUrl+"#collection";
+    this.categorySchema['@graph'][3]['url'] = "https://tulsisilks.co.in"+this.pageUrl;
+    this.categorySchema['@graph'][3]['name'] = this.category_details.name;
+    this.categorySchema['@graph'][3]['description'] = this.category_details.seo_details?.meta_desc || '';
+    this.categorySchema['@graph'][3]['mainEntity']['itemListElement'] = [];
+
+    let pageItemList = this.parent_list.sort((a, b) => 0 - (a.rank > b.rank ? 1 : -1)).slice(0, this.pageSize);
+    let ind = 0;
+    for(let itemData of pageItemList)
+    {
+      ind++;
+      this.categorySchema['@graph'][3]['mainEntity']['itemListElement'].push(
         {
-          name: this.category_details.name,
-          position: 2,
-          link: this.router.url,
+          "@type": "ListItem",
+          "position": ind,
+          "url": "https://tulsisilks.co.in/product/"+itemData.seo_details.page_url,
+          "item": {
+            "@type": "Product",
+            "@id": "https://tulsisilks.co.in/product/"+itemData.seo_details.page_url+"#product",
+            "name": itemData.name,
+            "sku": itemData.sku,
+            "aggregateRating": {
+              "@type": "AggregateRating",
+              "ratingValue": 4.8,
+              "reviewCount": 255
+            },
+            "offers": {
+              "@type": "Offer",
+              "priceCurrency": "INR",
+              "price": itemData.discounted_price,
+              "availability": "https://schema.org/InStock",
+              "url": "https://tulsisilks.co.in/product/"+itemData.seo_details.page_url,
+              "priceValidUntil": this.expiryData,
+              "shippingDetails": {
+                "@type": "OfferShippingDetails",
+                "shippingRate": {
+                  "@type": "MonetaryAmount",
+                  "value": 0,
+                  "currency": "INR"
+                },
+                "deliveryTime": {
+                  "@type": "ShippingDeliveryTime",
+                  "transitTime": {
+                    "@type": "QuantitativeValue",
+                    "minValue": 4,
+                    "maxValue": 7,
+                    "unitCode": "d"
+                  }
+                },
+                "shippingDestination": [
+                  {
+                    "@type": "DefinedRegion",
+                    "addressCountry": "IN"
+                  },
+                  {
+                    "@type": "DefinedRegion",
+                    "addressCountry": "US"
+                  },
+                  {
+                    "@type": "DefinedRegion",
+                    "addressCountry": "GB"
+                  },
+                  {
+                    "@type": "DefinedRegion",
+                    "addressCountry": "AE"
+                  }
+                ]
+              },
+              "hasMerchantReturnPolicy": {
+                "@type": "MerchantReturnPolicy",
+                "returnPolicyCategory": "MerchantReturnFiniteReturnWindow",
+                "merchantReturnDays": 1,
+                "returnShippingFeesAmount": {
+                  "@type": "MonetaryAmount",
+                  "currency": "INR",
+                  "value": 0
+                },
+                "refundType": "FullRefund",
+                "description": "Free returns within 1 day of delivery. Initiate return via orders@tulsisilks.com or customer service."
+              },
+              "seller": {
+                "@type": "Organization",
+                "name": "Tulsi Silks",
+                "@id": "https://tulsisilks.co.in/#organization"
+              }
+            }
+          }
         }
-      ];
+      );
     }
-    else this.bcList = [{ name: 'Home', position: 1, link: '/' }];
-    this.commonService.breadCrumbList(this.bcList);
+
+    let tempList = this.parent_list.sort((a, b) => 0 - (a.discounted_price > b.discounted_price ? -1 : 1));
+    if(tempList.length > 1) {
+      let minPrice = this.decimalPipe.transform(tempList[0].discounted_price, '1.0-0');
+      let maxPrice = this.decimalPipe.transform(tempList[tempList.length-1].discounted_price, '1.0-0');
+      this.categorySchema['@graph'][4]['priceRange'] = "INR "+minPrice+" - INR "+maxPrice;
+    }
+
+    // JSON-LD
+    this.commonService.createJsonLD("category-jsonld", this.categorySchema);
   }
 
   getRandomProds(arr, num) {
