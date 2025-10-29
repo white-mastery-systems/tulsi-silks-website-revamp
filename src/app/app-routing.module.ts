@@ -35,6 +35,7 @@ const mainRoutes: Routes = [
   { path: 'service-confirmed/:id', loadChildren: () => import('./views/features/appointment/service-placed/service-placed.module').then(m => m.ServicePlacedModule), canActivate: [AccountGuard] },
   { path: 'sizing-assistant/:id', loadChildren: () => import('./views/features/sizing-assistant/sizing-assistant.module').then(m => m.SizingAssistantModule) },
   { path: 'order-review/:id', loadChildren: () => import('./views/features/order-review/order-review.module').then(m => m.OrderReviewModule) },
+  { path: 'shipping-calculator', loadChildren: () => import('./views/features/shipping-calculator/shipping-calculator.module').then(m => m.ShippingCalculatorModule) },
   
   { path: 'contact-us', loadChildren: () => import('./views/properties/contact-us/contact-us.module').then(m => m.ContactUsModule) },
   { path: 'about-us', loadChildren: () => import('./views/properties/about-us/about-us.module').then(m => m.AboutUsModule) },

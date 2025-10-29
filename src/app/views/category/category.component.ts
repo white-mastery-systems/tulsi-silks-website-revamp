@@ -106,7 +106,8 @@ export class CategoryComponent implements OnInit {
         "sameAs": [
           "https://www.instagram.com/tulsisilks/",
           "https://www.facebook.com/TulsiSilks/",
-          "https://www.google.com/maps?cid=5155564344403189918"
+          "https://www.google.com/maps?cid=5155564344403189918",
+          "https://www.google.com/m/storepages?q=tulsisilks.co.in&c=IN&hl=en-IN"
         ],
         "address": {
           "@type": "PostalAddress",
@@ -749,12 +750,14 @@ export class CategoryComponent implements OnInit {
             "@type": "Product",
             "@id": "https://tulsisilks.co.in/product/"+itemData.seo_details.page_url+"#product",
             "name": itemData.name,
+            "image": [environment.img_baseurl+itemData.image_list[0].image],
+            "description": itemData.seo_details.meta_desc,
             "sku": itemData.sku,
-            "aggregateRating": {
-              "@type": "AggregateRating",
-              "ratingValue": 4.8,
-              "reviewCount": 255
-            },
+            // "aggregateRating": {
+            //   "@type": "AggregateRating",
+            //   "ratingValue": 4.8,
+            //   "reviewCount": 255
+            // },
             "offers": {
               "@type": "Offer",
               "priceCurrency": "INR",

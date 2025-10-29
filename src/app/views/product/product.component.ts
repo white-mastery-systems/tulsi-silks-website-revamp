@@ -53,65 +53,12 @@ export class ProductComponent implements OnInit {
   subscription: Subscription; wl_subscription: Subscription;
   related_products: any = []; reviews: any = []; avg_review: any;
   page: number; pageSize: number = 10; review_sort: string;
-  prodFeatures: any = {};
+  prodFeatures: any = {}; pageUrl: string = "";
   shippingDuration: any = {
     ship_start: new Date(new Date().setDate(new Date().getDate() + 1)),
     ship_end: new Date(new Date().setDate(new Date().getDate() + 4)),
     delivery_start: new Date(new Date().setDate(new Date().getDate() + 5)),
     delivery_end: new Date(new Date().setDate(new Date().getDate() + 6))
-  };
-
-  homeSchema: any = {
-    "@context": "https://schema.org",
-    "@type": "Organization",
-    "name": "Tulsi Silks",
-    "url": "https://tulsisilks.co.in/",
-    "logo": "https://yourstore.io/api/uploads/5d30013a5c83a702392c4c8b/logo.png",
-    "contactPoint": {
-      "@type": "ContactPoint",
-      "telephone": "+91 44 24991086",
-      "contactType": "Customer Service",
-      "availableLanguage": "en"
-    },
-    "sameAs": [
-      "https://www.facebook.com/TulsiSilks/",
-      "https://www.instagram.com/tulsisilks/"
-    ]
-  };
-  productSchema: any = {
-    "@context": "https://schema.org/",
-    "@type": "Product",
-    "brand": {
-      "@type": "Brand",
-      "name": "Tulsi Silks"
-    },
-    "review": {
-      "@type": "Review",
-      "reviewRating": {
-        "@type": "Rating",
-        "ratingValue": this.commonService.reviewerList[Math.floor(Math.random() * this.commonService.reviewerList.length)].rating,
-        "bestRating": "5"
-      },
-      "author": {
-        "@type": "Person",
-        "name": this.commonService.reviewerList[Math.floor(Math.random() * this.commonService.reviewerList.length)].name
-      }
-    },
-    "aggregateRating": {
-      "@type": "AggregateRating",
-      "ratingValue": this.commonService.ratingList[Math.floor(Math.random() * this.commonService.ratingList.length)].rating,
-      "reviewCount": this.commonService.ratingList[Math.floor(Math.random() * this.commonService.ratingList.length)].count
-    },
-    "offers": {
-      "@type": "Offer",
-      "priceCurrency": "INR",
-      "priceValidUntil": new Date().getFullYear()+1+"-06-30",
-      "itemCondition": "https://schema.org/NewCondition"
-      // "seller": {
-      //   "@type": "Organization",
-      //   "name": "Tulsi Silks"
-      // }
-    }
   };
 
   constructor(
@@ -136,6 +83,7 @@ export class ProductComponent implements OnInit {
 
   ngOnInit(): void {
     this.activeRoute.params.subscribe((params: Params) => {
+      this.pageUrl = this.router.url.split('?')[0];
       this.removeMetaProperties(); this.psInitiated = false;
       this.params = params; this.swipeProductIndex = 0; this.swipe_product_list = []; this.activeImgIndex = 0;
       this.category_details = {}; this.related_products = []; this.reviews = [];this.page = 1; this.review_sort = 'rating';
@@ -396,19 +344,66 @@ export class ProductComponent implements OnInit {
 
   // JSON LD
   createJsonLd() {
-    this.productSchema.mpn = this.productDetails._id;
-    this.productSchema.offers.availability = "https://schema.org/OutofStock";
-    if(this.productDetails.stock>0) this.productSchema.offers.availability = "https://schema.org/InStock";
-    this.productSchema.name = this.productDetails.name;
-    if(this.productDetails.image_list.length && this.productDetails.image_list[this.activeImgIndex]) {
-      this.productSchema.image = [environment.img_baseurl+this.productDetails.image_list[this.activeImgIndex].image];
+    let productSchema: any = {
+      "@type": "Product",
+      "@id": this.commonService.origin+this.pageUrl+"#product",
+      "name": this.productDetails.name,
+      "image": [],
+      "description": this.productDetails.seo_details?.meta_desc || '',
+      "sku": this.productDetails.sku,
+      "productID": this.productDetails.sku,
+      "brand": {
+        "@type": "Brand",
+        "name": "Tulsi Silks"
+      },
+      // "material": "Kanjivaram silk",
+      // "color": "Red and Orange",
+      "additionalProperty": [],
+      "offers": {
+        "@type": "Offer",
+        "url": this.commonService.origin+this.pageUrl,
+        "priceCurrency": "INR",
+        "price": this.productDetails.discounted_price.toFixed(2),
+        "availability": "https://schema.org/InStock",
+        "itemCondition": "https://schema.org/NewCondition"
+      },
+      "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": this.commonService.origin+this.pageUrl
+      }
+    };
+    if(!this.productDetails.stock) productSchema['offers']['availability'] = "https://schema.org/OutofStock";
+    if(this.productDetails.tag_status && this.productDetails.tag_list.length) {
+      let tagData = this.productDetails.tag_list.find(el => el["5d3057b12d12374382fc07a0"].length);
+      if(tagData) productSchema["color"] = this.formatColors(tagData["5d3057b12d12374382fc07a0"]);
     }
-    this.productSchema.description = this.stripHtml(this.productDetails.original_desc);
-    this.productSchema.sku = this.productDetails.sku;
-    this.productSchema.offers.url = this.commonService.origin+this.router.url;
-    this.productSchema.offers.price = this.productDetails.discounted_price;
-    this.commonService.createJsonLD("product-jsonld", this.productSchema);
-    this.commonService.createJsonLD("home-jsonld", this.homeSchema);
+    if(this.productDetails.image_list?.length) {
+      for(let iData of this.productDetails.image_list)
+      {
+        productSchema.image.push(environment.img_baseurl+iData.image);
+      }
+    }
+    if(this.productDetails.footnote_list?.length) {
+      for(let fData of this.productDetails.footnote_list)
+      {
+        let fHeading = fData.name;
+        if(fHeading=="Measurements Saree") fHeading = "Saree Measurements";
+        else if(fHeading=="Measurements Dupatta") fHeading = "Dupatta Measurements";
+        else if(fHeading=="Measurement Blouse") fHeading = "Blouse Measurements";
+        else if(fHeading=="Measurements Dhoti") fHeading = "Dhoti Measurements";
+        else if(fHeading=="Measurement Pavadai") fHeading = "Pavadai Measurements";
+        productSchema['additionalProperty'].push({ "@type": "PropertyValue", "name": fHeading, "value": fData.value });
+      }
+    }
+    console.log(productSchema)
+    this.commonService.createJsonLD("product-jsonld", productSchema);
+  }
+
+  formatColors(colors) {
+    if(!colors || colors.length === 0) return '';
+    if(colors.length === 1) return colors[0];
+    if(colors.length === 2) return colors.join(' and ');
+    return colors.slice(0, -1).join(', ') + ' and ' + colors.at(-1);
   }
 
   openEnqModal(modalName) {

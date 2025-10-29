@@ -68,6 +68,7 @@ export class CommonService {
   search_category_list: any = [];
   collection_list: any = [];
   footer_seo_links: any = [];
+  shippingList: any = [];
 
   selected_model: any = {};
   selected_product: any;

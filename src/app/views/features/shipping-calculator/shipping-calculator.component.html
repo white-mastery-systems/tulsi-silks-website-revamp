@@ -1,0 +1,87 @@
+<section class="over-all smooth-fadein">
+
+	<!-- breadcrumb -->
+	<section class="head-breadcrumb">
+		<div class="{{template_setting?.body_type}}">
+			<div class="row">
+				<div class="col-md-12">
+					<div class="breadcrumb-navigation my-1">
+						<ul class="collapsed">
+							<li>
+								<a routerLink="/">Home</a>
+							</li>
+							<li>
+								<a class="active-page">Calculator</a>
+							</li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+  </section>
+  <!--# breadcrumb #-->
+  
+	<section>
+		<div class="{{template_setting?.body_type}}">
+			<div class="row">
+				<div class="col-md-12 d-flex justify-content-center smooth-fadein">
+          <div class="account-card primary-card p-5 mb-3">
+            <div class="d-flex flex-column align-items-center">
+              <h4 align="center">Shipping Calculator</h4>
+            </div>
+            <form autocomplete="off" (ngSubmit)="onCalculate();" ngNativeValidate>
+              <div class="border-btm pb-3">
+                <div class="row">
+                  <div class="form-group col-md-12">
+                    <label>Shipping Type</label>
+                    <select class="w-100" name="shipping_type" (change)="loginForm.shipping_price=null;" [(ngModel)]="loginForm.shipping_type" (change)="loginForm.shipping_method=''" required>
+                      <option value="Domestic">Domestic</option>
+                      <option value="International">International</option>
+                    </select>
+                  </div>
+                  <div class="form-group col-md-12">
+                    <label>Shipping Methods</label>
+                    <select class="w-100" name="shipping_method" (change)="loginForm.shipping_price=null;" [(ngModel)]="loginForm.shipping_method" required>
+                      <option value="">-- Select --</option>
+                      <ng-container *ngFor="let x of commonService.shippingList">
+                        <option *ngIf="x.shipping_type==loginForm.shipping_type" [ngValue]="x">{{x.name}}</option>
+                      </ng-container>
+                    </select>
+                  </div>
+                  <div *ngIf="loginForm.shipping_type=='International'" class="form-group col-md-12">
+                    <label>Country</label>
+                    <select class="w-100" name="country" (change)="loginForm.shipping_price=null;" [(ngModel)]="loginForm.country" required>
+                      <ng-container *ngFor="let x of commonService.country_list | orderAsc: 'name';">
+                        <option *ngIf="x.name!=commonService.store_details.country" [ngValue]="x.name">{{x.name}}</option>
+                      </ng-container>
+                    </select>
+                  </div>
+                  <div class="form-group col-md-6">
+                    <label>Shipping Weight</label>
+                    <input class="w-100" type="number" name="weight" (input)="loginForm.shipping_price=null;" [(ngModel)]="loginForm.weight" appNumberOnly required />
+                  </div>
+                  <div class="form-group col-md-6">
+                    <label>Order Amount (₹)</label>
+                    <input class="w-100" type="number" name="amount" (input)="loginForm.shipping_price=null;" [(ngModel)]="loginForm.amount" appNumberOnly required />
+                  </div>
+                  <div *ngIf="loginForm.shipping_price!=null" class="form-group col-md-12">
+                    <h5 class="pt-3 pb-3">
+                      Shipping Price: <b style="font-weight: bold;">{{ loginForm.shipping_price | currency:'INR':'symbol':cc.format }}</b>
+                    </h5>
+                  </div>
+                  <div class="form-group col-12">
+                    <button class="primary-btn d-flex justify-content-center align-items-center w-100" type="submit">
+                      Calculate
+                      <em></em>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+			</div>
+		</div>
+	</section>
+
+</section>
