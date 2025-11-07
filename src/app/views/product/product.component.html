@@ -607,7 +607,7 @@
             </div>
             <!-- #size chart -->
             <!-- timeline -->
-            <div *ngIf="productDetails.stock>0" class="timeline">
+            <div *ngIf="productDetails.stock>0 && shippingExists" class="timeline">
               <div class="step">
                 <div class="circle">
                   <!-- Lucide: Package -->

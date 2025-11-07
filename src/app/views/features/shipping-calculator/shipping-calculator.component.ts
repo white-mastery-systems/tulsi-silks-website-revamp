@@ -25,7 +25,6 @@ export class ShippingCalculatorComponent implements OnInit {
       this.storeApi.SHIPPING_METHODS().subscribe(result => {
         if(result.status) this.commonService.shippingList = result.list;
         else console.log("response", result);
-        console.log(this.commonService.shippingList)
         setTimeout(() => { this.pageLoader = false; }, 500);
       });
     }

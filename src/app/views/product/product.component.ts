@@ -60,6 +60,7 @@ export class ProductComponent implements OnInit {
     delivery_start: new Date(new Date().setDate(new Date().getDate() + 5)),
     delivery_end: new Date(new Date().setDate(new Date().getDate() + 6))
   };
+  shippingExists: boolean;
 
   constructor(
     @Inject(PLATFORM_ID) private platformId: Object, private renderer: Renderer2, @Inject(DOCUMENT) private document, private assetLoader: DynamicAssetLoaderService,
@@ -84,6 +85,7 @@ export class ProductComponent implements OnInit {
   ngOnInit(): void {
     this.activeRoute.params.subscribe((params: Params) => {
       this.pageUrl = this.router.url.split('?')[0];
+      this.shippingExists = false;
       this.removeMetaProperties(); this.psInitiated = false;
       this.params = params; this.swipeProductIndex = 0; this.swipe_product_list = []; this.activeImgIndex = 0;
       this.category_details = {}; this.related_products = []; this.reviews = [];this.page = 1; this.review_sort = 'rating';
@@ -91,6 +93,7 @@ export class ProductComponent implements OnInit {
         this.rpLoaded = true;
         // for login redirection
         this.productDetails = this.commonService.product_page_attr.product;
+        if(this.productDetails.footnote_list?.find(el => el.name=='Shipping Time')) this.shippingExists = true;
         this.parentProductImages = this.productDetails.image_list;
         this.activeImgIndex = this.commonService.product_page_attr.active_img_index;
         this.related_products = this.commonService.product_page_attr.related_products;
@@ -124,6 +127,7 @@ export class ProductComponent implements OnInit {
         this.rpLoaded = false;
         if(this.commonService.selected_product) {
           this.productDetails = this.commonService.selected_product;
+          if(this.productDetails.footnote_list?.find(el => el.name=='Shipping Time')) this.shippingExists = true;
           this.productDetails.image = this.productDetails.image_list[0].image;
           delete this.commonService.selected_product;
         }
@@ -142,6 +146,7 @@ export class ProductComponent implements OnInit {
           setTimeout(() => { this.pageLoader = false; }, 500);
           if(result.status) {
             this.productDetails = result.data;
+            if(this.productDetails.footnote_list?.find(el => el.name=='Shipping Time')) this.shippingExists = true;
             this.productDetails.original_desc = result.data.description;
             this.productDetails.description = this.sanitizer.bypassSecurityTrustHtml(this.productDetails.description);
             this.productDetails.quantity = this.commonService.min_qty[this.productDetails.unit];
@@ -395,7 +400,6 @@ export class ProductComponent implements OnInit {
         productSchema['additionalProperty'].push({ "@type": "PropertyValue", "name": fHeading, "value": fData.value });
       }
     }
-    console.log(productSchema)
     this.commonService.createJsonLD("product-jsonld", productSchema);
   }
 

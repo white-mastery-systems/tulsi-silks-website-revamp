@@ -119,7 +119,7 @@
             <!-- single image slider -->
             <ng-container *ngIf="!category_details?.navigationList[activeSlideIndex]?.isMultiImages">
               <!-- Design & Occasion -->
-              <div *ngIf="activeSlideIndex==0 || activeSlideIndex==2 || category_details?.navigationList?.length===1" class="swiper-container multi-slider product-slider featured-sections px-max"
+              <div *ngIf="activeSlideIndex==0 || activeSlideIndex==1 || activeSlideIndex==2 || category_details?.navigationList?.length===1" class="swiper-container multi-slider product-slider featured-sections px-max"
                 id="navigationHighlights" [ngClass]="commonService.desktop_device? 'desktop_phls': 'phls'" style="visibility: hidden;" appCategoryHighlights>
                 <div class="swiper-wrapper">
                   <div *ngFor="let x of navigationImageList | orderAsc: 'rank'; let i=index;" class="swiper-slide">
