@@ -439,7 +439,7 @@ export class CategoryComponent implements OnInit {
     }, 0);
 
     setTimeout(() => {
-      this.navigationImageList = this.category_details.navigationList[index].image_list;
+      this.navigationImageList = this.category_details.navigationList[index].image_list.filter(el => el.isActive);
       // Show the image section after content is loaded
       if (el) el.style.visibility = "visible";
       // Scroll selected navigation item into view

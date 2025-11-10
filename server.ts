@@ -165,6 +165,27 @@ export function app(): express.Express {
   server.use('/category/embroidery', function(req, res) {
     res.redirect('/category/embroidery-kanjivaram-silk-sarees');
   });
+  server.use('/category/tussar', function(req, res) {
+    res.redirect('/category/tussar-banarasi-silk-sarees');
+  });
+  server.use('/category/banaras-georgette', function(req, res) {
+    res.redirect('/category/georgette-banarasi-silk-sarees');
+  });
+  server.use('/category/organza', function(req, res) {
+    res.redirect('/category/organza-banarasi-silk-sarees');
+  });
+  server.use('/category/banaras-cotton', function(req, res) {
+    res.redirect('/category/cotton-banarasi-silk-sarees');
+  });
+  server.use('/category/banaras-kathan-silk', function(req, res) {
+    res.redirect('/category/kathan-banarasi-silk-sarees');
+  });
+  server.use('/category/view-all-banaras', function(req, res) {
+    res.redirect('/category/banarasi-silk-sarees');
+  });
+  server.use('/category/banarasi-silk', function(req, res) {
+    res.redirect('/category/banarasi-silk-sarees');
+  });
   
   // Example Express Rest API endpoints
   // server.get('/api/**', (req, res) => { });
