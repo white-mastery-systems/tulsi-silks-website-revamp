@@ -1273,8 +1273,8 @@ p.error-msg {
     line-height: 1.6;
   }
 }
-.category-banner-accordion .fc_status p a,
-.category-banner-accordion .fc_status ul li a{
+.category-banner-accordion .fc_status a,
+.category-banner-accordion .fc_status a strong {
   color: #2196f3 !important;
   text-decoration: underline;
 }
