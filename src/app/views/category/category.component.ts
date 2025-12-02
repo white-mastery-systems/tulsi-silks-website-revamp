@@ -804,6 +804,7 @@ export class CategoryComponent implements OnInit {
                 "@type": "MerchantReturnPolicy",
                 "returnPolicyCategory": "MerchantReturnFiniteReturnWindow",
                 "merchantReturnDays": 1,
+                "applicableCountry": "IN",
                 "returnShippingFeesAmount": {
                   "@type": "MonetaryAmount",
                   "currency": "INR",
