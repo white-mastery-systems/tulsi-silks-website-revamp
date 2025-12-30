@@ -27,6 +27,15 @@
                         <li>
                           <a routerLink="/">Home</a>
                         </li>
+                        <li *ngIf="isKanjivaram">
+                          <a routerLink="/category/kanjivaram-silk-sarees">Kanjivaram Silk Sarees</a>
+                        </li>
+                        <li *ngIf="isBanarasi">
+                          <a routerLink="/category/banarasi-silk-sarees">Banarasi Silk Sarees</a>
+                        </li>
+                        <li *ngIf="isOrganza">
+                          <a routerLink="/category/organza-sarees">Organza Sarees</a>
+                        </li>
                         <li *ngIf="category_details?.name">
                           <span class="active-page">{{category_details.name}}</span>
                         </li>
@@ -339,6 +348,15 @@
               <ul class="collapsed">
                 <li>
                   <a routerLink="/">Home</a>
+                </li>
+                <li *ngIf="isKanjivaram">
+                  <a routerLink="/category/kanjivaram-silk-sarees">Kanjivaram Silk Sarees</a>
+                </li>
+                <li *ngIf="isBanarasi">
+                  <a routerLink="/category/banarasi-silk-sarees">Banarasi Silk Sarees</a>
+                </li>
+                <li *ngIf="isOrganza">
+                  <a routerLink="/category/organza-sarees">Organza Sarees</a>
                 </li>
                 <li *ngIf="category_details?.name">
                   <span class="active-page">{{category_details.name}}</span>

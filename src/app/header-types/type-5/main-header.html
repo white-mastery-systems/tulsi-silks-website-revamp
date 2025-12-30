@@ -9,17 +9,15 @@
 
   <header class="cd-main-header">
     <div class="{{template_setting.header_type}} m-header-container hover-container">
-      <div class="row m-header-row align-items-center justify-content-between">
+
+      <!-- mobile header -->
+      <div *ngIf="!commonService.desktop_device" class="row m-header-row align-items-center justify-content-between">
         <div class="col-xl-2 col-4 center-logo order-1">
-          <div class="cd-logo logo">
-            <a (click)="commonService.resetMegaMenu();" routerLink="/">
-              <img width="100%" height="100%" appImgLazyLoad class="logo-img" [ImagelazyLoad]="imgBaseUrl+commonService.store_logo" alt="{{commonService.store_details?.name}}">
-            </a>
-          </div>
+          <!-- logo -->
+          <ng-template [ngTemplateOutlet]="headerLogo"></ng-template>
         </div>
 
         <div class="col-xl-7 col-4 header-right-sec order-0">
-
           <!-- navbar -->
           <nav class="cd-nav">
             <ul id="cd-primary-nav" class="cd-primary-nav is-fixed">
@@ -40,111 +38,167 @@
               </ng-container>
 
               <!-- mobile menu list -->
-              <ng-container *ngIf="!commonService.desktop_device">
-                <li *ngFor="let menu of commonService.menu_list | orderAsc: 'rank'; let i=index;" [ngClass]="{ 'has-children mega-menu slim-scroll': menu?.sec_count, 'pos-relative': menu?.sec_count<=2 }">
-                  <a class="sub-arrow-sec" (mouseenter)="(!menu?.sec_count && commonService.desktop_device)? commonService.resetMegaMenu(): ''" (click)="(!menu?.sec_count)? commonService.onPageRedirect(menu): ''">
-                    {{menu.name}}
-                   <i *ngIf="menu?.sec_count"><lucide-icon name="chevron-right" [size]="16" class="ms-1 align-middle"></lucide-icon> </i>
-                    <ng-container *ngIf="menu?.sec_count && commonService?.screen_width>=992">
-                      <lucide-icon name="chevron-down" [size]="18" class="ms-1 align-middle"></lucide-icon>
-                    </ng-container>
-                  </a>
+              <li *ngFor="let menu of commonService.menu_list | orderAsc: 'rank'; let i=index;" [ngClass]="{ 'has-children mega-menu slim-scroll': menu?.sec_count, 'pos-relative': menu?.sec_count<=2 }">
+                <a class="sub-arrow-sec" (mouseenter)="(!menu?.sec_count && commonService.desktop_device)? commonService.resetMegaMenu(): ''" (click)="(!menu?.sec_count)? commonService.onPageRedirect(menu): ''">
+                  {{menu.name}}
+                  <i *ngIf="menu?.sec_count"><lucide-icon name="chevron-right" [size]="16" class="ms-1 align-middle"></lucide-icon> </i>
+                  <ng-container *ngIf="menu?.sec_count && commonService?.screen_width>=992">
+                    <lucide-icon name="chevron-down" [size]="18" class="ms-1 align-middle"></lucide-icon>
+                  </ng-container>
+                </a>
 
-                  <ul class="cd-secondary-nav cd-secondary-nav is-hidden slim-scroll" [ngClass]="{
-                    'menu-layout-one': menu?.sec_count<=1,
-                    'menu-layout-two': menu?.sec_count==2,
-                    'menu-layout-three': menu?.sec_count==3,
-                    'menu-layout-four': menu?.sec_count==4,
-                    'menu-layout-five': menu?.sec_count>4
-                  }">
-                    <li class="go-back">
-                      <a>
-                        <i style="margin-right:15px;">
-                          <lucide-icon name="chevron-left" [size]="16" class="ms-1 align-middle"></lucide-icon>
-                        </i>
-                        <span>{{menu.name}}</span>
-                      </a>
-                    </li>
-                    <li class="see-all display-none">
-                      <a>&nbsp;</a>
-                    </li>
-                    <!-- sections without category -->
-                    <li *ngIf="menu?.sections_in_one_col">
-                      <a *ngFor="let sec of menu.sections | orderAsc: 'rank';" (click)="commonService.onPageRedirect(sec);">{{ sec.name }}</a>
-                    </li>
-                    <!-- section with category -->
-                    <ng-container *ngIf="!menu?.sections_in_one_col">
-                      <li class="slim-scroll" *ngFor="let sec of menu.sections | orderAsc: 'rank';" [ngClass]="(sec?.categories?.length)? 'has-children' : ''">
-                        <!-- <a class="sub-arrow-sec" (click)="(sec?.categories?.length && commonService?.screen_width<=991)? '' :commonService.onPageRedirect(sec);">
-                          <span>{{ sec.name }}----</span>
-                          <i *ngIf="sec?.categories?.length"><lucide-icon name="chevron-right" [size]="16" class="ms-1 align-middle"></lucide-icon> </i>                         
-                        </a> -->
-                        <a class="sub-arrow-sec last-sec" [ngClass]="(sec.link_status)? 'has-link': null">
-                          <a (click)="(sec.link_status && sec.link_type!='internal')? commonService.onPageRedirect(sec): null;"
-                          [routerLink]="(sec.link_type=='internal')? sec.link: null" style="height: auto; margin-bottom: 0; gap: unset; width: 100%;">
-                            <span class="cat-name">{{ sec.name }}</span> 
-                          </a>
-                          <i *ngIf="sec?.categories?.length" [ngClass]="(sec.link_status)? 'has-link': null">
-                            <lucide-icon name="chevron-right" [size]="16" class="ms-1 align-middle"></lucide-icon>
-                          </i>
+                <ul class="cd-secondary-nav cd-secondary-nav is-hidden slim-scroll" [ngClass]="{
+                  'menu-layout-one': menu?.sec_count<=1,
+                  'menu-layout-two': menu?.sec_count==2,
+                  'menu-layout-three': menu?.sec_count==3,
+                  'menu-layout-four': menu?.sec_count==4,
+                  'menu-layout-five': menu?.sec_count>4
+                }">
+                  <li class="go-back">
+                    <a>
+                      <i style="margin-right:15px;">
+                        <lucide-icon name="chevron-left" [size]="16" class="ms-1 align-middle"></lucide-icon>
+                      </i>
+                      <span>{{menu.name}}</span>
+                    </a>
+                  </li>
+                  <li class="see-all display-none">
+                    <a>&nbsp;</a>
+                  </li>
+                  <!-- sections without category -->
+                  <li *ngIf="menu?.sections_in_one_col">
+                    <a *ngFor="let sec of menu.sections | orderAsc: 'rank';" (click)="commonService.onPageRedirect(sec);">{{ sec.name }}</a>
+                  </li>
+                  <!-- section with category -->
+                  <ng-container *ngIf="!menu?.sections_in_one_col">
+                    <li class="slim-scroll" *ngFor="let sec of menu.sections | orderAsc: 'rank';" [ngClass]="(sec?.categories?.length)? 'has-children' : ''">
+                      <!-- <a class="sub-arrow-sec" (click)="(sec?.categories?.length && commonService?.screen_width<=991)? '' :commonService.onPageRedirect(sec);">
+                        <span>{{ sec.name }}----</span>
+                        <i *ngIf="sec?.categories?.length"><lucide-icon name="chevron-right" [size]="16" class="ms-1 align-middle"></lucide-icon> </i>                         
+                      </a> -->
+                      <a class="sub-arrow-sec last-sec" [ngClass]="(sec.link_status)? 'has-link': null">
+                        <a (click)="(sec.link_status && sec.link_type!='internal')? commonService.onPageRedirect(sec): null;"
+                        [routerLink]="(sec.link_type=='internal')? sec.link: null" style="height: auto; margin-bottom: 0; gap: unset; width: 100%;">
+                          <span class="cat-name">{{ sec.name }}</span> 
                         </a>
-                        <ul class="is-hidden">
-                          <li class="go-back">                            
-                            <a>
-                              <i style="margin-right:15px;">
-                                <lucide-icon name="chevron-left" [size]="16" class="ms-1 align-middle"></lucide-icon>
-                              </i>
-                              <span>{{sec.name}}</span>                              
-                            </a>                            
-                          </li>
-                          <li class="slim-scroll" *ngFor="let cat of sec.categories | orderAsc: 'rank';" [ngClass]="(cat?.sub_categories?.length)? 'has-children' : ''">
-                            <!-- <a class="sub-arrow-sec" (click)="(cat?.sub_categories?.length)? '' :commonService.onPageRedirect(cat);">
-                              <span>{{ cat.name }}</span>
-                              <i *ngIf="cat?.sub_categories?.length"><lucide-icon name="chevron-right" [size]="16" class="ms-1 align-middle"></lucide-icon> </i>
-                            </a> -->
-                            <a class="sub-arrow-sec last-sec" [ngClass]="(cat.link_status)? 'has-link': null">
-                              <a (click)="(cat.link_status && cat.link_type!='internal')? commonService.onPageRedirect(cat): null;"
-                              [routerLink]="(cat.link_type=='internal')? cat.link: null" style="height: auto; margin-bottom: 0; gap: unset; width: 100%;">
-                                <span class="cat-name">{{ cat.name }}</span> 
-                              </a>
-                              <i *ngIf="cat?.sub_categories?.length" [ngClass]="(cat.link_status)? 'has-link': null">
-                                <lucide-icon name="chevron-right" [size]="16" class="ms-1 align-middle"></lucide-icon>
-                              </i>
+                        <i *ngIf="sec?.categories?.length" [ngClass]="(sec.link_status)? 'has-link': null">
+                          <lucide-icon name="chevron-right" [size]="16" class="ms-1 align-middle"></lucide-icon>
+                        </i>
+                      </a>
+                      <ul class="is-hidden">
+                        <li class="go-back">                            
+                          <a>
+                            <i style="margin-right:15px;">
+                              <lucide-icon name="chevron-left" [size]="16" class="ms-1 align-middle"></lucide-icon>
+                            </i>
+                            <span>{{sec.name}}</span>                              
+                          </a>                            
+                        </li>
+                        <li class="slim-scroll" *ngFor="let cat of sec.categories | orderAsc: 'rank';" [ngClass]="(cat?.sub_categories?.length)? 'has-children' : ''">
+                          <!-- <a class="sub-arrow-sec" (click)="(cat?.sub_categories?.length)? '' :commonService.onPageRedirect(cat);">
+                            <span>{{ cat.name }}</span>
+                            <i *ngIf="cat?.sub_categories?.length"><lucide-icon name="chevron-right" [size]="16" class="ms-1 align-middle"></lucide-icon> </i>
+                          </a> -->
+                          <a class="sub-arrow-sec last-sec" [ngClass]="(cat.link_status)? 'has-link': null">
+                            <a (click)="(cat.link_status && cat.link_type!='internal')? commonService.onPageRedirect(cat): null;"
+                            [routerLink]="(cat.link_type=='internal')? cat.link: null" style="height: auto; margin-bottom: 0; gap: unset; width: 100%;">
+                              <span class="cat-name">{{ cat.name }}</span> 
                             </a>
-                            <ul class="is-hidden">
-                              <li class="go-back">
-                                <a>
-                                  <i style="margin-right:15px;">
-                                    <lucide-icon name="chevron-left" [size]="16" class="ms-1 align-middle"></lucide-icon> 
-                                  </i>
-                                  <span>{{ cat.name }}</span>                                  
-                                </a>
-                              </li>
-                              <li class="see-all" *ngFor="let sub_cat of cat.sub_categories | orderAsc: 'rank';">
-                                <a (click)="commonService.onPageRedirect(sub_cat);">{{ sub_cat.name }}</a>
-                              </li>
-                            </ul>
-                          </li>
-                        </ul>
-                      </li>
-                    </ng-container>
-                    <!-- menu images -->
-                    <li class="nav-img-wrapper slim-scroll" *ngFor="let x of menu.menu_images;">
-                      <div class="nav-img">
-                        <h4 *ngIf="x.heading" class="nav-img-title">{{x.heading}}</h4>
-                        <img width="100%" height="100%" appImgLazyLoad [ImagelazyLoad]="imgBaseUrl+x.image" alt="menu-img" class="menu-nav-img">
-                        <p *ngIf="x.sub_heading" class="blog-description pt-3">{{x.sub_heading}}</p>
-                        <div *ngIf="x.btn_status" class="button-container">
-                          <button class="primary-btn" (click)="commonService.onPageRedirect(x);">{{x.btn_text}}</button>
-                        </div>
-                      </div>
+                            <i *ngIf="cat?.sub_categories?.length" [ngClass]="(cat.link_status)? 'has-link': null">
+                              <lucide-icon name="chevron-right" [size]="16" class="ms-1 align-middle"></lucide-icon>
+                            </i>
+                          </a>
+                          <ul class="is-hidden">
+                            <li class="go-back">
+                              <a>
+                                <i style="margin-right:15px;">
+                                  <lucide-icon name="chevron-left" [size]="16" class="ms-1 align-middle"></lucide-icon> 
+                                </i>
+                                <span>{{ cat.name }}</span>                                  
+                              </a>
+                            </li>
+                            <li class="see-all" *ngFor="let sub_cat of cat.sub_categories | orderAsc: 'rank';">
+                              <a (click)="commonService.onPageRedirect(sub_cat);">{{ sub_cat.name }}</a>
+                            </li>
+                          </ul>
+                        </li>
+                      </ul>
                     </li>
-                  </ul>
+                  </ng-container>
+                  <!-- menu images -->
+                  <li class="nav-img-wrapper slim-scroll" *ngFor="let x of menu.menu_images;">
+                    <div class="nav-img">
+                      <h4 *ngIf="x.heading" class="nav-img-title">{{x.heading}}</h4>
+                      <img width="100%" height="100%" appImgLazyLoad [ImagelazyLoad]="imgBaseUrl+x.image" alt="menu-img" class="menu-nav-img">
+                      <p *ngIf="x.sub_heading" class="blog-description pt-3">{{x.sub_heading}}</p>
+                      <div *ngIf="x.btn_status" class="button-container">
+                        <button class="primary-btn" (click)="commonService.onPageRedirect(x);">{{x.btn_text}}</button>
+                      </div>
+                    </div>
+                  </li>
+                </ul>
+              </li>
+
+              <!-- account -->
+              <ng-container *ngIf="commonService?.screen_width<=991">
+                <li>
+                  <a routerLink="/account">My Account</a>
+                </li>
+                <li>
+                  <a routerLink="/wishlist">My Wishlist</a>
+                </li>
+                <li>
+                  <a routerLink="/cart">Shopping Bag</a>
                 </li>
               </ng-container>
+            </ul>
+          </nav>
+          <!-- #navbar -->
 
-              <!-- desktop menu list-->
-              <ng-container *ngIf="commonService.desktop_device">
+          <ul class="cd-header-buttons">
+            <!-- for mobile screen -->
+            <li *ngIf="commonService?.screen_width<=991">
+              <a aria-label="" class="cd-nav-trigger" href="#cd-primary-nav">
+                <span></span>
+              </a>
+            </li>
+          </ul>
+        </div>
+
+        <div class="col-xl-3 col-4 header-left-sec order-2">
+          <!-- right side content -->
+          <ng-template [ngTemplateOutlet]="rightSideContent"></ng-template>
+        </div>
+      </div>
+
+
+      <!-- desktop header -->
+      <div *ngIf="commonService.desktop_device" class="row m-header-row align-items-center justify-content-between">
+        <div class="col-12 center-logo order-1">
+          <!-- logo -->
+          <ng-template [ngTemplateOutlet]="headerLogo"></ng-template>
+
+          <div class="header-right-sec order-0">
+            <!-- navbar -->
+            <nav class="cd-nav">
+              <ul id="cd-primary-nav" class="cd-primary-nav is-fixed">
+                <!-- currency variation -->
+                <ng-container *ngIf="commonService.ys_features.indexOf('currency_variation')!=-1 && !commonService.application_setting?.hide_currency && commonService?.screen_width<=991">
+                  <!-- currency drop-down -->
+                  <li *ngIf="!commonService.ipBasedCurrency && commonService.currency_types.length>1">
+                    <a>
+                      <select class="currency-select" (change)="onCurrencyChange();" name="temp_currency" [(ngModel)]="commonService.temp_currency" [disabled]="router.url.indexOf('/gift-cards/')!=-1">
+                        <option *ngFor="let x of commonService.currency_types; let i=index;" [ngValue]="x">{{x.country_code}}</option>
+                      </select>
+                    </a>
+                  </li>
+                  <!-- ip based -->
+                  <li *ngIf="commonService.ipBasedCurrency || commonService.currency_types.length===1">
+                    <a>{{commonService.temp_currency?.country_code}}</a>
+                  </li>
+                </ng-container>
+
+                <!-- desktop menu list-->
                 <li *ngFor="let menu of commonService.menu_list | orderAsc: 'rank'; let i=index;" [ngClass]="{ 'has-children mega-menu slim-scroll': menu?.sec_count, 'pos-relative': menu?.sec_count<=2 }">
                   <a (mouseenter)="(!menu?.sec_count && commonService.desktop_device)? commonService.resetMegaMenu(): ''"
                   [routerLink]="(!menu?.sec_count && menu.link_type=='internal')? menu.link: null"
@@ -219,146 +273,159 @@
                     </li>
                   </ul>
                 </li>
-              </ng-container>
 
-              <!-- account -->
-              <ng-container *ngIf="commonService?.screen_width<=991">
-                <li>
-                  <a routerLink="/account">My Account</a>
-                </li>
-                <li>
-                  <a routerLink="/wishlist">My Wishlist</a>
-                </li>
-                <li>
-                  <a routerLink="/cart">Shopping Bag</a>
-                </li>
-              </ng-container>
-            </ul>
-          </nav>
-          <!-- #navbar -->
+                <!-- account -->
+                <ng-container *ngIf="commonService?.screen_width<=991">
+                  <li>
+                    <a routerLink="/account">My Account</a>
+                  </li>
+                  <li>
+                    <a routerLink="/wishlist">My Wishlist</a>
+                  </li>
+                  <li>
+                    <a routerLink="/cart">Shopping Bag</a>
+                  </li>
+                </ng-container>
+              </ul>
+            </nav>
+            <!-- #navbar -->
 
-          <ul class="cd-header-buttons">
-            <!-- for mobile screen -->
-            <li *ngIf="commonService?.screen_width<=991">
-              <a aria-label="" class="cd-nav-trigger" href="#cd-primary-nav">
-                <span></span>
-              </a>
-            </li>
-          </ul>
-        </div>
-
-        <div class="col-xl-3 col-4 header-left-sec order-2">
-          <ng-container *ngIf="commonService?.screen_width>=991">
-            <!-- currency variation -->
-            <div class="header-icon-container" *ngIf="commonService.ys_features.indexOf('currency_variation')!=-1 && !commonService.application_setting?.hide_currency">
-              <!-- currency drop-down -->
-              <div *ngIf="!commonService.ipBasedCurrency && commonService.currency_types.length>1">
-                <a>
-                  <select class="currency-select" (change)="onCurrencyChange();" name="temp_currency" [(ngModel)]="commonService.temp_currency" [disabled]="router.url.indexOf('/gift-cards/')!=-1">
-                    <option *ngFor="let x of commonService.currency_types; let i=index;" [ngValue]="x">{{x.country_code}}</option>
-                  </select>
+            <ul class="cd-header-buttons">
+              <!-- for mobile screen -->
+              <li *ngIf="commonService?.screen_width<=991">
+                <a aria-label="" class="cd-nav-trigger" href="#cd-primary-nav">
+                  <span></span>
                 </a>
-              </div>
-              <!-- ip based -->
-              <div *ngIf="commonService.ipBasedCurrency || commonService.currency_types.length===1">
-                <a>{{commonService.temp_currency?.country_code}}</a>
-              </div>
-            </div>
-          </ng-container>
-
-          <!-- search -->
-          <div *ngIf="commonService.ys_features.indexOf('product_search')!=-1" routerLink="/search" class="btn-search header-icon-container header-s-icon">
-            <div class="tooltip-wrapper">
-              <lucide-icon name="search" [size]="20" stroke="1" color="black"></lucide-icon>
-              <div class="custom-tooltip">Search</div>
-            </div>
-            <!-- <img src="assets/images/search.png" alt="search-icon" class="header-s-icon"> -->
-            <!-- <i [hidden]="!commonService?.window_loaded" class="{{template_setting?.mat_icon_type}} transform-90">{{template_setting?.mat_icons?.search}}</i> -->
+              </li>
+            </ul>
           </div>
-          <!-- wishlist -->
-          <div *ngIf="commonService?.screen_width>=991" class="header-icon-container">
-            <a class="header-s-icon" [hidden]="!commonService?.window_loaded" (click)="(commonService?.customer_token)? '': commonService.after_login_event={ redirect: '/wishlist' }" [routerLink]="(commonService?.customer_token)? '/wishlist' : '/account'">
-              <div class="tooltip-wrapper">
-                <lucide-icon name="heart" [size]="20" stroke="1" color="black"></lucide-icon>
-                <div class="custom-tooltip">Wishlist</div>
-              </div>
 
-              <!-- <img src="assets/images/heart.png" alt="wishlist-icon" class="header-s-icon"> -->
-              <!-- <i class="{{template_setting?.mat_icon_type}}">{{template_setting?.mat_icons?.wishlist}}</i> -->
-              <sup *ngIf="wishService.wish_list?.length">
-                <div class="item-badge">{{ wishService.wish_list.length }}</div>
-              </sup>
-            </a>
-          </div>
-          <!-- my account -->
-          <div *ngIf="commonService?.screen_width>=991" class="header-icon-container">
-            <a class="header-s-icon" routerLink="/account">
-              <div class="tooltip-wrapper">
-                <lucide-icon name="user" [size]="20" stroke="1" color="black"></lucide-icon>
-                <div class="custom-tooltip">Account</div>
-              </div>
-
-              <!-- <img src="assets/images/user.png" alt="user-icon" class="header-s-icon"> -->
-              <!-- <i [hidden]="!commonService?.window_loaded" class="{{template_setting?.mat_icon_type}}">{{template_setting?.mat_icons?.account}}</i> -->
-            </a>
-          </div>
-          <!-- cart -->
-          <div class="mini-cart header-icon-container">
-            <div id="minicart-trigger">
-              <a class="header-s-icon" [hidden]="!commonService?.window_loaded">
-                <div class="tooltip-wrapper">
-                  <lucide-icon name="shopping-cart" [size]="20" stroke="1" color="black"></lucide-icon>
-                  <div class="custom-tooltip">Cart</div>
-                </div>
-                <!-- <img src="assets/images/shopping-cart.png" alt="cart-icon" class="header-s-icon"> -->
-                <!-- <i class="{{template_setting?.mat_icon_type}}">{{template_setting?.mat_icons?.cart}}</i> -->
-                <sup *ngIf="cartService?.cart_list?.length">
-                  <div class="item-badge">{{ cartService.cart_list.length }}</div>
-                </sup>
-              </a>
-            </div>
-            <div class="cart-box" id="cart-box">
-              <div class="shop-inner">
-                <div class="cart-header">
-                  <div class="cart-product-list slim-scroll">
-                    <div class="cart-count">
-                      <h4>Shopping Bag
-                        <span>{{cartService.cart_list?.length}}
-                          {{(cartService.cart_list?.length>1)? 'items': 'item'}}</span>
-                      </h4>
-                    </div>
-                    <div class="cart-inner" *ngFor="let x of cartService.cart_list | slice:0:2; let i=index;">
-                      <div class="thumb">
-                        <a>
-                          <img width="100%" height="100%" appImgLazyLoad [ImagelazyLoad]="imgBaseUrl+x.image" alt="prod-thum">
-                        </a>
-                      </div>
-                      <div class="content">
-                        <div class="content-inner">
-                          <p class="overflow-dotss mb-0 p-0">
-                            <strong>{{x.name}}</strong>
-                          </p>
-                          <div class="quatity">
-                            <span>Qty: {{x.quantity}}
-                              {{template_setting?.display_unit? x.unit: ''}}</span>
-                            <span>{{ x.temp_final_price | currency:cc.currency?.country_code:'symbol':cc.format }}</span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div class="cart-footer" *ngIf="cartService.cart_list?.length">
-                  <button routerLink="/cart" class="primary-btn w-100" id="view-btn">Go to Cart</button>
-                </div>
-              </div>
-            </div>
+          <div class="header-left-sec order-2">
+            <!-- right side content -->
+            <ng-template [ngTemplateOutlet]="rightSideContent"></ng-template>
           </div>
         </div>
       </div>
     </div>
   </header>
 </header>
+
+<!-- header logo -->
+<ng-template #headerLogo>
+  <div class="cd-logo logo">
+    <a (click)="commonService.resetMegaMenu();" routerLink="/">
+      <img width="100%" height="100%" appImgLazyLoad class="logo-img" [ImagelazyLoad]="imgBaseUrl+commonService.store_logo" alt="{{commonService.store_details?.name}}">
+    </a>
+  </div>
+</ng-template>
+
+<ng-template #rightSideContent>
+  <!-- currency variation -->
+  <ng-container *ngIf="commonService?.screen_width>=991">
+    <div class="header-icon-container" *ngIf="commonService.ys_features.indexOf('currency_variation')!=-1 && !commonService.application_setting?.hide_currency">
+      <!-- currency drop-down -->
+      <div *ngIf="!commonService.ipBasedCurrency && commonService.currency_types.length>1">
+        <a>
+          <select class="currency-select" (change)="onCurrencyChange();" name="temp_currency" [(ngModel)]="commonService.temp_currency" [disabled]="router.url.indexOf('/gift-cards/')!=-1">
+            <option *ngFor="let x of commonService.currency_types; let i=index;" [ngValue]="x">{{x.country_code}}</option>
+          </select>
+        </a>
+      </div>
+      <!-- ip based -->
+      <div *ngIf="commonService.ipBasedCurrency || commonService.currency_types.length===1">
+        <a>{{commonService.temp_currency?.country_code}}</a>
+      </div>
+    </div>
+  </ng-container>
+  <!-- search -->
+  <div *ngIf="commonService.ys_features.indexOf('product_search')!=-1" routerLink="/search" class="btn-search header-icon-container header-s-icon">
+    <div class="tooltip-wrapper">
+      <lucide-icon name="search" [size]="20" stroke="1" color="black"></lucide-icon>
+      <div class="custom-tooltip">Search</div>
+    </div>
+    <!-- <img src="assets/images/search.png" alt="search-icon" class="header-s-icon"> -->
+    <!-- <i [hidden]="!commonService?.window_loaded" class="{{template_setting?.mat_icon_type}} transform-90">{{template_setting?.mat_icons?.search}}</i> -->
+  </div>
+  <!-- wishlist -->
+  <div *ngIf="commonService?.screen_width>=991" class="header-icon-container">
+    <a class="header-s-icon" [hidden]="!commonService?.window_loaded" (click)="(commonService?.customer_token)? '': commonService.after_login_event={ redirect: '/wishlist' }" [routerLink]="(commonService?.customer_token)? '/wishlist' : '/account'">
+      <div class="tooltip-wrapper">
+        <lucide-icon name="heart" [size]="20" stroke="1" color="black"></lucide-icon>
+        <div class="custom-tooltip">Wishlist</div>
+      </div>
+
+      <!-- <img src="assets/images/heart.png" alt="wishlist-icon" class="header-s-icon"> -->
+      <!-- <i class="{{template_setting?.mat_icon_type}}">{{template_setting?.mat_icons?.wishlist}}</i> -->
+      <sup *ngIf="wishService.wish_list?.length">
+        <div class="item-badge">{{ wishService.wish_list.length }}</div>
+      </sup>
+    </a>
+  </div>
+  <!-- my account -->
+  <div *ngIf="commonService?.screen_width>=991" class="header-icon-container">
+    <a class="header-s-icon" routerLink="/account">
+      <div class="tooltip-wrapper">
+        <lucide-icon name="user" [size]="20" stroke="1" color="black"></lucide-icon>
+        <div class="custom-tooltip">Account</div>
+      </div>
+
+      <!-- <img src="assets/images/user.png" alt="user-icon" class="header-s-icon"> -->
+      <!-- <i [hidden]="!commonService?.window_loaded" class="{{template_setting?.mat_icon_type}}">{{template_setting?.mat_icons?.account}}</i> -->
+    </a>
+  </div>
+  <!-- cart -->
+  <div class="mini-cart header-icon-container">
+    <div id="minicart-trigger">
+      <a class="header-s-icon" [hidden]="!commonService?.window_loaded">
+        <div class="tooltip-wrapper">
+          <lucide-icon name="shopping-cart" [size]="20" stroke="1" color="black"></lucide-icon>
+          <div class="custom-tooltip">Cart</div>
+        </div>
+        <!-- <img src="assets/images/shopping-cart.png" alt="cart-icon" class="header-s-icon"> -->
+        <!-- <i class="{{template_setting?.mat_icon_type}}">{{template_setting?.mat_icons?.cart}}</i> -->
+        <sup *ngIf="cartService?.cart_list?.length">
+          <div class="item-badge">{{ cartService.cart_list.length }}</div>
+        </sup>
+      </a>
+    </div>
+    <div class="cart-box" id="cart-box">
+      <div class="shop-inner">
+        <div class="cart-header">
+          <div class="cart-product-list slim-scroll">
+            <div class="cart-count">
+              <h4>Shopping Bag
+                <span>{{cartService.cart_list?.length}}
+                  {{(cartService.cart_list?.length>1)? 'items': 'item'}}</span>
+              </h4>
+            </div>
+            <div class="cart-inner" *ngFor="let x of cartService.cart_list | slice:0:2; let i=index;">
+              <div class="thumb">
+                <a>
+                  <img width="100%" height="100%" appImgLazyLoad [ImagelazyLoad]="imgBaseUrl+x.image" alt="prod-thum">
+                </a>
+              </div>
+              <div class="content">
+                <div class="content-inner">
+                  <p class="overflow-dotss mb-0 p-0">
+                    <strong>{{x.name}}</strong>
+                  </p>
+                  <div class="quatity">
+                    <span>Qty: {{x.quantity}}
+                      {{template_setting?.display_unit? x.unit: ''}}</span>
+                    <span>{{ x.temp_final_price | currency:cc.currency?.country_code:'symbol':cc.format }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="cart-footer" *ngIf="cartService.cart_list?.length">
+          <button routerLink="/cart" class="primary-btn w-100" id="view-btn">Go to Cart</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-template>
 
 <!-- body -->
 <div class="page-container">

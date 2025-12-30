@@ -489,6 +489,9 @@
                     </p>
                   </div>
                 </div>
+                <div *ngIf="productDetails.stock < commonService.min_qty[productDetails.unit]">
+                  <p>This piece is currently sold out. Please enquire now to check if it can be custom-made or remade for you.</p>
+                </div>
                 <div *ngIf="productDetails.allow_preorder">
                   <p style="font-size: 1rem; font-weight: bold; padding: 5px 0; line-height: 1.6;">This exclusive piece can be specially made for you and delivered in 30 days. Contact us for more details!</p>
                 </div>

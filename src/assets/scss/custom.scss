@@ -1172,7 +1172,7 @@ p.error-msg {
   width: 100%;
   float: left;
   text-align: center;
-  z-index: -1;
+  z-index: 1;
   padding:40px 0;
   img {
     width: 100%;
@@ -1220,6 +1220,7 @@ p.error-msg {
 
 .category-banner-accordion {
   margin-top: 20px;
+  word-spacing: 2px;
   .fc_status {
     h5 ,h1, h2, h3, h4, h6 {
       text-align: left;
@@ -1244,11 +1245,11 @@ p.error-msg {
   // }
   h5 ,h1, h2, h3, h4, h6 {
     color: $primary-text;
-    font-weight: bold !important;
+    font-weight: 600 !important;
     margin-bottom: 10px;
     text-align: center;
     strong {
-      font-weight: bold;
+      font-weight: 600;
     }
   }
   h1{ font-size: 22px !important; }
@@ -1257,20 +1258,25 @@ p.error-msg {
   h4{ font-size: 16px !important; }
   h5{ font-size: 14px !important; }
   h6{ font-size: 12px !important; }
-  p {
+  p, ul li {
     color: $primary-text !important;
     margin-bottom: 15px;
     transition: all 2s ease;
-    line-height: 1.5;
+    line-height: 1.75;
     font-size: 16px !important;
     margin-bottom: 0;
     text-align: center;
   }
+
   p * {
     color: $primary-text !important;   
   }
   ul{
-    line-height: 1.6;
+    line-height: 1.75;
+    li{
+      text-align: left!important;
+      margin-bottom:12px;
+    }
   }
 }
 .category-banner-accordion .fc_status a,
@@ -2176,13 +2182,13 @@ textarea {
   .blog-details {
     .blog-content {
       h1, h1 span{ font-size: 22px !important;font-weight: bold; }
-      h2, h2 span{ font-size: 24px !important;font-weight: bold; margin-bottom: 0.6rem; }
-      h3, h3 span{ font-size: 20px !important;font-weight: bold; margin-bottom: 0.5rem; }
+      h2, h2 span{ font-size: 20px !important;font-weight: bold; margin-bottom: 0.6rem; }
+      h3, h3 span{ font-size: 18px !important;font-weight: bold; margin-bottom: 0.5rem; }
       h4, h4 span{ font-size: 17px !important; font-weight: bold; margin-bottom: 0.5rem;}
       h5, h5 span{ font-size: 12px !important;font-weight: bold; color: rgb(67, 67, 67); }
       h6, h6 span{ font-size: 10px !important;font-weight: bold; }
       .blog-title {
-        font-size: 30px !important;
+        font-size: 30px;
         font-weight: bold;
         line-height: 1.2em;
         margin-bottom: 0.8rem;
@@ -3952,6 +3958,11 @@ input::-webkit-inner-spin-button {
       border: 1px solid #ccc;
       padding: 4px 0;
       font-size: 13px;
+      text-align: left;
+      padding: 10px;
+      &[colspan]{
+        text-align: center;
+      }
     }
   }
 }

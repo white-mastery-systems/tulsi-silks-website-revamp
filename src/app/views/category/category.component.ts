@@ -40,6 +40,7 @@ export class CategoryComponent implements OnInit {
   IsBrowser: boolean;
   navigationImageList = [];
   showNavigationButtons: boolean = false;
+  isKanjivaram: boolean; isBanarasi: boolean; isOrganza: boolean;
 
   categorySchema: any = {
     "@context": "https://schema.org",
@@ -241,6 +242,18 @@ export class CategoryComponent implements OnInit {
   ngOnInit(): void {
     this.activeRoute.params.subscribe((params: Params) => {
       this.pageUrl = this.router.url.split('?')[0];
+      this.isKanjivaram = false; this.isBanarasi = false; this.isOrganza = false;
+      const kanjivaramList: any = [
+        "Kanjivaram Silk Sarees",
+        "Kanjivaram Tissue Silk Sarees",
+        "Kanjivaram Pure Silk Sarees"
+      ];
+      const banarasiList: any = [
+        "Banarasi Silk Sarees"
+      ];
+      const organzaList: any = [
+        "Organza Sarees"
+      ];
       this.showMore = false; this.params = params; this.tag_list = []; this.randomProducts = [];
       if (this.pageUrl == '/recommended-products' || this.pageUrl == '/all-products' || this.pageUrl == '/new-arrivals' || this.pageUrl == '/on-sale' || this.pageUrl == '/featured-products' || this.pageUrl == '/best-sellers') {
         this.params = { category_id: this.pageUrl };
@@ -356,7 +369,15 @@ export class CategoryComponent implements OnInit {
           this.gridType = this.commonService.category_page_attr.grid_type;
           this.sort_value = this.commonService.category_page_attr.sort_value;
           this.collapseIndex = this.commonService.category_page_attr.collapse_index;
+
           this.category_details = this.commonService.category_page_attr.category_details;
+          this.isKanjivaram = kanjivaramList.some(item => this.category_details.name.toLowerCase().includes(item.toLowerCase()));
+          if(this.isKanjivaram && this.category_details.name=='Kanjivaram Silk Sarees') this.isKanjivaram = false;
+          this.isBanarasi = banarasiList.some(item => this.category_details.name.toLowerCase().includes(item.toLowerCase()));
+          if(this.isBanarasi && this.category_details.name=='Banarasi Silk Sarees') this.isBanarasi = false;
+          this.isOrganza = organzaList.some(item => this.category_details.name.toLowerCase().includes(item.toLowerCase()));
+          if(this.isOrganza && this.category_details.name=='Organza Sarees') this.isOrganza = false;
+
           this.rangeMin = this.commonService.category_page_attr.range_min;
           this.rangeMax = this.commonService.category_page_attr.range_max;
           this.range_disp = this.commonService.category_page_attr.range_disp;
@@ -382,7 +403,15 @@ export class CategoryComponent implements OnInit {
           this.storeApi.PRODUCT_LIST({ category_id: this.params.category_id }).subscribe(result => {
             setTimeout(() => { this.pageLoader = false; }, 500);
             if (result.status) {
+
               this.category_details = result.category_details;
+              this.isKanjivaram = kanjivaramList.some(item => this.category_details.name.toLowerCase().includes(item.toLowerCase()));
+              if(this.isKanjivaram && this.category_details.name=='Kanjivaram Silk Sarees') this.isKanjivaram = false;
+              this.isBanarasi = banarasiList.some(item => this.category_details.name.toLowerCase().includes(item.toLowerCase()));
+              if(this.isBanarasi && this.category_details.name=='Banarasi Silk Sarees') this.isBanarasi = false;
+              this.isOrganza = organzaList.some(item => this.category_details.name.toLowerCase().includes(item.toLowerCase()));
+              if(this.isOrganza && this.category_details.name=='Organza Sarees') this.isOrganza = false;
+
               if (this.category_details.navigationList?.length) {
                 this.category_details.navigationList = this.category_details.navigationList.sort((a, b) => 0 - (a.rank > b.rank ? -1 : 1))
                 this.onSelectNav(0);
@@ -715,20 +744,42 @@ export class CategoryComponent implements OnInit {
   setCategorySchema() {
     // breadcrumb
     this.categorySchema['@graph'][2]['@id'] = "https://tulsisilks.co.in"+this.pageUrl+"#breadcrumbs";
-    this.categorySchema['@graph'][2]['itemListElement'] = [
-      {
-        "@type": "ListItem",
-        "position": 1,
-        "name": "Home",
-        "item": "https://tulsisilks.co.in/"
-      },
-      {
+    this.categorySchema['@graph'][2]['itemListElement'] = [{
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "https://tulsisilks.co.in/"
+    }];
+    if(this.isKanjivaram) {
+      this.categorySchema['@graph'][2]['itemListElement'].push({
         "@type": "ListItem",
         "position": 2,
-        "name": this.category_details.name,
-        "item": "https://tulsisilks.co.in"+this.pageUrl
-      }
-    ];
+        "name": "Kanjivaram Silk Sarees",
+        "item": "https://tulsisilks.co.in/category/kanjivaram-silk-sarees"
+      });
+    }
+    else if(this.isBanarasi) {
+      this.categorySchema['@graph'][2]['itemListElement'].push({
+        "@type": "ListItem",
+        "position": 2,
+        "name": "Banarasi Silk Sarees",
+        "item": "https://tulsisilks.co.in/category/banarasi-silk-sarees"
+      });
+    }
+     else if(this.isOrganza) {
+      this.categorySchema['@graph'][2]['itemListElement'].push({
+        "@type": "ListItem",
+        "position": 2,
+        "name": "Organza Sarees",
+        "item": "https://tulsisilks.co.in/category/organza-sarees"
+      });
+    }
+    this.categorySchema['@graph'][2]['itemListElement'].push({
+      "@type": "ListItem",
+      "position": this.categorySchema['@graph'][2]['itemListElement'].length+1,
+      "name": this.category_details.name,
+      "item": "https://tulsisilks.co.in"+this.pageUrl
+    });
     // item list
     this.categorySchema['@graph'][3]['@id'] = "https://tulsisilks.co.in"+this.pageUrl+"#collection";
     this.categorySchema['@graph'][3]['url'] = "https://tulsisilks.co.in"+this.pageUrl;

@@ -151,17 +151,17 @@ $mobile-final-height: calc(74px + #{$mobile-announcement-bar-mh});
   // }
   .header-left-sec{
     display: flex;
-    justify-content: center;
+    justify-content: end;
     align-items: center;
   }
   .center-logo{
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: space-between;
   }
   .header-right-sec {
     display: flex;
-    justify-content: flex-end;
+    justify-content: center;
     align-items: center;
   }
   .cd-main-header{

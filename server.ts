@@ -186,6 +186,84 @@ export function app(): express.Express {
   server.use('/category/banarasi-silk', function(req, res) {
     res.redirect('/category/banarasi-silk-sarees');
   });
+  server.use('/category/view-all-organza', function(req, res) {
+    res.redirect('/category/organza-sarees');
+  });
+  server.use('/category/woven-organza', function(req, res) {
+    res.redirect('/category/woven-organza-sarees');
+  });
+  server.use('/category/printed-organza', function(req, res) {
+    res.redirect('/category/printed-organza-sarees');
+  });
+  server.use('/category/organza-embroidery', function(req, res) {
+    res.redirect('/category/embroidered-organza-sarees');
+  });
+  server.use('/category/black-party-wear-sarees', function(req, res) {
+    res.redirect('/category/party-wear-black-sarees');
+  });
+  server.use('/category/black-festive-wear-sarees', function(req, res) {
+    res.redirect('/category/festive-wear-black-sarees');
+  });
+  server.use('/category/black-traditional-sarees', function(req, res) {
+    res.redirect('/category/traditional-black-sarees');
+  });
+  server.use('/category/black-office-wear-sarees', function(req, res) {
+    res.redirect('/category/office-wear-black-sarees');
+  });
+  server.use('/category/black-daily-wear-sarees', function(req, res) {
+    res.redirect('/category/daily-wear-black-sarees');
+  });
+  server.use('/category/black-farewell-sarees', function(req, res) {
+    res.redirect('/category/farewell-black-sarees');
+  });
+  server.use('/category/black-printed-sarees', function(req, res) {
+    res.redirect('/category/printed-black-sarees');
+  });
+  server.use('/category/black-embroidered-sarees', function(req, res) {
+    res.redirect('/category/embroidered-black-sarees');
+  });
+  server.use('/category/black-floral-sarees', function(req, res) {
+    res.redirect('/category/floral-black-sarees');
+  });
+  server.use('/category/black-bandhani-sarees', function(req, res) {
+    res.redirect('/category/bandhani-black-sarees');
+  });
+  server.use('/category/black-brocade-sarees', function(req, res) {
+    res.redirect('/category/brocade-black-sarees');
+  });
+  server.use('/category/black-checked-sarees', function(req, res) {
+    res.redirect('/category/checked-black-sarees');
+  });
+  server.use('/category/black-borderless-sarees', function(req, res) {
+    res.redirect('/category/borderless-black-sarees');
+  });
+  server.use('/category/black-big-border-sarees', function(req, res) {
+    res.redirect('/category/big-border-black-sarees');
+  });
+  server.use('/category/black-small-border-sarees', function(req, res) {
+    res.redirect('/category/small-border-black-sarees');
+  });
+  server.use('/category/black-kantha-work-sarees', function(req, res) {
+    res.redirect('/category/kantha-work-black-sarees');
+  });
+  server.use('/category/black-fancy-sarees', function(req, res) {
+    res.redirect('/category/fancy-black-sarees');
+  });
+  server.use('/category/black-plain-sarees', function(req, res) {
+    res.redirect('/category/plain-black-sarees');
+  });
+  server.use('/category/black-woven-sarees', function(req, res) {
+    res.redirect('/category/woven-black-sarees');
+  });
+  server.use('/category/black-zari-weave-sarees', function(req, res) {
+    res.redirect('/category/zari-weave-black-sarees');
+  });
+  server.use('/category/black-korvai-weave-sarees', function(req, res) {
+    res.redirect('/category/korvai-weave-black-sarees');
+  });
+  server.use('/category/black-kora-weave-sarees', function(req, res) {
+    res.redirect('/category/kora-weave-black-sarees');
+  });
   
   // Example Express Rest API endpoints
   // server.get('/api/**', (req, res) => { });
