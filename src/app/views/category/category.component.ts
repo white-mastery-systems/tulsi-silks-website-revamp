@@ -41,6 +41,7 @@ export class CategoryComponent implements OnInit {
   navigationImageList = [];
   showNavigationButtons: boolean = false;
   isKanjivaram: boolean; isBanarasi: boolean; isOrganza: boolean;
+  selectedOptions: any = {}; qParams: any = {};
 
   categorySchema: any = {
     "@context": "https://schema.org",
@@ -240,6 +241,30 @@ export class CategoryComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.activeRoute.queryParams.subscribe((qParams: Params) => {
+      this.qParams = Object.assign({}, qParams);
+      this.selectedOptions = {};
+      for(let key in this.qParams) {
+        this.selectedOptions[key] = this.qParams[key].split("-");
+      }
+      for(let tagData of this.tag_list)
+      {
+        let paramName = tagData.name.trim().toLowerCase().replace(/ /g, "_");
+        if(this.selectedOptions[paramName]) {
+          this.selectedOptions[paramName].forEach(element => {
+            let paramElem = element.trim().toLowerCase().replace(/ /g, "_");
+            let optData = tagData.option_list.find(el => el.name.trim().toLowerCase().replace(/ /g, "_")==paramElem);
+            optData.checked = false;
+            if(optData) optData.checked = true;
+          });
+        }
+        else {
+          tagData.option_list.forEach(element => {
+            element.checked = false;
+          });
+        }
+      }
+    });
     this.activeRoute.params.subscribe((params: Params) => {
       this.pageUrl = this.router.url.split('?')[0];
       this.isKanjivaram = false; this.isBanarasi = false; this.isOrganza = false;
@@ -630,7 +655,7 @@ export class CategoryComponent implements OnInit {
 
   onCreateTagList(list, click) {
     let duplicateTagList: any = this.tag_list;
-    this.tag_list = [];
+    this.tag_list = []; const counts = {};
     list.forEach(prod => {
       if (prod.tag_status) {
         prod.tag_list.forEach(tagObj => {
@@ -646,16 +671,31 @@ export class CategoryComponent implements OnInit {
               let tIndex = this.store_tags.findIndex(element => element._id == tagId);
               if (tIndex != -1) {
                 let optionArray = [];
-                tagObj[tagId].forEach(element => { optionArray.push({ name: element }) });
+                tagObj[tagId].forEach(element => {
+                  if (counts[element]) { counts[element]++; } 
+                  else { counts[element] = 1; }
+                  let pushData: any = { name: element, count: counts[element] };
+                  let paramName = this.store_tags[tIndex].name.trim().toLowerCase().replace(/ /g, "_");
+                  let paramElem = element.trim().toLowerCase().replace(/ /g, "_");
+                  if(this.qParams[paramName]?.indexOf(paramElem)>=0) pushData.checked = true;
+                  optionArray.push(pushData);
+                });
                 if (optionArray.length) this.tag_list.push({ _id: tagId, name: this.store_tags[tIndex].name, rank: this.store_tags[tIndex].rank, option_list: optionArray });
               }
             }
             else {
               tagObj[tagId].forEach(element => {
                 let optionIndex = this.tag_list[tagIndex].option_list.findIndex(x => x.name == element);
+                if (counts[element]) { counts[element]++; } 
+                else { counts[element] = 1; }
                 if (optionIndex == -1) {
-                  this.tag_list[tagIndex].option_list.push({ name: element });
+                  let pushData: any = { name: element, count: counts[element] };
+                  let paramName = this.tag_list[tagIndex].name.trim().toLowerCase().replace(/ /g, "_");
+                  let paramElem = element.trim().toLowerCase().replace(/ /g, "_");
+                  if(this.qParams[paramName]?.indexOf(paramElem)>=0) pushData.checked = true;
+                  this.tag_list[tagIndex].option_list.push(pushData);
                 }
+                else{ this.tag_list[tagIndex].option_list[optionIndex].count = counts[element]; }
               });
             }
           }
@@ -663,6 +703,7 @@ export class CategoryComponent implements OnInit {
       }
     });
     if (this.tag_list.length && !click) this.gridType = "three";
+    this.onTagFilter(false);
   }
   onTagFilter(changeEvent) {
     let parentProducts: any = this.parent_list;
@@ -697,8 +738,59 @@ export class CategoryComponent implements OnInit {
     else this.list = this.parent_list;
     if (changeEvent) this.page = 1;
     this.findMinMax();
+    // recreate tag list
+    let duplicateTagList: any = this.tag_list;
+    this.tag_list = []; const counts = {};
+    this.list.forEach(prod => {
+      if (prod.tag_status) {
+        prod.tag_list.forEach(tagObj => {
+          let tagId = Object.keys(tagObj)[0];
+          let existingTagIndex = duplicateTagList.findIndex(x => x._id.toString() == tagId.toString());
+          if (existingTagIndex != -1) {
+            let tagIndex = this.tag_list.findIndex(x => x._id == tagId);
+            if (tagIndex == -1) this.tag_list.push(duplicateTagList[existingTagIndex]);
+          }
+          else {
+            let tagIndex = this.tag_list.findIndex(x => x._id == tagId);
+            if (tagIndex == -1) {
+              let tIndex = this.store_tags.findIndex(element => element._id == tagId);
+              if (tIndex != -1) {
+                let optionArray = [];
+                tagObj[tagId].forEach(element => {
+                  if (counts[element]) { counts[element]++; } 
+                  else { counts[element] = 1; }
+                  let pushData: any = { name: element, count: counts[element] };
+                  let paramName = this.store_tags[tIndex].name.trim().toLowerCase().replace(/ /g, "_");
+                  let paramElem = element.trim().toLowerCase().replace(/ /g, "_");
+                  if(this.qParams[paramName]?.indexOf(paramElem)>=0) pushData.checked = true;
+                  optionArray.push(pushData);
+                });
+                if (optionArray.length) this.tag_list.push({ _id: tagId, name: this.store_tags[tIndex].name, rank: this.store_tags[tIndex].rank, option_list: optionArray });
+              }
+            }
+            else {
+              tagObj[tagId].forEach(element => {
+                let optionIndex = this.tag_list[tagIndex].option_list.findIndex(x => x.name == element);
+                if (counts[element]) { counts[element]++; } 
+                else { counts[element] = 1; }
+                if (optionIndex == -1) {
+                  let pushData: any = { name: element, count: counts[element] };
+                  let paramName = this.tag_list[tagIndex].name.trim().toLowerCase().replace(/ /g, "_");
+                  let paramElem = element.trim().toLowerCase().replace(/ /g, "_");
+                  if(this.qParams[paramName]?.indexOf(paramElem)>=0) pushData.checked = true;
+                  this.tag_list[tagIndex].option_list.push(pushData);
+                }
+                else{ this.tag_list[tagIndex].option_list[optionIndex].count = counts[element]; }
+              });
+            }
+          }
+        });
+      }
+    });
   }
   clearTagFilter() {
+    this.qParams = {};
+    this.router.navigate([this.router.url.split('?')[0]], { queryParams: this.qParams });
     this.list = this.parent_list;
     this.tag_list.forEach(tag => {
       tag.option_list.forEach(tagOption => { delete tagOption.checked; });
@@ -706,6 +798,35 @@ export class CategoryComponent implements OnInit {
     this.tagSelected = false;
     this.onCreateTagList(this.list, false);
     this.findMinMax();
+  }
+
+  onTagNewFilter(x, y) {
+    this.page = 1;
+    let heading = x.name.trim().toLowerCase().replace(/ /g, "_");
+    let option = y.name.trim().toLowerCase().replace(/ /g, "_");
+    if(y.checked) {
+      if(this.selectedOptions[heading]) {
+        if(this.selectedOptions[heading].indexOf(option)==-1) this.selectedOptions[heading].push(option);
+      }
+      else this.selectedOptions[heading] = [option];
+    }
+    else {
+      if(this.selectedOptions[heading]) {
+        let oInd = this.selectedOptions[heading].indexOf(option);
+        if(oInd!=-1) {
+          this.selectedOptions[heading].splice(oInd, 1);
+          if(!this.selectedOptions[heading].length) delete this.selectedOptions[heading];
+        }
+      }
+    }
+    let tempParams = {};
+    for(let key in this.selectedOptions) {
+      if(this.selectedOptions.hasOwnProperty(key)) tempParams[key] = this.selectedOptions[key].join("-");
+    }
+    if(this.parent_list.length) {
+      this.onTagFilter(true); this.page = 1;
+    }
+    this.router.navigate([this.router.url.split('?')[0]], { queryParams: tempParams });
   }
 
   findMinMax() {

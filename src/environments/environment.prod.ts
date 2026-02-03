@@ -21,7 +21,7 @@ export const environment = {
     primary_slider: "fs_slider", // fs_slider, slider, ''
     highlights: false,
     products_per_page: 24,
-    display_products_count: false,
+    display_products_count: true,
     currency_format: '1.0',
     qty_scale: true, // - qty +(product page)
     enable_product_inc: true, // for allow to order single qty of each product only(cart page)

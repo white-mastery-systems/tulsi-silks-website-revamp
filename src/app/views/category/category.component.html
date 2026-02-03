@@ -340,7 +340,7 @@
 
   <!-- breadcrumb -->
   <ng-container *ngIf="template_setting?.breadcrumb">
-    <section *ngIf="!category_details.banner_image || commonService.screen_width>=992 && list.length" class="head-breadcrumb mt-3">
+    <section *ngIf="!category_details.banner_image && commonService.screen_width>=992 && list.length" class="head-breadcrumb mt-3">
       <div class="container-fluid">
         <div class="row">
           <div class="col-md-12 d-flex align-items-center justify-content-between">
@@ -363,7 +363,7 @@
                 </li>
               </ul>
             </div>
-            <div *ngIf="commonService.screen_width>=992 && list.length" class="d-flex justify-content-end pr-0"
+            <!-- <div *ngIf="commonService.screen_width>=992 && list.length" class="d-flex justify-content-end pr-0"
               [ngClass]="category_details.banner_image? 'col-xl-12': 'col-xl-6'">
               <span>
                 Sort by:
@@ -371,7 +371,7 @@
                   <option *ngFor="let x of sort_list;" [ngValue]="x.value">{{x.name}}</option>
                 </select>
               </span>
-            </div>
+            </div> -->
           </div>
         </div>
       </div>
@@ -386,8 +386,8 @@
 
         <!-- filters -->
         <div *ngIf="commonService?.screen_width>=992 && tag_list?.length" class="col-lg-3">
-          <div class="col-md-12" style="height:40px;">
-            <p *ngIf="tagSelected" (click)="clearTagFilter();" class="cursor mb-0">Clear All</p>
+          <div class="col-md-12 p-0" style="height:40px;">
+            <p *ngIf="tagSelected" (click)="clearTagFilter();" style="text-decoration: underline;" class="cursor mt-2 mb-0">Clear All</p>
           </div>
           <div style="height:104px;">
             <div *ngIf="template_setting.price_range && IsBrowser" class="by_price">
@@ -430,7 +430,7 @@
                             <div>
                               <input class="option-input checkbox" type="checkbox" name="{{y.checked}}"
                                 [checked]="y.checked"
-                                (change)="y.checked? y.checked=false: y.checked=true; onTagFilter(true);">
+                                (change)="y.checked=!y.checked; onTagNewFilter(x, y);">
                             </div>
                             <div>
                               <p class="m-0">{{y.name}}</p>
@@ -449,7 +449,7 @@
                             <div>
                               <input class="option-input checkbox" type="checkbox" name="{{y.checked}}"
                                 [checked]="y.checked"
-                                (change)="y.checked? y.checked=false: y.checked=true; onTagFilter(true);">
+                                (change)="y.checked=!y.checked; onTagNewFilter(x, y);">
                             </div>
                             <div>
                               <p class="m-0">{{y.name}}</p>
@@ -518,6 +518,14 @@
                       </div>
                     </div>
                   </div>
+                  <div *ngIf="commonService.screen_width>=992 && list.length" class="col-6">
+                    <span>
+                      Sort by:
+                      <select name="sort_list" [(ngModel)]="sort_value">
+                        <option *ngFor="let x of sort_list;" [ngValue]="x.value">{{x.name}}</option>
+                      </select>
+                    </span>
+                  </div>
                   <!-- <div class="col-6">
                     <span>
                       Sort by:
@@ -542,9 +550,8 @@
                   [ngClass]="(tag_list?.length)? 'justify-content-end': 'justify-content-start'">
                   <button class="sort-btn" type="button" (click)="sortModal.show();">Sort by</button>
                 </div>
-                <div *ngIf="template_setting?.display_products_count" class="d-flex align-items-center pr-0"
-                  [ngClass]="(tag_list?.length)? 'col-12 justify-content-center': 'col-6 justify-content-end'">
-                  <p class="m-0">
+                <div *ngIf="template_setting?.display_products_count" class="col-12 pr-0">
+                  <p class="mt-3 mb-0">
                     Total <b>{{list.length}}</b>
                     {{ list.length>1 ? 'products' : 'product' }}
                   </p>
@@ -701,7 +708,7 @@
       <div class="row">
         <div class="col-md-12">
           <div class="collections">
-            <ng-container *ngFor="let x of commonService.footer_seo_links | orderAsc: 'rank';">
+            <ng-container *ngFor="let x of commonService.footer_seo_links | slice:0: (pageUrl.indexOf('kanjivaram')==-1)? 2: commonService.footer_seo_links.length | orderAsc: 'rank';">
               <p>{{x.name}}</p>
               <ul class="pl-0">
                 <li *ngFor="let y of x.links">
@@ -825,7 +832,7 @@
                             <div>
                               <input class="option-input checkbox" type="checkbox" name="{{y.checked}}"
                                 [checked]="y.checked"
-                                (change)="y.checked? y.checked=false: y.checked=true; onTagFilter(true);">
+                                (change)="y.checked=!y.checked; onTagNewFilter(x, y);">
                             </div>
                             <div>
                               <p class="m-0">{{y.name}}</p>
@@ -844,7 +851,7 @@
                             <div>
                               <input class="option-input checkbox" type="checkbox" name="{{y.checked}}"
                                 [checked]="y.checked"
-                                (change)="y.checked? y.checked=false: y.checked=true; onTagFilter(true);">
+                                (change)="y.checked=!y.checked; onTagNewFilter(x, y);">
                             </div>
                             <div>
                               <p class="m-0">{{y.name}}</p>

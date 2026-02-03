@@ -22,6 +22,9 @@ export class SearchComponent implements OnInit {
     { name: "Home", position: 1, link: "/" },
     { name: "Search", position: 2, link: "/search" }
   ];
+  productCount: number = 0;
+  loading: boolean; hasMore: boolean;
+  observer!: IntersectionObserver;
 
   constructor(
     @Inject(PLATFORM_ID) private platformId: Object, private storeApi: StoreApiService,
@@ -49,14 +52,17 @@ export class SearchComponent implements OnInit {
 
   ngOnInit(): void {
     this.activeRoute.queryParams.subscribe((params: Params) => {
-      this.afterSearchEvent = false; this.searchLoader = false;
+      this.afterSearchEvent = false; this.searchLoader = false; this.hasMore = false;
       if(this.commonService.search_page_attr.search_form) {
         this.afterSearchEvent = true;
         this.searchForm = this.commonService.search_page_attr.search_form;
         this.product_list = this.commonService.search_page_attr.product_list;
+        this.productCount = this.commonService.search_page_attr.product_count;
         let scrollPos = this.commonService.search_page_attr.scroll_y_pos;
         setTimeout(() => { window.scrollTo({ top: scrollPos, behavior: 'smooth' }); }, 500);
         this.commonService.search_page_attr = {};
+        if(this.productCount > this.product_list.length) this.hasMore = true;
+        this.loadMoreIntersect();
       }
       else {
         this.searchForm = { category_id: '', name: params['q'] };
@@ -70,9 +76,11 @@ export class SearchComponent implements OnInit {
   onSearch() {
     if(this.searchForm?.name?.length >= 3) {
       this.afterSearchEvent = true; this.searchLoader = true;
+      this.searchForm.skip = 0; this.searchForm.limit = 10;
       this.storeApi.SEARCH_PRODUCT(this.searchForm).subscribe(result => {
         setTimeout(() => { this.searchLoader = false; }, 500);
         if(result.status) {
+          this.productCount = result.count;
           this.product_list = result.list;
           this.product_list.forEach(obj => {
             if(obj.hold_till) {
@@ -81,10 +89,50 @@ export class SearchComponent implements OnInit {
               obj.stock = balanceStock;
             }
           });
+          if(this.productCount > this.product_list.length) this.hasMore = true;
+          this.loadMoreIntersect();
         }
         else console.log("response", result);
       });
     }
+  }
+
+  loadMoreIntersect() {
+    if(isPlatformBrowser(this.platformId)) {
+      // Delay ensures DOM is rendered
+      setTimeout(() => {
+        const loadMoreEl = document.getElementById('load-more');
+        if(!loadMoreEl) {
+          console.error('load-more element not found');
+          return;
+        }
+        this.observer = new IntersectionObserver(entries => {
+          if(entries[0].isIntersecting && !this.loading && this.hasMore) this.loadMoreItems();
+        });
+        this.observer.observe(loadMoreEl);
+      }, 500);
+    }
+  }
+
+  loadMoreItems() {
+    this.loading = true; this.hasMore = false;
+    this.searchForm.skip = this.product_list.length;
+    this.searchForm.limit = 10;
+    this.storeApi.SEARCH_PRODUCT(this.searchForm).subscribe(result => {
+      setTimeout(() => { this.loading = false; }, 500);
+      if(result.status) {
+        result.list.forEach(obj => {
+          if(obj.hold_till) {
+            let balanceStock = obj.stock;
+            if(new Date() < new Date(obj.hold_till)) balanceStock = obj.stock - obj.hold_qty;
+            obj.stock = balanceStock;
+          }
+          this.product_list.push(obj);
+        });
+        if(this.productCount > this.product_list.length) this.hasMore = true;
+      }
+      else console.log("response", result);
+    });
   }
 
   onSubmit() {
@@ -110,8 +158,13 @@ export class SearchComponent implements OnInit {
   onSelectProduct(x) {
     this.commonService.selected_product = x;
     this.commonService.search_page_attr = {
-      search_form: this.searchForm, product_list: this.product_list, scroll_y_pos: this.commonService.scroll_y_pos
+      search_form: this.searchForm, product_list: this.product_list,
+      scroll_y_pos: this.commonService.scroll_y_pos, product_count: this.productCount
     }
+  }
+
+  ngOnDestroy() {
+    this.observer?.disconnect();
   }
 
 }
