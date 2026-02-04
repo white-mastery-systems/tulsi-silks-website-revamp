@@ -5,6 +5,7 @@ import { Subscription } from 'rxjs';
 import { environment } from './../../../environments/environment';
 import { StoreApiService } from '../../services/store-api.service';
 import { CommonService } from '../../services/common.service';
+import { WishlistService } from '../../services/wishlist.service';
 import { CurrencyConversionService } from '../../services/currency-conversion.service';
 import { Options } from '@angular-slider/ngx-slider';
 
@@ -194,7 +195,7 @@ export class CategoryComponent implements OnInit {
   constructor(
     @Inject(PLATFORM_ID) private platformId: Object, private router: Router, private activeRoute: ActivatedRoute,
     private storeApi: StoreApiService, public cc: CurrencyConversionService, public commonService: CommonService,
-    @Inject(DOCUMENT) private document, private decimalPipe: DecimalPipe
+    @Inject(DOCUMENT) private document, private decimalPipe: DecimalPipe, public ws: WishlistService
   ) {
     this.subscription = this.commonService.currency_type.subscribe(currency => {
       this.findCurrency();

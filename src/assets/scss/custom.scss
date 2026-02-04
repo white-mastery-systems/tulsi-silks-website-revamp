@@ -1160,6 +1160,7 @@ p.error-msg {
   right: 12px;
   top: 12px;   
   width: auto !important;
+  transition: none!important;
   .wishlist-icon {
     display: flex;
     align-items: center;
@@ -1175,22 +1176,26 @@ p.error-msg {
         color:#d6d6d6; 
         fill: #d6d6d6;  
         stroke:#d6d6d6;
+        transition: none!important;
       }
       svg{
           color: #d6d6d6; 
           fill:#d6d6d6; 
           stroke:#d6d6d6; 
+          transition: none!important;
       }
     &.wishlist-icon-active{
       lucide-icon {
         color: #D32F2F!important; 
         fill: #D32F2F!important;  
         stroke:#D32F2F!important;
+        transition: none!important;
       }
       svg{
         color: #D32F2F!important; 
         fill:#D32F2F!important; 
         stroke: #D32F2F!important; 
+        transition: none!important;
       }
   }
 }

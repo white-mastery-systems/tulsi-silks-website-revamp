@@ -597,6 +597,14 @@
               *ngFor="let x of list | rangeFilter:rangeMin:rangeMax | productSort: sort_value | paginate: { itemsPerPage: pageSize, currentPage: page }; let i=index;"
               class="cat-grid col-sm-6 col-6 pr-0 d-flex"
               [ngClass]="{ 'col-md-6': gridType=='two', 'col-md-4': gridType=='three', 'col-md-3': gridType=='four' }">
+              <!--Wishlist icon-->
+              <div class="product_labellist wishlist-main">
+                <span class="wishlist-icon" (click)="(commonService.wishListIds.indexOf(x._id)!=-1)? ws.removeFromWishList(x._id): ws.addToWishList(x);"
+                [ngClass]="(commonService.wishListIds.indexOf(x._id)!=-1)? 'wishlist-icon-active': null">                      
+                  <lucide-icon name="heart" [size]="16" stroke="1" color="#000000" fill="#000000"></lucide-icon>                        
+                </span>
+              </div>
+              <!--#Wishlist icon-->
               <a appMouseHover class="product-box smooth-fadein p-0" [ngClass]="template_setting?.p_card? '': ''"
                 (click)="onSelectProduct(x);"
                 routerLink="{{ x.seo_status ? '/product/'+x.seo_details.page_url : '/product/'+x._id }}">

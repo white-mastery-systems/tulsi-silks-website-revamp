@@ -474,6 +474,14 @@
               <div class="row d-flex flex-wrap align-items-stretch" style="margin-left: -7px;margin-right: -7px;">
                 <div  *ngFor="let x of segment.product_list | slice: 0:4; let j = index;" class="col-md-3 px-0 col-6 feature-grid">
                   <div appMouseHover class="product-box cursor h-100 d-flex flex-column" [ngClass]="template_setting?.p_card? '': ''">
+                    <!--Wishlist icon-->
+                    <div class="product_labellist wishlist-main">
+                      <span class="wishlist-icon" (click)="(commonService.wishListIds.indexOf(x._id)!=-1)? ws.removeFromWishList(x._id): ws.addToWishList(x);"
+                      [ngClass]="(commonService.wishListIds.indexOf(x._id)!=-1)? 'wishlist-icon-active': null">                      
+                        <lucide-icon name="heart" [size]="16" stroke="1" color="#000000" fill="#000000"></lucide-icon>                        
+                      </span>
+                    </div>
+                    <!--#Wishlist icon-->
                     <a class="prod-div" (click)="commonService.selected_product=x;" routerLink="{{ x.seo_status ? '/product/'+x.seo_details.page_url : '/product/'+x._id }}">
                       <figure class="product-image">
                         <!-- label -->
@@ -554,6 +562,14 @@
                     <div *ngIf="tab.blogs_type=='slider' && tab?.product_list?.length>=swiperService.multi_tab_featured_products?.card_count" class="swiper-container multi-slider product-slider px-max" [ngClass]="commonService.desktop_device? 'desktoptabslider_'+(i+1)+(j+1): 'tabslider_'+(i+1)+(j+1)" appHomeSwiper>
                       <div class="swiper-wrapper">
                         <div *ngFor="let x of tab.product_list; let k=index;" class="swiper-slide p-0">
+                          <!--Wishlist icon-->
+                          <div class="product_labellist wishlist-main">
+                            <span class="wishlist-icon" (click)="(commonService.wishListIds.indexOf(x._id)!=-1)? ws.removeFromWishList(x._id): ws.addToWishList(x);"
+                            [ngClass]="(commonService.wishListIds.indexOf(x._id)!=-1)? 'wishlist-icon-active': null">                      
+                              <lucide-icon name="heart" [size]="16" stroke="1" color="#000000" fill="#000000"></lucide-icon>                        
+                            </span>
+                          </div>
+                          <!--#Wishlist icon-->
                           <a appMouseHover class="product-box p-0" [ngClass]="template_setting?.p_card? '': ''"
                           (click)="tabNavigate(tab); commonService.selected_product=x;" routerLink="{{ x.seo_status ? '/product/'+x.seo_details.page_url : '/product/'+x._id }}">
                             <div class="prod-div">
@@ -614,6 +630,14 @@
                      <div *ngIf="tab.blogs_type=='grid'" class="row d-flex flex-wrap align-items-stretch" style="margin-left: -7px;margin-right: -7px;">
                       <div  *ngFor="let x of tab.product_list | slice: 0:4; let j = index;" class="col-md-3 px-0 col-6 feature-grid">
                         <div appMouseHover class="product-box cursor h-100 d-flex flex-column" [ngClass]="template_setting?.p_card? '': ''">
+                          <!--Wishlist icon-->
+                          <div class="product_labellist wishlist-main">
+                            <span class="wishlist-icon" (click)="(commonService.wishListIds.indexOf(x._id)!=-1)? ws.removeFromWishList(x._id): ws.addToWishList(x);"
+                            [ngClass]="(commonService.wishListIds.indexOf(x._id)!=-1)? 'wishlist-icon-active': null">                      
+                              <lucide-icon name="heart" [size]="16" stroke="1" color="#000000" fill="#000000"></lucide-icon>                        
+                            </span>
+                          </div>
+                          <!--#Wishlist icon-->
                           <a class="prod-div" (click)="commonService.selected_product=x;" routerLink="{{ x.seo_status ? '/product/'+x.seo_details.page_url : '/product/'+x._id }}">
                             <figure class="product-image">
                               <!-- label -->

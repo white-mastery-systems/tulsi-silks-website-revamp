@@ -65,12 +65,12 @@ export class ProductComponent implements OnInit {
   constructor(
     @Inject(PLATFORM_ID) private platformId: Object, private renderer: Renderer2, @Inject(DOCUMENT) private document, private assetLoader: DynamicAssetLoaderService,
     private router: Router, private activeRoute: ActivatedRoute, public commonService: CommonService, private storeApi: StoreApiService, private meta: Meta, private sanitizer: DomSanitizer,
-    private api: ApiService, public wishService: WishlistService, private cartService: CartlistService, public cc: CurrencyConversionService, public swiperService: SwiperService
+    private api: ApiService, public ws: WishlistService, private cartService: CartlistService, public cc: CurrencyConversionService, public swiperService: SwiperService
   ) {
     this.subscription = this.commonService.currency_type.subscribe(currency => {
       this.findCurrency();
     });
-    this.wl_subscription = this.wishService.observe_wishlist.subscribe(wishlist => {
+    this.wl_subscription = this.ws.observe_wishlist.subscribe(wishlist => {
       this.exist_in_wishlist = wishlist.some(x => x.product_id == this.productDetails._id);
     });
     if(isPlatformBrowser(this.platformId)) {
@@ -98,7 +98,7 @@ export class ProductComponent implements OnInit {
         this.activeImgIndex = this.commonService.product_page_attr.active_img_index;
         this.related_products = this.commonService.product_page_attr.related_products;
         delete this.commonService.product_page_attr;
-        this.exist_in_wishlist = this.wishService.checkProductExist(this.productDetails._id);
+        this.exist_in_wishlist = this.ws.checkProductExist(this.productDetails._id);
         this.createJsonLd();
         this.findCurrency();
         this.loadBlogAndProducts();
@@ -157,7 +157,7 @@ export class ProductComponent implements OnInit {
             this.productDetails.image = this.productDetails.image_list[0].image;
             this.productDetails.external_addon_status = this.productDetails.addon_status;
             this.productDetails.external_addon_list = this.productDetails.addon_list;
-            this.exist_in_wishlist = this.wishService.checkProductExist(this.productDetails._id);
+            this.exist_in_wishlist = this.ws.checkProductExist(this.productDetails._id);
             this.createJsonLd();
             this.findCurrency();
             this.loadBlogAndProducts();
@@ -824,7 +824,7 @@ export class ProductComponent implements OnInit {
       }
     }
     this.cartService.addToCart(this.productDetails);
-    if(this.params.wishstatus) this.wishService.removeFromWishList(this.productDetails._id);
+    if(this.params.wishstatus) this.ws.removeFromWishList(this.productDetails._id);
   }
   gotoCart() {
     if(environment.header_root.indexOf('sc') != -1) {
@@ -893,7 +893,7 @@ export class ProductComponent implements OnInit {
       if(this.commonService.customer_token) {
         this.api.USER_DETAILS().subscribe(result => {
           if(result.status) {
-            this.wishService.removeFromWishList(x._id);
+            this.ws.removeFromWishList(x._id);
             let addressList = result.data.address_list;
             let shippingIndex = addressList.findIndex(obj => obj.shipping_address);
             if(shippingIndex != -1) {
@@ -1355,8 +1355,8 @@ export class ProductComponent implements OnInit {
   modifyWishList(type, product) {
     if(this.commonService.customer_token) {
       this.showHeader();
-      if(type=='add') this.wishService.addToWishList(product);
-      else if(type=='remove') this.wishService.removeFromWishList(product._id);
+      if(type=='add') this.ws.addToWishList(product);
+      else if(type=='remove') this.ws.removeFromWishList(product._id);
     }
     else {
       this.commonService.after_login_event = { type: 'add_product_to_wishlist', product: product, redirect: this.router.url };

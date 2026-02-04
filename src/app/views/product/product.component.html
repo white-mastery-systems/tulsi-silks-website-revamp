@@ -772,6 +772,14 @@
             <div class="swiper-container multi-slider" [ngClass]="commonService.desktop_device? 'desktop_related_prod_slider1': 'related_prod_slider1'" appRelatedProducts>
               <div class="swiper-wrapper">
                 <div *ngFor="let x of related_products; let i=index;" class="swiper-slide p-0">
+                  <!--Wishlist icon-->
+                  <div class="product_labellist wishlist-main">
+                    <span class="wishlist-icon" (click)="(commonService.wishListIds.indexOf(x._id)!=-1)? ws.removeFromWishList(x._id): ws.addToWishList(x);"
+                    [ngClass]="(commonService.wishListIds.indexOf(x._id)!=-1)? 'wishlist-icon-active': null">                      
+                      <lucide-icon name="heart" [size]="16" stroke="1" color="#000000" fill="#000000"></lucide-icon>                        
+                    </span>
+                  </div>
+                  <!--#Wishlist icon-->
                   <a appMouseHover class="product-box p-0" [ngClass]="template_setting?.p_card? '': ''"
                   (click)="commonService.selected_product=x;" routerLink="{{ x.seo_status ? '/product/'+x.seo_details.page_url : '/product/'+x._id }}">
                     <div class="prod-div">
@@ -911,6 +919,14 @@
               <div class="swiper-container multi-slider product-slider padding--left" [ngClass]="commonService.desktop_device? 'desktop_related_prod_slider2': 'related_prod_slider2'" appRelatedProducts>
                 <div class="swiper-wrapper">
                   <div *ngFor="let x of recentlyViewedList; let i=index;" class="swiper-slide p-0">
+                    <!--Wishlist icon-->
+                    <div class="product_labellist wishlist-main">
+                      <span class="wishlist-icon" (click)="(commonService.wishListIds.indexOf(x._id)!=-1)? ws.removeFromWishList(x._id): ws.addToWishList(x);"
+                      [ngClass]="(commonService.wishListIds.indexOf(x._id)!=-1)? 'wishlist-icon-active': null">                      
+                        <lucide-icon name="heart" [size]="16" stroke="1" color="#000000" fill="#000000"></lucide-icon>                        
+                      </span>
+                    </div>
+                    <!--#Wishlist icon-->
                     <a appMouseHover class="product-box p-0" [ngClass]="template_setting?.p_card? '': ''"
                     (click)="commonService.selected_product=x;" routerLink="{{ x.seo_status ? '/product/'+x.seo_details.page_url : '/product/'+x._id }}">
                       <div class="prod-div">
