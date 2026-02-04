@@ -1123,35 +1123,78 @@ p.error-msg {
   .product_labellist {
     position: absolute;
     text-align: center;
-    z-index: 1;
+    z-index: 1;   
     &.label_t_l {
-      left: 0px;
-      top: 0px;
+      left: 10px;
+      top: 10px;
     }
     &.label_t_r {
-      right: 0px;
-      top: 0px;
+      right: 10px;
+      top: 10px;
     }
     &.label_b_l {
-      left: 0px;
-      bottom: 0px;
+      left: 10px;
+      bottom: 10px;
     }
     &.label_b_r {
-      right: 0px;
-      bottom: 0px;
+      right: 10px;
+      bottom: 10px;
     }
     .span_label {
       display: block;
       font-size: 10px;
-      padding: 4px 6px;
+      padding: 6px 14px;
       margin-top:7px;
-      background: $primary-btn-bg;
-      color:$primary-btn-txt;
+      background: $primary-btn-txt;
+      color:$primary-btn-bg;
+      text-transform: uppercase;
+      font-weight: 500;
     }
     .span_label:first-child {
       margin-top:0px;
     }
   }
+}
+
+.wishlist-main{
+  right: 12px;
+  top: 12px;   
+  width: auto !important;
+  .wishlist-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 600;
+    background: #ffffff;
+    padding: 6px;
+    border-radius: 50px;
+    width: 36px;
+    height: 36px; 
+      lucide-icon {
+        color:#d6d6d6; 
+        fill: #d6d6d6;  
+        stroke:#d6d6d6;
+      }
+      svg{
+          color: #d6d6d6; 
+          fill:#d6d6d6; 
+          stroke:#d6d6d6; 
+      }
+    &.wishlist-icon-active{
+      lucide-icon {
+        color: #D32F2F!important; 
+        fill: #D32F2F!important;  
+        stroke:#D32F2F!important;
+      }
+      svg{
+        color: #D32F2F!important; 
+        fill:#D32F2F!important; 
+        stroke: #D32F2F!important; 
+      }
+  }
+}
+
 }
 
 .sort-btn {
