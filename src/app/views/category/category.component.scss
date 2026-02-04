@@ -616,3 +616,46 @@
     width: auto !important;
   }
 }
+
+
+.chip-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.chip {
+  position: relative;
+  cursor: pointer;
+  width:auto;
+  margin-bottom: 0;
+}
+
+.chip input {
+  display: none; /* hide checkbox */
+}
+
+.chip span {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 18px;
+  border-radius: 999px;
+  border: 1px solid #e0e0e0;
+  background: #fff;
+  color: #1f1b24;
+  font-size: 14px;
+  transition: all 0.25s ease;
+}
+
+/* Active / Checked state */
+.chip.active span {
+  background: #1f1b24;
+  color: #fff;
+  border-color: #1f1b24;
+}
+
+/* Hover effect */
+.chip:hover span {
+  border-color: #1f1b24;
+}
