@@ -82,7 +82,7 @@ export class StoryDetailsComponent {
     this.commonService.menu_list = [];
     this.commonService.announcementBar = "";
     this.commonService.currency_types = [];
-    this.wishService.wish_list = [];
+    this.commonService.wish_list = [];
     this.commonService.removeElement('ws-jsonld');
   }
 

@@ -62,6 +62,8 @@ export class CommonService {
   payment_methods: any = [];
   catalog_list: any = [];
   menu_list: any = [];
+  wish_list: any = [];
+  wishListIds: any = [];
   layout_list: any = [];
   ai_styles: any = [];
   blog_list: any = [];

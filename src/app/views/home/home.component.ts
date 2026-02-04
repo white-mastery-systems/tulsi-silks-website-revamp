@@ -7,6 +7,7 @@ import { environment } from '../../../environments/environment';
 import { StoreApiService } from '../../services/store-api.service';
 import { CommonService } from '../../services/common.service';
 import { SwiperService } from '../../services/swiper.service';
+import { WishlistService } from '../../services/wishlist.service';
 import { CurrencyConversionService } from '../../services/currency-conversion.service';
 import { DynamicAssetLoaderService } from '../../services/dynamic-asset-loader.service';
 declare const Plyr: any;
@@ -126,7 +127,7 @@ export class HomeComponent implements OnInit {
 
   constructor(
     @Inject(PLATFORM_ID) private platformId: Object, private storeApi: StoreApiService, public swiperService: SwiperService,
-    private sanitizer: DomSanitizer, public commonService: CommonService, private router: Router,
+    private sanitizer: DomSanitizer, public commonService: CommonService, private router: Router, public ws: WishlistService,
     public cc: CurrencyConversionService, @Inject(DOCUMENT) private document, private assetLoader: DynamicAssetLoaderService
   ) {
     this.subscription = this.commonService.currency_type.subscribe(() => {

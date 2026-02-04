@@ -44,7 +44,7 @@ export class WishListComponent implements OnInit {
       this.api.UPDATE_WISHLIST().subscribe(result => {
         if(result.status) {
           this.wishService.updateWishList(result.data.wish_list);
-          this.list = this.wishService.wish_list;
+          this.list = this.commonService.wish_list;
           this.findCurrency();
         }
         else console.log("response", result);

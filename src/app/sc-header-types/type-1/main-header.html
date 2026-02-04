@@ -43,8 +43,8 @@
                   <a (click)="(commonService?.customer_token)? '': commonService.after_login_event={ redirect: '/wishlist' }" [routerLink]="(commonService?.customer_token)? '/wishlist' : '/account'">
                     <i [hidden]="!commonService?.window_loaded" class="{{template_setting?.mat_icon_type}}">{{template_setting?.mat_icons?.wishlist}}</i>
                     <span>Wishlist</span>
-                    <sup *ngIf="wishService.wish_list?.length">
-                      <div class="item-badge">{{ wishService.wish_list.length }}</div>
+                    <sup *ngIf="commonService.wish_list?.length">
+                      <div class="item-badge">{{ commonService.wish_list.length }}</div>
                     </sup>
                   </a>
                 </li>

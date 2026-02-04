@@ -386,15 +386,14 @@
                 <div class="swiper-wrapper">
                   <div *ngFor="let x of segment.product_list; let j=index;" class="swiper-slide p-0">
                     <div appMouseHover class="product-box cursor p-0" [ngClass]="template_setting?.p_card? '': ''">
-
-                  <!--Wishlist icon-->
-                    <div class="product_labellist wishlist-main">
-                      <span class="wishlist-icon wishlist-icon-active0">                      
-                        <lucide-icon name="heart" [size]="16" stroke="1" color="#000000" fill="#000000"></lucide-icon>                        
-                      </span>
-                    </div>
-                  <!--#Wishlist icon-->
-
+                      <!--Wishlist icon-->
+                      <div class="product_labellist wishlist-main">
+                        <span class="wishlist-icon" (click)="(commonService.wishListIds.indexOf(x._id)!=-1)? ws.removeFromWishList(x._id): ws.addToWishList(x);"
+                        [ngClass]="(commonService.wishListIds.indexOf(x._id)!=-1)? 'wishlist-icon-active': null">                      
+                          <lucide-icon name="heart" [size]="16" stroke="1" color="#000000" fill="#000000"></lucide-icon>                        
+                        </span>
+                      </div>
+                      <!--#Wishlist icon-->
                       <a class="prod-div" (click)="commonService.selected_product=x;" routerLink="{{ x.seo_status ? '/product/'+x.seo_details.page_url : '/product/'+x._id }}">
                         <figure class="product-image" [ngClass]="segment.slider_type=='one'? '' : 'product-image-sec2' ">
                           <!-- label -->
