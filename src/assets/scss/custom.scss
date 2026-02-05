@@ -1161,6 +1161,8 @@ p.error-msg {
   top: 12px;   
   width: auto !important;
   transition: none!important;
+  position: absolute;
+  z-index: 1;
   .wishlist-icon {
     display: flex;
     align-items: center;
