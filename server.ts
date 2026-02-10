@@ -264,6 +264,9 @@ export function app(): express.Express {
   server.use('/category/black-kora-weave-sarees', function(req, res) {
     res.redirect('/category/kora-weave-black-sarees');
   });
+  server.use('/category/view-all-cotton', function(req, res) {
+    res.redirect('/category/cotton-sarees');
+  });
   
   // Example Express Rest API endpoints
   // server.get('/api/**', (req, res) => { });

@@ -416,7 +416,7 @@
                 </div>
                 <div id="collapseBasic" [collapse]="collapseIndex!=i" [isAnimated]="true">
                   <div class="product-filter card-body">
-                    <div *ngIf="x?.option_list?.length>3" class="form-group has-search mb-3">
+                    <div *ngIf="x?.option_list?.length>6" class="form-group has-search mb-3">
                       <span class="material-icons form-control-feedback">search</span>
                       <input type="text" class="form-control" name="tag_search{{i}}" [(ngModel)]="x.tag_search"
                         (input)="x.show_more=true;" placeholder="Search {{x.name}}">
@@ -424,7 +424,7 @@
                     <!-- limited option -->
                     <ng-container *ngIf="!x.show_more">
                       <!--<div
-                        *ngFor="let y of x.option_list | orderAsc: 'name' | slice:0:3 | orderSearch: 'name':x.tag_search; let j=index;">
+                        *ngFor="let y of x.option_list | orderAsc: 'name' | slice:0:6 | orderSearch: 'name':x.tag_search; let j=index;">
                         <label *ngIf="!y.notFound" class="store-label w-100 m-0 mb-3">
                           <div class="d-flex align-items-center">
                             <div>
@@ -442,7 +442,7 @@
 
                     <div class="chip-wrapper">
                       <ng-container 
-                         *ngFor="let y of x.option_list | orderAsc: 'name' | slice:0:3 | orderSearch: 'name':x.tag_search; let j=index;">
+                         *ngFor="let y of x.option_list | orderAsc: 'name' | slice:0:6 | orderSearch: 'name':x.tag_search; let j=index;">
 
                         <label
                           *ngIf="!y.notFound"
@@ -491,7 +491,7 @@
                         </ng-container>
                       </div>
                     </ng-container>
-                    <div *ngIf="x?.option_list?.length>3 && !x.tag_search">
+                    <div *ngIf="x?.option_list?.length>6 && !x.tag_search">
                       <a (click)="x.show_more=!x.show_more;">Show {{ x.show_more? 'Less': 'More' }}</a>
                     </div>
                   </div>
@@ -858,15 +858,14 @@
                 </div>
                 <div id="collapseBasic" [collapse]="collapseIndex!=i" [isAnimated]="true">
                   <div class="product-filter card-body">
-                    <div *ngIf="x?.option_list?.length>3" class="form-group has-search mb-3">
+                    <div *ngIf="x?.option_list?.length>6" class="form-group has-search mb-3">
                       <span class="material-icons form-control-feedback">search</span>
                       <input type="text" class="form-control" name="tag_search{{i}}" [(ngModel)]="x.tag_search"
                         (input)="x.show_more=true;" placeholder="Search {{x.name}}">
                     </div>
                     <!-- limited option -->
                     <ng-container *ngIf="!x.show_more">
-                      <!--<div
-                        *ngFor="let y of x.option_list | orderAsc: 'name' | slice:0:3 | orderSearch: 'name':x.tag_search; let j=index;">
+                      <!-- <div *ngFor="let y of x.option_list | orderAsc: 'name' | slice:0:6 | orderSearch: 'name':x.tag_search; let j=index;">
                         <label *ngIf="!y.notFound" class="store-label w-100 m-0 mb-3">
                           <div class="d-flex align-items-center">
                             <div>
@@ -880,58 +879,45 @@
                           </div>
                         </label>
                         <p *ngIf="y.notFound">No matches found</p>
-                      </div>-->
+                      </div> -->
                       <div class="chip-wrapper">
-                      <ng-container 
-                         *ngFor="let y of x.option_list | orderAsc: 'name' | slice:0:3 | orderSearch: 'name':x.tag_search; let j=index;">
-
-                        <label
-                          *ngIf="!y.notFound"
-                          class="chip" [class.active]="y.checked">                         
-                          <input type="checkbox" name="{{y.checked}}"
-                            [checked]="y.checked"
-                            (change)="y.checked=!y.checked; onTagNewFilter(x, y);"/>
-                          <span>{{ y.name }}</span>
-                        </label> 
-                        <p *ngIf="y.notFound">No matches found</p>
-                      </ng-container>
-                    </div> 
-                    </ng-container>
-                    <!-- full option -->
-                    <ng-container *ngIf="x.show_more">
-                      <!--<div
-                        *ngFor="let y of x.option_list | orderAsc: 'name' | orderSearch: 'name':x.tag_search; let j=index;">
-                        <label *ngIf="!y.notFound" class="store-label w-100 m-0 mb-3">
-                          <div class="d-flex align-items-center">
-                            <div>
-                              <input class="option-input checkbox" type="checkbox" name="{{y.checked}}"
-                                [checked]="y.checked"
-                                (change)="y.checked=!y.checked; onTagNewFilter(x, y);">
-                            </div>
-                            <div>
-                              <p class="m-0">{{y.name}}</p>
-                            </div>
-                          </div>
-                        </label>
-                        <p *ngIf="y.notFound">No matches found</p>
-                      </div>-->
-                      <div class="chip-wrapper">
-                        <ng-container 
-                          *ngFor="let y of x.option_list | orderAsc: 'name' | orderSearch: 'name':x.tag_search; let j=index;">
-
-                          <label
-                            *ngIf="!y.notFound"
-                            class="chip" [class.active]="y.checked">                         
-                            <input type="checkbox" name="{{y.checked}}"
-                              [checked]="y.checked"
-                              (change)="y.checked=!y.checked; onTagNewFilter(x, y);"/>
+                        <ng-container *ngFor="let y of x.option_list | orderAsc: 'name' | slice:0:6 | orderSearch: 'name':x.tag_search; let j=index;">
+                          <label *ngIf="!y.notFound" class="chip" [class.active]="y.checked">                         
+                            <input type="checkbox" name="{{y.checked}}" [checked]="y.checked" (change)="y.checked=!y.checked; onTagNewFilter(x, y);"/>
                             <span>{{ y.name }}</span>
                           </label> 
                           <p *ngIf="y.notFound">No matches found</p>
                         </ng-container>
                       </div>
                     </ng-container>
-                    <div *ngIf="x?.option_list?.length>3 && !x.tag_search">
+                    <!-- full option -->
+                    <ng-container *ngIf="x.show_more">
+                      <!-- <div *ngFor="let y of x.option_list | orderAsc: 'name' | orderSearch: 'name':x.tag_search; let j=index;">
+                        <label *ngIf="!y.notFound" class="store-label w-100 m-0 mb-3">
+                          <div class="d-flex align-items-center">
+                            <div>
+                              <input class="option-input checkbox" type="checkbox" name="{{y.checked}}"
+                                [checked]="y.checked"
+                                (change)="y.checked=!y.checked; onTagNewFilter(x, y);">
+                            </div>
+                            <div>
+                              <p class="m-0">{{y.name}}</p>
+                            </div>
+                          </div>
+                        </label>
+                        <p *ngIf="y.notFound">No matches found</p>
+                      </div> -->
+                      <div class="chip-wrapper">
+                        <ng-container *ngFor="let y of x.option_list | orderAsc: 'name' | orderSearch: 'name':x.tag_search; let j=index;">
+                          <label *ngIf="!y.notFound" class="chip" [class.active]="y.checked">                         
+                            <input type="checkbox" name="{{y.checked}}" [checked]="y.checked" (change)="y.checked=!y.checked; onTagNewFilter(x, y);"/>
+                            <span>{{ y.name }}</span>
+                          </label> 
+                          <p *ngIf="y.notFound">No matches found</p>
+                        </ng-container>
+                      </div>
+                    </ng-container>
+                    <div *ngIf="x?.option_list?.length>6 && !x.tag_search">
                       <a (click)="x.show_more=!x.show_more;">Show {{ x.show_more? 'Less': 'More' }}</a>
                     </div>
                   </div>
