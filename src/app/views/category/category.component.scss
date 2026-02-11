@@ -659,3 +659,27 @@
 .chip:hover span {
   border-color: #1f1b24;
 }
+
+
+
+.price-wrapper {
+  display: flex;
+  align-items: flex-end;
+  gap: 20px;
+}
+
+.price-box {
+  display: flex;
+  flex-direction: column;
+}
+
+.price-label {
+  font-size: 12px;
+  font-weight: 600; 
+  margin-bottom: 6px;
+  letter-spacing: 0.5px;
+}
+
+.price-separator {
+  font-size: 14px;    
+}

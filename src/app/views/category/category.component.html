@@ -389,19 +389,39 @@
           <div class="col-md-12 p-0" style="height:40px;">
             <p *ngIf="tagSelected" (click)="clearTagFilter();" style="text-decoration: underline;" class="cursor mt-2 mb-0">Clear All</p>
           </div>
-          <div style="height:104px;">
+          <div style="height:auto;">
             <div *ngIf="template_setting.price_range && IsBrowser" class="by_price">
-              <p class="by">By Price</p>
+              <!--<p class="by">By Price</p>-->
+              <p class="by">Price Range</p>
               <div style="margin-top: 20px;">
                 <ngx-slider [(value)]="rangeMin" [(highValue)]="rangeMax" [options]="range_disp"></ngx-slider>
-                <div class="price_label">
+                <!--<div class="price_label">
                   Price:
                   <span class="from">
                     <span class="money">{{rangeMin | currency:cc.currency?.country_code:'symbol':cc.format}}</span>
                   </span> - <span class="to">
                     <span class="money">{{rangeMax | currency:cc.currency?.country_code:'symbol':cc.format}}</span>
                   </span>
+                </div>-->
+
+                <div class="price-wrapper mb-3">
+                  <div class="price-box">
+                    <label class="price-label">Min</label>
+                    <span class="from">
+                      <span class="money">{{rangeMin | currency:cc.currency?.country_code:'symbol':cc.format}}</span>
+                    </span>
+                  </div>
+
+                  <div class="price-separator">—</div>
+
+                  <div class="price-box">
+                    <label class="price-label">Max</label>
+                    <span class="to">
+                      <span class="money">{{rangeMax | currency:cc.currency?.country_code:'symbol':cc.format}}</span>
+                    </span>
+                  </div>
                 </div>
+
               </div>
             </div>
           </div>
