@@ -176,6 +176,38 @@ export class CategoryComponent implements OnInit {
       }
     ]
   };
+  colorCodes: any = {
+    "Beige": "#F5F5DC",
+    "Black": "#000000",
+    "Blue": "#0000FF",
+    "Brown": "#A52A2A",
+    "Cream": "#FFFDD0",
+    "Gold": "#FFD700",
+    "Green": "#008000",
+    "Grey": "#808080",
+    "Lavender": "#E6E6FA",
+    "Maroon": "#800000",
+    "Magenta": "#FF00FF",
+    "Multicolour": null,
+    "Orange": "#FFA500",
+    "Peach": "#FFDAB9",
+    "Pink": "#FFC0CB",
+    "Purple": "#800080",
+    "Red": "#FF0000",
+    "Rust": "#B7410E",
+    "Silver": "#C0C0C0",
+    "Violet": "#EE82EE",
+    "White": "#FFFFFF",
+    "Yellow": "#FFFF00",
+    "Off White": "#FAF9F6",
+    "Burgundy": "#800020",
+    "Mustard": "#FFDB58",
+    "Lime Green": "#32CD32",
+    "Coffee Brown": "#4B3621",
+    "Navy Blue": "#000080",
+    "Sea Green": "#2E8B57",
+    "Turquoise Blue": "#00FFEF"
+  };
 
   categoryFAQSchema: any = {
     "@context": "https://schema.org",

@@ -443,72 +443,49 @@
                     </div>
                     <!-- limited option -->
                     <ng-container *ngIf="!x.show_more">
-                      <!--<div
-                        *ngFor="let y of x.option_list | orderAsc: 'name' | slice:0:6 | orderSearch: 'name':x.tag_search; let j=index;">
-                        <label *ngIf="!y.notFound" class="store-label w-100 m-0 mb-3">
-                          <div class="d-flex align-items-center">
-                            <div>
-                              <input class="option-input checkbox" type="checkbox" name="{{y.checked}}"
-                                [checked]="y.checked"
-                                (change)="y.checked=!y.checked; onTagNewFilter(x, y);">
-                            </div>
-                            <div>
-                              <p class="m-0">{{y.name}}</p>
-                            </div>
-                          </div>
-                        </label>
-                        <p *ngIf="y.notFound">No matches found</p>
-                      </div>-->
+                      <div class="chip-wrapper" *ngIf="x.name!='Body Colour'">
+                        <ng-container *ngFor="let y of x.option_list | orderAsc: 'name' | slice:0:6 | orderSearch: 'name':x.tag_search; let j=index;">
+                          <label *ngIf="!y.notFound" class="chip" [class.active]="y.checked">                         
+                            <input type="checkbox" name="{{y.checked}}" [checked]="y.checked" (change)="y.checked=!y.checked; onTagNewFilter(x, y);"/>
+                            <span>{{ y.name }}</span>
+                          </label> 
+                          <p *ngIf="y.notFound">No matches found</p>
+                        </ng-container>
+                      </div>
 
-                    <div class="color-wrapper">
-                      <ng-container 
-                         *ngFor="let y of x.option_list | orderAsc: 'name' | slice:0:6 | orderSearch: 'name':x.tag_search; let j=index;">
-
-                        <label
-                          *ngIf="!y.notFound"
-                          class="color-item" [class.active]="y.checked">                         
-                          <input type="checkbox" name="{{y.checked}}"
-                            [checked]="y.checked"
-                            (change)="y.checked=!y.checked; onTagNewFilter(x, y);"/>
-                            <span class="color-circle circle-red">
-                                  <i *ngIf="y.checked" class="material-icons">done</i>
+                      <div *ngIf="x.name=='Body Colour'" class="color-wrapper">
+                        <ng-container *ngFor="let y of x.option_list | orderAsc: 'name' | slice:0:6 | orderSearch: 'name':x.tag_search; let j=index;">
+                          <label *ngIf="!y.notFound" class="color-item" [class.active]="y.checked">                         
+                            <input type="checkbox" name="{{y.checked}}" [checked]="y.checked" (change)="y.checked=!y.checked; onTagNewFilter(x, y);"/>
+                            <span class="color-circle" [style.background-color]="colorCodes[y.name]">
+                              <i *ngIf="y.checked" class="material-icons">done</i>
                             </span>
-                          <span class="color-name">{{ y.name }}</span>
-                        </label> 
-                        <p *ngIf="y.notFound">No matches found</p>
-                      </ng-container>
-                    </div>  
-
+                            <span class="color-name">{{ y.name }}</span>
+                          </label> 
+                          <p *ngIf="y.notFound">No matches found</p>
+                        </ng-container>
+                      </div>
                     </ng-container>
                     <!-- full option -->
                     <ng-container *ngIf="x.show_more">
-                      <!-- <div
-                        *ngFor="let y of x.option_list | orderAsc: 'name' | orderSearch: 'name':x.tag_search; let j=index;">
-                        <label *ngIf="!y.notFound" class="store-label w-100 m-0 mb-3">
-                          <div class="d-flex align-items-center">
-                            <div>
-                              <input class="option-input checkbox" type="checkbox" name="{{y.checked}}"
-                                [checked]="y.checked"
-                                (change)="y.checked=!y.checked; onTagNewFilter(x, y);">
-                            </div>
-                            <div>
-                              <p class="m-0">{{y.name}}</p>
-                            </div>
-                          </div>
-                        </label>
-                        <p *ngIf="y.notFound">No matches found</p>
-                      </div> -->
-                      <div class="chip-wrapper">
-                        <ng-container 
-                          *ngFor="let y of x.option_list | orderAsc: 'name' | orderSearch: 'name':x.tag_search; let j=index;">
-
-                          <label
-                            *ngIf="!y.notFound"
-                            class="chip" [class.active]="y.checked">                         
-                            <input type="checkbox" name="{{y.checked}}"
-                              [checked]="y.checked"
-                              (change)="y.checked=!y.checked; onTagNewFilter(x, y);"/>
+                      <div class="chip-wrapper" *ngIf="x.name!='Body Colour'">
+                        <ng-container *ngFor="let y of x.option_list | orderAsc: 'name' | orderSearch: 'name':x.tag_search; let j=index;">
+                          <label *ngIf="!y.notFound" class="chip" [class.active]="y.checked">                         
+                            <input type="checkbox" name="{{y.checked}}" [checked]="y.checked" (change)="y.checked=!y.checked; onTagNewFilter(x, y);"/>
                             <span>{{ y.name }}</span>
+                          </label> 
+                          <p *ngIf="y.notFound">No matches found</p>
+                        </ng-container>
+                      </div>
+
+                      <div *ngIf="x.name=='Body Colour'" class="color-wrapper">
+                        <ng-container *ngFor="let y of x.option_list | orderAsc: 'name' | orderSearch: 'name':x.tag_search; let j=index;">
+                          <label *ngIf="!y.notFound" class="color-item" [class.active]="y.checked">                         
+                            <input type="checkbox" name="{{y.checked}}" [checked]="y.checked" (change)="y.checked=!y.checked; onTagNewFilter(x, y);"/>
+                            <span class="color-circle" [style.background-color]="colorCodes[y.name]">
+                              <i *ngIf="y.checked" class="material-icons">done</i>
+                            </span>
+                            <span class="color-name">{{ y.name }}</span>
                           </label> 
                           <p *ngIf="y.notFound">No matches found</p>
                         </ng-container>
@@ -888,22 +865,7 @@
                     </div>
                     <!-- limited option -->
                     <ng-container *ngIf="!x.show_more">
-                      <!-- <div *ngFor="let y of x.option_list | orderAsc: 'name' | slice:0:6 | orderSearch: 'name':x.tag_search; let j=index;">
-                        <label *ngIf="!y.notFound" class="store-label w-100 m-0 mb-3">
-                          <div class="d-flex align-items-center">
-                            <div>
-                              <input class="option-input checkbox" type="checkbox" name="{{y.checked}}"
-                                [checked]="y.checked"
-                                (change)="y.checked=!y.checked; onTagNewFilter(x, y);">
-                            </div>
-                            <div>
-                              <p class="m-0">{{y.name}}</p>
-                            </div>
-                          </div>
-                        </label>
-                        <p *ngIf="y.notFound">No matches found</p>
-                      </div> -->
-                      <div class="chip-wrapper">
+                      <div *ngIf="x.name!='Body Colour'" class="chip-wrapper">
                         <ng-container *ngFor="let y of x.option_list | orderAsc: 'name' | slice:0:6 | orderSearch: 'name':x.tag_search; let j=index;">
                           <label *ngIf="!y.notFound" class="chip" [class.active]="y.checked">                         
                             <input type="checkbox" name="{{y.checked}}" [checked]="y.checked" (change)="y.checked=!y.checked; onTagNewFilter(x, y);"/>
@@ -912,29 +874,40 @@
                           <p *ngIf="y.notFound">No matches found</p>
                         </ng-container>
                       </div>
+
+                      <div *ngIf="x.name=='Body Colour'" class="color-wrapper">
+                        <ng-container *ngFor="let y of x.option_list | orderAsc: 'name' | slice:0:6 | orderSearch: 'name':x.tag_search; let j=index;">
+                          <label *ngIf="!y.notFound" class="color-item" [class.active]="y.checked">                         
+                            <input type="checkbox" name="{{y.checked}}" [checked]="y.checked" (change)="y.checked=!y.checked; onTagNewFilter(x, y);"/>
+                            <span class="color-circle" [style.background-color]="colorCodes[y.name]">
+                              <i *ngIf="y.checked" class="material-icons">done</i>
+                            </span>
+                            <span class="color-name">{{ y.name }}</span>
+                          </label> 
+                          <p *ngIf="y.notFound">No matches found</p>
+                        </ng-container>
+                      </div>
                     </ng-container>
                     <!-- full option -->
                     <ng-container *ngIf="x.show_more">
-                      <!-- <div *ngFor="let y of x.option_list | orderAsc: 'name' | orderSearch: 'name':x.tag_search; let j=index;">
-                        <label *ngIf="!y.notFound" class="store-label w-100 m-0 mb-3">
-                          <div class="d-flex align-items-center">
-                            <div>
-                              <input class="option-input checkbox" type="checkbox" name="{{y.checked}}"
-                                [checked]="y.checked"
-                                (change)="y.checked=!y.checked; onTagNewFilter(x, y);">
-                            </div>
-                            <div>
-                              <p class="m-0">{{y.name}}</p>
-                            </div>
-                          </div>
-                        </label>
-                        <p *ngIf="y.notFound">No matches found</p>
-                      </div> -->
-                      <div class="chip-wrapper">
+                      <div *ngIf="x.name!='Body Colour'" class="chip-wrapper">
                         <ng-container *ngFor="let y of x.option_list | orderAsc: 'name' | orderSearch: 'name':x.tag_search; let j=index;">
                           <label *ngIf="!y.notFound" class="chip" [class.active]="y.checked">                         
                             <input type="checkbox" name="{{y.checked}}" [checked]="y.checked" (change)="y.checked=!y.checked; onTagNewFilter(x, y);"/>
                             <span>{{ y.name }}</span>
+                          </label> 
+                          <p *ngIf="y.notFound">No matches found</p>
+                        </ng-container>
+                      </div>
+
+                      <div *ngIf="x.name=='Body Colour'" class="color-wrapper">
+                        <ng-container *ngFor="let y of x.option_list | orderAsc: 'name' | orderSearch: 'name':x.tag_search; let j=index;">
+                          <label *ngIf="!y.notFound" class="color-item" [class.active]="y.checked">                         
+                            <input type="checkbox" name="{{y.checked}}" [checked]="y.checked" (change)="y.checked=!y.checked; onTagNewFilter(x, y);"/>
+                            <span class="color-circle" [style.background-color]="colorCodes[y.name]">
+                              <i *ngIf="y.checked" class="material-icons">done</i>
+                            </span>
+                            <span class="color-name">{{ y.name }}</span>
                           </label> 
                           <p *ngIf="y.notFound">No matches found</p>
                         </ng-container>

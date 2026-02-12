@@ -718,10 +718,6 @@
   justify-content: center;
   transition: 0.3s ease;
 
-  &.circle-red {
-    background-color: red;
-  }
-
   /* White inner space */
   &::before {
     content: "";
