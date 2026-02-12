@@ -457,8 +457,10 @@
                         <ng-container *ngFor="let y of x.option_list | orderAsc: 'name' | slice:0:6 | orderSearch: 'name':x.tag_search; let j=index;">
                           <label *ngIf="!y.notFound" class="color-item" [class.active]="y.checked">                         
                             <input type="checkbox" name="{{y.checked}}" [checked]="y.checked" (change)="y.checked=!y.checked; onTagNewFilter(x, y);"/>
-                            <span class="color-circle" [style.background-color]="colorCodes[y.name]">
-                              <i *ngIf="y.checked" class="material-icons">done</i>
+                            <span class="color-circle-outer">
+                              <span class="color-circle" [style.background-color]="colorCodes[y.name]">
+                                <i *ngIf="y.checked" class="material-icons">done</i>
+                              </span>
                             </span>
                             <span class="color-name">{{ y.name }}</span>
                           </label> 
@@ -481,9 +483,11 @@
                       <div *ngIf="x.name=='Body Colour'" class="color-wrapper">
                         <ng-container *ngFor="let y of x.option_list | orderAsc: 'name' | orderSearch: 'name':x.tag_search; let j=index;">
                           <label *ngIf="!y.notFound" class="color-item" [class.active]="y.checked">                         
-                            <input type="checkbox" name="{{y.checked}}" [checked]="y.checked" (change)="y.checked=!y.checked; onTagNewFilter(x, y);"/>
-                            <span class="color-circle" [style.background-color]="colorCodes[y.name]">
-                              <i *ngIf="y.checked" class="material-icons">done</i>
+                            <input type="checkbox" name="{{y.checked}}" [checked]="y.checked" (change)="y.checked=!y.checked; onTagNewFilter(x, y);"/>                           
+                            <span class="color-circle-outer">
+                              <span class="color-circle" [style.background-color]="colorCodes[y.name]">
+                                <i *ngIf="y.checked" class="material-icons">done</i>
+                              </span>
                             </span>
                             <span class="color-name">{{ y.name }}</span>
                           </label> 
@@ -750,14 +754,22 @@
           <div class="collections">
             <ng-container *ngFor="let x of commonService.footer_seo_links | slice:0: (pageUrl.indexOf('kanjivaram')==-1)? 2: commonService.footer_seo_links.length | orderAsc: 'rank';">
               <p>{{x.name}}</p>
-              <ul class="pl-0">
+              <!--<ul class="pl-0">
                 <li *ngFor="let y of x.links">
                   <a [routerLink]="(y.link_type=='internal')? y.link: null"
                     (click)="(y.link_type!='internal')? commonService.onPageRedirect(y): null;">
                     {{y.name}}
                   </a>
                 </li>
-              </ul>
+              </ul>-->
+              <div class="row mb-5 border-divider">
+                <div class="col-md-4 d-flex justify-content-center text-center" *ngFor="let y of x.links">
+                  <a class="collect-list" [routerLink]="(y.link_type=='internal')? y.link: null"
+                    (click)="(y.link_type!='internal')? commonService.onPageRedirect(y): null;">
+                    {{y.name}}
+                  </a>
+                </div>
+              </div>
             </ng-container>
           </div>
         </div>
@@ -878,9 +890,11 @@
                       <div *ngIf="x.name=='Body Colour'" class="color-wrapper">
                         <ng-container *ngFor="let y of x.option_list | orderAsc: 'name' | slice:0:6 | orderSearch: 'name':x.tag_search; let j=index;">
                           <label *ngIf="!y.notFound" class="color-item" [class.active]="y.checked">                         
-                            <input type="checkbox" name="{{y.checked}}" [checked]="y.checked" (change)="y.checked=!y.checked; onTagNewFilter(x, y);"/>
-                            <span class="color-circle" [style.background-color]="colorCodes[y.name]">
-                              <i *ngIf="y.checked" class="material-icons">done</i>
+                            <input type="checkbox" name="{{y.checked}}" [checked]="y.checked" (change)="y.checked=!y.checked; onTagNewFilter(x, y);"/>                           
+                            <span class="color-circle-outer">
+                              <span class="color-circle" [style.background-color]="colorCodes[y.name]">
+                                <i *ngIf="y.checked" class="material-icons">done</i>
+                              </span>
                             </span>
                             <span class="color-name">{{ y.name }}</span>
                           </label> 
@@ -903,9 +917,11 @@
                       <div *ngIf="x.name=='Body Colour'" class="color-wrapper">
                         <ng-container *ngFor="let y of x.option_list | orderAsc: 'name' | orderSearch: 'name':x.tag_search; let j=index;">
                           <label *ngIf="!y.notFound" class="color-item" [class.active]="y.checked">                         
-                            <input type="checkbox" name="{{y.checked}}" [checked]="y.checked" (change)="y.checked=!y.checked; onTagNewFilter(x, y);"/>
-                            <span class="color-circle" [style.background-color]="colorCodes[y.name]">
-                              <i *ngIf="y.checked" class="material-icons">done</i>
+                            <input type="checkbox" name="{{y.checked}}" [checked]="y.checked" (change)="y.checked=!y.checked; onTagNewFilter(x, y);"/>                           
+                            <span class="color-circle-outer">
+                              <span class="color-circle" [style.background-color]="colorCodes[y.name]">
+                                <i *ngIf="y.checked" class="material-icons">done</i>
+                              </span>
                             </span>
                             <span class="color-name">{{ y.name }}</span>
                           </label> 

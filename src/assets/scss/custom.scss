@@ -3985,9 +3985,24 @@ input::-webkit-inner-spin-button {
   p {
     font-size: 13px !important;
     font-weight: bold !important;
-    margin-bottom: 15px;
+    margin-bottom: 24px;
     text-align: center;
-    text-decoration: underline;
+    // text-decoration: underline;
+    text-transform: uppercase;
+  }
+
+  .border-divider{
+    border-bottom: 1px solid #eee;
+    padding-bottom: 30px;
+    &:last-child{
+      border-bottom: 0!important;
+    }
+  }
+
+  .collect-list{
+    padding: 0 5px;
+    margin-bottom: 12px;
+    font-size: 13px;
   }
   ul {
     display: flex;
