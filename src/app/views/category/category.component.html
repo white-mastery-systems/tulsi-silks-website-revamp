@@ -395,16 +395,16 @@
               <p class="by">Price Range</p>
               <div style="margin-top: 20px;">
                 <ngx-slider [(value)]="rangeMin" [(highValue)]="rangeMax" [options]="range_disp"></ngx-slider>
-                <!--<div class="price_label">
+                <div class="price_label mb-3">
                   Price:
                   <span class="from">
                     <span class="money">{{rangeMin | currency:cc.currency?.country_code:'symbol':cc.format}}</span>
                   </span> - <span class="to">
                     <span class="money">{{rangeMax | currency:cc.currency?.country_code:'symbol':cc.format}}</span>
                   </span>
-                </div>-->
+                </div>
 
-                <div class="price-wrapper mb-3">
+                <!-- <div class="price-wrapper mb-3">
                   <div class="price-box">
                     <label class="price-label">Min</label>
                     <span class="from">
@@ -420,7 +420,7 @@
                       <span class="money">{{rangeMax | currency:cc.currency?.country_code:'symbol':cc.format}}</span>
                     </span>
                   </div>
-                </div>
+                </div> -->
 
               </div>
             </div>
@@ -720,7 +720,7 @@
             <div class="highlighted-text-width">
               <div class="landing-highlighted-text d-flex flex-column text-left" [innerHtml]="category_details.profile_details.description">                
               </div>
-              <button routerLink="/about-us" class="primary-btn">Read More</button>
+              <!-- <button routerLink="/about-us" class="primary-btn">Read More</button> -->
             </div>
           </div>       
       </div>
