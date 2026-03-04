@@ -29,6 +29,7 @@ export class AppComponent {
   imgBaseUrl: string = environment.img_baseurl;
   isConnected = true; chatLoaded: boolean;
   headroomInit: boolean; intracted: boolean;
+  headroom: any;
   randomNum: any; currUrl: string;
   showTooltip = false;
 
@@ -54,12 +55,27 @@ export class AppComponent {
       if (window.pageYOffset > 150 && !this.headroomInit) {
         this.headroomInit = true;
         this.assetLoader.load('headroom-js', 'headroom-css').then(() => {
-          let headroomElement = this.document.querySelector("#headroom-head");
-          new Headroom(headroomElement, {
-            offset: 150,
-            tolerance: 5,
-            classes: { initial: "animated", pinned: "slideDown", unpinned: "slideUp" }
-          }).init();
+          // let headroomElement = this.document.querySelector("#headroom-head");
+          // new Headroom(headroomElement, {
+          //   offset: 150,
+          //   tolerance: 5,
+          //   classes: { initial: "animated", pinned: "slideDown", unpinned: "slideUp" }
+          // }).init();
+          const headroomElement = this.document.querySelector("#headroom-head");
+
+            if (headroomElement && !this.headroom) {
+              this.headroom = new Headroom(headroomElement, {
+                offset: 150,
+                tolerance: 5,
+                classes: {
+                  initial: "animated",
+                  pinned: "slideDown",
+                  unpinned: "slideUp"
+                }
+              });
+
+              this.headroom.init();
+            }
         }).catch(error => console.log("err", error));
       }
     }
@@ -379,6 +395,32 @@ export class AppComponent {
       let currentUrl = this.router.url;
       this.router.events.subscribe(event => {
         if (event instanceof NavigationEnd) {
+
+          const isCategoryPage = event.url.includes('/category/');
+
+          if (this.commonService.desktop_device && isCategoryPage) {
+            if (this.headroom) {
+              this.headroom.destroy();
+              this.headroom = null;
+            }
+          } else {
+            const headroomElement = this.document.querySelector("#headroom-head");
+
+            if (headroomElement && !this.headroom) {
+              this.headroom = new Headroom(headroomElement, {
+                offset: 150,
+                tolerance: 5,
+                classes: {
+                  initial: "animated",
+                  pinned: "slideDown",
+                  unpinned: "slideUp"
+                }
+              });
+
+              this.headroom.init();
+            }
+          }
+
           this.commonService.removeElement('bc-jsonld');
           // SEO
           let routeName = this.location.path();
