@@ -398,26 +398,28 @@ export class AppComponent {
 
           const isCategoryPage = event.url.includes('/category/');
 
-          if (this.commonService.desktop_device && isCategoryPage) {
-            if (this.headroom) {
-              this.headroom.destroy();
-              this.headroom = null;
-            }
-          } else {
-            const headroomElement = this.document.querySelector("#headroom-head");
+          if (isPlatformBrowser(this.platformId)) {
+            if (this.commonService.desktop_device && isCategoryPage) {
+              if (this.headroom) {
+                this.headroom.destroy();
+                this.headroom = null;
+              }
+            } else {
+              const headroomElement = this.document.querySelector("#headroom-head");
 
-            if (headroomElement && !this.headroom) {
-              this.headroom = new Headroom(headroomElement, {
-                offset: 150,
-                tolerance: 5,
-                classes: {
-                  initial: "animated",
-                  pinned: "slideDown",
-                  unpinned: "slideUp"
-                }
-              });
+              if (headroomElement && !this.headroom && typeof Headroom !== 'undefined') {
+                this.headroom = new Headroom(headroomElement, {
+                  offset: 150,
+                  tolerance: 5,
+                  classes: {
+                    initial: "animated",
+                    pinned: "slideDown",
+                    unpinned: "slideUp"
+                  }
+                });
 
-              this.headroom.init();
+                this.headroom.init();
+              }
             }
           }
 
