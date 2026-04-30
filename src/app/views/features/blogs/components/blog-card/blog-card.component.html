@@ -1,0 +1,15 @@
+<article class="blog-card" *ngIf="item">
+  <a class="blog-card__media" [routerLink]="routerLinkArray()" [attr.aria-label]="item.name" (click)="emitNavigate()">
+    <img [src]="resolveImageSrc()" [alt]="item.img_alt || item.name || 'Blog'" loading="lazy" width="640" height="400" />
+  </a>
+  <div class="blog-card__body">
+    <div class="blog-card__meta">
+      <span class="blog-card__date" *ngIf="item.created_on">{{ item.created_on | date: 'dd MMM yyyy' }}</span>
+      <span class="blog-card__dot" *ngIf="item.created_on && item.category" aria-hidden="true">·</span>
+      <span class="blog-card__cat" *ngIf="item.category">{{ item.category }}</span>
+    </div>
+    <a class="blog-card__title" [routerLink]="routerLinkArray()" (click)="emitNavigate()">{{ item.name }}</a>
+    <p class="blog-card__excerpt">{{ excerptPreview() }}</p>
+    <a class="blog-card__read" [routerLink]="routerLinkArray()" (click)="emitNavigate()">Read article</a>
+  </div>
+</article>

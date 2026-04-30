@@ -989,7 +989,8 @@ p.error-msg {
       }
     }
   }
-  .blog-image {
+  /* Exclude premium detail hero — parent has no height; height:100% collapses the image */
+  .blog-image:not(.blog-image--hero):not(.premium-blog-detail__hero) {
     img {
       width: 100% !important;
       height: 100%;
@@ -1039,7 +1040,8 @@ p.error-msg {
 }
 // ----------------CART END------------------
 // ---------------BLOGS----------------
-.blog-image {
+/* Listing thumbnails only — premium detail hero uses `.blog-image--hero` / `.premium-blog-detail__hero` full-width */
+.blog-image:not(.blog-image--hero):not(.premium-blog-detail__hero) {
   img {
     width: 50%;
     height: 100%;

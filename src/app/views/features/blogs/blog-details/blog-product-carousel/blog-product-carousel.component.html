@@ -1,0 +1,66 @@
+<section class="ej-pc" *ngIf="products.length">
+  <header class="ej-pc__head">
+    <div class="ej-pc__titles">
+      <h2 class="ej-pc__title" *ngIf="data?.title">{{ data?.title }}</h2>
+      <p class="ej-pc__subtitle" *ngIf="data?.subtitle">{{ data?.subtitle }}</p>
+    </div>
+    <div class="ej-pc__nav" *ngIf="products.length > 1">
+      <button
+        type="button"
+        #btnPrev
+        class="ej-pc__nav-btn ej-pc__nav-btn--prev"
+        aria-label="Previous slides"
+      >
+        <lucide-icon name="chevron-left" [size]="20" stroke="2" class="ej-pc__nav-ico"></lucide-icon>
+      </button>
+      <button
+        type="button"
+        #btnNext
+        class="ej-pc__nav-btn ej-pc__nav-btn--next"
+        aria-label="Next slides"
+      >
+        <lucide-icon name="chevron-right" [size]="20" stroke="2" class="ej-pc__nav-ico"></lucide-icon>
+      </button>
+    </div>
+  </header>
+
+  <div class="ej-pc__viewport">
+    <div class="swiper-container ej-blog-pc-swiper" #swiperRoot>
+      <div class="swiper-wrapper">
+        <div class="swiper-slide ej-pc__slide" *ngFor="let p of products; trackBy: trackByIdx">
+          <article class="ej-pc-card">
+            <a class="ej-pc-card__media-link" [routerLink]="productLink(p)">
+              <div class="ej-pc-card__figure">
+                <img
+                  class="ej-pc-card__img"
+                  [src]="imageSrc(p)"
+                  [alt]="p.title || ''"
+                  loading="lazy"
+                  decoding="async"
+                />
+                <div class="ej-pc-card__brand-bar">
+                  <span class="ej-pc-card__brand">{{ brandFor(p) }}</span>
+                </div>
+              </div>
+            </a>
+            <div class="ej-pc-card__body">
+              <a class="ej-pc-card__title-link" [routerLink]="productLink(p)">
+                <h3 class="ej-pc-card__title">{{ p.title }}</h3>
+              </a>
+              <div class="ej-pc-card__price-row">
+                <ng-container *ngIf="originalPriceValue(p) as orig; else onePrice">
+                  <span class="ej-pc-card__strike">{{ orig | currency: cc.currency?.country_code:'symbol':cc.format }}</span>
+                  <span class="ej-pc-card__price">{{ priceValue(p) | currency: cc.currency?.country_code:'symbol':cc.format }}</span>
+                </ng-container>
+                <ng-template #onePrice>
+                  <span class="ej-pc-card__price">{{ priceValue(p) | currency: cc.currency?.country_code:'symbol':cc.format }}</span>
+                </ng-template>
+              </div>
+              <a class="ej-pc-card__cta" [routerLink]="productLink(p)">Add to cart</a>
+            </div>
+          </article>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

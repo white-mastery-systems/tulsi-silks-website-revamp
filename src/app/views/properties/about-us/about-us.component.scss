@@ -2,7 +2,7 @@
     .home-slider-text{
         right: 0;
         text-align: left;
-        justify-content: start;
+        justify-content: flex-start;
         align-items: center;
         h1{
             color: #fff;
@@ -232,7 +232,7 @@
 .sections{
   display:flex;
   flex-direction: column;
-  align-items:start;
+  align-items: flex-start;
   justify-content:center;
   padding-left: 40px;
   h2{

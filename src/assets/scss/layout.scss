@@ -751,7 +751,7 @@
 .home-slider {
   .home-slider-text {
     justify-content: center;
-    align-items: end !important;
+    align-items: flex-end !important;
     top: auto !important;
     bottom: 15%;
     h1{
@@ -1835,7 +1835,7 @@ span{
     .mobile-button{
       flex-direction: row !important;
       justify-content: space-between !important;
-      align-items: end !important;
+      align-items: flex-end !important;
     }
     .outline-btn{
       font-size: 1rem !important;
@@ -1857,7 +1857,7 @@ span{
       align-items: flex-start !important;
       .testimonial-profile{
         align-items: self-start !important;
-        justify-content: start !important;
+        justify-content: flex-start !important;
         width: 100%;
       }
     }

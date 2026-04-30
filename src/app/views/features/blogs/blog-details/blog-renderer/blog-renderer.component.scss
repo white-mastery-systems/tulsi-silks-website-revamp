@@ -1,0 +1,645 @@
+@import "../../styles/premium-blog.tokens.scss";
+@import "../../blogs.tokens.scss";
+
+:host {
+  display: block;
+}
+
+.blog-renderer {
+  max-width: $premium-max-read;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+:host ::ng-deep blockquote {
+  margin: 1.75rem 0;
+  padding: 0.25rem 0 0.25rem 1.25rem;
+  border-left: 3px solid rgba(26, 23, 28, 0.18);
+  font-style: italic;
+  color: rgba(26, 23, 28, 0.78);
+}
+
+:host ::ng-deep pre,
+:host ::ng-deep code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+:host ::ng-deep pre {
+  margin: 1.5rem 0;
+  padding: 1rem 1.15rem;
+  border-radius: 10px;
+  background: rgba(26, 23, 28, 0.05);
+  overflow-x: auto;
+  line-height: 1.55;
+  font-size: 0.9em;
+}
+
+:host ::ng-deep ul,
+:host ::ng-deep ol {
+  margin-bottom: 1.15em;
+  padding-left: 1.35rem;
+}
+
+/* TOC accordion — injected via innerHTML; pierce encapsulation */
+:host ::ng-deep .ej-toc--accordion {
+  margin: 1.75rem 0;
+  padding: 0;
+  border: 1px solid rgba(31, 27, 36, 0.12);
+  border-radius: $premium-radius-md;
+  background: #ffffff;
+
+  .ej-toc__summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1.1rem 1.35rem;
+    cursor: pointer;
+    list-style: none;
+    font-family: $premium-font-display;
+    font-size: clamp(0.95rem, 1.6vw, 1.05rem);
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: $premium-ink;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+
+    &::-webkit-details-marker {
+      display: none;
+    }
+
+    &:focus-visible {
+      outline: 2px solid rgba(107, 83, 68, 0.35);
+      outline-offset: 2px;
+    }
+
+    &:hover {
+      background: rgba(31, 27, 36, 0.02);
+    }
+  }
+
+  .ej-toc__summary-title {
+    flex: 1;
+    line-height: 1.35;
+  }
+
+  .ej-toc__chevron {
+    flex-shrink: 0;
+    width: 10px;
+    height: 10px;
+    margin-top: 2px;
+    border-right: 2px solid rgba(31, 27, 36, 0.45);
+    border-bottom: 2px solid rgba(31, 27, 36, 0.45);
+    transform: rotate(45deg);
+    transition: transform 0.22s ease;
+  }
+
+  &[open] .ej-toc__chevron {
+    transform: rotate(-135deg);
+    margin-top: 6px;
+  }
+
+  .ej-toc__panel {
+    padding: 0 1.35rem 1.35rem;
+    border-top: 1px solid rgba(31, 27, 36, 0.08);
+  }
+
+  .ej-toc__jump-label {
+    margin: 1rem 0 0.65rem;
+    font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    font-size: 0.6875rem;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: $premium-ink-soft;
+  }
+
+  .ej-toc-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .ej-toc-item {
+    margin: 0;
+    border-bottom: 1px solid rgba(31, 27, 36, 0.08);
+
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+
+  .ej-toc-link,
+  .ej-toc-row {
+    display: flex;
+    gap: 0.85rem;
+    align-items: baseline;
+    padding: 0.95rem 0;
+    text-decoration: none;
+    color: inherit;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .ej-toc-link:hover .ej-toc-text {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .ej-toc-num {
+    flex-shrink: 0;
+    min-width: 2.25rem;
+    font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: $premium-ink-soft;
+
+    &::after {
+      content: '.';
+    }
+  }
+
+  .ej-toc-text {
+    font-family: $premium-font-display;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.45;
+    color: $premium-ink;
+  }
+
+  .ej-toc-item--static .ej-toc-text {
+    opacity: 0.85;
+  }
+}
+
+/* Editorial table card — injected via innerHTML */
+:host ::ng-deep .ej-table-card {
+  margin: 2.25rem 0;
+  border-radius: $premium-radius-lg;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  box-shadow: $ej-table-shadow;
+  border: 1px solid $ej-table-card-border;
+  background: $ej-table-row-odd;
+
+  .ej-table {
+    width: 100%;
+    min-width: 560px;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin: 0;
+    border: none;
+    font-size: 0.9375rem;
+    background: transparent;
+
+    thead th {
+      border: none;
+      border-bottom: 1px solid $ej-table-line;
+      padding: 1.25rem 1.5rem;
+      font-family: $ej-display-font;
+      font-size: 0.6875rem;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: $ej-table-header-text;
+      text-align: left;
+      vertical-align: bottom;
+      background: $ej-table-header-bg;
+    }
+
+    tbody td {
+      border: none;
+      border-bottom: 1px solid $ej-table-line;
+      padding: 1.35rem 1.5rem;
+      vertical-align: top;
+      font-family: $ej-display-font;
+      font-size: 0.9375rem;
+      line-height: 1.68;
+      color: $ej-table-body-text;
+      text-align: left;
+
+      a {
+        font-family: inherit;
+        color: inherit;
+        text-decoration: underline;
+        text-underline-offset: 4px;
+        text-decoration-color: rgba(31, 27, 36, 0.45);
+
+        &:hover {
+          opacity: 0.88;
+        }
+      }
+    }
+
+    tbody tr:nth-child(odd) td {
+      background: $ej-table-row-odd;
+    }
+
+    tbody tr:nth-child(even) td {
+      background: $ej-table-row-even;
+    }
+
+    tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    /* Middle column — “best options” emphasis (matches editorial underline treatment) */
+    tbody td:nth-child(2) {
+      text-decoration: underline;
+      text-decoration-color: rgba(31, 27, 36, 0.28);
+      text-underline-offset: 4px;
+    }
+
+    tbody td:nth-child(2) a {
+      text-decoration: underline;
+      text-underline-offset: 4px;
+    }
+  }
+}
+
+/* ctaBlock — beige band, serif copy left; pill CTAs (capsule + sans caps; theme-adjacent ink) */
+:host ::ng-deep .ej-cta-block {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: clamp(1rem, 3vw, 2rem);
+  margin: 2rem 0;
+  padding: clamp(1.15rem, 2.5vw, 1.5rem) clamp(1.25rem, 3vw, 1.75rem);
+  border-radius: $premium-radius-lg;
+  background: #f0e8de;
+  box-sizing: border-box;
+
+  @media (max-width: 640px) {
+    flex-direction: column;
+    align-items: stretch;
+    text-align: center;
+  }
+}
+
+:host ::ng-deep .ej-cta-block__text {
+  margin: 0;
+  flex: 1;
+  min-width: 0;
+  font-family: $premium-font-display;
+  font-size: clamp(1.05rem, 2vw, 1.2rem);
+  font-weight: 400;
+  line-height: 1.45;
+  letter-spacing: 0.01em;
+  color: $premium-ink;
+}
+
+:host ::ng-deep .ej-cta-block__actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.6rem;
+  flex-shrink: 0;
+
+  @media (max-width: 640px) {
+    align-items: stretch;
+    width: 100%;
+  }
+}
+
+/* Anchor + theme button: keep flex centering and no underline; width on small screens */
+:host ::ng-deep .ej-cta-block__link {
+  text-decoration: none !important;
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  white-space: nowrap;
+  min-height: 48px;
+  padding: 0 clamp(1.5rem, 4vw, 2.25rem) !important;
+  border-radius: 999px !important;
+  font-family: $ej-font-ui !important;
+  font-size: 0.6875rem !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.16em !important;
+  text-transform: uppercase !important;
+  line-height: 1.2 !important;
+
+  &::before {
+    border-radius: 999px !important;
+  }
+
+  @media (max-width: 640px) {
+    width: 100%;
+  }
+}
+
+:host ::ng-deep .ej-cta-block .primary-btn {
+  background: #1a181e !important;
+  border: none !important;
+  color: #ffffff !important;
+
+  &:hover,
+  &:focus,
+  &:active {
+    color: #ffffff !important;
+  }
+
+  &::before {
+    background: rgba(255, 255, 255, 0.15) !important;
+  }
+}
+
+:host ::ng-deep .ej-cta-block .secondary-btn {
+  background: #ffffff !important;
+  border: 1px solid rgba(26, 23, 28, 0.22) !important;
+  color: #1a181e !important;
+
+  &:hover,
+  &:focus,
+  &:active {
+    color: #1a181e !important;
+  }
+
+  &::before {
+    background: rgba(26, 23, 28, 0.06) !important;
+  }
+
+  i {
+    color: #1a181e !important;
+  }
+
+  &:hover i,
+  &:focus i {
+    color: #1a181e !important;
+  }
+}
+
+:host ::ng-deep .ej-cta-block .primary-btn:focus-visible,
+:host ::ng-deep .ej-cta-block .secondary-btn:focus-visible {
+  outline: 2px solid rgba(26, 23, 28, 0.3);
+  outline-offset: 2px;
+}
+
+/* Editorial CTA row — pill dark button (often placed below a table in CMS) */
+:host ::ng-deep .ej-btn-wrap {
+  display: flex;
+  width: 100%;
+  margin: 2rem 0 1.75rem;
+}
+
+:host ::ng-deep .ej-btn-wrap--center {
+  justify-content: center;
+}
+
+:host ::ng-deep .ej-btn-wrap--left {
+  justify-content: flex-start;
+}
+
+:host ::ng-deep .ej-btn-wrap--right {
+  justify-content: flex-end;
+}
+
+:host ::ng-deep .ej-btn-dark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  padding: 0 2.25rem;
+  border-radius: 999px;
+  background: #1f1b24;
+  color: #ffffff !important;
+  font-family: $ej-font-ui;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  text-decoration: none !important;
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s ease, opacity 0.2s ease;
+
+  &:hover {
+    background: #000000;
+    color: #ffffff !important;
+  }
+}
+
+:host ::ng-deep .ej-btn-light {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  padding: 0 2.25rem;
+  border-radius: 999px;
+  border: 1px solid #1f1b24;
+  background: #ffffff;
+  color: #1f1b24 !important;
+  font-family: $ej-font-ui;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-decoration: none !important;
+}
+
+:host ::ng-deep figure.ej-figure {
+  box-sizing: border-box;
+  margin: 1.5rem 0 !important;
+  max-width: min(24rem, 72%) !important;
+  width: 100%;
+  display: block !important;
+  text-align: left;
+
+  img {
+    box-sizing: border-box;
+    width: 100% !important;
+    max-width: 100% !important;
+    height: auto !important;
+    display: block !important;
+    margin-left: 0 !important;
+    margin-right: auto !important;
+    border-radius: 2px;
+  }
+
+  figcaption,
+  .ej-figure__caption {
+    font-size: 0.85rem;
+    opacity: 0.75;
+    margin-top: 0.5rem;
+    text-align: left;
+    line-height: 1.45;
+  }
+}
+
+/* productCta — dark editorial shell + nested white product row (Editor.js innerHTML) */
+:host ::ng-deep section.ej-product-cta {
+  margin: 2.25rem 0;
+}
+
+:host ::ng-deep .ej-product-cta-shell {
+  background: #1a1a1e;
+  border-radius: 18px;
+  padding: 1.65rem 1.35rem 1.35rem;
+  box-shadow: 0 20px 56px rgba(0, 0, 0, 0.25);
+
+  @media (min-width: 576px) {
+    padding: 2rem 2rem 1.65rem;
+  }
+}
+
+:host ::ng-deep .ej-product-cta-head {
+  margin-bottom: 1.2rem;
+
+  .ej-product-cta-label {
+    margin: 0 0 0.45rem;
+    font-family: $premium-font-display;
+    font-size: clamp(1.2rem, 2.2vw, 1.45rem);
+    font-weight: 500;
+    color: #ffffff;
+    letter-spacing: 0.02em;
+    line-height: 1.3;
+  }
+
+  .ej-product-cta-sub {
+    margin: 0;
+    font-family: $premium-font-display;
+    font-size: 0.95rem;
+    line-height: 1.58;
+    color: rgba(255, 255, 255, 0.72);
+    font-weight: 400;
+    max-width: 36rem;
+  }
+}
+
+:host ::ng-deep .ej-product-cta-card {
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 1.2rem 1.25rem 1.35rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.15rem;
+  align-items: stretch;
+
+  @media (min-width: 576px) {
+    flex-direction: row;
+    align-items: stretch;
+    gap: 1.5rem;
+    padding: 1.35rem 1.5rem 1.5rem;
+  }
+}
+
+:host ::ng-deep .ej-product-cta-img {
+  flex-shrink: 0;
+  width: 100%;
+  max-width: 210px;
+  aspect-ratio: 3 / 4;
+  object-fit: cover;
+  border-radius: 12px;
+  display: block;
+  align-self: flex-start;
+
+  @media (max-width: 575px) {
+    max-width: 100%;
+    max-height: 300px;
+    aspect-ratio: auto;
+    object-fit: cover;
+  }
+}
+
+:host ::ng-deep .ej-product-cta-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.55rem;
+  min-width: 0;
+}
+
+:host ::ng-deep .ej-product-cta-brand {
+  margin: 0;
+  font-family: $ej-font-ui;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(26, 23, 28, 0.46);
+}
+
+:host ::ng-deep .ej-product-cta-name {
+  margin: 0;
+  font-family: $premium-font-display;
+  font-size: clamp(1.05rem, 1.9vw, 1.22rem);
+  font-weight: 500;
+  color: $premium-ink;
+  line-height: 1.35;
+}
+
+:host ::ng-deep .ej-product-cta-prices {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.25rem;
+
+  .ej-price-orig {
+    font-family: $premium-font-display;
+    font-size: 0.92rem;
+    color: rgba(26, 23, 28, 0.42);
+    text-decoration: line-through;
+    margin: 0;
+    order: 0;
+  }
+
+  .ej-price-sale {
+    font-family: $premium-font-display;
+    font-size: clamp(1.2rem, 2vw, 1.42rem);
+    font-weight: 600;
+    color: $premium-ink;
+    margin: 0;
+    line-height: 1.2;
+    order: 1;
+  }
+}
+
+:host ::ng-deep a.ej-product-cta-btn {
+  align-self: flex-start;
+  margin-top: 0.65rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 46px;
+  padding: 0 1.85rem;
+  border-radius: 999px;
+  background: #141418;
+  color: #ffffff !important;
+  font-family: $ej-font-ui;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  text-decoration: none !important;
+  border: none;
+  transition: background 0.2s ease, opacity 0.2s ease;
+
+  &:hover {
+    background: #000000;
+    color: #ffffff !important;
+  }
+
+  &.ej-product-cta-btn--loading {
+    pointer-events: none;
+    opacity: 0.65;
+    cursor: wait;
+  }
+}
+
+:host ::ng-deep .ej-btn-outline {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  padding: 0 2.25rem;
+  border-radius: 999px;
+  border: 1px solid rgba(31, 27, 36, 0.28);
+  background: transparent;
+  color: #1f1b24 !important;
+  font-family: $ej-font-ui;
+  font-size: 0.8125rem;
+  text-decoration: none !important;
+}

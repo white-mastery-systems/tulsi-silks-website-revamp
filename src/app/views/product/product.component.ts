@@ -212,10 +212,10 @@ export class ProductComponent implements OnInit {
             }
             if(this.productDetails.quantity > this.productDetails.stock) this.productDetails.quantity = this.productDetails.stock;
             // variants
-            if(this.productDetails.variant_status) {
+            if(this.productDetails.variant_status && Array.isArray(this.productDetails.variant_types)) {
               // for first option checked
               this.productDetails.variant_types.forEach(element => {
-                element.value = element.options[0].value;
+                if (element?.options?.length) element.value = element.options[0].value;
               });
               this.setVariantPrice();
             }
@@ -257,6 +257,9 @@ export class ProductComponent implements OnInit {
             console.log("p1-response", result, this.router.url);
             this.router.navigate(["/"]);
           }
+        }, () => {
+          setTimeout(() => { this.pageLoader = false; }, 500);
+          this.router.navigate(["/"]);
         });
       }
     });
@@ -645,6 +648,7 @@ export class ProductComponent implements OnInit {
     let variantImages = [];
     let productImgList = this.parentProductImages;
     let variantTypes = this.productDetails.variant_types;
+    if (!Array.isArray(variantTypes) || !Array.isArray(this.productDetails.variant_list)) return;
     if(variantTypes.length===1) {
       variantInfo = this.productDetails.variant_list.filter(element => 
         element[variantTypes[0].name]==variantTypes[0].value
@@ -667,6 +671,7 @@ export class ProductComponent implements OnInit {
         obj.tag==variantTypes[0].value || obj.tag==variantTypes[1].value || obj.tag==variantTypes[2].value
       );
     }
+    if (!variantInfo.length || !variantInfo[0]) return;
     // update price
     if(variantInfo[0].sku) this.productDetails.sku = variantInfo[0].sku;
     if(variantInfo[0].taxrate_id) this.productDetails.taxrate_id = variantInfo[0].taxrate_id;

@@ -1,0 +1,52 @@
+<section class="premium-blog-list">
+  <!-- Loading skeleton -->
+  <div class="premium-blog-list__skeleton" *ngIf="loading" aria-busy="true">
+    <div class="container-fluid px-2 px-md-3 px-xl-4 mb-4">
+      <div class="premium-blog-list__skeleton-feature shimmer"></div>
+    </div>
+    <div [ngClass]="bodyContainer || 'container'">
+      <div class="premium-blog-list__skeleton-grid">
+        <div class="premium-blog-list__skeleton-card shimmer" *ngFor="let _ of skeletonSlots"></div>
+      </div>
+    </div>
+  </div>
+
+  <ng-container *ngIf="!loading">
+    <!-- Full-width featured strip (page 1 only) -->
+    <div class="premium-blog-list__featured-band container-fluid px-2 px-md-3 px-xl-4" *ngIf="featuredBlog as hero">
+      <section class="premium-blog-list__featured">
+        <div class="premium-blog-list__featured-media">
+          <img [src]="resolveFeaturedImg(hero)" [alt]="hero.name" loading="eager" />
+          <div class="premium-blog-list__featured-overlay"></div>
+          <div class="premium-blog-list__featured-copy">
+            <span class="premium-blog-list__featured-label">Featured story</span>
+            <h2 class="premium-blog-list__featured-title">
+              <a
+                class="premium-blog-list__featured-title-link"
+                [routerLink]="routerLinkFeatured(hero)"
+                (click)="emitFeatured(hero)"
+              >{{ hero.name }}</a>
+            </h2>
+            <p class="premium-blog-list__featured-desc">{{ featuredExcerpt(hero) }}</p>
+            <a class="premium-blog-list__featured-cta" [routerLink]="routerLinkFeatured(hero)" (click)="emitFeatured(hero)">Read the journal</a>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Grid + pagination (aligned to site container) -->
+    <div [ngClass]="bodyContainer || 'container'" class="premium-blog-list__main">
+      <div class="row" *ngIf="gridBlogs?.length">
+        <div class="col-12 col-md-6 col-xl-4 d-flex" *ngFor="let b of gridBlogs; trackBy: trackById">
+          <app-blog-card [item]="b" [imgBaseUrl]="imgBaseUrl" (selectBlog)="selectBlog.emit($event)"></app-blog-card>
+        </div>
+      </div>
+
+      <ng-content select="[premiumBlogPagination]"></ng-content>
+
+      <div class="premium-blog-list__empty text-center py-5" *ngIf="!blogs?.length">
+        <p class="mb-0">No journals published yet. Please check back soon.</p>
+      </div>
+    </div>
+  </ng-container>
+</section>

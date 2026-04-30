@@ -54,10 +54,14 @@ export class AccountComponent implements OnInit {
         else this.router.navigateByUrl('/account');
       }
       else {
-        if(routeUrl.includes("#access_token=")) {
-          this.pageLoader = true;
-          let updatedRouteUrl = routeUrl.replace("#access_token=", "?access_token=");
-          this.router.navigateByUrl(updatedRouteUrl);
+        if(routeUrl.includes("access_token=")) {
+          // Check if the URL has a hash AND contains an access token anywhere inside it
+          if(routeUrl.includes("#") && routeUrl.includes("access_token=")) {
+            this.pageLoader = true;
+            // Replace the first '#' with '?' to convert the entire fragment string into query parameters
+            let updatedRouteUrl = routeUrl.replace("#", "?");
+            this.router.navigateByUrl(updatedRouteUrl);
+          }
         }
         else setTimeout(() => { this.pageLoader = false; }, 500);
       }

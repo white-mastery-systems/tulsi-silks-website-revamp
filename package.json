@@ -28,6 +28,7 @@
     "@angular/youtube-player": "^13.3.4",
     "@nguniversal/express-engine": "^13.1.0",
     "angularx-qrcode": "^13.0.14",
+    "editorjs-html": "^4.0.5",
     "express": "^4.15.2",
     "html2canvas": "^1.4.1",
     "jspdf": "^2.5.1",

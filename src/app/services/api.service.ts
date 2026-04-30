@@ -11,6 +11,8 @@ export class ApiService {
 
   constructor(@Inject(PLATFORM_ID) private platformId: Object, private http: HttpClient) { }
 
+  WHATSAPP_VALIDATE_CART_TOKEN(token) { return this.http.get<any>(environment.ws_url+'/whatsapp/validate-cart-token?token='+token); }
+
   REGISTER(x) { return this.http.post<any>(environment.ws_url+'/auth/user/register', x); }
   LOGIN(x) { return this.http.post<any>(environment.ws_url+'/auth/user/login', x); }
   SOCIAL_LOGIN(x) { return this.http.post<any>(environment.ws_url+'/auth/user/social_login', x); }

@@ -45,7 +45,7 @@ export class CartlistService {
     productDetails.variant_types = [];
     if(x.hsn_code) productDetails.hsn_code = x.hsn_code;
     if(x.vendor_id) productDetails.vendor_id = x.vendor_id;
-    if(productDetails.variant_status) {
+    if(productDetails.variant_status && Array.isArray(x.variant_types)) {
       x.variant_types.forEach(element => {
         productDetails.variant_types.push({ name: element.name, value: element.value });
       });

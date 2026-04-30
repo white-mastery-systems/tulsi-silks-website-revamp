@@ -37,10 +37,10 @@ body {
     order: 2 !important;
   }
   .header-left-sec{
-    justify-content: end !important;
+    justify-content: flex-end !important;
   }
   .header-right-sec{
-    justify-content: start !important;
+    justify-content: flex-start !important;
   }
   .header-s-icon{
     width: 35px;
@@ -151,7 +151,7 @@ $mobile-final-height: calc(74px + #{$mobile-announcement-bar-mh});
   // }
   .header-left-sec{
     display: flex;
-    justify-content: end;
+    justify-content: flex-end;
     align-items: center;
   }
   .center-logo{

@@ -2,7 +2,21 @@
   <app-loading-spinner></app-loading-spinner>
 </section>
 
-<section class="over-all smooth-fadein" *ngIf="!pageLoader">
+<section class="site-section" *ngIf="!pageLoader && errorMsg">
+  <div class="{{template_setting?.body_type}}">
+    <div class="row justify-content-center">
+      <div class="col-lg-6">
+        <div class="danger-alert mt-4">
+          <div class="alert-msg d-flex align-items-center justify-content-center p-3">
+            <p class="m-0">{{errorMsg}}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="over-all smooth-fadein" *ngIf="!pageLoader && !errorMsg">
 
   <!-- breadcrumb -->
   <section class="head-breadcrumb">

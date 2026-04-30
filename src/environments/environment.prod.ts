@@ -47,5 +47,8 @@ export const environment = {
     limit: 3
   },
   port: 4006,
-  domain: "tulsisilks.co.in"
+  domain: "tulsisilks.co.in",
+
+  mergeEditorJsStaticDemo: false,
+  editorJsStaticDemoBlogIds: [] as string[],
 };

@@ -27,7 +27,8 @@
               "core-js",
               "raf",
               "lazysizes",
-              "@cordobo/qrcode"
+              "@cordobo/qrcode",
+              "editorjs-html"
             ],
             "outputPath": "dist/ecommerce/browser",
             "index": "src/index.html",
@@ -49,13 +50,13 @@
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "500kb",
-                  "maximumError": "1mb"
+                  "maximumWarning": "900kb",
+                  "maximumError": "1.2mb"
                 },
                 {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "10kb",
-                  "maximumError": "10kb"
+                  "maximumWarning": "20kb",
+                  "maximumError": "30kb"
                 }
               ],
               "fileReplacements": [

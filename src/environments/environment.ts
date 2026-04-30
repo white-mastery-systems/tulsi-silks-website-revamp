@@ -47,5 +47,15 @@ export const environment = {
     limit: 3
   },
   port: 4006,
-  domain: "tulsisilks.co.in"
+  domain: "tulsisilks.co.in",
+
+  /**
+   * When true: inject demo Editor.js blocks only if the API response has no `content.blocks`
+   * (empty CMS body). Leave false when CMS always returns real payloads.
+   */
+  mergeEditorJsStaticDemo: false,
+  /**
+   * Overlay static Editor.js sample only for these blog `_id` values from `/blogs/:blog_id` (Network tab → blog payload `_id`).
+   */
+  editorJsStaticDemoBlogIds: [] as string[],
 };

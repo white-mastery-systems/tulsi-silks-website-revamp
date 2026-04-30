@@ -1,5 +1,5 @@
 import { Component, OnInit, Inject, PLATFORM_ID } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { isPlatformBrowser } from '@angular/common';
 import { ApiService } from '../../services/api.service';
@@ -19,6 +19,7 @@ declare const fbq: Function;
 export class CartComponent implements OnInit {
 
   pageLoader: boolean; btnLoader: boolean;
+  errorMsg: string;
   imgBaseUrl: string = environment.img_baseurl;
   list: any = []; cartTotal: any; cartWeight: any; cartQty: any;
   tempCartTotal: any; tempMinCheckoutValue: any;
@@ -32,7 +33,7 @@ export class CartComponent implements OnInit {
 
   constructor(@Inject(PLATFORM_ID) private platformId: Object,
     private cartService: CartlistService, public cc: CurrencyConversionService, public commonService: CommonService,
-    private router: Router, private storeApi: StoreApiService, private api: ApiService
+    private router: Router, private route: ActivatedRoute, private storeApi: StoreApiService, private api: ApiService
   ) {
     this.subscription = this.commonService.currency_type.subscribe(currency => {
       this.findCurrency();
@@ -43,9 +44,36 @@ export class CartComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.list = []; this.unique_product_list = [];
+    this.list = []; this.unique_product_list = []; this.errorMsg = null;
+    if(isPlatformBrowser(this.platformId)) {
+      const waToken = this.route.snapshot.queryParamMap.get('token');
+      if(waToken) {
+        this.pageLoader = true;
+        this.api.WHATSAPP_VALIDATE_CART_TOKEN(waToken).subscribe(result => {
+          if(result.status) {
+            // Always let the WhatsApp cart link override any stale browser session/cart.
+            this.commonService.customer_token = result.token;
+            localStorage.setItem('customer_token', result.token);
+            this.cartService.resetCartList(result.cart_list);
+            this.errorMsg = null;
+          }
+          else {
+            this.errorMsg = result.message || 'Unable to open cart link';
+          }
+          this.loadCartPage();
+        }, () => {
+          this.errorMsg = 'Unable to open cart link';
+          this.loadCartPage();
+        });
+        return;
+      }
+    }
+    this.loadCartPage();
+  }
+
+  loadCartPage(): void {
     // run in browser side(for overcome ssr 504 Gateway Error)
-    if(isPlatformBrowser(this.platformId) && this.cartService.cart_list.length) {
+    if(!this.errorMsg && isPlatformBrowser(this.platformId) && this.cartService.cart_list.length) {
       this.pageLoader = true;
       this.storeApi.UPDATE_CARTLIST({ store_id: this.commonService.store_id, cart_list: this.cartService.cart_list }).subscribe(result => {
         if(result.status) {
@@ -73,10 +101,13 @@ export class CartComponent implements OnInit {
         else console.log("response", result);
         setTimeout(() => {
           this.pageLoader = false;
-          if(this.commonService.store_properties.pickup_locations.length && this.commonService.application_setting.disable_delivery) this.orderType = 'pickup';
+          if(this.commonService.store_properties?.pickup_locations?.length && this.commonService.application_setting?.disable_delivery) this.orderType = 'pickup';
         }, 500);
+      }, () => {
+        this.pageLoader = false;
       });
     }
+    else this.pageLoader = false;
     if(this.commonService.storeDataLoaded) this.setPageSeo();
   }
 
