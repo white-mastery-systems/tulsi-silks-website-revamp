@@ -308,5 +308,6 @@ If you used **one PR per major**, production typically receives merges in order 
 | Milestone | Branch (recommended) | Notes |
 |-----------|----------------------|--------|
 | **13 → 14** | `upgrade/angular-14` | `ng update` to v14; Universal + youtube-player → 14; `ngx-bootstrap` ^9; `angularx-qrcode` ^14; `.npmrc` with `legacy-peer-deps=true` for `ng-connection-service` outdated peers; `analyze` script uses `--configuration production`; `tsconfig` target **ES2020** (CLI migration); `defaultProject` removed from `angular.json`. Verified: `ng build --configuration=development`, `ng run ecommerce:server:development`. |
+| **14 → 15** | `upgrade/angular-15` | `ng update` to v15; TypeScript **~4.9.5**; Universal + youtube-player → 15; `ngx-bootstrap` **^10.3.0**; `angularx-qrcode` **^15.0.1**; `zone.js` **~0.12.0**; `server.ts` uses `import 'zone.js/node'` (replaces deprecated `zone.js/dist/zone-node`). CLI migrations: removed `.browserslistrc` (defaults), `main.server.ts` no longer exports `renderModule`, `test.ts` / `tsconfig` **ES2022** + `useDefineForClassFields`, `angular.json` builder cleanup. Verified: `ng build --configuration=development`, `ng run ecommerce:server:development`. |
 
-Next: create branch `upgrade/angular-14`, commit, push, open PR → merge, then branch `upgrade/angular-15` from updated `main` for the next hop.
+Next: commit on branch `upgrade/angular-15`, push, open PR → merge, then branch `upgrade/angular-16` for the next hop.
