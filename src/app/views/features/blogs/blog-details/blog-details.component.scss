@@ -827,3 +827,76 @@
   }
 }
 
+/* Related blogs (right sidebar) — keep existing article layout intact */
+.premium-blog-detail__article-row {
+  display: block;
+}
+
+@media (min-width: 992px) {
+  .premium-blog-detail__article-row {
+    display: grid;
+    /* Keep existing blog detail reading column */
+    grid-template-columns: minmax(0, 42rem) 320px;
+    column-gap: 2rem;
+    align-items: flex-start;
+    justify-content: center;
+  }
+
+  .premium-blog-detail__article-row > .tulsi-blog-detail__inner {
+    /* Restore original inner spacing/width so left column matches existing design */
+    max-width: 42rem;
+    width: 100%;
+    min-width: 0;
+    margin: 0;
+    padding: 0 0.25rem;
+  }
+
+  .premium-blog-detail__aside {
+    width: 320px;
+    position: sticky;
+    top: 110px;
+    align-self: flex-start;
+  }
+}
+
+.premium-blog-detail__aside-card {
+  background: #ffffff;
+  border: 1px solid rgba(31, 27, 36, 0.08);
+  border-radius: $premium-radius-md;
+  padding: 1.15rem 1.1rem;
+  box-shadow: 0 10px 30px rgba(26, 23, 28, 0.06);
+}
+
+.premium-blog-detail__aside-title {
+  margin: 0 0 0.85rem;
+  font-family: $ej-font-ui;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(26, 23, 28, 0.62);
+}
+
+.premium-blog-detail__aside-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.premium-blog-detail__aside-link {
+  display: inline-block;
+  text-decoration: none;
+  font-family: $premium-font-display;
+  font-size: 1rem;
+  line-height: 1.35;
+  color: $premium-ink;
+
+  &:hover {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+}
+

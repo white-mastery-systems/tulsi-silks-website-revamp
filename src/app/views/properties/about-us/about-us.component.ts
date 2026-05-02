@@ -1,4 +1,4 @@
-import { Component, OnInit, PLATFORM_ID, Inject } from '@angular/core';
+import { Component, OnInit, AfterViewInit, PLATFORM_ID, Inject } from '@angular/core';
 import { isPlatformBrowser, DOCUMENT } from '@angular/common';
 import { CommonService } from '../../../services/common.service';
 import { environment } from '../../../../environments/environment';
@@ -21,7 +21,15 @@ interface HeritageItem {
   styleUrls: ['./about-us.component.scss']
 })
 
-export class AboutUsComponent implements OnInit {
+export class AboutUsComponent implements OnInit, AfterViewInit {
+
+  private static readonly MASTHEAD_FALLBACK_PX = 80;
+
+  fullBleedHeroHeightCss = `calc(100vh - ${AboutUsComponent.MASTHEAD_FALLBACK_PX}px)`;
+
+  get fsHeroHeightStyle(): string | null {
+    return this.template_setting?.primary_slider === 'fs_slider' ? this.fullBleedHeroHeightCss : null;
+  }
 
   imgBaseUrl = 'assets/';
   pageLoader: boolean;
@@ -75,6 +83,12 @@ export class AboutUsComponent implements OnInit {
     if (isPlatformBrowser(this.platformId)) {
       this.screen_width = window.innerWidth;
       this.loadSliderData();
+    }
+  }
+
+  ngAfterViewInit(): void {
+    if (isPlatformBrowser(this.platformId)) {
+      this.setSliderHeight();
     }
   }
 
@@ -155,16 +169,15 @@ export class AboutUsComponent implements OnInit {
   }
 
   setSliderHeight() {
-      // For set body margin-top and main-slider height
-      if(environment.template_setting.primary_slider=='fs_slider') {
-        let mastHeight = this.document.getElementById("headroom-head").offsetHeight;
-        this.document.body.style.marginTop = mastHeight+'px';
-        let slider_height = "calc(100vh - " + mastHeight + "px)";
-        let classList = this.document.getElementsByClassName('dynamic-height');
-        for(let i=0; i<classList.length; i++) {
-          classList[i].style.height = slider_height;
-        }
-      }
-    }
+    if (!isPlatformBrowser(this.platformId)) return;
+    if (environment.template_setting.primary_slider !== 'fs_slider') return;
+    const raw = this.document.getElementById('headroom-head')?.offsetHeight;
+    const n = Number(
+      typeof raw === 'number' && !Number.isNaN(raw) ? raw : AboutUsComponent.MASTHEAD_FALLBACK_PX
+    );
+    const mastHeight = Number.isFinite(n) && n >= 0 ? Math.trunc(n) : AboutUsComponent.MASTHEAD_FALLBACK_PX;
+    this.fullBleedHeroHeightCss = `calc(100vh - ${mastHeight}px)`;
+    this.document.body.style.marginTop = `${mastHeight}px`;
+  }
 
 }

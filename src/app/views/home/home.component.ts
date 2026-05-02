@@ -1,4 +1,4 @@
-import { Component, OnInit, Inject, PLATFORM_ID } from '@angular/core';
+import { Component, OnInit, AfterViewInit, OnDestroy, Inject, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser, DOCUMENT } from '@angular/common';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
@@ -18,13 +18,37 @@ declare const Plyr: any;
   styleUrls: ['./home.component.scss']
 })
 
-export class HomeComponent implements OnInit {
+export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
+
+  /** Matches `index.html` preload for `.dynamic-height` when masthead is not measurable yet. */
+  private static readonly MASTHEAD_FALLBACK_PX = 80;
+
+  /**
+   * Bound in template for full-bleed hero (`fs_slider`) so SSR / view-source never emits invalid CSS.
+   * Updated on the client after masthead height is known.
+   */
+  fullBleedHeroHeightCss = `calc(100vh - ${HomeComponent.MASTHEAD_FALLBACK_PX}px)`;
+
+  get fsHeroHeightStyle(): string | null {
+    return this.template_setting?.primary_slider === 'fs_slider' ? this.fullBleedHeroHeightCss : null;
+  }
 
   styleIndex: number = 0; maxWidth: number = 720;
   imgBaseUrl: string = environment.img_baseurl;
   template_setting = environment.template_setting;
   plyrLoaded: boolean; subscription: Subscription;
   storeSubscription: Subscription; pageLoader: boolean;
+  private headerResizeObserver: ResizeObserver | undefined;
+  private sliderHeightResizeTimer: ReturnType<typeof setTimeout> | undefined;
+  private readonly boundOnWindowResize = (): void => {
+    if (this.sliderHeightResizeTimer !== undefined) {
+      clearTimeout(this.sliderHeightResizeTimer);
+    }
+    this.sliderHeightResizeTimer = setTimeout(() => {
+      this.sliderHeightResizeTimer = undefined;
+      this.setSliderHeight();
+    }, 150);
+  };
   currType: string; activeIndex = 0;
 
   homeSchema: any = [
@@ -166,6 +190,24 @@ export class HomeComponent implements OnInit {
     if(this.commonService.storeLoaded) this.loadHomeContent();
   }
 
+  ngAfterViewInit(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+    if (environment.template_setting.primary_slider !== 'fs_slider') return;
+    this.setSliderHeight();
+    window.addEventListener('resize', this.boundOnWindowResize);
+    const head = this.document.getElementById('headroom-head');
+    if (typeof ResizeObserver !== 'undefined' && head) {
+      this.headerResizeObserver = new ResizeObserver(() => this.setSliderHeight());
+      this.headerResizeObserver.observe(head);
+    }
+  }
+
+  /** Pixel height of `#headroom-head` for full-bleed slider offset; safe on missing DOM / SSR. */
+  private getMastheadHeightPx(): number {
+    const raw = this.document.getElementById('headroom-head')?.offsetHeight;
+    return typeof raw === 'number' && !Number.isNaN(raw) ? raw : HomeComponent.MASTHEAD_FALLBACK_PX;
+  }
+
   loadHomeContent() {
     this.setSliderHeight();
     /* LAYOUT DETAILS */
@@ -201,7 +243,7 @@ export class HomeComponent implements OnInit {
               "type": "multiple_featured_section",
               "name": "Our Occasion",
               "heading": "Shop by Occasion",
-              "sub_heading": "From everyday to occasion wear",
+              "sub_heading": "From everyday to celebrations",
               "store_id": occasionList[0].store_id,
               "image_list": [],
               "created_on": occasionList[0].created_on,
@@ -595,16 +637,13 @@ export class HomeComponent implements OnInit {
   }
 
   setSliderHeight() {
-    // For set body margin-top and main-slider height
-    if(environment.template_setting.primary_slider=='fs_slider') {
-      let mastHeight = this.document.getElementById("headroom-head").offsetHeight;
-      this.document.body.style.marginTop = mastHeight+'px';
-      let slider_height = "calc(100vh - " + mastHeight + "px)";
-      let classList = this.document.getElementsByClassName('dynamic-height');
-      for(let i=0; i<classList.length; i++) {
-        classList[i].style.height = slider_height;
-      }
-    }
+    if (!isPlatformBrowser(this.platformId)) return;
+    if (environment.template_setting.primary_slider !== 'fs_slider') return;
+    const raw = this.getMastheadHeightPx();
+    const n = Number(raw);
+    const mastHeight = Number.isFinite(n) && n >= 0 ? Math.trunc(n) : HomeComponent.MASTHEAD_FALLBACK_PX;
+    this.fullBleedHeroHeightCss = `calc(100vh - ${mastHeight}px)`;
+    this.document.body.style.marginTop = `${mastHeight}px`;
   }
 
   /* AI Styling */
@@ -692,6 +731,13 @@ export class HomeComponent implements OnInit {
   /* ### AI Styling ### */
 
   ngOnDestroy() {
+    if (isPlatformBrowser(this.platformId)) {
+      window.removeEventListener('resize', this.boundOnWindowResize);
+      if (this.sliderHeightResizeTimer !== undefined) {
+        clearTimeout(this.sliderHeightResizeTimer);
+      }
+      this.headerResizeObserver?.disconnect();
+    }
     this.subscription.unsubscribe();
     this.storeSubscription.unsubscribe();
     this.commonService.removeElement('home-jsonld');

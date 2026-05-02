@@ -36,8 +36,8 @@
   <!-- #Primary Highlights -->
 
   <!-- Primary Main Slider -->
-  <section *ngIf="template_setting?.primary_slider && commonService?.primary_main_slider?.length" class="dynamic-height primary-section home-slider">
-    <div class="swiper-container dynamic-height" [ngClass]="(commonService.primary_main_slider?.length>1 && commonService.desktop_device)? 'desktop_pms': (commonService.primary_main_slider?.length>1)? 'pms': ''" appHomeSwiper>
+  <section *ngIf="template_setting?.primary_slider && commonService?.primary_main_slider?.length" class="dynamic-height primary-section home-slider" [style.height]="fsHeroHeightStyle">
+    <div class="swiper-container dynamic-height" [style.height]="fsHeroHeightStyle" [ngClass]="(commonService.primary_main_slider?.length>1 && commonService.desktop_device)? 'desktop_pms': (commonService.primary_main_slider?.length>1)? 'pms': ''" appHomeSwiper>
       <div class="swiper-wrapper">
         <div class="swiper-slide" *ngFor="let x of commonService.primary_main_slider; let j=index;" (click)="(x?.btn_status)? '': commonService.onPageRedirect(x);">
           <!-- mobile -->
@@ -95,8 +95,8 @@
 
     <!-- Main Slider -->
     <ng-container *ngIf="segment.type=='primary_slider' || segment.type=='slider'">
-      <section *ngIf="segment.image_list?.length" class="dynamic-height primary-section home-slider">
-        <div class="swiper-container dynamic-height" [ngClass]="(segment.image_list?.length>1 && commonService.desktop_device)? 'desktopcarousal_'+(i+1): (segment.image_list?.length>1)? 'carousal_'+(i+1): ''" appHomeSwiper>
+      <section *ngIf="segment.image_list?.length" class="dynamic-height primary-section home-slider" [style.height]="fsHeroHeightStyle">
+        <div class="swiper-container dynamic-height" [style.height]="fsHeroHeightStyle" [ngClass]="(segment.image_list?.length>1 && commonService.desktop_device)? 'desktopcarousal_'+(i+1): (segment.image_list?.length>1)? 'carousal_'+(i+1): ''" appHomeSwiper>
           <div class="swiper-wrapper">
             <div class="swiper-slide" *ngFor="let x of segment.image_list; let j=index;" (click)="(x?.btn_status)? '': commonService.onPageRedirect(x);">
               <!-- mobile -->
@@ -159,9 +159,12 @@
               </div>
             </div>
             <div class="titles">
-              <h2>30 Years of Timeless Excellence, Where Every Saree Is Truly Unique</h2>
+              <!-- <h2>30 Years of Timeless Excellence, Where Every Saree Is Truly Unique</h2>
               <p>For over 30 years, Tulsi Silks has been weaving tradition into every saree, with each uniquely handcrafted piece reflecting a legacy of timeless elegance and unmatched craftsmanship</p>               
-              <button routerLink="/about-us" class="primary-btn mt-3">Learn More</button>
+              <button routerLink="/about-us" class="primary-btn mt-3">Learn More</button> -->
+              <h2>Draped in Legacy Since 1993</h2>
+              <p>What began with a deep understanding of textiles has grown into a name trusted across generations, bringing together heritage weaves, evolving styles, and a way of service that feels personal.</p>               
+              <button routerLink="/about-us" class="primary-btn mt-3">Our Story</button>
             </div>              
           </div>          
         </div>

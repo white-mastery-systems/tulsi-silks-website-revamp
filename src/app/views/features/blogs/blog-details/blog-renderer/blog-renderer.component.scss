@@ -40,6 +40,11 @@
   padding-left: 1.35rem;
 }
 
+/* Unsupported blocks are rendered as hidden placeholders (debuggable in DOM). */
+:host ::ng-deep .ej-unsupported {
+  display: none;
+}
+
 /* TOC accordion — injected via innerHTML; pierce encapsulation */
 :host ::ng-deep .ej-toc--accordion {
   margin: 1.75rem 0;

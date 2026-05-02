@@ -287,5 +287,12 @@ export function createEditorJsCustomParsers(imgBaseUrl: string): Record<string, 
         `</section>`
       );
     },
+
+    /** Fallback for unsupported EditorJS block types (kept hidden; prevents renderer crashes). */
+    unsupported: ({ data }) => {
+      const t = data?.originalType != null ? String(data.originalType) : '';
+      const msg = t ? `Unsupported block: ${t}` : 'Unsupported block';
+      return `<div class="ej-unsupported" aria-hidden="true">${escapeHtml(msg)}</div>`;
+    },
   };
 }

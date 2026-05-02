@@ -36,6 +36,8 @@ export class BlogDetailsComponent implements OnInit {
   private ejHashLinkCaptureCleanup?: () => void;
   showScrollTools = false;
   private readonly tocAnchorId = 'ej-toc';
+  relatedBlogs: any[] = [];
+  relatedBlogsLoading = false;
 
   constructor(
     private router: Router, private storeApi: StoreApiService, private activeRoute: ActivatedRoute, public swiperService: SwiperService,
@@ -168,6 +170,7 @@ export class BlogDetailsComponent implements OnInit {
           }
           this.findCurrency();
           this.updateMetaData();
+          this.loadRelatedBlogs();
         }
         else {
           console.log("response", result);
@@ -182,6 +185,68 @@ export class BlogDetailsComponent implements OnInit {
         }, 500);
       });
     });
+  }
+
+  private loadRelatedBlogs(): void {
+    const current = this.blog_details;
+    if (!current) return;
+    this.relatedBlogsLoading = true;
+    this.storeApi.BLOG_LIST(0, 24).subscribe({
+      next: (res) => {
+        const list = Array.isArray(res?.list) ? res.list : [];
+        const currentId = current?._id != null ? String(current._id) : '';
+        const currentSlug = current?.seo_details?.page_url != null ? String(current.seo_details.page_url) : '';
+        const currentTags = new Set<string>(
+          Array.isArray(current?.tags) ? current.tags.map((t) => String(t).toLowerCase()) : []
+        );
+        const currentCat = current?.category != null ? String(current.category).toLowerCase() : '';
+
+        const base = list.filter((x: any) => {
+          if (!x) return false;
+          const id = x._id != null ? String(x._id) : '';
+          const slug = x?.seo_details?.page_url != null ? String(x.seo_details.page_url) : '';
+          if (currentId && id && id === currentId) return false;
+          if (currentSlug && slug && slug === currentSlug) return false;
+          return true;
+        });
+
+        const scored = base
+          .map((x: any) => {
+            const tags = Array.isArray(x.tags) ? x.tags.map((t: any) => String(t).toLowerCase()) : [];
+            let score = 0;
+            const cat = x?.category != null ? String(x.category).toLowerCase() : '';
+            if (currentCat && cat && cat === currentCat) score += 3;
+            if (currentTags.size && tags.length) {
+              for (const t of tags) {
+                if (currentTags.has(t)) score += 1;
+              }
+            }
+            const ts = x?.created_on ? new Date(x.created_on).getTime() : 0;
+            return { x, score, ts };
+          })
+          .sort((a: any, b: any) => (b.score - a.score) || (b.ts - a.ts))
+          .slice(0, 4)
+          .map((row: any) => row.x);
+
+        // If scoring yields nothing, fall back to “recent posts” (still excluding current).
+        this.relatedBlogs = scored.length ? scored : base.slice(0, 4);
+        this.relatedBlogsLoading = false;
+      },
+      error: () => {
+        this.relatedBlogs = [];
+        this.relatedBlogsLoading = false;
+      },
+    });
+  }
+
+  onSelectRelatedBlog(_blog: any): void {
+    // no-op (blog card navigation handled via routerLink)
+  }
+
+  relatedBlogLinkArray(x: any): string[] {
+    if (!x) return ['/blogs'];
+    if (x.seo_status && x.seo_details?.page_url) return ['/blogs/' + x.seo_details.page_url];
+    return ['/blogs/' + x._id];
   }
 
   exploreAll(segment) {

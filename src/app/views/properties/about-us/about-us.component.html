@@ -1,7 +1,7 @@
  <section *ngIf="!pageLoader" class="over-all smooth-fadein">
  
-  <section *ngIf="primary_main_slider?.length" class="dynamic-height primary-section home-slider">
-    <div class="swiper-container dynamic-height" [ngClass]="(primary_main_slider?.length>1 && commonService.desktop_device)? 'desktop_pms': (primary_main_slider?.length>1)? 'pms': ''" appHomeSwiper>
+  <section *ngIf="primary_main_slider?.length" class="dynamic-height primary-section home-slider" [style.height]="fsHeroHeightStyle">
+    <div class="swiper-container dynamic-height" [style.height]="fsHeroHeightStyle" [ngClass]="(primary_main_slider?.length>1 && commonService.desktop_device)? 'desktop_pms': (primary_main_slider?.length>1)? 'pms': ''" appHomeSwiper>
       <div class="swiper-wrapper">
         <div class="swiper-slide" *ngFor="let x of primary_main_slider; let j=index;" (click)="(x?.btn_status)? '': onPageRedirect(x);">
         <!-- desktop -->
