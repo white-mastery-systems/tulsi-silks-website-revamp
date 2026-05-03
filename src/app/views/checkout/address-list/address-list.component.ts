@@ -7,9 +7,10 @@ import { CurrencyConversionService } from '../../../services/currency-conversion
 import { environment } from '../../../../environments/environment';
 
 @Component({
-  selector: 'app-address-list',
-  templateUrl: './address-list.component.html',
-  styleUrls: ['./address-list.component.scss']
+    selector: 'app-address-list',
+    templateUrl: './address-list.component.html',
+    styleUrls: ['./address-list.component.scss'],
+    standalone: false
 })
 
 export class AddressListComponent implements OnInit {

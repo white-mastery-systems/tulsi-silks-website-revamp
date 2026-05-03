@@ -2,7 +2,8 @@ import { Directive, ElementRef, Input, Renderer2, Inject, PLATFORM_ID } from '@a
 import { isPlatformBrowser } from '@angular/common';
 
 @Directive({
-  selector: '[appImgIntersection]'
+    selector: '[appImgIntersection]',
+    standalone: false
 })
 
 export class ImgIntersectionDirective {

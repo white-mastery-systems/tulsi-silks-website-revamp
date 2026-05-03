@@ -4,9 +4,10 @@ import { StoreApiService } from '../../../services/store-api.service';
 import { environment } from '../../../../environments/environment';
 
 @Component({
-  selector: 'app-service-unavailable',
-  templateUrl: './service-unavailable.component.html',
-  styleUrls: ['./service-unavailable.component.scss']
+    selector: 'app-service-unavailable',
+    templateUrl: './service-unavailable.component.html',
+    styleUrls: ['./service-unavailable.component.scss'],
+    standalone: false
 })
 
 export class ServiceUnavailableComponent implements OnInit {

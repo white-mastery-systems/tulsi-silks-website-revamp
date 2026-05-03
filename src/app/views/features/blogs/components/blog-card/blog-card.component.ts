@@ -1,9 +1,10 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 
 @Component({
-  selector: 'app-blog-card',
-  templateUrl: './blog-card.component.html',
-  styleUrls: ['./blog-card.component.scss'],
+    selector: 'app-blog-card',
+    templateUrl: './blog-card.component.html',
+    styleUrls: ['./blog-card.component.scss'],
+    standalone: false
 })
 export class BlogCardComponent {
   @Input() item: any;

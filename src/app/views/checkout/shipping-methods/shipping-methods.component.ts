@@ -8,9 +8,10 @@ import { CommonService } from '../../../services/common.service';
 import { CurrencyConversionService } from '../../../services/currency-conversion.service';
 
 @Component({
-  selector: 'app-shipping-methods',
-  templateUrl: './shipping-methods.component.html',
-  styleUrls: ['./shipping-methods.component.scss']
+    selector: 'app-shipping-methods',
+    templateUrl: './shipping-methods.component.html',
+    styleUrls: ['./shipping-methods.component.scss'],
+    standalone: false
 })
 export class ShippingMethodsComponent implements OnInit {
 

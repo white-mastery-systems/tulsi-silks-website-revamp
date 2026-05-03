@@ -6,9 +6,10 @@ import { StoreApiService } from '../../../services/store-api.service';
 import { CommonService } from '../../../services/common.service';
 
 @Component({
-  selector: 'app-discounts',
-  templateUrl: './discounts.component.html',
-  styleUrls: ['./discounts.component.scss']
+    selector: 'app-discounts',
+    templateUrl: './discounts.component.html',
+    styleUrls: ['./discounts.component.scss'],
+    standalone: false
 })
 
 export class DiscountsComponent implements OnInit {

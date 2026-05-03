@@ -6,8 +6,9 @@ import { environment } from '../../../environments/environment';
 import { CommonService } from '../../services/common.service';
 
 @Directive({
-  selector: '[appSmallImg]',
-  host: { '(error)':'placeholder()' }
+    selector: '[appSmallImg]',
+    host: { '(error)': 'placeholder()' },
+    standalone: false
 })
 
 export class SmallImgDirective {

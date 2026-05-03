@@ -1,7 +1,8 @@
 import {Directive, EventEmitter, HostListener, Output} from '@angular/core';
 
 @Directive({
-  selector: '[ngModel][appLowercase]'
+    selector: '[ngModel][appLowercase]',
+    standalone: false
 })
 
 export class LowercaseDirective {

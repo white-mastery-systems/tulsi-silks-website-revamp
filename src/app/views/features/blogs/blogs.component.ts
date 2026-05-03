@@ -4,9 +4,10 @@ import { StoreApiService } from '../../../services/store-api.service';
 import { CommonService } from '../../../services/common.service';
 
 @Component({
-  selector: 'app-blogs',
-  templateUrl: './blogs.component.html',
-  styleUrls: ['./blogs.component.scss']
+    selector: 'app-blogs',
+    templateUrl: './blogs.component.html',
+    styleUrls: ['./blogs.component.scss'],
+    standalone: false
 })
 
 export class BlogsComponent implements OnInit {

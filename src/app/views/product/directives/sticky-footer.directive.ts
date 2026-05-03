@@ -8,7 +8,8 @@ import {
 import { isPlatformBrowser, DOCUMENT } from '@angular/common';
 
 @Directive({
-  selector: '[appStickyFooter]',
+    selector: '[appStickyFooter]',
+    standalone: false
 })
 
 export class StickyFooterDirective implements AfterViewInit {

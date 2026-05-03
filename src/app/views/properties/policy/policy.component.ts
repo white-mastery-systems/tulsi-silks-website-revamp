@@ -6,9 +6,10 @@ import { CommonService } from '../../../services/common.service';
 import { environment } from '../../../../environments/environment';
 
 @Component({
-  selector: 'app-policy',
-  templateUrl: './policy.component.html',
-  styleUrls: ['./policy.component.scss']
+    selector: 'app-policy',
+    templateUrl: './policy.component.html',
+    styleUrls: ['./policy.component.scss'],
+    standalone: false
 })
 
 export class PolicyComponent implements OnInit {

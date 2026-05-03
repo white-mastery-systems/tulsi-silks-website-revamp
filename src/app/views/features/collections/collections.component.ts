@@ -5,9 +5,10 @@ import { StoreApiService } from '../../../services/store-api.service';
 import { CommonService } from '../../../services/common.service';
 
 @Component({
-  selector: 'app-collections',
-  templateUrl: './collections.component.html',
-  styleUrls: ['./collections.component.scss']
+    selector: 'app-collections',
+    templateUrl: './collections.component.html',
+    styleUrls: ['./collections.component.scss'],
+    standalone: false
 })
 
 export class CollectionsComponent implements OnInit {

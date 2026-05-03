@@ -3,8 +3,9 @@ import { isPlatformBrowser } from '@angular/common';
 import { CommonService } from '../../../services/common.service';
 
 @Component({
-  selector: 'app-vendor-login',
-  templateUrl: './vendor-login.component.html'
+    selector: 'app-vendor-login',
+    templateUrl: './vendor-login.component.html',
+    standalone: false
 })
 
 export class VendorLoginComponent implements OnInit {

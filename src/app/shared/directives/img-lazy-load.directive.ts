@@ -5,8 +5,9 @@ import lazySizes from 'lazysizes';
 import { environment } from '../../../environments/environment';
 
 @Directive({
-  selector: '[appImgLazyLoad]',
-  host: { '(error)':'placeholder()' }
+    selector: '[appImgLazyLoad]',
+    host: { '(error)': 'placeholder()' },
+    standalone: false
 })
 
 export class ImgLazyLoadDirective {

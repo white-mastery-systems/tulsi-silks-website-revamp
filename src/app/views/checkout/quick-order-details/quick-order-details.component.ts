@@ -9,9 +9,10 @@ import { CommonService } from '../../../services/common.service';
 import { CurrencyConversionService } from '../../../services/currency-conversion.service';
 
 @Component({
-  selector: 'app-quick-order-details',
-  templateUrl: './quick-order-details.component.html',
-  styleUrls: ['./quick-order-details.component.scss']
+    selector: 'app-quick-order-details',
+    templateUrl: './quick-order-details.component.html',
+    styleUrls: ['./quick-order-details.component.scss'],
+    standalone: false
 })
 
 export class QuickOrderDetailsComponent implements OnInit {

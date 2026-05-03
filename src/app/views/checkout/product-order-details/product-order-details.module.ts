@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { QRCodeModule } from 'angularx-qrcode';
+import { QRCodeComponent } from 'angularx-qrcode';
 
 import { ProductOrderDetailsRoutingModule } from './product-order-details-routing.module';
 import { SharedModule } from '../../../shared/shared.module';
@@ -12,7 +12,7 @@ import { ProductOrderDetailsComponent } from './product-order-details.component'
   ],
   imports: [
     SharedModule,
-    QRCodeModule,
+    QRCodeComponent,
     ProductOrderDetailsRoutingModule
   ]
 })

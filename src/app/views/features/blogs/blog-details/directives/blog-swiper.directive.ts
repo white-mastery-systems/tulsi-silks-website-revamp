@@ -4,7 +4,8 @@ import { DynamicAssetLoaderService } from '../../../../../services/dynamic-asset
 declare const Swiper: any;
 
 @Directive({
-  selector: '[appBlogSwiper]'
+    selector: '[appBlogSwiper]',
+    standalone: false
 })
 
 export class BlogSwiperDirective {

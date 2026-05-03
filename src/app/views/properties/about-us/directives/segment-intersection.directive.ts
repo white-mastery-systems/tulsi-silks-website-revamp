@@ -8,7 +8,8 @@ import {
 import { isPlatformBrowser } from '@angular/common';
 
 @Directive({
-  selector: '[appSegmentIntersection]',
+    selector: '[appSegmentIntersection]',
+    standalone: false
 })
 
 export class SegmentIntersectionDirective implements AfterViewInit {

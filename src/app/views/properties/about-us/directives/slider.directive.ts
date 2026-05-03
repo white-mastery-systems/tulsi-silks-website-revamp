@@ -5,7 +5,8 @@ import { delay } from 'rxjs';
 declare const Swiper: any;
 ​
 @Directive({
-  selector: '[appHomeSwiper]'
+    selector: '[appHomeSwiper]',
+    standalone: false
 })
 
 export class SliderDirective {

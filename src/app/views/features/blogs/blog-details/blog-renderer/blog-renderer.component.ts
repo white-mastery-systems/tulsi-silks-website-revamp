@@ -14,9 +14,10 @@ export type BlogRendererSegment =
  * `productCarousel` blocks are spliced out and rendered as `app-blog-product-carousel` (Swiper).
  */
 @Component({
-  selector: 'app-blog-renderer',
-  templateUrl: './blog-renderer.component.html',
-  styleUrls: ['./blog-renderer.component.scss'],
+    selector: 'app-blog-renderer',
+    templateUrl: './blog-renderer.component.html',
+    styleUrls: ['./blog-renderer.component.scss'],
+    standalone: false
 })
 export class BlogRendererComponent implements OnChanges {
   @Input() blocks: any[] | undefined;

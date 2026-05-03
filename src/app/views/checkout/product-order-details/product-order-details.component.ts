@@ -16,9 +16,10 @@ declare var window: any;
 declare const Razorpay: any;
 
 @Component({
-  selector: 'app-product-order-details',
-  templateUrl: './product-order-details.component.html',
-  styleUrls: ['./product-order-details.component.scss']
+    selector: 'app-product-order-details',
+    templateUrl: './product-order-details.component.html',
+    styleUrls: ['./product-order-details.component.scss'],
+    standalone: false
 })
 
 export class ProductOrderDetailsComponent implements OnInit {

@@ -5,9 +5,10 @@ import { CurrencyConversionService } from '../../../services/currency-conversion
 import { environment } from '../../../../environments/environment';
 
 @Component({
-  selector: 'app-appointment-list',
-  templateUrl: './appointment-list.component.html',
-  styleUrls: ['./appointment-list.component.scss']
+    selector: 'app-appointment-list',
+    templateUrl: './appointment-list.component.html',
+    styleUrls: ['./appointment-list.component.scss'],
+    standalone: false
 })
 
 export class AppointmentListComponent implements OnInit {

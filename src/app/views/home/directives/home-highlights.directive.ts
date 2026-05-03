@@ -5,7 +5,8 @@ declare const Swiper: any;
 declare const $: any;
 ​
 @Directive({
-  selector: '[appHomeHighlights]'
+    selector: '[appHomeHighlights]',
+    standalone: false
 })
 
 export class HomeHighlightsDirective {

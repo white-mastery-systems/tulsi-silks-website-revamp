@@ -4,9 +4,10 @@ import { StoreApiService } from '../../services/store-api.service';
 import { CommonService } from '../../services/common.service';
 
 @Component({
-  selector: 'app-stories',
-  templateUrl: './stories.component.html',
-  styleUrls: ['./stories.component.scss']
+    selector: 'app-stories',
+    templateUrl: './stories.component.html',
+    styleUrls: ['./stories.component.scss'],
+    standalone: false
 })
 
 export class StoriesComponent implements OnInit {

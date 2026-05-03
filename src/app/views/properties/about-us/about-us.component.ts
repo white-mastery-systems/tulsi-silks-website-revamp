@@ -16,9 +16,10 @@ interface HeritageItem {
 }
 
 @Component({
-  selector: 'app-about-us',
-  templateUrl: './about-us.component.html',
-  styleUrls: ['./about-us.component.scss']
+    selector: 'app-about-us',
+    templateUrl: './about-us.component.html',
+    styleUrls: ['./about-us.component.scss'],
+    standalone: false
 })
 
 export class AboutUsComponent implements OnInit, AfterViewInit {

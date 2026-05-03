@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { APP_ID, NgModule } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
@@ -16,7 +16,7 @@ import { SharedModule } from './shared/shared.module';
 @NgModule({
   declarations: [AppComponent],
   imports: [
-    BrowserModule.withServerTransition({ appId: 'serverApp' }),
+    BrowserModule,
     HammerModule,
     BrowserAnimationsModule,
     AppRoutingModule,
@@ -24,7 +24,12 @@ import { SharedModule } from './shared/shared.module';
     SharedModule,
     FormsModule,
   ],
-  providers: [DatePipe, DeviceDetectorService, provideHttpClient(withInterceptorsFromDi())],
+  providers: [
+    { provide: APP_ID, useValue: 'serverApp' },
+    DatePipe,
+    DeviceDetectorService,
+    provideHttpClient(withInterceptorsFromDi()),
+  ],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

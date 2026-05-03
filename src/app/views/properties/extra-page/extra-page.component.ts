@@ -6,9 +6,10 @@ import { CommonService } from '../../../services/common.service';
 import { environment } from '../../../../environments/environment';
 
 @Component({
-  selector: 'app-extra-page',
-  templateUrl: './extra-page.component.html',
-  styleUrls: ['./extra-page.component.scss']
+    selector: 'app-extra-page',
+    templateUrl: './extra-page.component.html',
+    styleUrls: ['./extra-page.component.scss'],
+    standalone: false
 })
 
 export class ExtraPageComponent implements OnInit {

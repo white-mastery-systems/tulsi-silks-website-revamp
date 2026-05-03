@@ -1,11 +1,12 @@
 import { Directive, Input } from '@angular/core';
 
 @Directive({
-  selector: 'img[imgBroken]',
-  host: {
-    '(error)': 'updateUrl()',
-    '[src]': 'src'
-  }
+    selector: 'img[imgBroken]',
+    host: {
+        '(error)': 'updateUrl()',
+        '[src]': 'src'
+    },
+    standalone: false
 })
 
 export class ImgBrokenDirective {

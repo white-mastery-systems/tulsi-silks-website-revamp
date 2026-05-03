@@ -4,9 +4,10 @@ import { CommonService } from '../../../services/common.service';
 import { environment } from '../../../../environments/environment';
 
 @Component({
-  selector: 'app-feedback',
-  templateUrl: './feedback.component.html',
-  styleUrls: ['./feedback.component.scss']
+    selector: 'app-feedback',
+    templateUrl: './feedback.component.html',
+    styleUrls: ['./feedback.component.scss'],
+    standalone: false
 })
 
 export class FeedbackComponent implements OnInit {

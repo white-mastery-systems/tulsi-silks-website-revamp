@@ -6,7 +6,8 @@ import {
 } from '@angular/core';
 
 @Directive({
-  selector: '[appButtonFlip]'
+    selector: '[appButtonFlip]',
+    standalone: false
 })
 export class ButtonFlipDirective implements AfterViewInit, OnDestroy {
   

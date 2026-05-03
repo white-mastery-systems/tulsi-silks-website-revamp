@@ -6,9 +6,10 @@ import { StoreApiService } from '../../../services/store-api.service';
 import { CurrencyConversionService } from '../../../services/currency-conversion.service';
 
 @Component({
-  selector: 'app-order-review',
-  templateUrl: './order-review.component.html',
-  styleUrls: ['./order-review.component.scss']
+    selector: 'app-order-review',
+    templateUrl: './order-review.component.html',
+    styleUrls: ['./order-review.component.scss'],
+    standalone: false
 })
 
 export class OrderReviewComponent implements OnInit {

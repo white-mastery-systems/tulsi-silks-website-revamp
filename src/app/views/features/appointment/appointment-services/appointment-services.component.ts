@@ -7,9 +7,10 @@ import { StoreApiService } from '../../../../services/store-api.service';
 import { CurrencyConversionService } from '../../../../services/currency-conversion.service';
 
 @Component({
-  selector: 'app-appointment-services',
-  templateUrl: './appointment-services.component.html',
-  styleUrls: ['./appointment-services.component.scss']
+    selector: 'app-appointment-services',
+    templateUrl: './appointment-services.component.html',
+    styleUrls: ['./appointment-services.component.scss'],
+    standalone: false
 })
 
 export class AppointmentServicesComponent implements OnInit {

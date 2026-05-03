@@ -10,9 +10,10 @@ import { CurrencyConversionService } from '../../../../services/currency-convers
 import { DynamicAssetLoaderService } from '../../../../services/dynamic-asset-loader.service';
 
 @Component({
-  selector: 'app-service-details',
-  templateUrl: './service-details.component.html',
-  styleUrls: ['./service-details.component.scss']
+    selector: 'app-service-details',
+    templateUrl: './service-details.component.html',
+    styleUrls: ['./service-details.component.scss'],
+    standalone: false
 })
 export class ServiceDetailsComponent implements OnInit {
 

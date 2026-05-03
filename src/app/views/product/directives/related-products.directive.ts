@@ -4,7 +4,8 @@ import { DynamicAssetLoaderService } from '../../../services/dynamic-asset-loade
 declare const Swiper: any;
 ​
 @Directive({
-  selector: '[appRelatedProducts]'
+    selector: '[appRelatedProducts]',
+    standalone: false
 })
 
 export class RelatedProductsDirective {

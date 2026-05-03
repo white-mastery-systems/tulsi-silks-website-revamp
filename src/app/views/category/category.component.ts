@@ -10,9 +10,10 @@ import { CurrencyConversionService } from '../../services/currency-conversion.se
 import { Options } from '@angular-slider/ngx-slider';
 
 @Component({
-  selector: 'app-category',
-  templateUrl: './category.component.html',
-  styleUrls: ['./category.component.scss']
+    selector: 'app-category',
+    templateUrl: './category.component.html',
+    styleUrls: ['./category.component.scss'],
+    standalone: false
 })
 
 export class CategoryComponent implements OnInit {

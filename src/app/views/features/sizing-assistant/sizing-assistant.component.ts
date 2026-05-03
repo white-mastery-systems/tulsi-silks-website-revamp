@@ -6,9 +6,10 @@ import { StoreApiService } from '../../../services/store-api.service';
 import { environment } from '../../../../environments/environment';
 
 @Component({
-  selector: 'app-sizing-assistant',
-  templateUrl: './sizing-assistant.component.html',
-  styleUrls: ['./sizing-assistant.component.scss']
+    selector: 'app-sizing-assistant',
+    templateUrl: './sizing-assistant.component.html',
+    styleUrls: ['./sizing-assistant.component.scss'],
+    standalone: false
 })
 
 export class SizingAssistantComponent implements OnInit {

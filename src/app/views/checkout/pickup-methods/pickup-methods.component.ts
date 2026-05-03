@@ -6,9 +6,10 @@ import { CommonService } from '../../../services/common.service';
 import { environment } from '../../../../environments/environment';
 
 @Component({
-  selector: 'app-pickup-methods',
-  templateUrl: './pickup-methods.component.html',
-  styleUrls: ['./pickup-methods.component.scss']
+    selector: 'app-pickup-methods',
+    templateUrl: './pickup-methods.component.html',
+    styleUrls: ['./pickup-methods.component.scss'],
+    standalone: false
 })
 
 export class PickupMethodsComponent implements OnInit {

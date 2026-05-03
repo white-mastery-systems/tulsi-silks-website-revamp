@@ -6,9 +6,10 @@ import { CommonService } from '../../services/common.service';
 import { environment } from '../../../environments/environment';
 
 @Component({
-  selector: 'app-guest-login',
-  templateUrl: './guest-login.component.html',
-  styleUrls: ['./guest-login.component.scss']
+    selector: 'app-guest-login',
+    templateUrl: './guest-login.component.html',
+    styleUrls: ['./guest-login.component.scss'],
+    standalone: false
 })
 
 export class GuestLoginComponent implements OnInit {

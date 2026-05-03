@@ -11,9 +11,10 @@ declare var SqPaymentForm : any;
 declare var Foloosipay: any;
 
 @Component({
-  selector: 'app-giftcard-order-details',
-  templateUrl: './giftcard-order-details.component.html',
-  styleUrls: ['./giftcard-order-details.component.scss']
+    selector: 'app-giftcard-order-details',
+    templateUrl: './giftcard-order-details.component.html',
+    styleUrls: ['./giftcard-order-details.component.scss'],
+    standalone: false
 })
 export class GiftcardOrderDetailsComponent implements OnInit {
 

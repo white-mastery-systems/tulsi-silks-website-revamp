@@ -3,9 +3,10 @@ import { environment } from '../../../../environments/environment';
 import { CommonService } from '../../../services/common.service';
 
 @Component({
-  selector: 'app-customization',
-  templateUrl: './customization.component.html',
-  styleUrls: ['./customization.component.scss']
+    selector: 'app-customization',
+    templateUrl: './customization.component.html',
+    styleUrls: ['./customization.component.scss'],
+    standalone: false
 })
 
 export class CustomizationComponent {

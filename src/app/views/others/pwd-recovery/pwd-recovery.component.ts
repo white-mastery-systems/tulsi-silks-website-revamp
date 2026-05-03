@@ -7,9 +7,10 @@ import { CartlistService } from '../../../services/cartlist.service';
 import { CommonService } from '../../../services/common.service';
 
 @Component({
-  selector: 'app-pwd-recovery',
-  templateUrl: './pwd-recovery.component.html',
-  styleUrls: ['./pwd-recovery.component.scss']
+    selector: 'app-pwd-recovery',
+    templateUrl: './pwd-recovery.component.html',
+    styleUrls: ['./pwd-recovery.component.scss'],
+    standalone: false
 })
 
 export class PwdRecoveryComponent implements OnInit {

@@ -5,7 +5,8 @@ declare const Swiper: any;
 declare const $: any;
 
 @Directive({
-  selector: '[appCategoryHighlights]'
+    selector: '[appCategoryHighlights]',
+    standalone: false
 })
 
 export class CategoryHighlightsDirective {

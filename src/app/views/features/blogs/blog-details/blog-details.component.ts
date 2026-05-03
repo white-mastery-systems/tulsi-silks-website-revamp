@@ -14,9 +14,10 @@ import { Subscription } from 'rxjs';
 declare const $: any;
 
 @Component({
-  selector: 'app-blog-details',
-  templateUrl: './blog-details.component.html',
-  styleUrls: ['./blog-details.component.scss']
+    selector: 'app-blog-details',
+    templateUrl: './blog-details.component.html',
+    styleUrls: ['./blog-details.component.scss'],
+    standalone: false
 })
 
 export class BlogDetailsComponent implements OnInit {

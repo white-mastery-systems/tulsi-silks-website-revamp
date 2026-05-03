@@ -8,9 +8,10 @@ import { WishlistService } from 'src/app/services/wishlist.service';
 import { environment } from 'src/environments/environment';
 
 @Component({
-  selector: 'app-story-details',
-  templateUrl: './story-details.component.html',
-  styleUrls: ['./story-details.component.scss']
+    selector: 'app-story-details',
+    templateUrl: './story-details.component.html',
+    styleUrls: ['./story-details.component.scss'],
+    standalone: false
 })
 
 export class StoryDetailsComponent {

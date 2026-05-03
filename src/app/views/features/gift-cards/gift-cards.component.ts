@@ -7,9 +7,10 @@ import { StoreApiService } from '../../../services/store-api.service';
 import { CurrencyConversionService } from '../../../services/currency-conversion.service';
 
 @Component({
-  selector: 'app-gift-cards',
-  templateUrl: './gift-cards.component.html',
-  styleUrls: ['./gift-cards.component.scss']
+    selector: 'app-gift-cards',
+    templateUrl: './gift-cards.component.html',
+    styleUrls: ['./gift-cards.component.scss'],
+    standalone: false
 })
 
 export class GiftCardsComponent implements OnInit {

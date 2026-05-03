@@ -23,10 +23,11 @@ export function getAccordionConfig(): AccordionConfig {
 }
 
 @Component({
-  selector: 'app-product',
-  templateUrl: './product.component.html',
-  styleUrls: ['./product.component.scss'],
-  providers: [{ provide: AccordionConfig, useFactory: getAccordionConfig }]
+    selector: 'app-product',
+    templateUrl: './product.component.html',
+    styleUrls: ['./product.component.scss'],
+    providers: [{ provide: AccordionConfig, useFactory: getAccordionConfig }],
+    standalone: false
 })
 
 export class ProductComponent implements OnInit {

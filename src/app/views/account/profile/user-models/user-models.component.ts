@@ -7,9 +7,10 @@ import { CurrencyConversionService } from '../../../../services/currency-convers
 import { environment } from './../../../../../environments/environment';
 
 @Component({
-  selector: 'app-user-models',
-  templateUrl: './user-models.component.html',
-  styleUrls: ['./user-models.component.scss']
+    selector: 'app-user-models',
+    templateUrl: './user-models.component.html',
+    styleUrls: ['./user-models.component.scss'],
+    standalone: false
 })
 export class UserModelsComponent implements OnInit {
 

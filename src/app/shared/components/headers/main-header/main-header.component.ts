@@ -12,9 +12,10 @@ import { CurrencyConversionService } from '../../../../services/currency-convers
 // declare const $: any;
 
 @Component({
-  selector: 'app-main-header',
-  templateUrl: '../../../../'+environment.header_root+'-types/'+environment.header_type+'/main-header.html',
-  styleUrls: ['./../../../../'+environment.header_root+'-types/'+environment.header_type+'/main-header.scss']
+    selector: 'app-main-header',
+    templateUrl: '../../../../' + environment.header_root + '-types/' + environment.header_type + '/main-header.html',
+    styleUrls: ['./../../../../' + environment.header_root + '-types/' + environment.header_type + '/main-header.scss'],
+    standalone: false
 })
 
 export class MainHeaderComponent {

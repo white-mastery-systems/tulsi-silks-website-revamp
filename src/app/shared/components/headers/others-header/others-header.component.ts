@@ -4,9 +4,10 @@ import { CommonService } from '../../../../services/common.service';
 import { environment } from '../../../../../environments/environment';
 
 @Component({
-  selector: 'app-others-header',
-  templateUrl: './others-header.component.html',
-  styleUrls: ['./others-header.component.scss']
+    selector: 'app-others-header',
+    templateUrl: './others-header.component.html',
+    styleUrls: ['./others-header.component.scss'],
+    standalone: false
 })
 
 export class OthersHeaderComponent implements OnInit {

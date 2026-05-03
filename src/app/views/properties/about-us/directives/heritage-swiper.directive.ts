@@ -4,7 +4,8 @@ import { isPlatformBrowser } from '@angular/common';
 declare var Swiper: any;
 
 @Directive({
-  selector: '[appHeritageSwiper]'
+    selector: '[appHeritageSwiper]',
+    standalone: false
 })
 export class HeritageSwiperDirective implements AfterViewInit, OnDestroy {
   private swiper: any;

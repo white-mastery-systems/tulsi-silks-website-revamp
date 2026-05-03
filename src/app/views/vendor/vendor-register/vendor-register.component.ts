@@ -4,9 +4,10 @@ import { StoreApiService } from '../../../services/store-api.service';
 import { CommonService } from '../../../services/common.service';
 
 @Component({
-  selector: 'app-vendor-register',
-  templateUrl: './vendor-register.component.html',
-  styleUrls: ['./vendor-register.component.scss']
+    selector: 'app-vendor-register',
+    templateUrl: './vendor-register.component.html',
+    styleUrls: ['./vendor-register.component.scss'],
+    standalone: false
 })
 
 export class VendorRegisterComponent implements OnInit {

@@ -3,9 +3,10 @@ import { environment } from '../../../../environments/environment';
 import { CommonService } from '../../../services/common.service';
 
 @Component({
-  selector: 'app-profile',
-  templateUrl: './profile.component.html',
-  styleUrls: ['./profile.component.scss']
+    selector: 'app-profile',
+    templateUrl: './profile.component.html',
+    styleUrls: ['./profile.component.scss'],
+    standalone: false
 })
 
 export class ProfileComponent {

@@ -1,7 +1,8 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
 @Pipe({
-  name: 'productSort'
+    name: 'productSort',
+    standalone: false
 })
 
 export class ProductSortPipe implements PipeTransform {

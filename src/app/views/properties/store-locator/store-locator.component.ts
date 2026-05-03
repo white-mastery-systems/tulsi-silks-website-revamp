@@ -5,9 +5,10 @@ import { CommonService } from '../../../services/common.service';
 import { environment } from '../../../../environments/environment';
 
 @Component({
-  selector: 'app-store-locator',
-  templateUrl: './store-locator.component.html',
-  styleUrls: ['./store-locator.component.scss']
+    selector: 'app-store-locator',
+    templateUrl: './store-locator.component.html',
+    styleUrls: ['./store-locator.component.scss'],
+    standalone: false
 })
 
 export class StoreLocatorComponent implements OnInit {

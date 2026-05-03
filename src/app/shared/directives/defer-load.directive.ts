@@ -2,8 +2,9 @@ import { Directive, ElementRef, Input, Renderer2, Inject, PLATFORM_ID } from '@a
 import { isPlatformBrowser } from '@angular/common';
 
 @Directive({
-  selector: '[appDeferLoad]',
-  host: { '(load)':'removeBlur()' }
+    selector: '[appDeferLoad]',
+    host: { '(load)': 'removeBlur()' },
+    standalone: false
 })
 
 export class DeferLoadDirective {

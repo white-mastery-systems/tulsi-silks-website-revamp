@@ -11,9 +11,10 @@ declare const fbq: Function;
 declare var gtag;
 
 @Component({
-  selector: 'app-order-summary',
-  templateUrl: './order-summary.component.html',
-  styleUrls: ['./order-summary.component.scss']
+    selector: 'app-order-summary',
+    templateUrl: './order-summary.component.html',
+    styleUrls: ['./order-summary.component.scss'],
+    standalone: false
 })
 
 export class OrderSummaryComponent implements OnInit {

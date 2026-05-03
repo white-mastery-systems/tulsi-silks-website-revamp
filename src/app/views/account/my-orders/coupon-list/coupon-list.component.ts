@@ -5,9 +5,10 @@ import { CurrencyConversionService } from '../../../../services/currency-convers
 import { environment } from '../../../../../environments/environment';
 
 @Component({
-  selector: 'app-coupon-list',
-  templateUrl: './coupon-list.component.html',
-  styleUrls: ['./coupon-list.component.scss']
+    selector: 'app-coupon-list',
+    templateUrl: './coupon-list.component.html',
+    styleUrls: ['./coupon-list.component.scss'],
+    standalone: false
 })
 
 export class CouponListComponent implements OnInit {

@@ -1,7 +1,8 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
 @Pipe({
-  name: 'orderDesc'
+    name: 'orderDesc',
+    standalone: false
 })
 
 export class OrderDescPipe implements PipeTransform {

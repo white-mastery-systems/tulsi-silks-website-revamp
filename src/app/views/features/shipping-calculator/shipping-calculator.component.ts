@@ -5,9 +5,10 @@ import { CommonService } from '../../../services/common.service';
 import { CurrencyConversionService } from '../../../services/currency-conversion.service';
 
 @Component({
-  selector: 'app-shipping-calculator',
-  templateUrl: './shipping-calculator.component.html',
-  styleUrls: ['./shipping-calculator.component.scss']
+    selector: 'app-shipping-calculator',
+    templateUrl: './shipping-calculator.component.html',
+    styleUrls: ['./shipping-calculator.component.scss'],
+    standalone: false
 })
 
 export class ShippingCalculatorComponent implements OnInit {

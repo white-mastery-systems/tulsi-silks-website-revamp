@@ -16,9 +16,10 @@ import { CurrencyConversionService } from '../../../../../services/currency-conv
 import { BlogCarouselProduct, ProductCarouselBlockData } from './blog-product-carousel.models';
 
 @Component({
-  selector: 'app-blog-product-carousel',
-  templateUrl: './blog-product-carousel.component.html',
-  styleUrls: ['./blog-product-carousel.component.scss'],
+    selector: 'app-blog-product-carousel',
+    templateUrl: './blog-product-carousel.component.html',
+    styleUrls: ['./blog-product-carousel.component.scss'],
+    standalone: false
 })
 export class BlogProductCarouselComponent implements OnChanges, OnDestroy, AfterViewInit {
   @Input() data: ProductCarouselBlockData | null = null;

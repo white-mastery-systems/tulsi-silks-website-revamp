@@ -11,9 +11,10 @@ import { CommonService } from '../../services/common.service';
 declare const fbq: Function;
 
 @Component({
-  selector: 'app-cart',
-  templateUrl: './cart.component.html',
-  styleUrls: ['./cart.component.scss']
+    selector: 'app-cart',
+    templateUrl: './cart.component.html',
+    styleUrls: ['./cart.component.scss'],
+    standalone: false
 })
 
 export class CartComponent implements OnInit {

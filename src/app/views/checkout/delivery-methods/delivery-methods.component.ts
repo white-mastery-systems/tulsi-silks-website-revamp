@@ -8,9 +8,10 @@ import { CurrencyConversionService } from '../../../services/currency-conversion
 import { environment } from '../../../../environments/environment';
 
 @Component({
-  selector: 'app-delivery-methods',
-  templateUrl: './delivery-methods.component.html',
-  styleUrls: ['./delivery-methods.component.scss']
+    selector: 'app-delivery-methods',
+    templateUrl: './delivery-methods.component.html',
+    styleUrls: ['./delivery-methods.component.scss'],
+    standalone: false
 })
 
 export class DeliveryMethodsComponent implements OnInit {

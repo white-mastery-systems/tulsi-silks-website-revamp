@@ -9,9 +9,10 @@ import html2canvas from 'html2canvas';
 import { jsPDF } from "jspdf";
 
 @Component({
-  selector: 'app-invoice',
-  templateUrl: './invoice.component.html',
-  styleUrls: ['./invoice.component.scss']
+    selector: 'app-invoice',
+    templateUrl: './invoice.component.html',
+    styleUrls: ['./invoice.component.scss'],
+    standalone: false
 })
 
 export class InvoiceComponent implements OnInit {

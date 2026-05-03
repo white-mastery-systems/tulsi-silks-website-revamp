@@ -1,7 +1,8 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
 @Pipe({
-  name: 'nestedSearch'
+    name: 'nestedSearch',
+    standalone: false
 })
 
 export class NestedSearchPipe implements PipeTransform {

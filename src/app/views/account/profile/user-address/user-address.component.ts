@@ -4,9 +4,10 @@ import { CommonService } from '../../../../services/common.service';
 import { environment } from '../../../../../environments/environment';
 
 @Component({
-  selector: 'app-user-address',
-  templateUrl: './user-address.component.html',
-  styleUrls: ['./user-address.component.scss']
+    selector: 'app-user-address',
+    templateUrl: './user-address.component.html',
+    styleUrls: ['./user-address.component.scss'],
+    standalone: false
 })
 
 export class UserAddressComponent implements OnInit {

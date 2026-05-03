@@ -5,8 +5,9 @@ import lazySizes from 'lazysizes';
 import { environment } from '../../../environments/environment';
 
 @Directive({
-  selector: '[appLqimgLoad]',
-  host: { '(error)':'placeholder()', '(load)':'addBlur()' }
+    selector: '[appLqimgLoad]',
+    host: { '(error)': 'placeholder()', '(load)': 'addBlur()' },
+    standalone: false
 })
 
 export class LqimgLoadDirective {

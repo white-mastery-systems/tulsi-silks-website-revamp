@@ -7,9 +7,10 @@ import { CurrencyConversionService } from '../../../../services/currency-convers
 import { environment } from '../../../../../environments/environment';
 
 @Component({
-  selector: 'app-giftcard-details',
-  templateUrl: './giftcard-details.component.html',
-  styleUrls: ['./giftcard-details.component.scss']
+    selector: 'app-giftcard-details',
+    templateUrl: './giftcard-details.component.html',
+    styleUrls: ['./giftcard-details.component.scss'],
+    standalone: false
 })
 
 export class GiftcardDetailsComponent implements OnInit {

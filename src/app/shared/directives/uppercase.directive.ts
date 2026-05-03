@@ -1,7 +1,8 @@
 import {Directive, EventEmitter, HostListener, Output} from '@angular/core';
 
 @Directive({
-  selector: '[ngModel][appUppercase]'
+    selector: '[ngModel][appUppercase]',
+    standalone: false
 })
 
 export class UppercaseDirective {
