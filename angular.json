@@ -28,6 +28,11 @@
               "raf",
               "lazysizes",
               "@cordobo/qrcode",
+              "qrcode",
+              "rgbcolor",
+              "html2canvas",
+              "photoswipe",
+              "photoswipe/dist/photoswipe-ui-default",
               "editorjs-html"
             ],
             "outputPath": "dist/ecommerce/browser",

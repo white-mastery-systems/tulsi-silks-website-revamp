@@ -1,6 +1,6 @@
-@import "../../../../../assets/scss/variables";
-@import "../blogs.tokens";
-@import "../styles/premium-blog.tokens.scss";
+@use "../../../../../assets/scss/variables" as *;
+@use "../blogs.tokens" as *;
+@use "../styles/premium-blog.tokens.scss" as *;
 
 /* Editor.js CTAs — align with global `.primary-btn` (Montaga, 48px, hover band from button.scss) */
 @mixin ej-editor-primary-anchor {

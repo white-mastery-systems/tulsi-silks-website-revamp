@@ -1,4 +1,4 @@
-@import "../variables.scss";
+@use "../variables.scss" as *;
 
 .cart-overlay {
   height: 100vh;

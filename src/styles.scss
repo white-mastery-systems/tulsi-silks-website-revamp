@@ -1,22 +1,22 @@
 /* You can add global styles to this file, and also import other style files */
+@use "assets/scss/template.scss" as *;
+@use "assets/scss/style.scss" as *;
+@use "assets/scss/layout.scss" as *;
+@use "assets/scss/custom.scss" as *;
+@use "assets/scss/checkbox.scss" as *;
+@use "assets/scss/button.scss" as *;
+@use "assets/scss/home.scss" as *;
+
+// header
+@use "assets/header/type-5.scss" as *;
+
+// cart
+@use "assets/scss/cart/dropdown.scss" as *;
+// @import "assets/scss/cart/overlay.scss";
+
 @import "assets/css/bootstrap-grid.css";
 @import "assets/css/swiper.css";
 @import "assets/css/quill-core.css";
-
-@import "assets/scss/template.scss";
-@import "assets/scss/style.scss";
-@import "assets/scss/layout.scss";
-@import "assets/scss/custom.scss";
-@import "assets/scss/checkbox.scss";
-@import "assets/scss/button.scss";
-@import "assets/scss/home.scss";
-
-// header
-@import "assets/header/type-5.scss";
-
-// cart
-@import "assets/scss/cart/dropdown.scss";
-// @import "assets/scss/cart/overlay.scss";
 
 .blur-up {
   -webkit-filter: blur(3px);

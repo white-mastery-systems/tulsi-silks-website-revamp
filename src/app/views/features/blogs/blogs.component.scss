@@ -1,4 +1,4 @@
-@import "./blogs.tokens";
+@use "./blogs.tokens" as *;
 
 :host {
   display: block;

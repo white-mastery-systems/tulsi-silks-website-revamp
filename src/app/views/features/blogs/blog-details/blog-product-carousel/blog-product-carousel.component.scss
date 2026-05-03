@@ -1,5 +1,5 @@
-@import "../../styles/premium-blog.tokens.scss";
-@import "../../blogs.tokens.scss";
+@use "../../styles/premium-blog.tokens.scss" as *;
+@use "../../blogs.tokens.scss" as *;
 
 .ej-pc {
   margin: 2.5rem 0;

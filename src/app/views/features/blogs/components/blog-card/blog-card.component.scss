@@ -1,4 +1,4 @@
-@import "../../styles/premium-blog.tokens.scss";
+@use "../../styles/premium-blog.tokens.scss" as *;
 
 :host {
   display: block;

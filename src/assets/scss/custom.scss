@@ -1,5 +1,5 @@
 @charset "UTF-8";
-@import "variables";
+@use "variables" as *;
 
 body {
   // scrollbar-width: none;
