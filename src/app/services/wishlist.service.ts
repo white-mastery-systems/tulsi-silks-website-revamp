@@ -1,7 +1,7 @@
-import { Injectable, Inject } from '@angular/core';
+import { Injectable, Inject, DOCUMENT } from '@angular/core';
 import { Subject } from 'rxjs';
 import { Router } from '@angular/router';
-import { DOCUMENT } from '@angular/common';
+
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { CommonService } from './common.service';
 import { environment } from '../../environments/environment';

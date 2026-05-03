@@ -1,6 +1,6 @@
-import { Component, OnInit, Inject, PLATFORM_ID, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, Inject, PLATFORM_ID, ViewChild, ElementRef, DOCUMENT } from '@angular/core';
 import { Router, ActivatedRoute, Params } from '@angular/router';
-import { isPlatformBrowser, DOCUMENT, DecimalPipe } from '@angular/common';
+import { isPlatformBrowser, DecimalPipe } from '@angular/common';
 import { Subscription } from 'rxjs';
 import { environment } from './../../../environments/environment';
 import { StoreApiService } from '../../services/store-api.service';

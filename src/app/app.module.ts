@@ -7,6 +7,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { QuicklinkModule } from 'ngx-quicklink';
 import { DeviceDetectorService } from 'ngx-device-detector';
+import { ConnectionService } from 'ng-connection-service';
 
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
@@ -28,6 +29,7 @@ import { SharedModule } from './shared/shared.module';
     { provide: APP_ID, useValue: 'serverApp' },
     DatePipe,
     DeviceDetectorService,
+    ConnectionService,
     provideHttpClient(withInterceptorsFromDi()),
   ],
   bootstrap: [AppComponent],

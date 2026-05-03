@@ -1,6 +1,6 @@
-import { Component, OnInit, Inject, PLATFORM_ID, Renderer2 } from '@angular/core';
+import { Component, OnInit, Inject, PLATFORM_ID, Renderer2, DOCUMENT } from '@angular/core';
 import { Router, ActivatedRoute, Params } from '@angular/router';
-import { isPlatformBrowser, DOCUMENT } from '@angular/common';
+import { isPlatformBrowser } from '@angular/common';
 import { Meta, DomSanitizer } from '@angular/platform-browser';
 import { fromEvent, Subscription } from 'rxjs';
 import { AccordionConfig } from 'ngx-bootstrap/accordion';

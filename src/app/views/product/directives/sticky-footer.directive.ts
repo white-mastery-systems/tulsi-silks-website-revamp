@@ -4,8 +4,9 @@ import {
   Inject,
   PLATFORM_ID,
   AfterViewInit,
+  DOCUMENT
 } from '@angular/core';
-import { isPlatformBrowser, DOCUMENT } from '@angular/common';
+import { isPlatformBrowser } from '@angular/common';
 
 @Directive({
     selector: '[appStickyFooter]',

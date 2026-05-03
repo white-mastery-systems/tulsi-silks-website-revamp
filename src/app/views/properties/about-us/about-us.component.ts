@@ -1,5 +1,5 @@
-import { Component, OnInit, AfterViewInit, PLATFORM_ID, Inject } from '@angular/core';
-import { isPlatformBrowser, DOCUMENT } from '@angular/common';
+import { Component, OnInit, AfterViewInit, PLATFORM_ID, Inject, DOCUMENT } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { CommonService } from '../../../services/common.service';
 import { environment } from '../../../../environments/environment';
 

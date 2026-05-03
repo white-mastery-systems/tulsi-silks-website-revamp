@@ -1,5 +1,5 @@
-import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
-import { Location, isPlatformBrowser, PlatformLocation, DOCUMENT } from '@angular/common';
+import { Injectable, Inject, PLATFORM_ID, DOCUMENT } from '@angular/core';
+import { Location, isPlatformBrowser, PlatformLocation } from '@angular/common';
 import { DomSanitizer, SafeHtml, Meta, Title } from '@angular/platform-browser';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';

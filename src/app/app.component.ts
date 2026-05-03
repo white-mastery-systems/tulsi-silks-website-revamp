@@ -1,5 +1,5 @@
-import { Component, Inject, PLATFORM_ID, HostListener } from '@angular/core';
-import { Location, isPlatformBrowser, DOCUMENT } from '@angular/common';
+import { Component, Inject, PLATFORM_ID, HostListener, DOCUMENT } from '@angular/core';
+import { Location, isPlatformBrowser } from '@angular/common';
 import { fromEvent, Subscription, interval } from 'rxjs';
 import { Router, NavigationEnd } from '@angular/router';
 import { ConnectionService } from 'ng-connection-service';
