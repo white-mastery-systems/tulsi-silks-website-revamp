@@ -1,6 +1,6 @@
 import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
-import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, Router } from '@angular/router';
+import { ActivatedRouteSnapshot, RouterStateSnapshot, Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { CommonService } from '../services/common.service';
 
@@ -8,7 +8,7 @@ import { CommonService } from '../services/common.service';
   providedIn: 'root'
 })
 
-export class GuestGuard implements CanActivate {
+export class GuestGuard  {
 
   constructor(@Inject(PLATFORM_ID) private platformId: Object, private router : Router, private commonService: CommonService) { }
 
