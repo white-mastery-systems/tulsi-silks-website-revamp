@@ -1,3 +1,25 @@
 .titles h2{
     margin-top:-10px;
 }
+
+/* Positioning context for off-screen H1 (no layout gap above hero). */
+.home-section {
+  position: relative;
+}
+
+/*
+ * WCAG “visually hidden”: text stays in DOM for search engines & screen readers.
+ * Avoids display:none / [hidden], which remove content from the accessibility tree.
+ */
+.home-page-title.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  clip-path: inset(50%);
+  border: 0;
+  white-space: nowrap;
+}

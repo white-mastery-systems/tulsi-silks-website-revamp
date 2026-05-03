@@ -65,7 +65,7 @@
                         </div>
                         <div class="mt-2 mb-2">
                           <span class="cursor" routerLink="{{ x.seo_status ? '/product/'+x.seo_details.page_url+'/1' : '/product/'+x.product_id+'/1' }}">
-                            {{ x.temp_discounted_price | currency:cc.currency?.country_code:'symbol':cc.format }}
+                            {{ x.temp_discounted_price | currency:cc.pipeCurrencyCode:'symbol-narrow':cc.format:cc.pipeLocale }}
                           </span>
                         </div>
                         <div class="mt-2 mb-2">
@@ -108,7 +108,7 @@
                   </td>
                   <td>
                     <span class="cursor" routerLink="{{ x.seo_status ? '/product/'+x.seo_details.page_url+'/1' : '/product/'+x.product_id+'/1' }}">
-                      {{ x.temp_discounted_price | currency:cc.currency?.country_code:'symbol':cc.format }}
+                      {{ x.temp_discounted_price | currency:cc.pipeCurrencyCode:'symbol-narrow':cc.format:cc.pipeLocale }}
                     </span>
                   </td>
                   <td>

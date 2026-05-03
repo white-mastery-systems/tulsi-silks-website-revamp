@@ -68,7 +68,7 @@
                   </div>
                 </td>
                 <td>
-                  <span>{{ orderForm.temp_price | currency:cc.currency?.country_code:'symbol':cc.format }}</span>
+                  <span>{{ orderForm.temp_price | currency:cc.pipeCurrencyCode:'symbol-narrow':cc.format:cc.pipeLocale }}</span>
                 </td>
               </tr>
             </tbody>
@@ -178,7 +178,7 @@
                           <h4>Amount Payable</h4>
                         </div>
                         <div class="col-6 d-flex justify-content-end">
-                          <h4>{{ orderForm.temp_price | currency:cc.currency?.country_code:'symbol':cc.format }}</h4>
+                          <h4>{{ orderForm.temp_price | currency:cc.pipeCurrencyCode:'symbol-narrow':cc.format:cc.pipeLocale }}</h4>
                         </div>
                       </div>
                     </div>

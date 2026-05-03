@@ -68,7 +68,7 @@
               </div>
               <div class="col-6 live_order_card_inner">
                 <p class="pull-right">
-                  {{ details.sub_total | currency:details.currency_type?.country_code:'symbol':cc.format }}
+                  {{ details.sub_total | currency:cc.savedCurrencyCode(details.currency_type):'symbol-narrow':cc.format:cc.savedCurrencyLocale(details.currency_type) }}
                 </p>
               </div>
               <ng-container *ngIf="details.gift_wrapper>0">
@@ -77,7 +77,7 @@
                 </div>
                 <div class="col-6 live_order_card_inner">
                   <p class="pull-right">
-                    {{ details.gift_wrapper | currency:details.currency_type?.country_code:'symbol':cc.format }}
+                    {{ details.gift_wrapper | currency:cc.savedCurrencyCode(details.currency_type):'symbol-narrow':cc.format:cc.savedCurrencyLocale(details.currency_type) }}
                   </p>
                 </div>
               </ng-container>
@@ -87,7 +87,7 @@
                 </div>
                 <div class="col-6 live_order_card_inner">
                   <p class="pull-right">
-                    {{ details.packaging_charges | currency:details.currency_type?.country_code:'symbol':cc.format }}
+                    {{ details.packaging_charges | currency:cc.savedCurrencyCode(details.currency_type):'symbol-narrow':cc.format:cc.savedCurrencyLocale(details.currency_type) }}
                   </p>
                 </div>
               </ng-container>
@@ -97,7 +97,7 @@
                 </div>
                 <div class="col-6 live_order_card_inner">
                   <p *ngIf="details.shipping_cost>0" class="pull-right">
-                    {{ details.shipping_cost | currency:details.currency_type?.country_code:'symbol':cc.format }}
+                    {{ details.shipping_cost | currency:cc.savedCurrencyCode(details.currency_type):'symbol-narrow':cc.format:cc.savedCurrencyLocale(details.currency_type) }}
                   </p>
                   <p *ngIf="details.shipping_cost==0" class="pull-right">FREE</p>
                 </div>
@@ -108,7 +108,7 @@
                 </div>
                 <div class="col-6 live_order_card_inner">
                   <p class="pull-right">
-                    {{ details.cod_charges | currency:details.currency_type?.country_code:'symbol':cc.format }}
+                    {{ details.cod_charges | currency:cc.savedCurrencyCode(details.currency_type):'symbol-narrow':cc.format:cc.savedCurrencyLocale(details.currency_type) }}
                   </p>
                 </div>
               </ng-container>
@@ -118,7 +118,7 @@
                 </div>
                 <div class="col-6 live_order_card_inner">
                   <p class="pull-right">
-                    {{ details.discount_amount | currency:details.currency_type?.country_code:'symbol':cc.format }}
+                    {{ details.discount_amount | currency:cc.savedCurrencyCode(details.currency_type):'symbol-narrow':cc.format:cc.savedCurrencyLocale(details.currency_type) }}
                   </p>
                 </div>
               </ng-container>
@@ -127,7 +127,7 @@
               </div>
               <div class="col-6 live_order_card_inner">
                 <p class="pull-right">
-                  {{ details.final_price | currency:details.currency_type?.country_code:'symbol':cc.format }}
+                  {{ details.final_price | currency:cc.savedCurrencyCode(details.currency_type):'symbol-narrow':cc.format:cc.savedCurrencyLocale(details.currency_type) }}
                 </p>
               </div>
             </div>
@@ -147,7 +147,7 @@
             <div class="live_order_card_inner">
               <h6>Order Value</h6>
               <p>
-                {{ details.final_price | currency:details.currency_type?.country_code:'symbol':cc.format }}
+                {{ details.final_price | currency:cc.savedCurrencyCode(details.currency_type):'symbol-narrow':cc.format:cc.savedCurrencyLocale(details.currency_type) }}
               </p>
             </div>
           </div>
@@ -233,7 +233,7 @@
                         </small>
                         <small class="summary-addon">{{x.quantity}} {{template_setting?.display_unit? x.unit: ''}}</small>
                         <small class="summary-addon">
-                          {{ x.final_price | currency:details.currency_type?.country_code:'symbol':cc.format }}
+                          {{ x.final_price | currency:cc.savedCurrencyCode(details.currency_type):'symbol-narrow':cc.format:cc.savedCurrencyLocale(details.currency_type) }}
                         </small>
                       </div>
                     </div>
@@ -310,7 +310,7 @@
                         </small>
                         <small class="summary-addon">{{x.quantity}} {{template_setting?.display_unit? x.unit: ''}}</small>
                         <small class="summary-addon">
-                          {{ x.final_price | currency:details.currency_type?.country_code:'symbol':cc.format }}
+                          {{ x.final_price | currency:cc.savedCurrencyCode(details.currency_type):'symbol-narrow':cc.format:cc.savedCurrencyLocale(details.currency_type) }}
                         </small>
                       </div>
                     </div>

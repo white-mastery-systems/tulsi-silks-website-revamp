@@ -66,7 +66,7 @@
                   </div>
                   <div *ngIf="loginForm.shipping_price!=null" class="form-group col-md-12">
                     <h5 class="pt-3 pb-3">
-                      Shipping Price: <b style="font-weight: bold;">{{ loginForm.shipping_price | currency:'INR':'symbol':cc.format }}</b>
+                      Shipping Price: <b style="font-weight: bold;">{{ loginForm.shipping_price | currency:'INR':'symbol-narrow':cc.format:'en-IN' }}</b>
                     </h5>
                   </div>
                   <div class="form-group col-12">

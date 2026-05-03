@@ -110,7 +110,7 @@
                   </td>
                   <td>
                     <span class="cursor" routerLink="{{ x.seo_status ? '/product/'+x.seo_details.page_url : '/product/'+x.product_id }}">
-                      {{ x.temp_final_price | currency:cc.currency?.country_code:'symbol':cc.format }}
+                      {{ x.temp_final_price | currency:cc.pipeCurrencyCode:'symbol-narrow':cc.format:cc.pipeLocale }}
                     </span>
                   </td>
                   <td class="text-center">
@@ -173,7 +173,7 @@
                 </div>
                 <div class="col-6 d-flex justify-content-end">
                   <div class="product-order-type border-none pb-3">
-                    <h4 class="total-items">{{ tempCartTotal | currency:cc.currency?.country_code:'symbol':cc.format }}</h4>
+                    <h4 class="total-items">{{ tempCartTotal | currency:cc.pipeCurrencyCode:'symbol-narrow':cc.format:cc.pipeLocale }}</h4>
                   </div>
                 </div>
               </div>
@@ -193,7 +193,7 @@
                       <div class="alert-msg d-flex align-items-center justify-content-center p-2">
                         <span class="material-icons"></span>
                         <p class="m-0">
-                          Minimum checkout value is {{ tempMinCheckoutValue | currency:cc.currency?.country_code:'symbol':cc.format }}
+                          Minimum checkout value is {{ tempMinCheckoutValue | currency:cc.pipeCurrencyCode:'symbol-narrow':cc.format:cc.pipeLocale }}
                         </p>
                       </div>
                     </div>
@@ -294,7 +294,7 @@
 
                     <div class="mt-2 mb-2">
                       <span class="cursor" routerLink="{{ x.seo_status ? '/product/'+x.seo_details.page_url : '/product/'+x.product_id }}">
-                        {{ x.temp_final_price | currency:cc.currency?.country_code:'symbol':cc.format }}
+                        {{ x.temp_final_price | currency:cc.pipeCurrencyCode:'symbol-narrow':cc.format:cc.pipeLocale }}
                       </span>
                     </div>
 
@@ -316,7 +316,7 @@
               <i (click)="balanceAmount=0;" class="material-icons">cancel</i>
               <div class="floating-popup-content">
                 <p>
-                  Add products worth {{ balanceAmount | currency:cc.currency?.country_code:'symbol':cc.format }}
+                  Add products worth {{ balanceAmount | currency:cc.pipeCurrencyCode:'symbol-narrow':cc.format:cc.pipeLocale }}
                   and avail FREE DOMESTIC SHIPPING.
                 </p>
               </div>

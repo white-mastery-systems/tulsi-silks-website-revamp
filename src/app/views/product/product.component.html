@@ -116,15 +116,15 @@
                 <ng-container *ngIf="productDetails.quantity>0">
                   <p *ngIf="productDetails.disc_status">
                     <span class="product-strike">
-                      {{ (productDetails.temp_selling_price*(productDetails.quantity+productDetails.additional_qty)) | currency:cc.currency?.country_code:'symbol':cc.format }}
+                      {{ (productDetails.temp_selling_price*(productDetails.quantity+productDetails.additional_qty)) | currency:cc.pipeCurrencyCode:'symbol-narrow':cc.format:cc.pipeLocale }}
                     </span>
                   </p>
                   <p>
                     <span *ngIf="productDetails.unit=='Pcs'" class="product-price">
-                      {{ (((productDetails.temp_discounted_price*1)+(productDetails.temp_addon_price*1)) * productDetails.quantity) | currency:cc.currency?.country_code:'symbol':cc.format }}
+                      {{ (((productDetails.temp_discounted_price*1)+(productDetails.temp_addon_price*1)) * productDetails.quantity) | currency:cc.pipeCurrencyCode:'symbol-narrow':cc.format:cc.pipeLocale }}
                     </span>
                     <span *ngIf="productDetails.unit!='Pcs'" class="product-price">
-                      {{ ((productDetails.temp_discounted_price*(productDetails.quantity+productDetails.additional_qty)) + (productDetails.temp_addon_price*1)) | currency:cc.currency?.country_code:'symbol':cc.format }}
+                      {{ ((productDetails.temp_discounted_price*(productDetails.quantity+productDetails.additional_qty)) + (productDetails.temp_addon_price*1)) | currency:cc.pipeCurrencyCode:'symbol-narrow':cc.format:cc.pipeLocale }}
                       {{ (productDetails.addon_price==0 && productDetails.unit=='Mts' && productDetails.quantity==1 && productDetails.additional_qty==0)? '/ Metre': '' }}
                       {{ (productDetails.addon_price==0 && productDetails.unit=='Kgs' && productDetails.quantity==1 && productDetails.additional_qty==0)? '/ Kg': '' }}
                     </span>
@@ -320,15 +320,15 @@
                 <ng-container *ngIf="productDetails.quantity>0">
                   <p *ngIf="productDetails.disc_status">
                     <span class="product-strike">
-                      {{ (productDetails.temp_selling_price*(productDetails.quantity+productDetails.additional_qty)) | currency:cc.currency?.country_code:'symbol':cc.format }}
+                      {{ (productDetails.temp_selling_price*(productDetails.quantity+productDetails.additional_qty)) | currency:cc.pipeCurrencyCode:'symbol-narrow':cc.format:cc.pipeLocale }}
                     </span>
                   </p>
                   <p>
                     <span *ngIf="productDetails.unit=='Pcs'" class="product-price">
-                      {{ (((productDetails.temp_discounted_price*1)+(productDetails.temp_addon_price*1)) * productDetails.quantity) | currency:cc.currency?.country_code:'symbol':cc.format }}
+                      {{ (((productDetails.temp_discounted_price*1)+(productDetails.temp_addon_price*1)) * productDetails.quantity) | currency:cc.pipeCurrencyCode:'symbol-narrow':cc.format:cc.pipeLocale }}
                     </span>
                     <span *ngIf="productDetails.unit!='Pcs'" class="product-price">
-                      {{ ((productDetails.temp_discounted_price*(productDetails.quantity+productDetails.additional_qty)) + (productDetails.temp_addon_price*1)) | currency:cc.currency?.country_code:'symbol':cc.format }}
+                      {{ ((productDetails.temp_discounted_price*(productDetails.quantity+productDetails.additional_qty)) + (productDetails.temp_addon_price*1)) | currency:cc.pipeCurrencyCode:'symbol-narrow':cc.format:cc.pipeLocale }}
                       {{ (productDetails.addon_price==0 && productDetails.unit=='Mts' && productDetails.quantity==1 && productDetails.additional_qty==0)? '/ Metre': '' }}
                       {{ (productDetails.addon_price==0 && productDetails.unit=='Kgs' && productDetails.quantity==1 && productDetails.additional_qty==0)? '/ Kg': '' }}
                     </span>
@@ -336,7 +336,7 @@
                 </ng-container>
                 <p *ngIf="productDetails.quantity<=0">
                   <span class="product-price">
-                    {{ (productDetails.temp_discounted_price*1) | currency:cc.currency?.country_code:'symbol':cc.format }}
+                    {{ (productDetails.temp_discounted_price*1) | currency:cc.pipeCurrencyCode:'symbol-narrow':cc.format:cc.pipeLocale }}
                   </span>
                 </p>
                 <div>
@@ -409,7 +409,7 @@
                   <div class="cursor prod-link-mdl">
                     {{productDetails.selected_addon.name}}
                     <ng-container *ngIf="productDetails.selected_addon.price">
-                      + {{ productDetails.selected_addon.temp_price | currency:cc.currency?.country_code:'symbol':cc.format }}
+                      + {{ productDetails.selected_addon.temp_price | currency:cc.pipeCurrencyCode:'symbol-narrow':cc.format:cc.pipeLocale }}
                     </ng-container>
                   </div>
                   <div class="ml-2 d-inline-block">
@@ -445,7 +445,7 @@
                   <button (click)="chooseAddonNew(x, existingListModal, createNewModal, mmOptionsModal);" class="primary-btn">
                     {{x.name}}
                     <ng-container *ngIf="x.price">
-                      + {{ x.temp_price | currency:cc.currency?.country_code:'symbol':cc.format }}
+                      + {{ x.temp_price | currency:cc.pipeCurrencyCode:'symbol-narrow':cc.format:cc.pipeLocale }}
                     </ng-container>
                   </button>
                 </ng-container>
@@ -463,7 +463,7 @@
                   <p *ngIf="productDetails.addon_alert" class="m-0">Select a Addon</p>
                   <p *ngIf="productDetails.customization_alert" class="m-0">Please create or select customization</p>
                   <p class="m-0" *ngIf="productDetails?.buynow_alert=='min_checkout'">
-                    Minimum checkout value is {{ tempMinCheckoutValue | currency:cc.currency?.country_code:'symbol':cc.format }}
+                    Minimum checkout value is {{ tempMinCheckoutValue | currency:cc.pipeCurrencyCode:'symbol-narrow':cc.format:cc.pipeLocale }}
                   </p>
                   <p class="m-0" *ngIf="productDetails?.buynow_alert=='max_shipping'">
                     Too much items in your purchase
@@ -815,8 +815,8 @@
                         <h3 *ngIf="x.brand">{{x.brand}}</h3>
                         <h4>{{x.name}}</h4>
                         <div>
-                          <span *ngIf="x.disc_status" class="strike">{{ x.temp_selling_price | currency:cc.currency?.country_code:'symbol':cc.format }}</span>
-                          <span>{{ x.temp_discounted_price | currency:cc.currency?.country_code:'symbol':cc.format }}</span>
+                          <span *ngIf="x.disc_status" class="strike">{{ x.temp_selling_price | currency:cc.pipeCurrencyCode:'symbol-narrow':cc.format:cc.pipeLocale }}</span>
+                          <span>{{ x.temp_discounted_price | currency:cc.pipeCurrencyCode:'symbol-narrow':cc.format:cc.pipeLocale }}</span>
                           <!-- <div *ngIf="template_setting?.purchase_txt" class="purchase-div">
                             <a>PURCHASE</a>
                           </div> -->
@@ -962,8 +962,8 @@
                           <h3 *ngIf="x.brand">{{x.brand}}</h3>
                           <h4>{{x.name}}</h4>
                           <div>
-                            <span *ngIf="x.disc_status" class="strike">{{ x.temp_selling_price | currency:cc.currency?.country_code:'symbol':cc.format }}</span>
-                            <span>{{ x.temp_discounted_price | currency:cc.currency?.country_code:'symbol':cc.format }}</span>
+                            <span *ngIf="x.disc_status" class="strike">{{ x.temp_selling_price | currency:cc.pipeCurrencyCode:'symbol-narrow':cc.format:cc.pipeLocale }}</span>
+                            <span>{{ x.temp_discounted_price | currency:cc.pipeCurrencyCode:'symbol-narrow':cc.format:cc.pipeLocale }}</span>
                             <!-- <div *ngIf="template_setting?.purchase_txt" class="purchase-div">
                               <a>PURCHASE</a>
                             </div> -->
@@ -1062,7 +1062,7 @@
               <img width="100%" height="100%" imgBroken *ngIf="x.image" [src]="imgBaseUrl+x.image" alt="addon" class="img-fluid">
               <img width="100%" height="100%" imgBroken *ngIf="!x.image" class="addon-icon opacity6" src="assets/images/addon.svg" alt="addon">
               <p class="text-center m-0">{{x.name}}</p>
-              <p *ngIf="x.price>0" class="text-center m-0">+ {{ cc.CALC(x.price) | currency:cc.currency?.country_code:'symbol':cc.format }}</p>
+              <p *ngIf="x.price>0" class="text-center m-0">+ {{ cc.CALC(x.price) | currency:cc.pipeCurrencyCode:'symbol-narrow':cc.format:cc.pipeLocale }}</p>
             </div>
           </div>
         </div>
@@ -1163,7 +1163,7 @@
                         <img width="100%" height="100%" imgBroken *ngIf="x.image" [src]="imgBaseUrl+x.image" alt="addon" class="img-fluid">
                         <img width="100%" height="100%" imgBroken *ngIf="!x.image" class="addon-icon opacity6" src="assets/images/addon.svg" alt="addon">
                         <p class="text-center m-0">{{x.name}}</p>
-                        <p *ngIf="x.price>0" class="text-center m-0">+ {{ cc.CALC(x.price) | currency:cc.currency?.country_code:'symbol':cc.format }}</p>
+                        <p *ngIf="x.price>0" class="text-center m-0">+ {{ cc.CALC(x.price) | currency:cc.pipeCurrencyCode:'symbol-narrow':cc.format:cc.pipeLocale }}</p>
                       </label>
                     </div>
                   </div>

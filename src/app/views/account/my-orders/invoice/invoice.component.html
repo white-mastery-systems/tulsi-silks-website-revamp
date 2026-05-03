@@ -153,7 +153,7 @@
                       <td class="p-10 invoice-font-size" align="left" style="width: 20%;">{{x.sku}}</td>
                       <td class="p-10 invoice-font-size" align="right" style="width: 20%;">{{x.quantity}}</td>
                       <td class="p-10 invoice-font-size" align="right" style="width: 20%;">
-                        <span>{{ x.temp_final_price | currency:invoice_details.currency_type?.country_code:'symbol':cc.format }}</span>
+                        <span>{{ x.temp_final_price | currency:cc.savedCurrencyCode(invoice_details.currency_type):'symbol-narrow':cc.format:cc.savedCurrencyLocale(invoice_details.currency_type) }}</span>
                       </td>
                     </tr>
                     <!-- if tax details exist -->
@@ -163,7 +163,7 @@
                           <p>Item total</p>
                         </td>
                         <td align="right" class="prl-10">
-                          <p>{{ order.temp_sub_total | currency:invoice_details.currency_type?.country_code:'symbol':cc.format }}</p>
+                          <p>{{ order.temp_sub_total | currency:cc.savedCurrencyCode(invoice_details.currency_type):'symbol-narrow':cc.format:cc.savedCurrencyLocale(invoice_details.currency_type) }}</p>
                         </td>
                       </tr>
                       <!-- India -->
@@ -174,7 +174,7 @@
                               <p>SGST ({{order?.tax_details?.sgst}}%)</p>
                             </td>
                             <td align="right" class="prl-10">
-                              <p>{{ order.temp_sgst | currency:invoice_details.currency_type?.country_code:'symbol':cc.format }}</p>
+                              <p>{{ order.temp_sgst | currency:cc.savedCurrencyCode(invoice_details.currency_type):'symbol-narrow':cc.format:cc.savedCurrencyLocale(invoice_details.currency_type) }}</p>
                             </td>
                           </tr>
                           <tr class="invoice-border">
@@ -182,7 +182,7 @@
                               <p>CGST ({{order?.tax_details?.cgst}}%)</p>
                             </td>
                             <td align="right" class="prl-10">
-                              <p>{{ order.temp_cgst | currency:invoice_details.currency_type?.country_code:'symbol':cc.format }}</p>
+                              <p>{{ order.temp_cgst | currency:cc.savedCurrencyCode(invoice_details.currency_type):'symbol-narrow':cc.format:cc.savedCurrencyLocale(invoice_details.currency_type) }}</p>
                             </td>
                           </tr>
                         </ng-container>
@@ -191,7 +191,7 @@
                             <p>IGST ({{order?.tax_details?.igst}}%)</p>
                           </td>
                           <td align="right" class="prl-10">
-                            <p>{{ order.temp_igst | currency:invoice_details.currency_type?.country_code:'symbol':cc.format }}</p>
+                            <p>{{ order.temp_igst | currency:cc.savedCurrencyCode(invoice_details.currency_type):'symbol-narrow':cc.format:cc.savedCurrencyLocale(invoice_details.currency_type) }}</p>
                           </td>
                         </tr>
                       </ng-container>
@@ -201,7 +201,7 @@
                           <p>{{order?.tax_details?.name}}</p>
                         </td>
                         <td align="right" class="prl-10">
-                          <p>{{ order.temp_igst | currency:invoice_details.currency_type?.country_code:'symbol':cc.format }}</p>
+                          <p>{{ order.temp_igst | currency:cc.savedCurrencyCode(invoice_details.currency_type):'symbol-narrow':cc.format:cc.savedCurrencyLocale(invoice_details.currency_type) }}</p>
                         </td>
                       </tr>
                     </ng-container>
@@ -216,7 +216,7 @@
                 <p class="m-0">Subtotal</p>
               </td>
               <td align="right" class="p-10 p-18-15" style="width: 20%;">
-                <p class="m-0">{{ invoice_details.sub_total | currency:invoice_details.currency_type?.country_code:'symbol':cc.format }}</p>
+                <p class="m-0">{{ invoice_details.sub_total | currency:cc.savedCurrencyCode(invoice_details.currency_type):'symbol-narrow':cc.format:cc.savedCurrencyLocale(invoice_details.currency_type) }}</p>
               </td>
             </tr>
             <tr class="sub-total-container" *ngIf="invoice_details?.gift_wrapper > 0">
@@ -224,7 +224,7 @@
                 <p>Gift Wrapping</p>
               </td>
               <td align="right" class="prl-10" style="width: 20%;">
-                <p>{{ invoice_details.gift_wrapper | currency:invoice_details.currency_type?.country_code:'symbol':cc.format }}</p>
+                <p>{{ invoice_details.gift_wrapper | currency:cc.savedCurrencyCode(invoice_details.currency_type):'symbol-narrow':cc.format:cc.savedCurrencyLocale(invoice_details.currency_type) }}</p>
               </td>
             </tr>
             <tr class="sub-total-container" *ngIf="invoice_details?.packaging_charges > 0">
@@ -232,7 +232,7 @@
                 <p>Packaging Charges</p>
               </td>
               <td align="right" class="prl-10" style="width: 20%;">
-                <p>{{ invoice_details.packaging_charges | currency:invoice_details.currency_type?.country_code:'symbol':cc.format }}</p>
+                <p>{{ invoice_details.packaging_charges | currency:cc.savedCurrencyCode(invoice_details.currency_type):'symbol-narrow':cc.format:cc.savedCurrencyLocale(invoice_details.currency_type) }}</p>
               </td>
             </tr>
             <tr *ngIf="invoice_details.order_type=='delivery'" class="sub-total-container">
@@ -240,7 +240,7 @@
                 <p>Shipping and Handling</p>
               </td>
               <td align="right" class="prl-10" style="width: 20%;">
-                <p>{{ invoice_details.shipping_cost | currency:invoice_details.currency_type?.country_code:'symbol':cc.format }}</p>
+                <p>{{ invoice_details.shipping_cost | currency:cc.savedCurrencyCode(invoice_details.currency_type):'symbol-narrow':cc.format:cc.savedCurrencyLocale(invoice_details.currency_type) }}</p>
               </td>
             </tr>
             <tr class="sub-total-container" *ngIf="invoice_details?.cod_charges > 0">
@@ -248,7 +248,7 @@
                 <p>COD Charges</p>
               </td>
               <td align="right" class="prl-10" style="width: 20%;">
-                <p>{{ invoice_details.cod_charges | currency:invoice_details.currency_type?.country_code:'symbol':cc.format }}</p>
+                <p>{{ invoice_details.cod_charges | currency:cc.savedCurrencyCode(invoice_details.currency_type):'symbol-narrow':cc.format:cc.savedCurrencyLocale(invoice_details.currency_type) }}</p>
               </td>
             </tr>
             <tr class="sub-total-container" *ngIf="invoice_details?.discount_amount > 0">
@@ -257,7 +257,7 @@
               </td>
               <td align="right" class="prl-10" style="width: 20%;">
                 <p>
-                  - <span>{{ invoice_details.discount_amount | currency:invoice_details.currency_type?.country_code:'symbol':cc.format }}</span>
+                  - <span>{{ invoice_details.discount_amount | currency:cc.savedCurrencyCode(invoice_details.currency_type):'symbol-narrow':cc.format:cc.savedCurrencyLocale(invoice_details.currency_type) }}</span>
                 </p>
               </td>
             </tr>
@@ -266,7 +266,7 @@
                 <h5 class="m-0">Grand Total</h5>
               </td>
               <td class="p-10" align="right" style="width: 20%;">
-                <p class="m-0">{{ invoice_details.final_price | currency:invoice_details.currency_type?.country_code:'symbol':cc.format }}</p>
+                <p class="m-0">{{ invoice_details.final_price | currency:cc.savedCurrencyCode(invoice_details.currency_type):'symbol-narrow':cc.format:cc.savedCurrencyLocale(invoice_details.currency_type) }}</p>
               </td>
             </tr>
 
@@ -380,7 +380,7 @@
             <td class="p-2 invoice-font-size">NA</td>
             <td class="p-2 invoice-font-size" align="right">1</td>
             <td class="p-2 invoice-font-size " align="right">
-              <span>{{ invoice_details.price | currency:invoice_details.currency_type?.country_code:'symbol':cc.format }}</span>
+              <span>{{ invoice_details.price | currency:cc.savedCurrencyCode(invoice_details.currency_type):'symbol-narrow':cc.format:cc.savedCurrencyLocale(invoice_details.currency_type) }}</span>
             </td>
           </tr>
 
@@ -389,7 +389,7 @@
               <p class="m-0">Subtotal</p>
             </td>
             <td class="p-10" align="right">
-              <p class="m-0">{{ invoice_details.price | currency:invoice_details.currency_type?.country_code:'symbol':cc.format }}</p>
+              <p class="m-0">{{ invoice_details.price | currency:cc.savedCurrencyCode(invoice_details.currency_type):'symbol-narrow':cc.format:cc.savedCurrencyLocale(invoice_details.currency_type) }}</p>
             </td>
           </tr>
 
@@ -398,7 +398,7 @@
               <h5 class="m-0">Grand Total</h5>
             </td>
             <td class="p-10" align="right">
-              <p class="m-0">{{ invoice_details.price | currency:invoice_details.currency_type?.country_code:'symbol':cc.format }}</p>
+              <p class="m-0">{{ invoice_details.price | currency:cc.savedCurrencyCode(invoice_details.currency_type):'symbol-narrow':cc.format:cc.savedCurrencyLocale(invoice_details.currency_type) }}</p>
             </td>
           </tr>
 

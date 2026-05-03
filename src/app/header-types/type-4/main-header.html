@@ -94,7 +94,7 @@
                                   </p>
                                   <div class="quatity">
                                     <span>Qty: {{x.quantity}} {{template_setting?.display_unit? x.unit: ''}}</span>
-                                    <span>{{ x.temp_final_price | currency:cc.currency?.country_code:'symbol':cc.format }}</span>
+                                    <span>{{ x.temp_final_price | currency:cc.pipeCurrencyCode:'symbol-narrow':cc.format:cc.pipeLocale }}</span>
                                   </div>
                                 </div>
                               </div>
@@ -276,7 +276,7 @@
                                   </p>
                                   <div class="quatity">
                                     <span>Qty: {{x.quantity}} {{template_setting?.display_unit? x.unit: ''}}</span>
-                                    <span>{{ x.temp_final_price | currency:cc.currency?.country_code:'symbol':cc.format }}</span>
+                                    <span>{{ x.temp_final_price | currency:cc.pipeCurrencyCode:'symbol-narrow':cc.format:cc.pipeLocale }}</span>
                                   </div>
                                 </div>
                               </div>

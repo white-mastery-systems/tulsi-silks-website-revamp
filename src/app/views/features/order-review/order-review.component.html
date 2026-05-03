@@ -51,7 +51,7 @@
                   {{x.quantity}} {{template_setting?.display_unit? x.unit: ''}}
                 </small>
                 <small class="summary-addon">
-                  {{ x.final_price | currency:orderDetails.currency_type?.country_code:'symbol':cc.format }}
+                  {{ x.final_price | currency:cc.savedCurrencyCode(orderDetails.currency_type):'symbol-narrow':cc.format:cc.savedCurrencyLocale(orderDetails.currency_type) }}
                 </small>
               </div>
             </div>
@@ -112,7 +112,7 @@
                       {{selected_product?.quantity}} {{template_setting?.display_unit? selected_product?.unit: ''}}
                     </small>
                     <small class="summary-addon">
-                      {{ selected_product?.final_price | currency:orderDetails.currency_type?.country_code:'symbol':cc.format }}
+                      {{ selected_product?.final_price | currency:cc.savedCurrencyCode(orderDetails.currency_type):'symbol-narrow':cc.format:cc.savedCurrencyLocale(orderDetails.currency_type) }}
                     </small>
                   </div>
                 </div>

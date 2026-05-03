@@ -45,7 +45,7 @@
                   <div class="primary-card p-3 mb-3">
                     <p for="custom_price">
                       Custom Price<br>
-                      ({{ card_details.min_price | currency:cc.currency?.country_code:'symbol':cc.format }} - {{ card_details.max_price | currency:cc.currency?.country_code:'symbol':cc.format }})
+                      ({{ card_details.min_price | currency:cc.pipeCurrencyCode:'symbol-narrow':cc.format:cc.pipeLocale }} - {{ card_details.max_price | currency:cc.pipeCurrencyCode:'symbol-narrow':cc.format:cc.pipeLocale }})
                     </p>
                     <input class="w-100" type="number" name="custom_price" id="custom_price" [(ngModel)]="cardForm.custom_price" #custom_price="ngModel" min="{{card_details.min_price}}"
                     max="{{card_details.max_price}}" required />

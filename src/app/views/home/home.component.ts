@@ -599,19 +599,25 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     for(let layout of this.commonService.layout_list) {
       if(layout.type=="featured_product") {
         for(let product of layout.product_list) {
-          product.temp_selling_price = this.cc.CALC(product.selling_price);
-          product.temp_discounted_price = this.cc.CALC(product.discounted_price);
+          this.applyHomeProductCardCurrency(product);
         }
       }
       else if(layout.type=="multiple_featured_product") {
         for(let tab of layout.multitab_list) {
           for(let product of tab.product_list) {
-            product.temp_selling_price = this.cc.CALC(product.selling_price);
-            product.temp_discounted_price = this.cc.CALC(product.discounted_price);
+            this.applyHomeProductCardCurrency(product);
           }
         }
       }
     }
+  }
+
+  /** Normalizes API prices then applies store currency (used by all home product sliders/grids). */
+  private applyHomeProductCardCurrency(product: any): void {
+    const sell = Number(product?.selling_price);
+    const disc = Number(product?.discounted_price);
+    product.temp_selling_price = this.cc.CALC(Number.isFinite(sell) ? sell : 0);
+    product.temp_discounted_price = this.cc.CALC(Number.isFinite(disc) ? disc : 0);
   }
 
   initializeSwiper(layoutList) {

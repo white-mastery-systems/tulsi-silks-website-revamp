@@ -13,6 +13,34 @@ export class CurrencyConversionService {
 
   constructor(private commonService: CommonService) { }
 
+  /**
+   * ISO code for Angular CurrencyPipe, always from the store selection.
+   * Defaults to INR when currency is not ready (SSR / first paint) so the pipe
+   * does not fall back to USD.
+   */
+  get pipeCurrencyCode(): string {
+    return this.commonService.selected_currency?.country_code ?? 'INR';
+  }
+
+  /** Locale for CurrencyPipe (Indian grouping and ₹ for INR). */
+  get pipeLocale(): string {
+    return this.localeForIsoCode(this.pipeCurrencyCode);
+  }
+
+  /** ISO code from order/invoice/coupon payload; INR if missing (avoids USD fallback in the pipe). */
+  savedCurrencyCode(ct: { country_code?: string } | null | undefined): string {
+    return ct?.country_code ?? 'INR';
+  }
+
+  /** Locale for a saved ISO code (order summary, invoices, coupons). */
+  savedCurrencyLocale(ct: { country_code?: string } | null | undefined): string {
+    return this.localeForIsoCode(this.savedCurrencyCode(ct));
+  }
+
+  private localeForIsoCode(code: string): string {
+    return code === 'INR' ? 'en-IN' : 'en-US';
+  }
+
   CALC(price) {
     if(!price) price = 0;
     if(this.commonService.selected_currency) {

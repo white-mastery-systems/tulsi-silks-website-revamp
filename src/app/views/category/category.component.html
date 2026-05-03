@@ -398,9 +398,9 @@
                 <div class="price_label mb-3">
                   Price:
                   <span class="from">
-                    <span class="money">{{rangeMin | currency:cc.currency?.country_code:'symbol':cc.format}}</span>
+                    <span class="money">{{rangeMin | currency:cc.pipeCurrencyCode:'symbol-narrow':cc.format:cc.pipeLocale}}</span>
                   </span> - <span class="to">
-                    <span class="money">{{rangeMax | currency:cc.currency?.country_code:'symbol':cc.format}}</span>
+                    <span class="money">{{rangeMax | currency:cc.pipeCurrencyCode:'symbol-narrow':cc.format:cc.pipeLocale}}</span>
                   </span>
                 </div>
 
@@ -408,7 +408,7 @@
                   <div class="price-box">
                     <label class="price-label">Min</label>
                     <span class="from">
-                      <span class="money">{{rangeMin | currency:cc.currency?.country_code:'symbol':cc.format}}</span>
+                      <span class="money">{{rangeMin | currency:cc.pipeCurrencyCode:'symbol-narrow':cc.format:cc.pipeLocale}}</span>
                     </span>
                   </div>
 
@@ -417,7 +417,7 @@
                   <div class="price-box">
                     <label class="price-label">Max</label>
                     <span class="to">
-                      <span class="money">{{rangeMax | currency:cc.currency?.country_code:'symbol':cc.format}}</span>
+                      <span class="money">{{rangeMax | currency:cc.pipeCurrencyCode:'symbol-narrow':cc.format:cc.pipeLocale}}</span>
                     </span>
                   </div>
                 </div> -->
@@ -652,9 +652,8 @@
                     <h3 *ngIf="x.brand">{{x.brand}}</h3>
                     <h4>{{x.name}}</h4>
                     <div>
-                      <span *ngIf="x.disc_status" class="strike">{{ x.temp_selling_price |
-                        currency:cc.currency?.country_code:'symbol':cc.format }}</span>
-                      <span>{{ x.temp_discounted_price | currency:cc.currency?.country_code:'symbol':cc.format }}</span>
+                      <span *ngIf="x.disc_status" class="strike">{{ x.temp_selling_price | currency:cc.pipeCurrencyCode:'symbol-narrow':cc.format:cc.pipeLocale }}</span>
+                      <span>{{ x.temp_discounted_price | currency:cc.pipeCurrencyCode:'symbol-narrow':cc.format:cc.pipeLocale }}</span>
                       <div *ngIf="template_setting?.purchase_txt" class="purchase-div">
                         <a>PURCHASE</a>
                       </div>
@@ -801,7 +800,7 @@
                     </a>
                   </td>
                   <td align="center" width="25%">
-                    {{ x.temp_discounted_price | currency:cc.currency?.country_code:'symbol':cc.format }}
+                    {{ x.temp_discounted_price | currency:cc.pipeCurrencyCode:'symbol-narrow':cc.format:cc.pipeLocale }}
                   </td>
                 </tr>
               </tbody>
@@ -854,9 +853,9 @@
               <div class="price_label">
                 Price:
                 <span class="from">
-                  <span class="money">{{rangeMin | currency:cc.currency?.country_code:'symbol':cc.format}}</span>
+                  <span class="money">{{rangeMin | currency:cc.pipeCurrencyCode:'symbol-narrow':cc.format:cc.pipeLocale}}</span>
                 </span> - <span class="to">
-                  <span class="money">{{rangeMax | currency:cc.currency?.country_code:'symbol':cc.format}}</span>
+                  <span class="money">{{rangeMax | currency:cc.pipeCurrencyCode:'symbol-narrow':cc.format:cc.pipeLocale}}</span>
                 </span>
               </div>
             </div>

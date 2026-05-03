@@ -154,7 +154,7 @@
                       <img width="100%" height="100%" imgBroken *ngIf="x.image" [src]="imgBaseUrl+x.image" class="img-fluid" alt="model">
                       <img width="100%" height="100%" imgBroken class="addon-icon opacity6" *ngIf="!x.image" src="assets/images/addon.svg" alt="addon">
                       <p class="text-center m-0">{{x.name}}</p>
-                      <p *ngIf="x.price>0" class="text-center m-0">{{ cc.CALC(x.price) | currency:cc.currency?.country_code:'symbol':cc.format }}</p>
+                      <p *ngIf="x.price>0" class="text-center m-0">{{ cc.CALC(x.price) | currency:cc.pipeCurrencyCode:'symbol-narrow':cc.format:cc.pipeLocale }}</p>
                     </label>
                   </div>
                 </div>

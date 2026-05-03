@@ -43,7 +43,7 @@
             </figure>
             <div class="gift-card-values">
               <h6>{{ x.name }}</h6>
-              <p *ngIf="x.temp_price > 0">{{ x.temp_price | currency:cc.currency?.country_code:'symbol':cc.format }}</p>
+              <p *ngIf="x.temp_price > 0">{{ x.temp_price | currency:cc.pipeCurrencyCode:'symbol-narrow':cc.format:cc.pipeLocale }}</p>
             </div>
           </div>
         </div>

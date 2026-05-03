@@ -234,7 +234,7 @@
                     </span>
                   </small>
                   <div class="mt-2">
-                    <span>{{ x.temp_final_price | currency:cc.currency?.country_code:'symbol':cc.format }}</span>
+                    <span>{{ x.temp_final_price | currency:cc.pipeCurrencyCode:'symbol-narrow':cc.format:cc.pipeLocale }}</span>
                   </div>
                   <div class="mt-2">
                     <div class="d-flex justify-content-between align-items-center">
@@ -295,7 +295,7 @@
           </h4>
         </div>
         <div class="col-6 pr-0 d-flex justify-content-end pt-2">
-          <h4 class="total-items">{{ tempCartTotal | currency:cc.currency?.country_code:'symbol':cc.format }}</h4>
+          <h4 class="total-items">{{ tempCartTotal | currency:cc.pipeCurrencyCode:'symbol-narrow':cc.format:cc.pipeLocale }}</h4>
         </div>
         <div class="col-12 p-0" *ngIf="commonService.store_properties.pickup_locations?.length || !commonService.application_setting.disable_delivery">
           <!-- alert some items are not available -->
@@ -310,7 +310,7 @@
             <div class="alert-msg d-flex align-items-center justify-content-center p-2">
               <span class="material-icons"></span>
               <p class="m-0">
-                Minimum checkout value is {{ tempMinCheckoutValue | currency:cc.currency?.country_code:'symbol':cc.format }}
+                Minimum checkout value is {{ tempMinCheckoutValue | currency:cc.pipeCurrencyCode:'symbol-narrow':cc.format:cc.pipeLocale }}
               </p>
             </div>
           </div>

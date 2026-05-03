@@ -147,7 +147,7 @@
                         <!-- ## qty scale ## -->
                       </td>
                       <td>
-                        <span>{{ x.tempFinalPrice | currency:cc.currency?.country_code:'symbol':cc.format }}</span>
+                        <span>{{ x.tempFinalPrice | currency:cc.pipeCurrencyCode:'symbol-narrow':cc.format:cc.pipeLocale }}</span>
                       </td>
                     </tr>
                   </tbody>
@@ -242,7 +242,7 @@
                           <!-- ## qty scale ## -->
 
                           <div class="mt-2 mb-2">
-                            <span>{{ x.tempFinalPrice | currency:cc.currency?.country_code:'symbol':cc.format }}</span>
+                            <span>{{ x.tempFinalPrice | currency:cc.pipeCurrencyCode:'symbol-narrow':cc.format:cc.pipeLocale }}</span>
                           </div>
                         </div>
 
@@ -413,7 +413,7 @@
                       <h6>Subtotal:</h6>
                     </div>
                     <div class="col-6 d-flex align-items-start justify-content-end">
-                      <span align="right">{{ tempSubTotal | currency:cc.currency?.country_code:'symbol':cc.format }}</span>
+                      <span align="right">{{ tempSubTotal | currency:cc.pipeCurrencyCode:'symbol-narrow':cc.format:cc.pipeLocale }}</span>
                     </div>
                     <!-- gift wrapper -->
                     <ng-container *ngIf="orderForm.gift_status && commonService.application_setting.gift_wrapping_charges > 0">
@@ -422,7 +422,7 @@
                       </div>
                       <div class="col-6 d-flex align-items-start justify-content-end">
                         <span align="right">
-                          {{ orderForm.tempGiftWrapCharges | currency:cc.currency?.country_code:'symbol':cc.format }}
+                          {{ orderForm.tempGiftWrapCharges | currency:cc.pipeCurrencyCode:'symbol-narrow':cc.format:cc.pipeLocale }}
                         </span>
                       </div>
                     </ng-container>
@@ -433,7 +433,7 @@
                       </div>
                       <div class="col-6 d-flex align-items-start justify-content-end">
                         <span align="right">
-                          {{ shipping_method?.tempShippingPrice | currency:cc.currency?.country_code:'symbol':cc.format }}
+                          {{ shipping_method?.tempShippingPrice | currency:cc.pipeCurrencyCode:'symbol-narrow':cc.format:cc.pipeLocale }}
                         </span>
                       </div>
                     </ng-container>
@@ -444,7 +444,7 @@
                       </div>
                       <div class="col-6 d-flex align-items-start justify-content-end">
                         <span align="right">
-                          {{ orderForm.tempPackagingCharges | currency:cc.currency?.country_code:'symbol':cc.format }}
+                          {{ orderForm.tempPackagingCharges | currency:cc.pipeCurrencyCode:'symbol-narrow':cc.format:cc.pipeLocale }}
                         </span>
                       </div>
                     </ng-container>
@@ -454,7 +454,7 @@
                     </div>
                     <div class="col-6 d-flex align-items-start justify-content-end">
                       <span align="right">
-                        {{ ((tempManualDiscAmount*1)+(tempDiscountAmount*1)+(tempOfferAmount*1)) | currency:cc.currency?.country_code:'symbol':cc.format }}
+                        {{ ((tempManualDiscAmount*1)+(tempDiscountAmount*1)+(tempOfferAmount*1)) | currency:cc.pipeCurrencyCode:'symbol-narrow':cc.format:cc.pipeLocale }}
                       </span>
                     </div>
 
@@ -546,7 +546,7 @@
                     </div>
                     <div class="col-6 d-flex align-items-start justify-content-end m-0 mt-3 mb-3">
                       <span class="m-0" align="right">
-                        {{ (((tempSubTotal*1)+(shipping_method.tempShippingPrice*1)+(orderForm.tempPackagingCharges*1)+(orderForm.tempGiftWrapCharges*1))-((tempManualDiscAmount*1)+(tempDiscountAmount*1)+(tempOfferAmount*1))) | currency:cc.currency?.country_code:'symbol':cc.format }}
+                        {{ (((tempSubTotal*1)+(shipping_method.tempShippingPrice*1)+(orderForm.tempPackagingCharges*1)+(orderForm.tempGiftWrapCharges*1))-((tempManualDiscAmount*1)+(tempDiscountAmount*1)+(tempOfferAmount*1))) | currency:cc.pipeCurrencyCode:'symbol-narrow':cc.format:cc.pipeLocale }}
                       </span>
                     </div>
 
@@ -556,7 +556,7 @@
                         <div class="d-flex align-items-center">
                           <input class="option-input checkbox" type="checkbox" name="gift_status" [(ngModel)]="orderForm.gift_status" (change)="giftStatus();" #gift_status="ngModel">
                           <span *ngIf="commonService.application_setting.gift_wrapping_charges===0" class="m-0">This is a gift</span>
-                          <span *ngIf="commonService.application_setting.gift_wrapping_charges > 0" class="m-0">Gift wrapping ({{ orderForm.dispGiftWrappingCharges | currency:cc.currency?.country_code:'symbol':cc.format }})</span>
+                          <span *ngIf="commonService.application_setting.gift_wrapping_charges > 0" class="m-0">Gift wrapping ({{ orderForm.dispGiftWrappingCharges | currency:cc.pipeCurrencyCode:'symbol-narrow':cc.format:cc.pipeLocale }})</span>
                         </div>
                       </label>
                     </div>
@@ -652,7 +652,7 @@
                   <i (click)="shipping_method.tempMinPrice=null;" class="material-icons">cancel</i>
                   <div class="floating-popup-content">
                     <p>
-                      Add products worth {{ shipping_method.tempMinPrice | currency:cc.currency?.country_code:'symbol':cc.format }}
+                      Add products worth {{ shipping_method.tempMinPrice | currency:cc.pipeCurrencyCode:'symbol-narrow':cc.format:cc.pipeLocale }}
                       and avail FREE {{ (shipping_address.country==commonService.store_details?.country)? 'DOMESTIC': 'INTERNATIONAL' }} SHIPPING.
                     </p>
                   </div>
@@ -705,7 +705,7 @@
         <div class="row">
           <div class="col-lg-12">
             <h6 *ngIf="codConfig.cod_charges>0">
-              You acknowledge that a sum of <span class="bold">{{ codConfig?.tempCodCharges | currency:cc.currency?.country_code:'symbol':cc.format }}</span> will be added to your final bill as COD handling charges.
+              You acknowledge that a sum of <span class="bold">{{ codConfig?.tempCodCharges | currency:cc.pipeCurrencyCode:'symbol-narrow':cc.format:cc.pipeLocale }}</span> will be added to your final bill as COD handling charges.
             </h6>
             <h6 *ngIf="codConfig.cod_charges==0">
               You acknowledge that the prefered payment method for this order as Cash On Delivery (COD).
@@ -726,7 +726,7 @@
           <div class="row">
             <div class="col-lg-12">
               <h6 *ngIf="codConfig.cod_charges>0">
-                You acknowledge that a sum of <span class="bold">{{ codConfig?.tempCodCharges | currency:cc.currency?.country_code:'symbol':cc.format }}</span> will be added to your final bill as COD handling charges.
+                You acknowledge that a sum of <span class="bold">{{ codConfig?.tempCodCharges | currency:cc.pipeCurrencyCode:'symbol-narrow':cc.format:cc.pipeLocale }}</span> will be added to your final bill as COD handling charges.
               </h6>
               <h6 *ngIf="codConfig.cod_charges==0">
                 You acknowledge that the prefered payment method for this order as Cash On Delivery (COD).
@@ -771,7 +771,7 @@
           <div class="row">
             <div class="col-lg-12">
               <h6 *ngIf="codConfig.cod_charges>0">
-                You acknowledge that a sum of <span class="bold">{{ codConfig?.tempCodCharges | currency:cc.currency?.country_code:'symbol':cc.format }}</span> will be added to your final bill as COD handling charges.
+                You acknowledge that a sum of <span class="bold">{{ codConfig?.tempCodCharges | currency:cc.pipeCurrencyCode:'symbol-narrow':cc.format:cc.pipeLocale }}</span> will be added to your final bill as COD handling charges.
               </h6>
               <h6 *ngIf="codConfig.cod_charges==0">
                 You acknowledge that the prefered payment method for this order as Cash On Delivery (COD).
@@ -937,7 +937,7 @@
               <qrcode #qrelement class="qr-canvas-inner" [qrdata]="qrvalue" [width]="350" [errorCorrectionLevel]="'M'"></qrcode>
             </div>
             <div class="qr-pay-amount text-center">
-              <p class="qr-amount">Amount to be Paid: <span>{{ orderDetails?.amount | currency:cc.currency?.country_code:'symbol':cc.format }}</span></p>
+              <p class="qr-amount">Amount to be Paid: <span>{{ orderDetails?.amount | currency:cc.pipeCurrencyCode:'symbol-narrow':cc.format:cc.pipeLocale }}</span></p>
             </div>
             <!-- desktop -->
             <div *ngIf="commonService?.screen_width>=992" class="qr-pay-desc text-center mt-3">
@@ -1047,7 +1047,7 @@
             <div class="col-md-12">
               <div class="qr-pay-header">
                 <div class="qr-pay-amount">
-                  <p class="qr-amount">Amount to be Paid: <span>{{ orderDetails?.amount | currency:cc.currency?.country_code:'symbol':cc.format }}</span></p>
+                  <p class="qr-amount">Amount to be Paid: <span>{{ orderDetails?.amount | currency:cc.pipeCurrencyCode:'symbol-narrow':cc.format:cc.pipeLocale }}</span></p>
                   <p *ngFor="let x of payAppConfig?.field_list;">
                     <span class="qr-amount">{{x.title}}</span> : {{x.value}}
                   </p>

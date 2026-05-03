@@ -49,11 +49,11 @@
               </a>
               <div class="ej-pc-card__price-row">
                 <ng-container *ngIf="originalPriceValue(p) as orig; else onePrice">
-                  <span class="ej-pc-card__strike">{{ orig | currency: cc.currency?.country_code:'symbol':cc.format }}</span>
-                  <span class="ej-pc-card__price">{{ priceValue(p) | currency: cc.currency?.country_code:'symbol':cc.format }}</span>
+                  <span class="ej-pc-card__strike">{{ orig | currency: cc.pipeCurrencyCode:'symbol-narrow':cc.format:cc.pipeLocale }}</span>
+                  <span class="ej-pc-card__price">{{ priceValue(p) | currency: cc.pipeCurrencyCode:'symbol-narrow':cc.format:cc.pipeLocale }}</span>
                 </ng-container>
                 <ng-template #onePrice>
-                  <span class="ej-pc-card__price">{{ priceValue(p) | currency: cc.currency?.country_code:'symbol':cc.format }}</span>
+                  <span class="ej-pc-card__price">{{ priceValue(p) | currency: cc.pipeCurrencyCode:'symbol-narrow':cc.format:cc.pipeLocale }}</span>
                 </ng-template>
               </div>
               <a class="ej-pc-card__cta" [routerLink]="productLink(p)">Add to cart</a>

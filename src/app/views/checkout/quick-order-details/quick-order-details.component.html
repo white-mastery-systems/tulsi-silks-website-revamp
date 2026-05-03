@@ -90,7 +90,7 @@
                         </div>
                       </td>
                       <td>
-                        <span>{{ x.temp_final_price | currency:cc.currency?.country_code:'symbol':cc.format }}</span>
+                        <span>{{ x.temp_final_price | currency:cc.pipeCurrencyCode:'symbol-narrow':cc.format:cc.pipeLocale }}</span>
                       </td>
                     </tr>
                   </tbody>
@@ -141,7 +141,7 @@
                           <!-- ## qty scale ## -->
 
                           <div class="mt-2 mb-2">
-                            <span>{{ x.temp_final_price | currency:cc.currency?.country_code:'symbol':cc.format }}</span>
+                            <span>{{ x.temp_final_price | currency:cc.pipeCurrencyCode:'symbol-narrow':cc.format:cc.pipeLocale }}</span>
                           </div>
                         </div>
 
@@ -271,7 +271,7 @@
                       <h6>Subtotal:</h6>
                     </div>
                     <div class="col-6 d-flex align-items-start justify-content-end">
-                      <span align="right">{{ orderForm.tempSubTotal | currency:cc.currency?.country_code:'symbol':cc.format }}</span>
+                      <span align="right">{{ orderForm.tempSubTotal | currency:cc.pipeCurrencyCode:'symbol-narrow':cc.format:cc.pipeLocale }}</span>
                     </div>
                     <!-- shipping -->
                     <div class="col-6 d-flex align-items-center">
@@ -287,7 +287,7 @@
                       </div>
                       <div class="col-6 d-flex align-items-start justify-content-end">
                         <span align="right">
-                          {{ orderForm.tempPackagingCharges | currency:cc.currency?.country_code:'symbol':cc.format }}
+                          {{ orderForm.tempPackagingCharges | currency:cc.pipeCurrencyCode:'symbol-narrow':cc.format:cc.pipeLocale }}
                         </span>
                       </div>
                     </ng-container>
@@ -297,7 +297,7 @@
                     </div>
                     <div class="col-6 d-flex align-items-start justify-content-end">
                       <span align="right">
-                        {{ orderForm.tempManualDiscAmount | currency:cc.currency?.country_code:'symbol':cc.format }}
+                        {{ orderForm.tempManualDiscAmount | currency:cc.pipeCurrencyCode:'symbol-narrow':cc.format:cc.pipeLocale }}
                       </span>
                     </div>
 
@@ -329,7 +329,7 @@
                     </div>
                     <div class="col-6 d-flex align-items-start justify-content-end m-0 mt-3 mb-3">
                       <span class="m-0" align="right">
-                        {{ ((orderForm.tempPackagingCharges*1)+(orderForm.tempSubTotal*1))-(orderForm.tempManualDiscAmount*1) | currency:cc.currency?.country_code:'symbol':cc.format }}
+                        {{ ((orderForm.tempPackagingCharges*1)+(orderForm.tempSubTotal*1))-(orderForm.tempManualDiscAmount*1) | currency:cc.pipeCurrencyCode:'symbol-narrow':cc.format:cc.pipeLocale }}
                       </span>
                     </div>
 
@@ -339,7 +339,7 @@
                         <div class="d-flex align-items-center">
                           <input class="option-input checkbox" type="checkbox" name="gift_status" [(ngModel)]="orderForm.gift_status" [disabled]="true" #gift_status="ngModel">
                           <span *ngIf="commonService.application_setting.gift_wrapping_charges===0" class="m-0">This is a gift</span>
-                          <span *ngIf="commonService.application_setting.gift_wrapping_charges > 0" class="m-0">Gift wrapping ({{ orderForm.dispGiftWrappingCharges | currency:cc.currency?.country_code:'symbol':cc.format }})</span>
+                          <span *ngIf="commonService.application_setting.gift_wrapping_charges > 0" class="m-0">Gift wrapping ({{ orderForm.dispGiftWrappingCharges | currency:cc.pipeCurrencyCode:'symbol-narrow':cc.format:cc.pipeLocale }})</span>
                         </div>
                       </label>
                     </div>

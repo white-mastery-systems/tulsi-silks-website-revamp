@@ -89,7 +89,7 @@
                           (change)="selected_slot=x;" [disabled]="!x.available">
                         <div class="time-slots card d-flex flex-column justify-content-center align-items-center">
                           <p>{{x.from | date: "hh:mm a"}} - {{x.to | date: "hh:mm a"}}</p>
-                          <p *ngIf="x.available && x.temp_price>0">{{x.temp_price | currency:cc.currency?.country_code:'symbol':cc.format}}</p>
+                          <p *ngIf="x.available && x.temp_price>0">{{x.temp_price | currency:cc.pipeCurrencyCode:'symbol-narrow':cc.format:cc.pipeLocale}}</p>
                           <p *ngIf="x.available && x.temp_price==0">&nbsp;</p>
                           <p *ngIf="!x.available">UNAVAILABLE</p>
                         </div>
@@ -108,7 +108,7 @@
                     <h6>Time:</h6>
                     <p>{{selected_slot.from | date: "hh:mm a"}} - {{selected_slot.to | date: "hh:mm a"}}</p>
                     <h6>Delivery Charges:</h6>
-                    <p>{{selected_slot.temp_price | currency:cc.currency?.country_code:'symbol':cc.format}}</p>
+                    <p>{{selected_slot.temp_price | currency:cc.pipeCurrencyCode:'symbol-narrow':cc.format:cc.pipeLocale}}</p>
                     <button class="btn-confirm d-flex justify-content-center align-items-center w-100" type="button" (click)="onConfirm();" [disabled]="btnLoader">
                       Confirm
                       <div class="box" *ngIf="btnLoader">
@@ -134,7 +134,7 @@
               <div class="pt-2 pb-2">
                 <p>{{selected_day?.date | date: "dd MMM"}} | {{selected_slot.from | date: "hh:mm a"}} - {{selected_slot.to |
                   date: "hh:mm a"}}</p>
-                <p>{{selected_slot.temp_price | currency:cc.currency?.country_code:'symbol':cc.format}}</p>
+                <p>{{selected_slot.temp_price | currency:cc.pipeCurrencyCode:'symbol-narrow':cc.format:cc.pipeLocale}}</p>
               </div>
             </div>
             <div class="col-6 d-flex justify-content-end align-items-center">

@@ -120,12 +120,12 @@
                                 <div class="product-price">
                                   <p *ngIf="segment.product_details.disc_status">
                                     <span class="product-strike">
-                                      {{ (segment.product_details.temp_selling_price*1) | currency:cc.currency?.country_code:'symbol':cc.format }}
+                                      {{ (segment.product_details.temp_selling_price*1) | currency:cc.pipeCurrencyCode:'symbol-narrow':cc.format:cc.pipeLocale }}
                                     </span>
                                   </p>
                                   <p>
                                     <span class="product-price">
-                                      {{ (segment.product_details.temp_discounted_price*1) | currency:cc.currency?.country_code:'symbol':cc.format }}
+                                      {{ (segment.product_details.temp_discounted_price*1) | currency:cc.pipeCurrencyCode:'symbol-narrow':cc.format:cc.pipeLocale }}
                                     </span>
                                   </p>
                                 </div>
@@ -189,8 +189,8 @@
                                         <h3 *ngIf="x.brand">{{x.brand}}</h3>
                                         <h4>{{x.name}}</h4>
                                         <div>
-                                          <span *ngIf="x.disc_status" class="strike">{{ x.temp_selling_price | currency:cc.currency?.country_code:'symbol':cc.format }}</span>
-                                          <span>{{ x.temp_discounted_price | currency:cc.currency?.country_code:'symbol':cc.format }}</span>
+                                          <span *ngIf="x.disc_status" class="strike">{{ x.temp_selling_price | currency:cc.pipeCurrencyCode:'symbol-narrow':cc.format:cc.pipeLocale }}</span>
+                                          <span>{{ x.temp_discounted_price | currency:cc.pipeCurrencyCode:'symbol-narrow':cc.format:cc.pipeLocale }}</span>
                                         </div>
                                         <div class="add-to-cart" style="margin-bottom: 0px;margin-top: 10px;">
                                           <a>ADD TO CART</a>
@@ -250,8 +250,8 @@
                                     <h3 *ngIf="x.brand">{{x.brand}}</h3>
                                     <h4>{{x.name}}</h4>
                                     <div>
-                                      <span *ngIf="x.disc_status" class="strike">{{ x.temp_selling_price | currency:cc.currency?.country_code:'symbol':cc.format }}</span>
-                                      <span>{{ x.temp_discounted_price | currency:cc.currency?.country_code:'symbol':cc.format }}</span>
+                                      <span *ngIf="x.disc_status" class="strike">{{ x.temp_selling_price | currency:cc.pipeCurrencyCode:'symbol-narrow':cc.format:cc.pipeLocale }}</span>
+                                      <span>{{ x.temp_discounted_price | currency:cc.pipeCurrencyCode:'symbol-narrow':cc.format:cc.pipeLocale }}</span>
                                       <div *ngIf="template_setting?.purchase_txt" class="purchase-div">
                                         <a>PURCHASE</a>
                                       </div>

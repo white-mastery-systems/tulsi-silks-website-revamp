@@ -1,8 +1,13 @@
 <section class="home-section">
 
-  <!-- SEO h1 tag -->
-  <h1 *ngIf="commonService.seo_details?.h1_tag" hidden>{{ commonService.seo_details.h1_tag }}</h1>
-  <!-- #SEO h1 tag -->
+  <!-- Page H1: first in DOM for SEO; visually hidden (clip), not display:none / hidden attr — still in accessibility tree. Hero copy stays h2. -->
+  <h1 class="home-page-title visually-hidden">{{ commonService.seo_details?.h1_tag || commonService.store_details?.name || 'Home' }}</h1>
+
+  <!-- Single template for product card prices on home (featured + multi-tab sliders/grids). -->
+  <ng-template #homeProductCardPrices let-p>
+    <span *ngIf="p.disc_status" class="strike">{{ (p.temp_selling_price ?? 0) | currency:cc.pipeCurrencyCode:'symbol-narrow':cc.format:cc.pipeLocale }}</span>
+    <span>{{ (p.temp_discounted_price ?? 0) | currency:cc.pipeCurrencyCode:'symbol-narrow':cc.format:cc.pipeLocale }}</span>
+  </ng-template>
 
   <!-- Primary Highlights -->
   <!--<section *ngIf="commonService?.primary_highlights?.length>=swiperService.highlights?.card_count" class="primary-section primary-highlighted-sec wow fadeInUp">
@@ -53,7 +58,7 @@
               'justify-content-end text-right': x?.position=='t_r' || x?.position=='m_r' || x?.position=='b_r'
             }">
               <div class="mr-2 ml-2 mt-2 mb-2" [ngClass]="(x?.position=='m_l' || x?.position=='m_c' || x?.position=='m_r')? 'mt--10': ''">
-                <h1 *ngIf="x?.content_status && x?.content_details?.heading" [ngClass]="(x?.content_details?.text_color=='dark')? 'text-dark': 'text-light'">{{x.content_details.heading}}</h1>
+                <h2 *ngIf="x?.content_status && x?.content_details?.heading" class="home-slider-heading" [ngClass]="(x?.content_details?.text_color=='dark')? 'text-dark': 'text-light'">{{x.content_details.heading}}</h2>
                 <p *ngIf="x?.content_status && x?.content_details?.sub_heading" [ngClass]="(x?.content_details?.text_color=='dark')? 'text-dark': 'text-light'" [innerHTML]="x.content_details.sub_heading"></p>
                 <button *ngIf="x?.btn_status && x?.btn_text" (click)="commonService.onPageRedirect(x);" class="primary-btn">{{x.btn_text}}</button>
               </div>
@@ -73,7 +78,7 @@
               'text-left': x?.position!='t_c' && x?.position!='m_c' && x?.position!='b_c'
             }">
               <div class="mr-8 ml-8 mt-5 mb-5">
-                <h1 *ngIf="x?.content_status && x?.content_details?.heading" [ngClass]="(x?.content_details?.text_color=='dark')? 'text-dark': 'text-light'">{{x.content_details.heading}}</h1>
+                <h2 *ngIf="x?.content_status && x?.content_details?.heading" class="home-slider-heading" [ngClass]="(x?.content_details?.text_color=='dark')? 'text-dark': 'text-light'">{{x.content_details.heading}}</h2>
                 <p *ngIf="x?.content_status && x?.content_details?.sub_heading" [ngClass]="(x?.content_details?.text_color=='dark')? 'text-dark': 'text-light'" [innerHTML]="x.content_details.sub_heading"></p>
                 <button *ngIf="x?.btn_status && x?.btn_text" (click)="commonService.onPageRedirect(x);" class="primary-btn">{{x.btn_text}}</button>
               </div>
@@ -111,7 +116,7 @@
                   'justify-content-end text-right': x?.position=='t_r' || x?.position=='m_r' || x?.position=='b_r'
                 }">
                   <div class="mr-2 ml-2 mt-2 mb-2" [ngClass]="(x?.position=='m_l' || x?.position=='m_c' || x?.position=='m_r')? 'mt--10': ''">
-                    <h1 *ngIf="x?.content_status && x?.content_details?.heading" [ngClass]="(x?.content_details?.text_color=='dark')? 'text-dark': 'text-light'">{{x.content_details.heading}}</h1>
+                    <h2 *ngIf="x?.content_status && x?.content_details?.heading" class="home-slider-heading" [ngClass]="(x?.content_details?.text_color=='dark')? 'text-dark': 'text-light'">{{x.content_details.heading}}</h2>
                     <p *ngIf="x?.content_status && x?.content_details?.sub_heading" [ngClass]="(x?.content_details?.text_color=='dark')? 'text-dark': 'text-light'" [innerHTML]="x.content_details.sub_heading"></p>
                     <button *ngIf="x?.btn_status && x?.btn_text" (click)="commonService.onPageRedirect(x);" class="primary-btn">{{x.btn_text}}</button>
                   </div>
@@ -130,7 +135,7 @@
                   'text-left': x?.position!='t_c' && x?.position!='m_c' && x?.position!='b_c'
                 }">
                   <div class="mr-8 ml-8 mt-5 mb-5">
-                    <h1 *ngIf="x?.content_status && x?.content_details?.heading" [ngClass]="(x?.content_details?.text_color=='dark')? 'text-dark': 'text-light'">{{x.content_details.heading}}</h1>
+                    <h2 *ngIf="x?.content_status && x?.content_details?.heading" class="home-slider-heading" [ngClass]="(x?.content_details?.text_color=='dark')? 'text-dark': 'text-light'">{{x.content_details.heading}}</h2>
                     <p *ngIf="x?.content_status && x?.content_details?.sub_heading" [ngClass]="(x?.content_details?.text_color=='dark')? 'text-dark': 'text-light'" [innerHTML]="x.content_details.sub_heading"></p>
                     <button *ngIf="x?.btn_status && x?.btn_text" (click)="commonService.onPageRedirect(x);" class="primary-btn">{{x.btn_text}}</button>
                   </div>
@@ -429,8 +434,7 @@
                           <h3 *ngIf="x.brand">{{x.brand}}</h3>
                           <h4>{{x.name}}</h4>
                           <div>
-                            <span *ngIf="x.disc_status" class="strike">{{ x.temp_selling_price | currency:cc.currency?.country_code:'symbol':cc.format }}</span>
-                            <span>{{ x.temp_discounted_price | currency:cc.currency?.country_code:'symbol':cc.format }}</span>
+                            <ng-container *ngTemplateOutlet="homeProductCardPrices; context: { $implicit: x }"></ng-container>
                             <div *ngIf="template_setting?.purchase_txt" class="purchase-div">
                               <a>PURCHASE</a>
                             </div>
@@ -517,8 +521,7 @@
                         <h3 *ngIf="x.brand">{{x.brand}}</h3>
                         <h4>{{x.name}}</h4>
                         <div>
-                          <span *ngIf="x.disc_status" class="strike">{{ x.temp_selling_price | currency:cc.currency?.country_code:'symbol':cc.format }}</span>
-                          <span>{{ x.temp_discounted_price | currency:cc.currency?.country_code:'symbol':cc.format }}</span>
+                          <ng-container *ngTemplateOutlet="homeProductCardPrices; context: { $implicit: x }"></ng-container>
                           <div *ngIf="template_setting?.purchase_txt" class="purchase-div">
                             <a>PURCHASE</a>
                           </div>
@@ -606,8 +609,7 @@
                                 <h3 *ngIf="x.brand">{{x.brand}}</h3>
                                 <h4>{{x.name}}</h4>
                                 <div>
-                                  <span *ngIf="x.disc_status" class="strike">{{ x.temp_selling_price | currency:cc.currency?.country_code:'symbol':cc.format }}</span>
-                                  <span>{{ x.temp_discounted_price | currency:cc.currency?.country_code:'symbol':cc.format }}</span>
+                                  <ng-container *ngTemplateOutlet="homeProductCardPrices; context: { $implicit: x }"></ng-container>
                                   <div *ngIf="template_setting?.purchase_txt" class="purchase-div">
                                     <a>PURCHASE</a>
                                   </div>
@@ -673,8 +675,7 @@
                               <h3 *ngIf="x.brand">{{x.brand}}</h3>
                               <h4>{{x.name}}</h4>
                               <div>
-                                <span *ngIf="x.disc_status" class="strike">{{ x.temp_selling_price | currency:cc.currency?.country_code:'symbol':cc.format }}</span>
-                                <span>{{ x.temp_discounted_price | currency:cc.currency?.country_code:'symbol':cc.format }}</span>
+                                <ng-container *ngTemplateOutlet="homeProductCardPrices; context: { $implicit: x }"></ng-container>
                                 <!-- <div *ngIf="template_setting?.purchase_txt" class="purchase-div">
                                   <a>PURCHASE</a>
                                 </div> -->
@@ -1022,7 +1023,7 @@
               <h2 class="mb-3" *ngIf="segment.heading">{{segment.heading}}</h2>
               <p class="shop-for mb-2" *ngIf="segment.shopping_assistant_config.prompt">{{segment.shopping_assistant_config.prompt}}</p>
               <section *ngIf="segment.shopping_assistant_config.changing_text.length" class="rw-wrapper mb-3">
-                <h1 class="rw-sentence">
+                <h2 class="rw-sentence">
                   <div class="rw-words rw-words-1">
                     <ng-container *ngFor="let txt of segment.shopping_assistant_config.changing_text;">
                       <span>{{ txt.value }}</span>
@@ -1031,7 +1032,7 @@
                       <span>{{ txt.value }}</span>
                     </ng-container>
                   </div>
-                </h1>
+                </h2>
               </section>
               <p class="mb-3" *ngIf="segment.shopping_assistant_config.sub_text" [innerHTML]="segment.shopping_assistant_config.sub_text"></p>
               <div class="ai-play-btn w-100 d-flex mt-3 mb-3">

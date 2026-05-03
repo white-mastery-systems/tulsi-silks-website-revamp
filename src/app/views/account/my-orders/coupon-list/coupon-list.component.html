@@ -74,7 +74,7 @@
                 <div class="col-lg-3 col-md-6">
                   <div class="live_order_card_inner">
                     <h6>Coupon Value</h6>
-                    <p>{{ x.temp_price | currency:x.currency_type?.country_code:'symbol':cc.format }}</p>
+                    <p>{{ x.temp_price | currency:cc.savedCurrencyCode(x.currency_type):'symbol-narrow':cc.format:cc.savedCurrencyLocale(x.currency_type) }}</p>
                   </div>
                 </div>
                 <div class="col-lg-3 col-md-6">
