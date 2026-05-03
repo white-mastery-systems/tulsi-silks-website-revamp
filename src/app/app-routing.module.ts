@@ -54,8 +54,6 @@ const mainRoutes: Routes = [
 ];
 
 const routes: Routes = [
-  { path: '', redirectTo: '/', pathMatch: 'full' },
-
   { path: 'web-stories/:story_id', loadChildren: () => import('./views/stories/story-details/story-details.module').then(m => m.StoryDetailsModule) },
   { path: '', component: MainHeaderComponent, children: mainRoutes },
   { path: 'checkout', loadChildren: () => import('./views/checkout/checkout.module').then(m => m.CheckoutModule) },

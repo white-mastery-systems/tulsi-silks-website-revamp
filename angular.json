@@ -82,10 +82,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "browserTarget": "ecommerce:build:production"
+              "buildTarget": "ecommerce:build:production"
             },
             "development": {
-              "browserTarget": "ecommerce:build:development"
+              "buildTarget": "ecommerce:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -93,7 +93,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "ecommerce:build"
+            "buildTarget": "ecommerce:build"
           }
         },
         "test": {
@@ -143,21 +143,21 @@
           "defaultConfiguration": "production"
         },
         "serve-ssr": {
-          "builder": "@nguniversal/builders:ssr-dev-server",
+          "builder": "@angular-devkit/build-angular:ssr-dev-server",
           "configurations": {
             "development": {
-              "browserTarget": "ecommerce:build:development",
+              "buildTarget": "ecommerce:build:development",
               "serverTarget": "ecommerce:server:development"
             },
             "production": {
-              "browserTarget": "ecommerce:build:production",
+              "buildTarget": "ecommerce:build:production",
               "serverTarget": "ecommerce:server:production"
             }
           },
           "defaultConfiguration": "development"
         },
         "prerender": {
-          "builder": "@nguniversal/builders:prerender",
+          "builder": "@angular-devkit/build-angular:prerender",
           "options": {
             "routes": [
               "/"
@@ -165,11 +165,11 @@
           },
           "configurations": {
             "production": {
-              "browserTarget": "ecommerce:build:production",
+              "buildTarget": "ecommerce:build:production",
               "serverTarget": "ecommerce:server:production"
             },
             "development": {
-              "browserTarget": "ecommerce:build:development",
+              "buildTarget": "ecommerce:build:development",
               "serverTarget": "ecommerce:server:development"
             }
           },
