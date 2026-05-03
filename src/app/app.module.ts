@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { HttpClientModule } from '@angular/common/http';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { BrowserModule, HammerModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
@@ -14,9 +14,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { SharedModule } from './shared/shared.module';
 
 @NgModule({
-  declarations: [
-    AppComponent
-  ],
+  declarations: [AppComponent],
   imports: [
     BrowserModule.withServerTransition({ appId: 'serverApp' }),
     HammerModule,
@@ -25,10 +23,8 @@ import { SharedModule } from './shared/shared.module';
     QuicklinkModule,
     SharedModule,
     FormsModule,
-    HttpClientModule
   ],
-  providers: [DatePipe, DeviceDetectorService],
-  bootstrap: [AppComponent]
+  providers: [DatePipe, DeviceDetectorService, provideHttpClient(withInterceptorsFromDi())],
+  bootstrap: [AppComponent],
 })
-
-export class AppModule { }
+export class AppModule {}
