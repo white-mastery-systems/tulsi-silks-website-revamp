@@ -4,6 +4,7 @@ import { APP_BASE_HREF } from '@angular/common';
 import { CommonEngine } from '@angular/ssr/node';
 import express from 'express';
 import { existsSync } from 'fs';
+import https from 'https';
 import { join } from 'path';
 
 import { environment } from './src/environments/environment';
@@ -13,6 +14,88 @@ import 'localstorage-polyfill';
 
 (globalThis as { localStorage?: Storage }).localStorage = localStorage;
 
+/** Cached STORE_DETAILS JSON — same endpoint as StoreApiService.STORE_DETAILS(). */
+let storeDetailsCache: { at: number; json: unknown } | null = null;
+const STORE_DETAILS_TTL_MS = 120_000;
+
+function fetchStoreDetailsV3(): Promise<any> {
+  return new Promise((resolve, reject) => {
+    const now = Date.now();
+    if (storeDetailsCache && now - storeDetailsCache.at < STORE_DETAILS_TTL_MS) {
+      resolve(storeDetailsCache.json);
+      return;
+    }
+    const url = `${environment.ws_url}/store_details/details_v3?json=1&store_id=${environment.store_id}`;
+    https
+      .get(url, (res) => {
+        let body = '';
+        res.on('data', (ch) => {
+          body += ch;
+        });
+        res.on('end', () => {
+          try {
+            const json = JSON.parse(body);
+            storeDetailsCache = { at: Date.now(), json };
+            resolve(json);
+          } catch (e) {
+            reject(e);
+          }
+        });
+      })
+      .on('error', reject);
+  });
+}
+
+function escapeHtmlAttr(value: string): string {
+  return String(value ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/"/g, '&quot;')
+    .replace(/</g, '&lt;');
+}
+
+function htmlHasEmptyTitle(html: string): boolean {
+  const m = html.match(/<title[^>]*>([\s\S]*?)<\/title>/i);
+  return !m || !String(m[1]).trim();
+}
+
+function metaDescriptionIsEmpty(html: string): boolean {
+  const m = html.match(/<meta\s+name="description"[^>]*>/i);
+  if (!m) {
+    return true;
+  }
+  const tag = m[0];
+  const quoted = tag.match(/content\s*=\s*["']([^"']*)["']/i);
+  if (quoted) {
+    return !String(quoted[1]).trim();
+  }
+  return true;
+}
+
+/** Patch head when SSR still emitted an empty &lt;title&gt; (timing / optimizers). */
+function injectStoreSeoIntoHtml(html: string, apiJson: any): string {
+  const seo = apiJson?.store_details?.seo_details;
+  if (!seo?.page_title) {
+    return html;
+  }
+  const title = escapeHtmlAttr(seo.page_title);
+  const desc = escapeHtmlAttr(seo.meta_desc ?? '');
+  const kwRaw = seo.meta_keywords;
+  const kw = escapeHtmlAttr(Array.isArray(kwRaw) ? kwRaw.join(', ') : String(kwRaw ?? ''));
+  const tile = escapeHtmlAttr(String(seo.tile_color ?? ''));
+  const ogImg = escapeHtmlAttr(`${environment.img_baseurl}uploads/${environment.store_id}/social_logo.jpg`);
+
+  let out = html;
+  out = out.replace(/<title[^>]*>[\s\S]*?<\/title>/i, `<title>${title}</title>`);
+  out = out.replace(/<meta name="theme-color"[^>]*>/i, `<meta name="theme-color" content="${tile}">`);
+  out = out.replace(/<meta name="description"[^>]*>/i, `<meta name="description" content="${desc}">`);
+  out = out.replace(/<meta name="keywords"[^>]*>/i, `<meta name="keywords" content="${kw}">`);
+  out = out.replace(/<meta property="og:site_name"[^>]*>/i, `<meta property="og:site_name" content="${title}">`);
+  out = out.replace(/<meta property="og:title"[^>]*>/i, `<meta property="og:title" content="${title}">`);
+  out = out.replace(/<meta property="og:description"[^>]*>/i, `<meta property="og:description" content="${desc}">`);
+  out = out.replace(/<meta property="og:image"[^>]*>/i, `<meta property="og:image" content="${ogImg}">`);
+  return out;
+}
+
 export function app(): express.Express {
   const request = require('request');
   const server = express();
@@ -21,7 +104,24 @@ export function app(): express.Express {
     ? join(distFolder, 'index.original.html')
     : join(distFolder, 'index.html');
 
-  const commonEngine = new CommonEngine();
+  /** Angular 20 SSR SSRF guard — without this, localhost requests fall back to CSR (empty shell meta in view-source). */
+  const allowedHostsFromEnv = String(process.env['NG_ALLOWED_HOSTS'] ?? '')
+    .split(',')
+    .map((s) => s.trim())
+    .filter(Boolean);
+  const commonEngineAllowedHosts = [
+    ...new Set([
+      'localhost',
+      '127.0.0.1',
+      'tulsi.pripod.com',
+      environment.domain,
+      ...(environment.domain ? [`www.${environment.domain}`] : []),
+      ...allowedHostsFromEnv,
+    ]),
+  ];
+  const commonEngine = new CommonEngine({
+    allowedHosts: commonEngineAllowedHosts,
+  });
   const robotsAccess = 'Allow';
 
   server.set('view engine', 'html');
@@ -270,6 +370,8 @@ export function app(): express.Express {
 
   server.get('*', (req, res, next) => {
     const { protocol, originalUrl, baseUrl, headers } = req;
+    const pathOnly = (originalUrl || '/').split('?')[0];
+    const isHomePath = pathOnly === '/' || pathOnly === '';
     commonEngine
       .render({
         bootstrap,
@@ -278,7 +380,20 @@ export function app(): express.Express {
         publicPath: distFolder,
         providers: [{ provide: APP_BASE_HREF, useValue: baseUrl }],
       })
-      .then((html) => res.send(html))
+      .then(async (html) => {
+        let out = html;
+        /* Home: default store SEO. Other routes rely on route components — do not overwrite with store meta. */
+        if (isHomePath && (htmlHasEmptyTitle(out) || metaDescriptionIsEmpty(out))) {
+          try {
+            const api = await fetchStoreDetailsV3();
+            out = injectStoreSeoIntoHtml(out, api);
+          } catch (e) {
+            const err = e as Error;
+            console.error('[SSR] store SEO inject failed:', err?.message ?? e);
+          }
+        }
+        res.send(out);
+      })
       .catch((err) => next(err));
   });
 

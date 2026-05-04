@@ -209,8 +209,11 @@ export class AppComponent {
             if (storeDetails.tax_config) this.commonService.store_details.tax_config = storeDetails.tax_config;
             if (storeDetails.packaging_charges) this.commonService.store_details.packaging_charges = storeDetails.packaging_charges;
             localStorage.setItem("store_details", this.commonService.encryptData(this.commonService.store_details));
-            // seo details
+            // seo details — update document title + meta as soon as API returns (SSR view-source + first paint)
             this.commonService.seo_details = storeDetails.seo_details;
+            if (this.commonService.seo_details) {
+              this.commonService.setSiteMetaData(this.commonService.seo_details, null);
+            }
             localStorage.setItem("seo_details", this.commonService.encryptData(this.commonService.seo_details));
             // store properties
             this.commonService.store_properties = {

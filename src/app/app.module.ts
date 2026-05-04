@@ -1,4 +1,4 @@
-import { APP_ID, NgModule } from '@angular/core';
+import { APP_ID, APP_INITIALIZER, NgModule } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
@@ -13,6 +13,7 @@ import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 
 import { SharedModule } from './shared/shared.module';
+import { serverSeoInitializerFactory, SERVER_SEO_INITIALIZER_DEPS } from './server-seo.initializer';
 
 @NgModule({
   declarations: [AppComponent],
@@ -26,6 +27,12 @@ import { SharedModule } from './shared/shared.module';
     FormsModule,
   ],
   providers: [
+    {
+      provide: APP_INITIALIZER,
+      multi: true,
+      useFactory: serverSeoInitializerFactory,
+      deps: [...SERVER_SEO_INITIALIZER_DEPS],
+    },
     { provide: APP_ID, useValue: 'serverApp' },
     DatePipe,
     DeviceDetectorService,

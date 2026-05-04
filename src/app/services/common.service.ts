@@ -333,14 +333,18 @@ export class CommonService {
     }
   }
   setSiteMetaData(seoDetails, image) {
+    if (!seoDetails) {
+      return;
+    }
     if(this.seo_details) {
       this.meta.updateTag({ name: 'theme-color', content: this.seo_details.tile_color });
       this.meta.updateTag({ property: 'og:site_name', content: this.seo_details.page_title });
     }
     if(!image) image = environment.img_baseurl+this.social_logo;
     this.title.setTitle(seoDetails.page_title);
-    this.meta.updateTag({ name: 'description', content: seoDetails.meta_desc });
-    this.meta.updateTag({ name: 'keywords', content: seoDetails.meta_keywords.join() });
+    this.meta.updateTag({ name: 'description', content: seoDetails.meta_desc ?? '' });
+    const kw = Array.isArray(seoDetails.meta_keywords) ? seoDetails.meta_keywords.join(', ') : (seoDetails.meta_keywords || '');
+    this.meta.updateTag({ name: 'keywords', content: kw });
     this.meta.updateTag({ property: 'og:title', content: seoDetails.page_title });
     this.meta.updateTag({ property: 'og:description', content: seoDetails.meta_desc });
     this.meta.updateTag({ property: 'og:image', content: image });
