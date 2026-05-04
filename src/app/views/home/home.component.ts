@@ -52,6 +52,47 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   };
   currType: string; activeIndex = 0;
 
+  /** Visible H1 copy from store SEO (fallback: store name, then “Home”). */
+  get homeMainHeading(): string {
+    const raw = this.commonService.seo_details?.h1_tag;
+    if (typeof raw === 'string' && raw.trim()) {
+      return raw.trim();
+    }
+    const name = this.commonService.store_details?.name;
+    return typeof name === 'string' && name.trim() ? name.trim() : 'Home';
+  }
+
+  /** Built-in hero block (`primary_main_slider`) — page H1 sits on this slider when shown. */
+  get hasPrimaryMainHero(): boolean {
+    return !!(
+      this.template_setting?.primary_slider &&
+      this.commonService?.primary_main_slider?.length
+    );
+  }
+
+  /**
+   * When there is no primary hero block, the first layout slider hosts the sole page H1.
+   */
+  showHomeH1OnLayoutSegment(segment: { type?: string; image_list?: unknown[] }): boolean {
+    if (this.hasPrimaryMainHero) {
+      return false;
+    }
+    if (!segment?.image_list?.length) {
+      return false;
+    }
+    if (segment.type !== 'primary_slider' && segment.type !== 'slider') {
+      return false;
+    }
+    const list = this.commonService.layout_list ?? [];
+    const sorted = [...list].sort((a, b) => (a.rank ?? 0) - (b.rank ?? 0));
+    const firstHero = sorted.find(
+      (s) =>
+        (s.type === 'primary_slider' || s.type === 'slider') &&
+        s.image_list?.length,
+    );
+    return firstHero === segment;
+  }
+
   homeSchema: any = [
     {
       "@context": "https://schema.org",

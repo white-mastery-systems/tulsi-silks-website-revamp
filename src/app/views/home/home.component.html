@@ -1,12 +1,22 @@
 <section class="home-section">
-
-  <!-- Page H1: first in DOM for SEO; visually hidden (clip), not display:none / hidden attr — still in accessibility tree. Hero copy stays h2. -->
-  <h1 class="home-page-title visually-hidden">{{ commonService.seo_details?.h1_tag || commonService.store_details?.name || 'Home' }}</h1>
-
   <!-- Single template for product card prices on home (featured + multi-tab sliders/grids). -->
   <ng-template #homeProductCardPrices let-p>
-    <span *ngIf="p.disc_status" class="strike">{{ (p.temp_selling_price ?? 0) | currency:cc.pipeCurrencyCode:'symbol-narrow':cc.format:cc.pipeLocale }}</span>
-    <span>{{ (p.temp_discounted_price ?? 0) | currency:cc.pipeCurrencyCode:'symbol-narrow':cc.format:cc.pipeLocale }}</span>
+    <span *ngIf="p.disc_status" class="strike">{{
+      p.temp_selling_price ?? 0
+        | currency
+          : cc.pipeCurrencyCode
+          : "symbol-narrow"
+          : cc.format
+          : cc.pipeLocale
+    }}</span>
+    <span>{{
+      p.temp_discounted_price ?? 0
+        | currency
+          : cc.pipeCurrencyCode
+          : "symbol-narrow"
+          : cc.format
+          : cc.pipeLocale
+    }}</span>
   </ng-template>
 
   <!-- Primary Highlights -->
@@ -41,46 +51,192 @@
   <!-- #Primary Highlights -->
 
   <!-- Primary Main Slider -->
-  <section *ngIf="template_setting?.primary_slider && commonService?.primary_main_slider?.length" class="dynamic-height primary-section home-slider" [style.height]="fsHeroHeightStyle">
-    <div class="swiper-container dynamic-height" [style.height]="fsHeroHeightStyle" [ngClass]="(commonService.primary_main_slider?.length>1 && commonService.desktop_device)? 'desktop_pms': (commonService.primary_main_slider?.length>1)? 'pms': ''" appHomeSwiper>
+  <section
+    *ngIf="
+      template_setting?.primary_slider &&
+      commonService?.primary_main_slider?.length
+    "
+    class="dynamic-height primary-section home-slider has-page-h1"
+    [style.height]="fsHeroHeightStyle"
+  >
+    <div class="home-slider-top-heading" aria-labelledby="home-main-heading">
+      <h1 id="home-main-heading" class="home-slider-top-heading__title">
+        {{ homeMainHeading }}
+      </h1>
+    </div>
+    <div
+      class="swiper-container dynamic-height"
+      [style.height]="fsHeroHeightStyle"
+      [ngClass]="
+        commonService.primary_main_slider?.length > 1 &&
+        commonService.desktop_device
+          ? 'desktop_pms'
+          : commonService.primary_main_slider?.length > 1
+            ? 'pms'
+            : ''
+      "
+      appHomeSwiper
+    >
       <div class="swiper-wrapper">
-        <div class="swiper-slide" *ngFor="let x of commonService.primary_main_slider; let j=index;" (click)="(x?.btn_status)? '': commonService.onPageRedirect(x);">
+        <div
+          class="swiper-slide"
+          *ngFor="let x of commonService.primary_main_slider; let j = index"
+          (click)="x?.btn_status ? '' : commonService.onPageRedirect(x)"
+        >
           <!-- mobile -->
           <ng-container *ngIf="commonService.screen_width <= maxWidth">
             <div class="banner_overlay"></div>
-            <img width="100%" height="100%" appImgLazyLoad class="img--fitscreen" [ImagelazyLoad]="imgBaseUrl+x.mobile_img" alt="{{(x.img_alt)? x.img_alt: 'slider'}}">
-            <div *ngIf="x?.content_status || x?.btn_status" class="home-slider-text d-flex" [ngClass]="{
-              'align-items-start': x?.position=='t_l' || x?.position=='t_c' || x?.position=='t_r',
-              'align-items-center': x?.position=='m_l' || x?.position=='m_c' || x?.position=='m_r',
-              'align-items-end': x?.position=='b_l' || x?.position=='b_c' || x?.position=='b_r',
-              'justify-content-start text-left': x?.position=='t_l' || x?.position=='m_l' || x?.position=='b_l',
-              'justify-content-center': x?.position=='t_c' || x?.position=='m_c' || x?.position=='b_c',
-              'justify-content-end text-right': x?.position=='t_r' || x?.position=='m_r' || x?.position=='b_r'
-            }">
-              <div class="mr-2 ml-2 mt-2 mb-2" [ngClass]="(x?.position=='m_l' || x?.position=='m_c' || x?.position=='m_r')? 'mt--10': ''">
-                <h2 *ngIf="x?.content_status && x?.content_details?.heading" class="home-slider-heading" [ngClass]="(x?.content_details?.text_color=='dark')? 'text-dark': 'text-light'">{{x.content_details.heading}}</h2>
-                <p *ngIf="x?.content_status && x?.content_details?.sub_heading" [ngClass]="(x?.content_details?.text_color=='dark')? 'text-dark': 'text-light'" [innerHTML]="x.content_details.sub_heading"></p>
-                <button *ngIf="x?.btn_status && x?.btn_text" (click)="commonService.onPageRedirect(x);" class="primary-btn">{{x.btn_text}}</button>
+            <img
+              width="100%"
+              height="100%"
+              appImgLazyLoad
+              class="img--fitscreen"
+              [ImagelazyLoad]="imgBaseUrl + x.mobile_img"
+              alt="{{ x.img_alt ? x.img_alt : 'slider' }}"
+            />
+            <div
+              *ngIf="x?.content_status || x?.btn_status"
+              class="home-slider-text d-flex"
+              [ngClass]="{
+                'align-items-start':
+                  x?.position == 't_l' ||
+                  x?.position == 't_c' ||
+                  x?.position == 't_r',
+                'align-items-center':
+                  x?.position == 'm_l' ||
+                  x?.position == 'm_c' ||
+                  x?.position == 'm_r',
+                'align-items-end':
+                  x?.position == 'b_l' ||
+                  x?.position == 'b_c' ||
+                  x?.position == 'b_r',
+                'justify-content-start text-left':
+                  x?.position == 't_l' ||
+                  x?.position == 'm_l' ||
+                  x?.position == 'b_l',
+                'justify-content-center':
+                  x?.position == 't_c' ||
+                  x?.position == 'm_c' ||
+                  x?.position == 'b_c',
+                'justify-content-end text-right':
+                  x?.position == 't_r' ||
+                  x?.position == 'm_r' ||
+                  x?.position == 'b_r',
+              }"
+            >
+              <div
+                class="mr-2 ml-2 mt-2 mb-2"
+                [ngClass]="
+                  x?.position == 'm_l' ||
+                  x?.position == 'm_c' ||
+                  x?.position == 'm_r'
+                    ? 'mt--10'
+                    : ''
+                "
+              >
+                <h2
+                  *ngIf="x?.content_status && x?.content_details?.heading"
+                  class="home-slider-heading"
+                  [ngClass]="
+                    x?.content_details?.text_color == 'dark'
+                      ? 'text-dark'
+                      : 'text-light'
+                  "
+                >
+                  {{ x.content_details.heading }}
+                </h2>
+                <p
+                  *ngIf="x?.content_status && x?.content_details?.sub_heading"
+                  [ngClass]="
+                    x?.content_details?.text_color == 'dark'
+                      ? 'text-dark'
+                      : 'text-light'
+                  "
+                  [innerHTML]="x.content_details.sub_heading"
+                ></p>
+                <button
+                  *ngIf="x?.btn_status && x?.btn_text"
+                  (click)="commonService.onPageRedirect(x)"
+                  class="primary-btn"
+                >
+                  {{ x.btn_text }}
+                </button>
               </div>
             </div>
           </ng-container>
           <!-- desktop -->
           <ng-container *ngIf="commonService.screen_width > maxWidth">
             <div class="banner_overlay"></div>
-            <img width="100%" height="100%" appImgLazyLoad class="img--fitscreen" [ImagelazyLoad]="imgBaseUrl+x.desktop_img" alt="{{(x.img_alt)? x.img_alt: 'slider'}}">
-            <div *ngIf="x?.content_status || x?.btn_status" class="home-slider-text d-flex" [ngClass]="{
-              'align-items-start': x?.position=='t_l' || x?.position=='t_c' || x?.position=='t_r',
-              'align-items-center': x?.position=='m_l' || x?.position=='m_c' || x?.position=='m_r',
-              'align-items-end': x?.position=='b_l' || x?.position=='b_c' || x?.position=='b_r',
-              'justify-content-start': x?.position=='t_l' || x?.position=='m_l' || x?.position=='b_l',
-              'justify-content-center': x?.position=='t_c' || x?.position=='m_c' || x?.position=='b_c',
-              'justify-content-end': x?.position=='t_r' || x?.position=='m_r' || x?.position=='b_r',
-              'text-left': x?.position!='t_c' && x?.position!='m_c' && x?.position!='b_c'
-            }">
+            <img
+              width="100%"
+              height="100%"
+              appImgLazyLoad
+              class="img--fitscreen"
+              [ImagelazyLoad]="imgBaseUrl + x.desktop_img"
+              alt="{{ x.img_alt ? x.img_alt : 'slider' }}"
+            />
+            <div
+              *ngIf="x?.content_status || x?.btn_status"
+              class="home-slider-text d-flex"
+              [ngClass]="{
+                'align-items-start':
+                  x?.position == 't_l' ||
+                  x?.position == 't_c' ||
+                  x?.position == 't_r',
+                'align-items-center':
+                  x?.position == 'm_l' ||
+                  x?.position == 'm_c' ||
+                  x?.position == 'm_r',
+                'align-items-end':
+                  x?.position == 'b_l' ||
+                  x?.position == 'b_c' ||
+                  x?.position == 'b_r',
+                'justify-content-start':
+                  x?.position == 't_l' ||
+                  x?.position == 'm_l' ||
+                  x?.position == 'b_l',
+                'justify-content-center':
+                  x?.position == 't_c' ||
+                  x?.position == 'm_c' ||
+                  x?.position == 'b_c',
+                'justify-content-end':
+                  x?.position == 't_r' ||
+                  x?.position == 'm_r' ||
+                  x?.position == 'b_r',
+                'text-left':
+                  x?.position != 't_c' &&
+                  x?.position != 'm_c' &&
+                  x?.position != 'b_c',
+              }"
+            >
               <div class="mr-8 ml-8 mt-5 mb-5">
-                <h2 *ngIf="x?.content_status && x?.content_details?.heading" class="home-slider-heading" [ngClass]="(x?.content_details?.text_color=='dark')? 'text-dark': 'text-light'">{{x.content_details.heading}}</h2>
-                <p *ngIf="x?.content_status && x?.content_details?.sub_heading" [ngClass]="(x?.content_details?.text_color=='dark')? 'text-dark': 'text-light'" [innerHTML]="x.content_details.sub_heading"></p>
-                <button *ngIf="x?.btn_status && x?.btn_text" (click)="commonService.onPageRedirect(x);" class="primary-btn">{{x.btn_text}}</button>
+                <h2
+                  *ngIf="x?.content_status && x?.content_details?.heading"
+                  class="home-slider-heading"
+                  [ngClass]="
+                    x?.content_details?.text_color == 'dark'
+                      ? 'text-dark'
+                      : 'text-light'
+                  "
+                >
+                  {{ x.content_details.heading }}
+                </h2>
+                <p
+                  *ngIf="x?.content_status && x?.content_details?.sub_heading"
+                  [ngClass]="
+                    x?.content_details?.text_color == 'dark'
+                      ? 'text-dark'
+                      : 'text-light'
+                  "
+                  [innerHTML]="x.content_details.sub_heading"
+                ></p>
+                <button
+                  *ngIf="x?.btn_status && x?.btn_text"
+                  (click)="commonService.onPageRedirect(x)"
+                  class="primary-btn"
+                >
+                  {{ x.btn_text }}
+                </button>
               </div>
             </div>
           </ng-container>
@@ -94,59 +250,229 @@
     </div>
   </section>
   <!-- #Primary Main Slider -->
-  
-  <!-- LAYOUTS -->
-  <ng-container *ngFor="let segment of commonService.layout_list | orderAsc: 'rank'; let i=index;">
 
+  <!-- LAYOUTS -->
+  <ng-container
+    *ngFor="
+      let segment of commonService.layout_list | orderAsc: 'rank';
+      let i = index
+    "
+  >
     <!-- Main Slider -->
-    <ng-container *ngIf="segment.type=='primary_slider' || segment.type=='slider'">
-      <section *ngIf="segment.image_list?.length" class="dynamic-height primary-section home-slider" [style.height]="fsHeroHeightStyle">
-        <div class="swiper-container dynamic-height" [style.height]="fsHeroHeightStyle" [ngClass]="(segment.image_list?.length>1 && commonService.desktop_device)? 'desktopcarousal_'+(i+1): (segment.image_list?.length>1)? 'carousal_'+(i+1): ''" appHomeSwiper>
+    <ng-container
+      *ngIf="segment.type == 'primary_slider' || segment.type == 'slider'"
+    >
+      <section
+        *ngIf="segment.image_list?.length"
+        class="dynamic-height primary-section home-slider"
+        [class.has-page-h1]="showHomeH1OnLayoutSegment(segment)"
+        [style.height]="fsHeroHeightStyle"
+      >
+        <div
+          *ngIf="showHomeH1OnLayoutSegment(segment)"
+          class="home-slider-top-heading"
+          aria-labelledby="home-main-heading-layout"
+        >
+          <h1 id="home-main-heading-layout" class="home-slider-top-heading__title">
+            {{ homeMainHeading }}
+          </h1>
+        </div>
+        <div
+          class="swiper-container dynamic-height"
+          [style.height]="fsHeroHeightStyle"
+          [ngClass]="
+            segment.image_list?.length > 1 && commonService.desktop_device
+              ? 'desktopcarousal_' + (i + 1)
+              : segment.image_list?.length > 1
+                ? 'carousal_' + (i + 1)
+                : ''
+          "
+          appHomeSwiper
+        >
           <div class="swiper-wrapper">
-            <div class="swiper-slide" *ngFor="let x of segment.image_list; let j=index;" (click)="(x?.btn_status)? '': commonService.onPageRedirect(x);">
+            <div
+              class="swiper-slide"
+              *ngFor="let x of segment.image_list; let j = index"
+              (click)="x?.btn_status ? '' : commonService.onPageRedirect(x)"
+            >
               <!-- mobile -->
               <ng-container *ngIf="commonService.screen_width <= maxWidth">
-                <img loading="lazy" appImgLazyLoad class="img--fitscreen" [ImagelazyLoad]="imgBaseUrl+x.mobile_img" alt="{{(x.img_alt)? x.img_alt: 'slider'}}">
-                <div *ngIf="x?.content_status || x?.btn_status" class="home-slider-text d-flex" [ngClass]="{
-                  'align-items-start': x?.position=='t_l' || x?.position=='t_c' || x?.position=='t_r',
-                  'align-items-center': x?.position=='m_l' || x?.position=='m_c' || x?.position=='m_r',
-                  'align-items-end': x?.position=='b_l' || x?.position=='b_c' || x?.position=='b_r',
-                  'justify-content-start text-left': x?.position=='t_l' || x?.position=='m_l' || x?.position=='b_l',
-                  'justify-content-center': x?.position=='t_c' || x?.position=='m_c' || x?.position=='b_c',
-                  'justify-content-end text-right': x?.position=='t_r' || x?.position=='m_r' || x?.position=='b_r'
-                }">
-                  <div class="mr-2 ml-2 mt-2 mb-2" [ngClass]="(x?.position=='m_l' || x?.position=='m_c' || x?.position=='m_r')? 'mt--10': ''">
-                    <h2 *ngIf="x?.content_status && x?.content_details?.heading" class="home-slider-heading" [ngClass]="(x?.content_details?.text_color=='dark')? 'text-dark': 'text-light'">{{x.content_details.heading}}</h2>
-                    <p *ngIf="x?.content_status && x?.content_details?.sub_heading" [ngClass]="(x?.content_details?.text_color=='dark')? 'text-dark': 'text-light'" [innerHTML]="x.content_details.sub_heading"></p>
-                    <button *ngIf="x?.btn_status && x?.btn_text" (click)="commonService.onPageRedirect(x);" class="primary-btn">{{x.btn_text}}</button>
+                <img
+                  loading="lazy"
+                  appImgLazyLoad
+                  class="img--fitscreen"
+                  [ImagelazyLoad]="imgBaseUrl + x.mobile_img"
+                  alt="{{ x.img_alt ? x.img_alt : 'slider' }}"
+                />
+                <div
+                  *ngIf="x?.content_status || x?.btn_status"
+                  class="home-slider-text d-flex"
+                  [ngClass]="{
+                    'align-items-start':
+                      x?.position == 't_l' ||
+                      x?.position == 't_c' ||
+                      x?.position == 't_r',
+                    'align-items-center':
+                      x?.position == 'm_l' ||
+                      x?.position == 'm_c' ||
+                      x?.position == 'm_r',
+                    'align-items-end':
+                      x?.position == 'b_l' ||
+                      x?.position == 'b_c' ||
+                      x?.position == 'b_r',
+                    'justify-content-start text-left':
+                      x?.position == 't_l' ||
+                      x?.position == 'm_l' ||
+                      x?.position == 'b_l',
+                    'justify-content-center':
+                      x?.position == 't_c' ||
+                      x?.position == 'm_c' ||
+                      x?.position == 'b_c',
+                    'justify-content-end text-right':
+                      x?.position == 't_r' ||
+                      x?.position == 'm_r' ||
+                      x?.position == 'b_r',
+                  }"
+                >
+                  <div
+                    class="mr-2 ml-2 mt-2 mb-2"
+                    [ngClass]="
+                      x?.position == 'm_l' ||
+                      x?.position == 'm_c' ||
+                      x?.position == 'm_r'
+                        ? 'mt--10'
+                        : ''
+                    "
+                  >
+                    <h2
+                      *ngIf="x?.content_status && x?.content_details?.heading"
+                      class="home-slider-heading"
+                      [ngClass]="
+                        x?.content_details?.text_color == 'dark'
+                          ? 'text-dark'
+                          : 'text-light'
+                      "
+                    >
+                      {{ x.content_details.heading }}
+                    </h2>
+                    <p
+                      *ngIf="
+                        x?.content_status && x?.content_details?.sub_heading
+                      "
+                      [ngClass]="
+                        x?.content_details?.text_color == 'dark'
+                          ? 'text-dark'
+                          : 'text-light'
+                      "
+                      [innerHTML]="x.content_details.sub_heading"
+                    ></p>
+                    <button
+                      *ngIf="x?.btn_status && x?.btn_text"
+                      (click)="commonService.onPageRedirect(x)"
+                      class="primary-btn"
+                    >
+                      {{ x.btn_text }}
+                    </button>
                   </div>
                 </div>
               </ng-container>
               <!-- desktop -->
               <ng-container *ngIf="commonService.screen_width > maxWidth">
-                <img loading="lazy" width="100%" height="100%" appImgLazyLoad class="img--fitscreen" [ImagelazyLoad]="imgBaseUrl+x.desktop_img" alt="{{(x.img_alt)? x.img_alt: 'slider'}}">
-                <div *ngIf="x?.content_status || x?.btn_status" class="home-slider-text d-flex" [ngClass]="{
-                  'align-items-start': x?.position=='t_l' || x?.position=='t_c' || x?.position=='t_r',
-                  'align-items-center': x?.position=='m_l' || x?.position=='m_c' || x?.position=='m_r',
-                  'align-items-end': x?.position=='b_l' || x?.position=='b_c' || x?.position=='b_r',
-                  'justify-content-start': x?.position=='t_l' || x?.position=='m_l' || x?.position=='b_l',
-                  'justify-content-center': x?.position=='t_c' || x?.position=='m_c' || x?.position=='b_c',
-                  'justify-content-end': x?.position=='t_r' || x?.position=='m_r' || x?.position=='b_r',
-                  'text-left': x?.position!='t_c' && x?.position!='m_c' && x?.position!='b_c'
-                }">
+                <img
+                  loading="lazy"
+                  width="100%"
+                  height="100%"
+                  appImgLazyLoad
+                  class="img--fitscreen"
+                  [ImagelazyLoad]="imgBaseUrl + x.desktop_img"
+                  alt="{{ x.img_alt ? x.img_alt : 'slider' }}"
+                />
+                <div
+                  *ngIf="x?.content_status || x?.btn_status"
+                  class="home-slider-text d-flex"
+                  [ngClass]="{
+                    'align-items-start':
+                      x?.position == 't_l' ||
+                      x?.position == 't_c' ||
+                      x?.position == 't_r',
+                    'align-items-center':
+                      x?.position == 'm_l' ||
+                      x?.position == 'm_c' ||
+                      x?.position == 'm_r',
+                    'align-items-end':
+                      x?.position == 'b_l' ||
+                      x?.position == 'b_c' ||
+                      x?.position == 'b_r',
+                    'justify-content-start':
+                      x?.position == 't_l' ||
+                      x?.position == 'm_l' ||
+                      x?.position == 'b_l',
+                    'justify-content-center':
+                      x?.position == 't_c' ||
+                      x?.position == 'm_c' ||
+                      x?.position == 'b_c',
+                    'justify-content-end':
+                      x?.position == 't_r' ||
+                      x?.position == 'm_r' ||
+                      x?.position == 'b_r',
+                    'text-left':
+                      x?.position != 't_c' &&
+                      x?.position != 'm_c' &&
+                      x?.position != 'b_c',
+                  }"
+                >
                   <div class="mr-8 ml-8 mt-5 mb-5">
-                    <h2 *ngIf="x?.content_status && x?.content_details?.heading" class="home-slider-heading" [ngClass]="(x?.content_details?.text_color=='dark')? 'text-dark': 'text-light'">{{x.content_details.heading}}</h2>
-                    <p *ngIf="x?.content_status && x?.content_details?.sub_heading" [ngClass]="(x?.content_details?.text_color=='dark')? 'text-dark': 'text-light'" [innerHTML]="x.content_details.sub_heading"></p>
-                    <button *ngIf="x?.btn_status && x?.btn_text" (click)="commonService.onPageRedirect(x);" class="primary-btn">{{x.btn_text}}</button>
+                    <h2
+                      *ngIf="x?.content_status && x?.content_details?.heading"
+                      class="home-slider-heading"
+                      [ngClass]="
+                        x?.content_details?.text_color == 'dark'
+                          ? 'text-dark'
+                          : 'text-light'
+                      "
+                    >
+                      {{ x.content_details.heading }}
+                    </h2>
+                    <p
+                      *ngIf="
+                        x?.content_status && x?.content_details?.sub_heading
+                      "
+                      [ngClass]="
+                        x?.content_details?.text_color == 'dark'
+                          ? 'text-dark'
+                          : 'text-light'
+                      "
+                      [innerHTML]="x.content_details.sub_heading"
+                    ></p>
+                    <button
+                      *ngIf="x?.btn_status && x?.btn_text"
+                      (click)="commonService.onPageRedirect(x)"
+                      class="primary-btn"
+                    >
+                      {{ x.btn_text }}
+                    </button>
                   </div>
                 </div>
               </ng-container>
             </div>
           </div>
-          <div id="swipe_pagination_{{i+1}}" class="swiper-pagination"></div>
-          <ng-container *ngIf="commonService?.desktop_device && segment.image_list?.length>1">
-            <div id="swipe_next_{{i+1}}" class="swiper-button swiper-button-next"></div>
-            <div id="swipe_prev_{{i+1}}" class="swiper-button swiper-button-prev"></div>
+          <div
+            id="swipe_pagination_{{ i + 1 }}"
+            class="swiper-pagination"
+          ></div>
+          <ng-container
+            *ngIf="
+              commonService?.desktop_device && segment.image_list?.length > 1
+            "
+          >
+            <div
+              id="swipe_next_{{ i + 1 }}"
+              class="swiper-button swiper-button-next"
+            ></div>
+            <div
+              id="swipe_prev_{{ i + 1 }}"
+              class="swiper-button swiper-button-prev"
+            ></div>
           </ng-container>
         </div>
       </section>
@@ -154,12 +480,14 @@
     <!-- #Main Slider -->
 
     <!-- About Segment -->
-    <section *ngIf="i==1" class="primary-section">
+    <section *ngIf="i == 1" class="primary-section">
       <div class="container">
         <div class="row">
           <div class="col-md-12 about-section">
             <div class="about-logo">
-              <div class="about-logo-bg d-flex justify-content-center align-items-center">
+              <div
+                class="about-logo-bg d-flex justify-content-center align-items-center"
+              >
                 <img src="assets/images/about-logo.svg" alt="about-logo" />
               </div>
             </div>
@@ -168,38 +496,83 @@
               <p>For over 30 years, Tulsi Silks has been weaving tradition into every saree, with each uniquely handcrafted piece reflecting a legacy of timeless elegance and unmatched craftsmanship</p>               
               <button routerLink="/about-us" class="primary-btn mt-3">Learn More</button> -->
               <h2>Draped in Legacy Since 1993</h2>
-              <p>What began with a deep understanding of textiles has grown into a name trusted across generations, bringing together heritage weaves, evolving styles, and a way of service that feels personal.</p>               
-              <button routerLink="/about-us" class="primary-btn mt-3">Our Story</button>
-            </div>              
-          </div>          
+              <p>
+                What began with a deep understanding of textiles has grown into
+                a name trusted across generations, bringing together heritage
+                weaves, evolving styles, and a way of service that feels
+                personal.
+              </p>
+              <button routerLink="/about-us" class="primary-btn mt-3">
+                Our Story
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </section>
     <!-- #About Segment -->
 
     <!-- Section Grid -->
-     <ng-container *ngIf="segment.section_grid_type=='grid_1'">
-      <section *ngIf="segment.type=='section' && segment.image_list?.length" class="grid-categories grid-sec-margin primary-section" [ngClass]="(i>1)? 'wow fadeInUp': null">
+    <ng-container *ngIf="segment.section_grid_type == 'grid_1'">
+      <section
+        *ngIf="segment.type == 'section' && segment.image_list?.length"
+        class="grid-categories grid-sec-margin primary-section"
+        [ngClass]="i > 1 ? 'wow fadeInUp' : null"
+      >
         <div class="page-width">
           <div class="row">
             <div *ngIf="segment?.heading" class="col-12 px-0">
               <div class="titles custom-title w-auto">
-                <h2>{{segment.heading}}</h2>
-                <p class="mb-0" *ngIf="segment.sub_heading" [innerHTML]="segment.sub_heading"></p>
+                <h2>{{ segment.heading }}</h2>
+                <p
+                  class="mb-0"
+                  *ngIf="segment.sub_heading"
+                  [innerHTML]="segment.sub_heading"
+                ></p>
               </div>
-            </div>         
-            <ng-container *ngIf="segment.section_grid_type!='grid_7' && segment.section_grid_type!='grid_8' && segment.section_grid_type!='grid_9' && segment.section_grid_type!='grid_10' && segment.section_grid_type!='grid_12'">
-              <ng-container *ngFor="let x of segment.image_list; let j=index;">
-                <div [ngClass]="{
-                  'col-md-6 equal-space col-12': segment.section_grid_type=='grid_1' || segment.section_grid_type=='grid_2',
-                  'col-md-4': segment.section_grid_type=='grid_3' || segment.section_grid_type=='grid_4' || segment.section_grid_type=='grid_11',
-                  'col-md-3': segment.section_grid_type=='grid_5' || segment.section_grid_type=='grid_6',
-                  'col-6': commonService.screen_width<991,
-                  'grid-odd-center': segment.section_grid_type=='grid_3' || segment.section_grid_type=='grid_11'
-                }">
-                  <div class="category custom-grid" (click)="commonService.onPageRedirect(x);">
+            </div>
+            <ng-container
+              *ngIf="
+                segment.section_grid_type != 'grid_7' &&
+                segment.section_grid_type != 'grid_8' &&
+                segment.section_grid_type != 'grid_9' &&
+                segment.section_grid_type != 'grid_10' &&
+                segment.section_grid_type != 'grid_12'
+              "
+            >
+              <ng-container *ngFor="let x of segment.image_list; let j = index">
+                <div
+                  [ngClass]="{
+                    'col-md-6 equal-space col-12':
+                      segment.section_grid_type == 'grid_1' ||
+                      segment.section_grid_type == 'grid_2',
+                    'col-md-4':
+                      segment.section_grid_type == 'grid_3' ||
+                      segment.section_grid_type == 'grid_4' ||
+                      segment.section_grid_type == 'grid_11',
+                    'col-md-3':
+                      segment.section_grid_type == 'grid_5' ||
+                      segment.section_grid_type == 'grid_6',
+                    'col-6': commonService.screen_width < 991,
+                    'grid-odd-center':
+                      segment.section_grid_type == 'grid_3' ||
+                      segment.section_grid_type == 'grid_11',
+                  }"
+                >
+                  <div
+                    class="category custom-grid"
+                    (click)="commonService.onPageRedirect(x)"
+                  >
                     <figure>
-                      <img loading="lazy" width="100%" height="100%" appLqimgLoad appDeferLoad [ImagelazyLoad]="imgBaseUrl+x.desktop_img" alt="{{(x.img_alt)? x.img_alt: 'Image'}}">
+                      <img
+                        loading="lazy"
+                        width="100%"
+                        height="100%"
+                        appLqimgLoad
+                        appDeferLoad
+                        [ImagelazyLoad]="imgBaseUrl + x.desktop_img"
+                        alt="{{ x.img_alt ? x.img_alt : 'Image' }}"
+                      />
                       <!-- <div *ngIf="x?.content_status && x?.content_details?.heading" class="category-grid-text d-flex flex-column" [ngClass]="{
                         'align-items-start': x?.position=='t_l' || x?.position=='t_c' || x?.position=='t_r',
                         'align-items-center': x?.position=='m_l' || x?.position=='m_c' || x?.position=='m_r',
@@ -214,14 +587,38 @@
                       </div> -->
                       <div class="category-grid-text">
                         <div class="inner-content">
-                          <h2 class="mb-3" [ngClass]="(x?.content_details?.text_color=='dark')? 'text-dark': 'text-light'">{{ x.content_details.heading }}</h2>
-                          <ng-container *ngIf="j===0">
-                            <p>Fine fabrics that speak the language of tradition</p>
-                            <button routerLink="/sections/by-fabrics" class="primary-btn">Shop Now</button>
+                          <h2
+                            class="mb-3"
+                            [ngClass]="
+                              x?.content_details?.text_color == 'dark'
+                                ? 'text-dark'
+                                : 'text-light'
+                            "
+                          >
+                            {{ x.content_details.heading }}
+                          </h2>
+                          <ng-container *ngIf="j === 0">
+                            <p>
+                              Fine fabrics that speak the language of tradition
+                            </p>
+                            <button
+                              routerLink="/sections/by-fabrics"
+                              class="primary-btn"
+                            >
+                              Shop Now
+                            </button>
                           </ng-container>
-                          <ng-container *ngIf="j===1">
-                            <p>Handcrafted sarees that celebrate India’s rich textile heritage</p>
-                            <button routerLink="/sections/by-crafts" class="primary-btn">Shop Now</button>
+                          <ng-container *ngIf="j === 1">
+                            <p>
+                              Handcrafted sarees that celebrate India’s rich
+                              textile heritage
+                            </p>
+                            <button
+                              routerLink="/sections/by-crafts"
+                              class="primary-btn"
+                            >
+                              Shop Now
+                            </button>
                           </ng-container>
                         </div>
                       </div>
@@ -230,7 +627,7 @@
                 </div>
               </ng-container>
             </ng-container>
-            
+
             <!-- <div *ngIf="segment.section_grid_type=='grid_7' || segment.section_grid_type=='grid_9' || segment.section_grid_type=='grid_12'" class="col-12">
               <div class="grids">
                 <div class="grid-sizer"></div>
@@ -263,75 +660,226 @@
                 </ng-container>
               </div>
             </div> -->
-          
-            <div *ngIf="segment.section_grid_type=='grid_8' || segment.section_grid_type=='grid_10'" class="col-12">
-              <div [ngClass]="segment.section_grid_type=='grid_8'? 'masonry-grid8': 'masonry-grid10'">
-                <ng-container *ngFor="let x of segment.image_list; let j=index;">
-                  <div class="masonry-col cursor" (click)="commonService.onPageRedirect(x);" [ngClass]="{
-                    'masonry-col--2x': segment.section_grid_type=='grid_8' && j===1 || segment.section_grid_type=='grid_8' && j===3 || j===4
-                  }">
+
+            <div
+              *ngIf="
+                segment.section_grid_type == 'grid_8' ||
+                segment.section_grid_type == 'grid_10'
+              "
+              class="col-12"
+            >
+              <div
+                [ngClass]="
+                  segment.section_grid_type == 'grid_8'
+                    ? 'masonry-grid8'
+                    : 'masonry-grid10'
+                "
+              >
+                <ng-container
+                  *ngFor="let x of segment.image_list; let j = index"
+                >
+                  <div
+                    class="masonry-col cursor"
+                    (click)="commonService.onPageRedirect(x)"
+                    [ngClass]="{
+                      'masonry-col--2x':
+                        (segment.section_grid_type == 'grid_8' && j === 1) ||
+                        (segment.section_grid_type == 'grid_8' && j === 3) ||
+                        j === 4,
+                    }"
+                  >
                     <figure>
-                      <img loading="lazy" width="100%" height="100%" class="masonry-img" appLqimgLoad appDeferLoad [ImagelazyLoad]="imgBaseUrl+x.desktop_img" alt="{{(x.img_alt)? x.img_alt: 'Image'}}">
-                      <div *ngIf="x?.content_status && x?.content_details?.heading" class="category-grid-text d-flex" [ngClass]="{
-                        'align-items-start': x?.position=='t_l' || x?.position=='t_c' || x?.position=='t_r',
-                        'align-items-center': x?.position=='m_l' || x?.position=='m_c' || x?.position=='m_r',
-                        'align-items-end': x?.position=='b_l' || x?.position=='b_c' || x?.position=='b_r',
-                        'justify-content-start': x?.position=='t_l' || x?.position=='m_l' || x?.position=='b_l',
-                        'justify-content-center': x?.position=='t_c' || x?.position=='m_c' || x?.position=='b_c',
-                        'justify-content-end': x?.position=='t_r' || x?.position=='m_r' || x?.position=='b_r',
-                        'text-left': x?.position!='t_c' && x?.position!='m_c' && x?.position!='b_c'
-                      }">
-                        <p class="m-3" [ngClass]="(x?.content_details?.text_color=='dark')? 'text-dark': 'text-light'">{{ x.content_details.heading }}</p>
+                      <img
+                        loading="lazy"
+                        width="100%"
+                        height="100%"
+                        class="masonry-img"
+                        appLqimgLoad
+                        appDeferLoad
+                        [ImagelazyLoad]="imgBaseUrl + x.desktop_img"
+                        alt="{{ x.img_alt ? x.img_alt : 'Image' }}"
+                      />
+                      <div
+                        *ngIf="x?.content_status && x?.content_details?.heading"
+                        class="category-grid-text d-flex"
+                        [ngClass]="{
+                          'align-items-start':
+                            x?.position == 't_l' ||
+                            x?.position == 't_c' ||
+                            x?.position == 't_r',
+                          'align-items-center':
+                            x?.position == 'm_l' ||
+                            x?.position == 'm_c' ||
+                            x?.position == 'm_r',
+                          'align-items-end':
+                            x?.position == 'b_l' ||
+                            x?.position == 'b_c' ||
+                            x?.position == 'b_r',
+                          'justify-content-start':
+                            x?.position == 't_l' ||
+                            x?.position == 'm_l' ||
+                            x?.position == 'b_l',
+                          'justify-content-center':
+                            x?.position == 't_c' ||
+                            x?.position == 'm_c' ||
+                            x?.position == 'b_c',
+                          'justify-content-end':
+                            x?.position == 't_r' ||
+                            x?.position == 'm_r' ||
+                            x?.position == 'b_r',
+                          'text-left':
+                            x?.position != 't_c' &&
+                            x?.position != 'm_c' &&
+                            x?.position != 'b_c',
+                        }"
+                      >
+                        <p
+                          class="m-3"
+                          [ngClass]="
+                            x?.content_details?.text_color == 'dark'
+                              ? 'text-dark'
+                              : 'text-light'
+                          "
+                        >
+                          {{ x.content_details.heading }}
+                        </p>
                       </div>
                     </figure>
                   </div>
                 </ng-container>
               </div>
-            </div>        
-
+            </div>
           </div>
         </div>
       </section>
-     </ng-container>
+    </ng-container>
     <!-- #Section Grid -->
 
     <!-- Featured Sections -->
-    <section *ngIf="segment.type=='featured_section' && segment.image_list?.length>=swiperService.featured_section?.card_count" class="primary-section feature-sec-margin feature-slide-sec" [ngClass]="(i>1)? 'wow fadeInUp': null">
+    <section
+      *ngIf="
+        segment.type == 'featured_section' &&
+        segment.image_list?.length >= swiperService.featured_section?.card_count
+      "
+      class="primary-section feature-sec-margin feature-slide-sec"
+      [ngClass]="i > 1 ? 'wow fadeInUp' : null"
+    >
       <div class="container-fluid">
         <div class="row">
           <div *ngIf="segment.heading" class="col-12 px-0 swipe_arrow">
             <div class="titles custom-title">
-              <h2>{{segment.heading}}</h2>
-              <p *ngIf="segment.sub_heading" [innerHTML]="segment.sub_heading"></p>
+              <h2>{{ segment.heading }}</h2>
+              <p
+                *ngIf="segment.sub_heading"
+                [innerHTML]="segment.sub_heading"
+              ></p>
               <!-- <span></span> -->
             </div>
-             <ng-container *ngIf="commonService?.desktop_device && segment.image_list?.length>1">
-                <div id="swipe_next_{{i+1}}" class="swiper-button swiper-button-next">
-                  <lucide-icon name="chevron-right" [size]="20" stroke="1" color="white"></lucide-icon>
-                </div>
-                <div id="swipe_prev_{{i+1}}" class="swiper-button swiper-button-prev">
-                  <lucide-icon name="chevron-left" [size]="20" stroke="1" color="black"></lucide-icon>
-                </div>
-              </ng-container>
+            <ng-container
+              *ngIf="
+                commonService?.desktop_device && segment.image_list?.length > 1
+              "
+            >
+              <div
+                id="swipe_next_{{ i + 1 }}"
+                class="swiper-button swiper-button-next"
+              >
+                <lucide-icon
+                  name="chevron-right"
+                  [size]="20"
+                  stroke="1"
+                  color="white"
+                ></lucide-icon>
+              </div>
+              <div
+                id="swipe_prev_{{ i + 1 }}"
+                class="swiper-button swiper-button-prev"
+              >
+                <lucide-icon
+                  name="chevron-left"
+                  [size]="20"
+                  stroke="1"
+                  color="black"
+                ></lucide-icon>
+              </div>
+            </ng-container>
           </div>
           <div class="col-12 px-0">
-            <div class="swiper-container multi-slider product-slider featured-sections" [ngClass]="commonService.desktop_device? 'desktopfeasecslider_'+(i+1): 'feasecslider_'+(i+1)" appHomeSwiper>
+            <div
+              class="swiper-container multi-slider product-slider featured-sections"
+              [ngClass]="
+                commonService.desktop_device
+                  ? 'desktopfeasecslider_' + (i + 1)
+                  : 'feasecslider_' + (i + 1)
+              "
+              appHomeSwiper
+            >
               <div class="swiper-wrapper">
-                <div *ngFor="let x of segment.image_list; let j=index;" class="swiper-slide p-0">
+                <div
+                  *ngFor="let x of segment.image_list; let j = index"
+                  class="swiper-slide p-0"
+                >
                   <div class="product-box cursor h-100">
-                    <a (click)="commonService.onPageRedirect(x);" class="prod-div h-100">
+                    <a
+                      (click)="commonService.onPageRedirect(x)"
+                      class="prod-div h-100"
+                    >
                       <figure class="mb-0">
-                        <img loading="lazy" width="100%" height="100%" appLqimgLoad appDeferLoad [ImagelazyLoad]="imgBaseUrl+x.desktop_img" alt="{{(x.img_alt)? x.img_alt: 'Image'}}">
-                        <div *ngIf="x?.content_status && x?.content_details?.heading" class="category-grid-text d-flex" [ngClass]="{
-                          'align-items-start': x?.position=='t_l' || x?.position=='t_c' || x?.position=='t_r',
-                          'align-items-center': x?.position=='m_l' || x?.position=='m_c' || x?.position=='m_r',
-                          'align-items-end': x?.position=='b_l' || x?.position=='b_c' || x?.position=='b_r',
-                          'justify-content-start': x?.position=='t_l' || x?.position=='m_l' || x?.position=='b_l',
-                          'justify-content-center': x?.position=='t_c' || x?.position=='m_c' || x?.position=='b_c',
-                          'justify-content-end': x?.position=='t_r' || x?.position=='m_r' || x?.position=='b_r',
-                          'text-left': x?.position!='t_c' && x?.position!='m_c' && x?.position!='b_c'
-                        }">
-                          <p class="mb-0" [ngClass]="(x?.content_details?.text_color=='dark')? 'text-dark': 'text-light'">{{ x.content_details.heading }}</p>
+                        <img
+                          loading="lazy"
+                          width="100%"
+                          height="100%"
+                          appLqimgLoad
+                          appDeferLoad
+                          [ImagelazyLoad]="imgBaseUrl + x.desktop_img"
+                          alt="{{ x.img_alt ? x.img_alt : 'Image' }}"
+                        />
+                        <div
+                          *ngIf="
+                            x?.content_status && x?.content_details?.heading
+                          "
+                          class="category-grid-text d-flex"
+                          [ngClass]="{
+                            'align-items-start':
+                              x?.position == 't_l' ||
+                              x?.position == 't_c' ||
+                              x?.position == 't_r',
+                            'align-items-center':
+                              x?.position == 'm_l' ||
+                              x?.position == 'm_c' ||
+                              x?.position == 'm_r',
+                            'align-items-end':
+                              x?.position == 'b_l' ||
+                              x?.position == 'b_c' ||
+                              x?.position == 'b_r',
+                            'justify-content-start':
+                              x?.position == 't_l' ||
+                              x?.position == 'm_l' ||
+                              x?.position == 'b_l',
+                            'justify-content-center':
+                              x?.position == 't_c' ||
+                              x?.position == 'm_c' ||
+                              x?.position == 'b_c',
+                            'justify-content-end':
+                              x?.position == 't_r' ||
+                              x?.position == 'm_r' ||
+                              x?.position == 'b_r',
+                            'text-left':
+                              x?.position != 't_c' &&
+                              x?.position != 'm_c' &&
+                              x?.position != 'b_c',
+                          }"
+                        >
+                          <p
+                            class="mb-0"
+                            [ngClass]="
+                              x?.content_details?.text_color == 'dark'
+                                ? 'text-dark'
+                                : 'text-light'
+                            "
+                          >
+                            {{ x.content_details.heading }}
+                          </p>
                         </div>
                       </figure>
                     </a>
@@ -346,183 +894,312 @@
     <!-- #Featured Sections -->
 
     <!-- Featured Products -->
-    <section *ngIf="segment.type=='featured_product' && segment.product_list?.length>=swiperService.featured_products?.card_count" class="primary-section product__slider feature-sec-margin"
-      [ngClass]="{ 
-        'background-grey': i===2 || i===4, 
-        'wow fadeInUp': i>1,
-        'feature-slide-sec': segment.slider_type=='two'
-      }">
+    <section
+      *ngIf="
+        segment.type == 'featured_product' &&
+        segment.product_list?.length >=
+          swiperService.featured_products?.card_count
+      "
+      class="primary-section product__slider feature-sec-margin"
+      [ngClass]="{
+        'background-grey': i === 2 || i === 4,
+        'wow fadeInUp': i > 1,
+        'feature-slide-sec': segment.slider_type == 'two',
+      }"
+    >
       <!-- {{segment.slider_type}} -->
       <div class="container-fluid">
         <!-- Slider -->
-        <div class="row featured_product_list" *ngIf="segment.blogs_type!='grid'" [ngClass]="(segment.slider_type=='one')? 'align-items-center slider_type_one': ''">
-            <div *ngIf="segment.heading && segment.slider_type=='one'" class="col-md-3 px-0 d-flex flex-column justify-content-center align-items-start mobile-button">
-              <div class="titles custom-title w-auto" [ngClass]="segment.blogs_type=='grid'? 'pl-0': ''">
-                <h2>{{segment.heading}}</h2>
-                <p *ngIf="segment.sub_heading" [innerHTML]="segment.sub_heading"></p>
-                <!-- <span></span> -->
-              </div>             
-              <div class="product-silder-btn" *ngIf="segment.blogs_type!='grid' && commonService?.screen_width>=767">
-                <button class="primary-btn" (click)="exploreAll(segment);" type="button">View All</button>
+        <div
+          class="row featured_product_list"
+          *ngIf="segment.blogs_type != 'grid'"
+          [ngClass]="
+            segment.slider_type == 'one'
+              ? 'align-items-center slider_type_one'
+              : ''
+          "
+        >
+          <div
+            *ngIf="segment.heading && segment.slider_type == 'one'"
+            class="col-md-3 px-0 d-flex flex-column justify-content-center align-items-start mobile-button"
+          >
+            <div
+              class="titles custom-title w-auto"
+              [ngClass]="segment.blogs_type == 'grid' ? 'pl-0' : ''"
+            >
+              <h2>{{ segment.heading }}</h2>
+              <p
+                *ngIf="segment.sub_heading"
+                [innerHTML]="segment.sub_heading"
+              ></p>
+              <!-- <span></span> -->
+            </div>
+            <div
+              class="product-silder-btn"
+              *ngIf="
+                segment.blogs_type != 'grid' &&
+                commonService?.screen_width >= 767
+              "
+            >
+              <button
+                class="primary-btn"
+                (click)="exploreAll(segment)"
+                type="button"
+              >
+                View All
+              </button>
+            </div>
+            <div
+              class="product-silder-btn"
+              *ngIf="
+                segment.blogs_type != 'grid' &&
+                commonService?.screen_width <= 767
+              "
+            >
+              <button
+                class="primary-btn outline-btn"
+                (click)="exploreAll(segment)"
+                type="button"
+              >
+                View All
+              </button>
+            </div>
+          </div>
+          <div
+            *ngIf="segment.heading && segment.slider_type == 'two'"
+            class="col-12 px-0 swipe_arrow"
+            [ngClass]="segment.slider_type == 'two' ? 'arrow' : ''"
+          >
+            <div
+              class="d-flex flex-column justify-content-center align-items-start mobile-button"
+            >
+              <div
+                class="titles custom-title w-auto"
+                [ngClass]="segment.blogs_type == 'grid' ? 'pl-0' : ''"
+              >
+                <h2>{{ segment.heading }}</h2>
+                <p
+                  *ngIf="segment.sub_heading"
+                  [innerHTML]="segment.sub_heading"
+                ></p>
               </div>
-              <div class="product-silder-btn" *ngIf="segment.blogs_type!='grid' && commonService?.screen_width<=767">
-                <button class="primary-btn outline-btn" (click)="exploreAll(segment);" type="button">View All</button>
+              <div
+                *ngIf="commonService?.screen_width <= 767"
+                class="product-silder-btn"
+              >
+                <button
+                  class="primary-btn outline-btn"
+                  (click)="exploreAll(segment)"
+                  type="button"
+                >
+                  View All
+                </button>
               </div>
             </div>
-            <div *ngIf="segment.heading && segment.slider_type=='two'" class="col-12 px-0 swipe_arrow" [ngClass]="segment.slider_type=='two'? 'arrow': ''">
-              <div class="d-flex flex-column justify-content-center align-items-start mobile-button">
-                <div class="titles custom-title w-auto" [ngClass]="segment.blogs_type=='grid'? 'pl-0': ''">
-                  <h2>{{segment.heading}}</h2>
-                  <p *ngIf="segment.sub_heading" [innerHTML]="segment.sub_heading"></p>
-                </div>
-                <div *ngIf="commonService?.screen_width<=767" class="product-silder-btn">
-                  <button class="primary-btn outline-btn" (click)="exploreAll(segment);" type="button">View All</button>
-                </div>
+            <ng-container
+              *ngIf="
+                commonService?.desktop_device &&
+                segment.product_list?.length > 1
+              "
+            >
+              <div
+                id="swipe_next_{{ i + 1 }}"
+                class="swiper-button swiper-button-next"
+              >
+                <lucide-icon
+                  name="chevron-right"
+                  [size]="20"
+                  stroke="1"
+                  color="white"
+                ></lucide-icon>
               </div>
-              <ng-container *ngIf="commonService?.desktop_device && segment.product_list?.length>1">
-                <div id="swipe_next_{{i+1}}" class="swiper-button swiper-button-next">
-                  <lucide-icon name="chevron-right" [size]="20" stroke="1" color="white"></lucide-icon>
-                </div>
-                <div id="swipe_prev_{{i+1}}" class="swiper-button swiper-button-prev">
-                  <lucide-icon name="chevron-left" [size]="20" stroke="1" color="black"></lucide-icon>
-                </div>
-              </ng-container>
-            </div>
-            <!-- Products -->
-            <div class="px-0 swipe_arrow" [ngClass]="(segment.slider_type=='one')? 'col-md-9': 'col-12'">
-              <div class="swiper-container multi-slider product-slider px-max" [ngClass]="commonService.desktop_device? 'desktopslider_'+(i+1): 'slider_'+(i+1)" appHomeSwiper>
-                <div class="swiper-wrapper">
-                  <div *ngFor="let x of segment.product_list; let j=index;" class="swiper-slide p-0">
-                    <div appMouseHover class="product-box cursor p-0" [ngClass]="template_setting?.p_card? '': ''">
-                      <!--Wishlist icon-->
-                      <div class="product_labellist wishlist-main">
-                        <span class="wishlist-icon" (click)="(commonService.wishListIds.indexOf(x._id)!=-1)? ws.removeFromWishList(x._id): ws.addToWishList(x);"
-                        [ngClass]="(commonService.wishListIds.indexOf(x._id)!=-1)? 'wishlist-icon-active': null">                      
-                          <lucide-icon name="heart" [size]="16" stroke="1" color="#000000" fill="#000000"></lucide-icon>                        
-                        </span>
-                      </div>
-                      <!--#Wishlist icon-->
-                      <a class="prod-div" (click)="commonService.selected_product=x;" routerLink="{{ x.seo_status ? '/product/'+x.seo_details.page_url : '/product/'+x._id }}">
-                        <figure class="product-image" [ngClass]="segment.slider_type=='one'? '' : 'product-image-sec2' ">
-                          <!-- label -->
-                          <div class="product_labellist label_{{commonService.application_setting?.tag_position}}">
-                            <span class="span_label" *ngIf="commonService.store_properties?.auto_tags?.sold_out && x.stock<=0">
-                              {{commonService.store_properties?.auto_tags?.sold_out}}
-                            </span>
-                            <ng-container *ngIf="x.stock>0">
-                              <span class="span_label" *ngIf="commonService.store_properties?.auto_tags?.new_arrival && x.created_on>commonService.currDate">
-                                {{commonService.store_properties?.auto_tags?.new_arrival}}
-                              </span>
-                              <span class="span_label" *ngIf="commonService.store_properties?.auto_tags?.on_sale && x.disc_status">
-                                {{commonService.store_properties?.auto_tags?.on_sale}}
-                              </span>
-                              <span class="span_label" *ngFor="let tag of x.badge_list | orderAsc: 'rank';">{{tag.name}}</span>
-                            </ng-container>
-                          </div>
-                          <!-- image -->
-                          <img loading="lazy" width="100%" height="100%" appLqimgLoad appDeferLoad [ImagelazyLoad]="imgBaseUrl+x.image_list[0].image" alt="{{(x.image_list[0].img_alt)? x.image_list[0].img_alt: 'Image'}}">
-                          <img loading="lazy" width="100%" height="100%" appLqimgLoad appDeferLoad *ngIf="commonService?.desktop_device && x.image_list.length > 1" [ImagelazyLoad]="imgBaseUrl+x.image_list[1]?.image" alt="{{(x.image_list[1].img_alt)? x.image_list[1].img_alt: 'Image'}}" class="image-hover">
-                          <figcaption *ngIf="template_setting?.purchase_badge">
-                            <span class="swipe-btn">
-                              <span class="swipe-btn-txt">Purchase
-                                <i class="material-icons">shopping_bag</i>
-                              </span>
-                            </span>
-                          </figcaption>
-                        </figure>
-                        <div class="product-content">
-                          <h3 *ngIf="x.brand">{{x.brand}}</h3>
-                          <h4>{{x.name}}</h4>
-                          <div>
-                            <ng-container *ngTemplateOutlet="homeProductCardPrices; context: { $implicit: x }"></ng-container>
-                            <div *ngIf="template_setting?.purchase_txt" class="purchase-div">
-                              <a>PURCHASE</a>
-                            </div>
-                          </div>
-                        </div>
-                      </a>
-                    </div>
-                  </div>
-                  <!-- explore all -->
-                  <!-- <div class="swiper-slide">
-                    <div class="product-box cursor d-flex justify-content-center align-items-center" [ngClass]="template_setting?.p_card? 'primary-card p-3': ''">
-                      <button class="primary-btn" (click)="exploreAll(segment);" type="button">
-                        Explore All
-                      </button>
-                    </div>
-                  </div> -->
-                </div>
-                <ng-container *ngIf="commonService?.screen_width>=991 && segment.product_list?.length>1 && segment.slider_type=='one'">
-                  <div id="swipe_next_{{i+1}}" class="swiper-button swiper-button-next">
-                    <lucide-icon name="chevron-right" [size]="20" stroke="1" color="white"></lucide-icon>
-                  </div>
-                  <div id="swipe_prev_{{i+1}}" class="swiper-button swiper-button-prev">
-                    <lucide-icon name="chevron-left" [size]="20" stroke="1" color="black"></lucide-icon>
-                  </div>
-                </ng-container>
+              <div
+                id="swipe_prev_{{ i + 1 }}"
+                class="swiper-button swiper-button-prev"
+              >
+                <lucide-icon
+                  name="chevron-left"
+                  [size]="20"
+                  stroke="1"
+                  color="black"
+                ></lucide-icon>
               </div>
-            </div>
-        </div>
-        <!-- Grid -->
-        <div class="row" *ngIf="segment.blogs_type=='grid'">
-          <!-- <ng-container *ngIf="segment.blogs_type=='grid'"> -->
-              <div *ngIf="segment.heading" class="col-12 px-0 d-flex justify-content-between align-items-end">
-                <div class="titles custom-title w-auto" [ngClass]="segment.blogs_type=='grid'? 'pl-0': ''">
-                  <h2>{{segment.heading}}</h2>
-                  <p *ngIf="segment.sub_heading" [innerHTML]="segment.sub_heading"></p>
-                  <!-- <span></span> -->
-                </div>
-                <div>
-                  <button class="primary-btn outline-btn" (click)="exploreAll(segment);" type="button">
-                    View All
-                  </button>
-                </div>             
-              </div> 
-              <div class="row d-flex flex-wrap align-items-stretch" style="margin-left: -7px;margin-right: -7px;">
-                <div  *ngFor="let x of segment.product_list | slice: 0:4; let j = index;" class="col-md-3 px-0 col-6 feature-grid">
-                  <div appMouseHover class="product-box cursor h-100 d-flex flex-column" [ngClass]="template_setting?.p_card? '': ''">
+            </ng-container>
+          </div>
+          <!-- Products -->
+          <div
+            class="px-0 swipe_arrow"
+            [ngClass]="segment.slider_type == 'one' ? 'col-md-9' : 'col-12'"
+          >
+            <div
+              class="swiper-container multi-slider product-slider px-max"
+              [ngClass]="
+                commonService.desktop_device
+                  ? 'desktopslider_' + (i + 1)
+                  : 'slider_' + (i + 1)
+              "
+              appHomeSwiper
+            >
+              <div class="swiper-wrapper">
+                <div
+                  *ngFor="let x of segment.product_list; let j = index"
+                  class="swiper-slide p-0"
+                >
+                  <div
+                    appMouseHover
+                    class="product-box cursor p-0"
+                    [ngClass]="template_setting?.p_card ? '' : ''"
+                  >
                     <!--Wishlist icon-->
                     <div class="product_labellist wishlist-main">
-                      <span class="wishlist-icon" (click)="(commonService.wishListIds.indexOf(x._id)!=-1)? ws.removeFromWishList(x._id): ws.addToWishList(x);"
-                      [ngClass]="(commonService.wishListIds.indexOf(x._id)!=-1)? 'wishlist-icon-active': null">                      
-                        <lucide-icon name="heart" [size]="16" stroke="1" color="#000000" fill="#000000"></lucide-icon>                        
+                      <span
+                        class="wishlist-icon"
+                        (click)="
+                          commonService.wishListIds.indexOf(x._id) != -1
+                            ? ws.removeFromWishList(x._id)
+                            : ws.addToWishList(x)
+                        "
+                        [ngClass]="
+                          commonService.wishListIds.indexOf(x._id) != -1
+                            ? 'wishlist-icon-active'
+                            : null
+                        "
+                      >
+                        <lucide-icon
+                          name="heart"
+                          [size]="16"
+                          stroke="1"
+                          color="#000000"
+                          fill="#000000"
+                        ></lucide-icon>
                       </span>
                     </div>
                     <!--#Wishlist icon-->
-                    <a class="prod-div" (click)="commonService.selected_product=x;" routerLink="{{ x.seo_status ? '/product/'+x.seo_details.page_url : '/product/'+x._id }}">
-                      <figure class="product-image">
+                    <a
+                      class="prod-div"
+                      (click)="commonService.selected_product = x"
+                      routerLink="{{
+                        x.seo_status
+                          ? '/product/' + x.seo_details.page_url
+                          : '/product/' + x._id
+                      }}"
+                    >
+                      <figure
+                        class="product-image"
+                        [ngClass]="
+                          segment.slider_type == 'one'
+                            ? ''
+                            : 'product-image-sec2'
+                        "
+                      >
                         <!-- label -->
-                        <div class="product_labellist label_{{commonService.application_setting?.tag_position}}">
-                          <span class="span_label" *ngIf="commonService.store_properties?.auto_tags?.sold_out && x.stock<=0">
-                            {{commonService.store_properties?.auto_tags?.sold_out}}
+                        <div
+                          class="product_labellist label_{{
+                            commonService.application_setting?.tag_position
+                          }}"
+                        >
+                          <span
+                            class="span_label"
+                            *ngIf="
+                              commonService.store_properties?.auto_tags
+                                ?.sold_out && x.stock <= 0
+                            "
+                          >
+                            {{
+                              commonService.store_properties?.auto_tags
+                                ?.sold_out
+                            }}
                           </span>
-                          <ng-container *ngIf="x.stock>0">
-                            <span class="span_label" *ngIf="commonService.store_properties?.auto_tags?.new_arrival && x.created_on>commonService.currDate">
-                              {{commonService.store_properties?.auto_tags?.new_arrival}}
+                          <ng-container *ngIf="x.stock > 0">
+                            <span
+                              class="span_label"
+                              *ngIf="
+                                commonService.store_properties?.auto_tags
+                                  ?.new_arrival &&
+                                x.created_on > commonService.currDate
+                              "
+                            >
+                              {{
+                                commonService.store_properties?.auto_tags
+                                  ?.new_arrival
+                              }}
                             </span>
-                            <span class="span_label" *ngIf="commonService.store_properties?.auto_tags?.on_sale && x.disc_status">
-                              {{commonService.store_properties?.auto_tags?.on_sale}}
+                            <span
+                              class="span_label"
+                              *ngIf="
+                                commonService.store_properties?.auto_tags
+                                  ?.on_sale && x.disc_status
+                              "
+                            >
+                              {{
+                                commonService.store_properties?.auto_tags
+                                  ?.on_sale
+                              }}
                             </span>
-                            <span class="span_label" *ngFor="let tag of x.badge_list | orderAsc: 'rank';">{{tag.name}}</span>
+                            <span
+                              class="span_label"
+                              *ngFor="
+                                let tag of x.badge_list | orderAsc: 'rank'
+                              "
+                              >{{ tag.name }}</span
+                            >
                           </ng-container>
                         </div>
                         <!-- image -->
-                        <img loading="lazy" width="100%" height="100%" appLqimgLoad appDeferLoad [ImagelazyLoad]="imgBaseUrl+x.image_list[0].image" alt="{{(x.image_list[0].img_alt)? x.image_list[0].img_alt: 'Image'}}">
-                        <img loading="lazy" width="100%" height="100%" appLqimgLoad appDeferLoad *ngIf="commonService?.desktop_device && x.image_list.length > 1" [ImagelazyLoad]="imgBaseUrl+x.image_list[1]?.image" alt="{{(x.image_list[1].img_alt)? x.image_list[1].img_alt: 'Image'}}" class="image-hover">
+                        <img
+                          loading="lazy"
+                          width="100%"
+                          height="100%"
+                          appLqimgLoad
+                          appDeferLoad
+                          [ImagelazyLoad]="imgBaseUrl + x.image_list[0].image"
+                          alt="{{
+                            x.image_list[0].img_alt
+                              ? x.image_list[0].img_alt
+                              : 'Image'
+                          }}"
+                        />
+                        <img
+                          loading="lazy"
+                          width="100%"
+                          height="100%"
+                          appLqimgLoad
+                          appDeferLoad
+                          *ngIf="
+                            commonService?.desktop_device &&
+                            x.image_list.length > 1
+                          "
+                          [ImagelazyLoad]="imgBaseUrl + x.image_list[1]?.image"
+                          alt="{{
+                            x.image_list[1].img_alt
+                              ? x.image_list[1].img_alt
+                              : 'Image'
+                          }}"
+                          class="image-hover"
+                        />
                         <figcaption *ngIf="template_setting?.purchase_badge">
                           <span class="swipe-btn">
-                            <span class="swipe-btn-txt">Purchase
+                            <span class="swipe-btn-txt"
+                              >Purchase
                               <i class="material-icons">shopping_bag</i>
                             </span>
                           </span>
                         </figcaption>
                       </figure>
                       <div class="product-content">
-                        <h3 *ngIf="x.brand">{{x.brand}}</h3>
-                        <h4>{{x.name}}</h4>
+                        <h3 *ngIf="x.brand">{{ x.brand }}</h3>
+                        <h4>{{ x.name }}</h4>
                         <div>
-                          <ng-container *ngTemplateOutlet="homeProductCardPrices; context: { $implicit: x }"></ng-container>
-                          <div *ngIf="template_setting?.purchase_txt" class="purchase-div">
+                          <ng-container
+                            *ngTemplateOutlet="
+                              homeProductCardPrices;
+                              context: { $implicit: x }
+                            "
+                          ></ng-container>
+                          <div
+                            *ngIf="template_setting?.purchase_txt"
+                            class="purchase-div"
+                          >
                             <a>PURCHASE</a>
                           </div>
                         </div>
@@ -530,8 +1207,239 @@
                     </a>
                   </div>
                 </div>
+                <!-- explore all -->
+                <!-- <div class="swiper-slide">
+                    <div class="product-box cursor d-flex justify-content-center align-items-center" [ngClass]="template_setting?.p_card? 'primary-card p-3': ''">
+                      <button class="primary-btn" (click)="exploreAll(segment);" type="button">
+                        Explore All
+                      </button>
+                    </div>
+                  </div> -->
               </div>
-            <!-- <div class="col-md-12 d-flex justify-content-center">
+              <ng-container
+                *ngIf="
+                  commonService?.screen_width >= 991 &&
+                  segment.product_list?.length > 1 &&
+                  segment.slider_type == 'one'
+                "
+              >
+                <div
+                  id="swipe_next_{{ i + 1 }}"
+                  class="swiper-button swiper-button-next"
+                >
+                  <lucide-icon
+                    name="chevron-right"
+                    [size]="20"
+                    stroke="1"
+                    color="white"
+                  ></lucide-icon>
+                </div>
+                <div
+                  id="swipe_prev_{{ i + 1 }}"
+                  class="swiper-button swiper-button-prev"
+                >
+                  <lucide-icon
+                    name="chevron-left"
+                    [size]="20"
+                    stroke="1"
+                    color="black"
+                  ></lucide-icon>
+                </div>
+              </ng-container>
+            </div>
+          </div>
+        </div>
+        <!-- Grid -->
+        <div class="row" *ngIf="segment.blogs_type == 'grid'">
+          <!-- <ng-container *ngIf="segment.blogs_type=='grid'"> -->
+          <div
+            *ngIf="segment.heading"
+            class="col-12 px-0 d-flex justify-content-between align-items-end"
+          >
+            <div
+              class="titles custom-title w-auto"
+              [ngClass]="segment.blogs_type == 'grid' ? 'pl-0' : ''"
+            >
+              <h2>{{ segment.heading }}</h2>
+              <p
+                *ngIf="segment.sub_heading"
+                [innerHTML]="segment.sub_heading"
+              ></p>
+              <!-- <span></span> -->
+            </div>
+            <div>
+              <button
+                class="primary-btn outline-btn"
+                (click)="exploreAll(segment)"
+                type="button"
+              >
+                View All
+              </button>
+            </div>
+          </div>
+          <div
+            class="row d-flex flex-wrap align-items-stretch"
+            style="margin-left: -7px; margin-right: -7px"
+          >
+            <div
+              *ngFor="
+                let x of segment.product_list | slice: 0 : 4;
+                let j = index
+              "
+              class="col-md-3 px-0 col-6 feature-grid"
+            >
+              <div
+                appMouseHover
+                class="product-box cursor h-100 d-flex flex-column"
+                [ngClass]="template_setting?.p_card ? '' : ''"
+              >
+                <!--Wishlist icon-->
+                <div class="product_labellist wishlist-main">
+                  <span
+                    class="wishlist-icon"
+                    (click)="
+                      commonService.wishListIds.indexOf(x._id) != -1
+                        ? ws.removeFromWishList(x._id)
+                        : ws.addToWishList(x)
+                    "
+                    [ngClass]="
+                      commonService.wishListIds.indexOf(x._id) != -1
+                        ? 'wishlist-icon-active'
+                        : null
+                    "
+                  >
+                    <lucide-icon
+                      name="heart"
+                      [size]="16"
+                      stroke="1"
+                      color="#000000"
+                      fill="#000000"
+                    ></lucide-icon>
+                  </span>
+                </div>
+                <!--#Wishlist icon-->
+                <a
+                  class="prod-div"
+                  (click)="commonService.selected_product = x"
+                  routerLink="{{
+                    x.seo_status
+                      ? '/product/' + x.seo_details.page_url
+                      : '/product/' + x._id
+                  }}"
+                >
+                  <figure class="product-image">
+                    <!-- label -->
+                    <div
+                      class="product_labellist label_{{
+                        commonService.application_setting?.tag_position
+                      }}"
+                    >
+                      <span
+                        class="span_label"
+                        *ngIf="
+                          commonService.store_properties?.auto_tags?.sold_out &&
+                          x.stock <= 0
+                        "
+                      >
+                        {{
+                          commonService.store_properties?.auto_tags?.sold_out
+                        }}
+                      </span>
+                      <ng-container *ngIf="x.stock > 0">
+                        <span
+                          class="span_label"
+                          *ngIf="
+                            commonService.store_properties?.auto_tags
+                              ?.new_arrival &&
+                            x.created_on > commonService.currDate
+                          "
+                        >
+                          {{
+                            commonService.store_properties?.auto_tags
+                              ?.new_arrival
+                          }}
+                        </span>
+                        <span
+                          class="span_label"
+                          *ngIf="
+                            commonService.store_properties?.auto_tags
+                              ?.on_sale && x.disc_status
+                          "
+                        >
+                          {{
+                            commonService.store_properties?.auto_tags?.on_sale
+                          }}
+                        </span>
+                        <span
+                          class="span_label"
+                          *ngFor="let tag of x.badge_list | orderAsc: 'rank'"
+                          >{{ tag.name }}</span
+                        >
+                      </ng-container>
+                    </div>
+                    <!-- image -->
+                    <img
+                      loading="lazy"
+                      width="100%"
+                      height="100%"
+                      appLqimgLoad
+                      appDeferLoad
+                      [ImagelazyLoad]="imgBaseUrl + x.image_list[0].image"
+                      alt="{{
+                        x.image_list[0].img_alt
+                          ? x.image_list[0].img_alt
+                          : 'Image'
+                      }}"
+                    />
+                    <img
+                      loading="lazy"
+                      width="100%"
+                      height="100%"
+                      appLqimgLoad
+                      appDeferLoad
+                      *ngIf="
+                        commonService?.desktop_device && x.image_list.length > 1
+                      "
+                      [ImagelazyLoad]="imgBaseUrl + x.image_list[1]?.image"
+                      alt="{{
+                        x.image_list[1].img_alt
+                          ? x.image_list[1].img_alt
+                          : 'Image'
+                      }}"
+                      class="image-hover"
+                    />
+                    <figcaption *ngIf="template_setting?.purchase_badge">
+                      <span class="swipe-btn">
+                        <span class="swipe-btn-txt"
+                          >Purchase
+                          <i class="material-icons">shopping_bag</i>
+                        </span>
+                      </span>
+                    </figcaption>
+                  </figure>
+                  <div class="product-content">
+                    <h3 *ngIf="x.brand">{{ x.brand }}</h3>
+                    <h4>{{ x.name }}</h4>
+                    <div>
+                      <ng-container
+                        *ngTemplateOutlet="
+                          homeProductCardPrices;
+                          context: { $implicit: x }
+                        "
+                      ></ng-container>
+                      <div
+                        *ngIf="template_setting?.purchase_txt"
+                        class="purchase-div"
+                      >
+                        <a>PURCHASE</a>
+                      </div>
+                    </div>
+                  </div>
+                </a>
+              </div>
+            </div>
+          </div>
+          <!-- <div class="col-md-12 d-flex justify-content-center">
               <button class="primary-btn" (click)="exploreAll(segment);" type="button">
                 Explore All
               </button>
@@ -543,139 +1451,433 @@
     <!-- #Featured Products -->
 
     <!-- Multi-tab Featured Products -->
-    <section *ngIf="segment.type=='multiple_featured_product' && segment.multitab_list?.length" class="primary-section feature-sec-margin multi-tab-featured" [ngClass]="(i>1)? 'wow fadeInUp': null">
+    <section
+      *ngIf="
+        segment.type == 'multiple_featured_product' &&
+        segment.multitab_list?.length
+      "
+      class="primary-section feature-sec-margin multi-tab-featured"
+      [ngClass]="i > 1 ? 'wow fadeInUp' : null"
+    >
       <div class="container-fluid">
         <div class="row">
-          <div *ngIf="segment.heading" class="col-12 px-0 d-flex justify-content-between align-items-end">
+          <div
+            *ngIf="segment.heading"
+            class="col-12 px-0 d-flex justify-content-between align-items-end"
+          >
             <div class="titles custom-title w-auto">
-              <p *ngIf="segment.sub_heading" [innerHTML]="segment.sub_heading"></p>
-              <h2 class="mb-0 mt-2">{{segment.heading}}</h2>              
+              <p
+                *ngIf="segment.sub_heading"
+                [innerHTML]="segment.sub_heading"
+              ></p>
+              <h2 class="mb-0 mt-2">{{ segment.heading }}</h2>
             </div>
-            <div *ngIf="commonService?.screen_width>=992" class="cursor d-flex justify-content-center align-items-center">
-              <ng-container *ngFor="let tab of segment.multitab_list; let j=index;">
-                <button *ngIf="tab.activeIndex===j" class="primary-btn outline-btn" (click)="exploreAll(tab);" type="button">
+            <div
+              *ngIf="commonService?.screen_width >= 992"
+              class="cursor d-flex justify-content-center align-items-center"
+            >
+              <ng-container
+                *ngFor="let tab of segment.multitab_list; let j = index"
+              >
+                <button
+                  *ngIf="tab.activeIndex === j"
+                  class="primary-btn outline-btn"
+                  (click)="exploreAll(tab)"
+                  type="button"
+                >
                   View All
                 </button>
-              </ng-container>              
+              </ng-container>
             </div>
           </div>
           <div class="col-12 px-0">
             <div class="tabs">
               <tabset>
-                <ng-container *ngFor="let tab of segment.multitab_list; let j=index;">
-                  <tab *ngIf="tab?.product_list?.length>=swiperService.multi_tab_featured_products?.card_count" heading="{{tab?.name}}">
+                <ng-container
+                  *ngFor="let tab of segment.multitab_list; let j = index"
+                >
+                  <tab
+                    *ngIf="
+                      tab?.product_list?.length >=
+                      swiperService.multi_tab_featured_products?.card_count
+                    "
+                    heading="{{ tab?.name }}"
+                  >
                     <!-- slider -->
-                    <div *ngIf="tab.blogs_type=='slider' && tab?.product_list?.length>=swiperService.multi_tab_featured_products?.card_count" class="swiper-container multi-slider product-slider px-max" [ngClass]="commonService.desktop_device? 'desktoptabslider_'+(i+1)+(j+1): 'tabslider_'+(i+1)+(j+1)" appHomeSwiper>
+                    <div
+                      *ngIf="
+                        tab.blogs_type == 'slider' &&
+                        tab?.product_list?.length >=
+                          swiperService.multi_tab_featured_products?.card_count
+                      "
+                      class="swiper-container multi-slider product-slider px-max"
+                      [ngClass]="
+                        commonService.desktop_device
+                          ? 'desktoptabslider_' + (i + 1) + (j + 1)
+                          : 'tabslider_' + (i + 1) + (j + 1)
+                      "
+                      appHomeSwiper
+                    >
                       <div class="swiper-wrapper">
-                        <div *ngFor="let x of tab.product_list; let k=index;" class="swiper-slide p-0">
+                        <div
+                          *ngFor="let x of tab.product_list; let k = index"
+                          class="swiper-slide p-0"
+                        >
                           <!--Wishlist icon-->
                           <div class="product_labellist wishlist-main">
-                            <span class="wishlist-icon" (click)="(commonService.wishListIds.indexOf(x._id)!=-1)? ws.removeFromWishList(x._id): ws.addToWishList(x);"
-                            [ngClass]="(commonService.wishListIds.indexOf(x._id)!=-1)? 'wishlist-icon-active': null">                      
-                              <lucide-icon name="heart" [size]="16" stroke="1" color="#000000" fill="#000000"></lucide-icon>                        
+                            <span
+                              class="wishlist-icon"
+                              (click)="
+                                commonService.wishListIds.indexOf(x._id) != -1
+                                  ? ws.removeFromWishList(x._id)
+                                  : ws.addToWishList(x)
+                              "
+                              [ngClass]="
+                                commonService.wishListIds.indexOf(x._id) != -1
+                                  ? 'wishlist-icon-active'
+                                  : null
+                              "
+                            >
+                              <lucide-icon
+                                name="heart"
+                                [size]="16"
+                                stroke="1"
+                                color="#000000"
+                                fill="#000000"
+                              ></lucide-icon>
                             </span>
                           </div>
                           <!--#Wishlist icon-->
-                          <a appMouseHover class="product-box p-0" [ngClass]="template_setting?.p_card? '': ''"
-                          (click)="tabNavigate(tab); commonService.selected_product=x;" routerLink="{{ x.seo_status ? '/product/'+x.seo_details.page_url : '/product/'+x._id }}">
+                          <a
+                            appMouseHover
+                            class="product-box p-0"
+                            [ngClass]="template_setting?.p_card ? '' : ''"
+                            (click)="
+                              tabNavigate(tab);
+                              commonService.selected_product = x
+                            "
+                            routerLink="{{
+                              x.seo_status
+                                ? '/product/' + x.seo_details.page_url
+                                : '/product/' + x._id
+                            }}"
+                          >
                             <div class="prod-div">
-                              <figure class="product-image">                                
-                                <div class="product_labellist label_{{commonService.application_setting?.tag_position}}">
-                                  <span class="span_label" *ngIf="commonService.store_properties?.auto_tags?.sold_out && x.stock<=0">
-                                    {{commonService.store_properties?.auto_tags?.sold_out}}
+                              <figure class="product-image">
+                                <div
+                                  class="product_labellist label_{{
+                                    commonService.application_setting
+                                      ?.tag_position
+                                  }}"
+                                >
+                                  <span
+                                    class="span_label"
+                                    *ngIf="
+                                      commonService.store_properties?.auto_tags
+                                        ?.sold_out && x.stock <= 0
+                                    "
+                                  >
+                                    {{
+                                      commonService.store_properties?.auto_tags
+                                        ?.sold_out
+                                    }}
                                   </span>
-                                  <ng-container *ngIf="x.stock>0">
-                                    <span class="span_label" *ngIf="commonService.store_properties?.auto_tags?.new_arrival && x.created_on>commonService.currDate">
-                                      {{commonService.store_properties?.auto_tags?.new_arrival}}
+                                  <ng-container *ngIf="x.stock > 0">
+                                    <span
+                                      class="span_label"
+                                      *ngIf="
+                                        commonService.store_properties
+                                          ?.auto_tags?.new_arrival &&
+                                        x.created_on > commonService.currDate
+                                      "
+                                    >
+                                      {{
+                                        commonService.store_properties
+                                          ?.auto_tags?.new_arrival
+                                      }}
                                     </span>
-                                    <span class="span_label" *ngIf="commonService.store_properties?.auto_tags?.on_sale && x.disc_status">
-                                      {{commonService.store_properties?.auto_tags?.on_sale}}
+                                    <span
+                                      class="span_label"
+                                      *ngIf="
+                                        commonService.store_properties
+                                          ?.auto_tags?.on_sale && x.disc_status
+                                      "
+                                    >
+                                      {{
+                                        commonService.store_properties
+                                          ?.auto_tags?.on_sale
+                                      }}
                                     </span>
-                                    <span class="span_label" *ngFor="let tag of x.badge_list | orderAsc: 'rank';">{{tag.name}}</span>
+                                    <span
+                                      class="span_label"
+                                      *ngFor="
+                                        let tag of x.badge_list
+                                          | orderAsc: 'rank'
+                                      "
+                                      >{{ tag.name }}</span
+                                    >
                                   </ng-container>
                                 </div>
-                               
-                                <img loading="lazy" width="100%" height="100%" appLqimgLoad appDeferLoad [ImagelazyLoad]="imgBaseUrl+x.image_list[0].image" alt="{{(x.image_list[0].img_alt)? x.image_list[0].img_alt: 'Image'}}">
-                                <img loading="lazy" width="100%" height="100%" appLqimgLoad appDeferLoad *ngIf="commonService?.desktop_device && x.image_list.length > 1" [ImagelazyLoad]="imgBaseUrl+x.image_list[1]?.image" alt="{{(x.image_list[1].img_alt)? x.image_list[1].img_alt: 'Image'}}" class="image-hover">
-                                <figcaption *ngIf="template_setting?.purchase_badge">
+
+                                <img
+                                  loading="lazy"
+                                  width="100%"
+                                  height="100%"
+                                  appLqimgLoad
+                                  appDeferLoad
+                                  [ImagelazyLoad]="
+                                    imgBaseUrl + x.image_list[0].image
+                                  "
+                                  alt="{{
+                                    x.image_list[0].img_alt
+                                      ? x.image_list[0].img_alt
+                                      : 'Image'
+                                  }}"
+                                />
+                                <img
+                                  loading="lazy"
+                                  width="100%"
+                                  height="100%"
+                                  appLqimgLoad
+                                  appDeferLoad
+                                  *ngIf="
+                                    commonService?.desktop_device &&
+                                    x.image_list.length > 1
+                                  "
+                                  [ImagelazyLoad]="
+                                    imgBaseUrl + x.image_list[1]?.image
+                                  "
+                                  alt="{{
+                                    x.image_list[1].img_alt
+                                      ? x.image_list[1].img_alt
+                                      : 'Image'
+                                  }}"
+                                  class="image-hover"
+                                />
+                                <figcaption
+                                  *ngIf="template_setting?.purchase_badge"
+                                >
                                   <span class="swipe-btn">
-                                    <span class="swipe-btn-txt">Purchase
+                                    <span class="swipe-btn-txt"
+                                      >Purchase
                                       <i class="material-icons">shopping_bag</i>
                                     </span>
                                   </span>
                                 </figcaption>
                               </figure>
                               <div class="product-content">
-                                <h3 *ngIf="x.brand">{{x.brand}}</h3>
-                                <h4>{{x.name}}</h4>
+                                <h3 *ngIf="x.brand">{{ x.brand }}</h3>
+                                <h4>{{ x.name }}</h4>
                                 <div>
-                                  <ng-container *ngTemplateOutlet="homeProductCardPrices; context: { $implicit: x }"></ng-container>
-                                  <div *ngIf="template_setting?.purchase_txt" class="purchase-div">
+                                  <ng-container
+                                    *ngTemplateOutlet="
+                                      homeProductCardPrices;
+                                      context: { $implicit: x }
+                                    "
+                                  ></ng-container>
+                                  <div
+                                    *ngIf="template_setting?.purchase_txt"
+                                    class="purchase-div"
+                                  >
                                     <a>PURCHASE</a>
                                   </div>
                                 </div>
                               </div>
                             </div>
                           </a>
-                        </div>                        
+                        </div>
                         <div class="swiper-slide">
-                          <div class="product-box cursor d-flex justify-content-center align-items-center" [ngClass]="template_setting?.p_card? 'primary-card p-3': ''">
-                            <button class="primary-btn" (click)="exploreAll(tab);" type="button">
+                          <div
+                            class="product-box cursor d-flex justify-content-center align-items-center"
+                            [ngClass]="
+                              template_setting?.p_card ? 'primary-card p-3' : ''
+                            "
+                          >
+                            <button
+                              class="primary-btn"
+                              (click)="exploreAll(tab)"
+                              type="button"
+                            >
                               View All
                             </button>
                           </div>
                         </div>
                       </div>
-                      <ng-container *ngIf="commonService?.screen_width>=992">
-                        <div id="swipe_next_{{i+1}}{{j+1}}" class="swiper-button swiper-button-next"></div>
-                        <div id="swipe_prev_{{i+1}}{{j+1}}" class="swiper-button swiper-button-prev"></div>
+                      <ng-container *ngIf="commonService?.screen_width >= 992">
+                        <div
+                          id="swipe_next_{{ i + 1 }}{{ j + 1 }}"
+                          class="swiper-button swiper-button-next"
+                        ></div>
+                        <div
+                          id="swipe_prev_{{ i + 1 }}{{ j + 1 }}"
+                          class="swiper-button swiper-button-prev"
+                        ></div>
                       </ng-container>
                     </div>
                     <!-- grid -->
-                     <div *ngIf="tab.blogs_type=='grid'" class="row d-flex flex-wrap align-items-stretch" style="margin-left: -7px;margin-right: -7px;">
-                      <div  *ngFor="let x of tab.product_list | slice: 0:4; let j = index;" class="col-md-3 px-0 col-6 feature-grid">
-                        <div appMouseHover class="product-box cursor h-100 d-flex flex-column" [ngClass]="template_setting?.p_card? '': ''">
+                    <div
+                      *ngIf="tab.blogs_type == 'grid'"
+                      class="row d-flex flex-wrap align-items-stretch"
+                      style="margin-left: -7px; margin-right: -7px"
+                    >
+                      <div
+                        *ngFor="
+                          let x of tab.product_list | slice: 0 : 4;
+                          let j = index
+                        "
+                        class="col-md-3 px-0 col-6 feature-grid"
+                      >
+                        <div
+                          appMouseHover
+                          class="product-box cursor h-100 d-flex flex-column"
+                          [ngClass]="template_setting?.p_card ? '' : ''"
+                        >
                           <!--Wishlist icon-->
                           <div class="product_labellist wishlist-main">
-                            <span class="wishlist-icon" (click)="(commonService.wishListIds.indexOf(x._id)!=-1)? ws.removeFromWishList(x._id): ws.addToWishList(x);"
-                            [ngClass]="(commonService.wishListIds.indexOf(x._id)!=-1)? 'wishlist-icon-active': null">                      
-                              <lucide-icon name="heart" [size]="16" stroke="1" color="#000000" fill="#000000"></lucide-icon>                        
+                            <span
+                              class="wishlist-icon"
+                              (click)="
+                                commonService.wishListIds.indexOf(x._id) != -1
+                                  ? ws.removeFromWishList(x._id)
+                                  : ws.addToWishList(x)
+                              "
+                              [ngClass]="
+                                commonService.wishListIds.indexOf(x._id) != -1
+                                  ? 'wishlist-icon-active'
+                                  : null
+                              "
+                            >
+                              <lucide-icon
+                                name="heart"
+                                [size]="16"
+                                stroke="1"
+                                color="#000000"
+                                fill="#000000"
+                              ></lucide-icon>
                             </span>
                           </div>
                           <!--#Wishlist icon-->
-                          <a class="prod-div" (click)="commonService.selected_product=x;" routerLink="{{ x.seo_status ? '/product/'+x.seo_details.page_url : '/product/'+x._id }}">
+                          <a
+                            class="prod-div"
+                            (click)="commonService.selected_product = x"
+                            routerLink="{{
+                              x.seo_status
+                                ? '/product/' + x.seo_details.page_url
+                                : '/product/' + x._id
+                            }}"
+                          >
                             <figure class="product-image">
                               <!-- label -->
-                              <div class="product_labellist label_{{commonService.application_setting?.tag_position}}">
-                                <span class="span_label" *ngIf="commonService.store_properties?.auto_tags?.sold_out && x.stock<=0">
-                                  {{commonService.store_properties?.auto_tags?.sold_out}}
+                              <div
+                                class="product_labellist label_{{
+                                  commonService.application_setting
+                                    ?.tag_position
+                                }}"
+                              >
+                                <span
+                                  class="span_label"
+                                  *ngIf="
+                                    commonService.store_properties?.auto_tags
+                                      ?.sold_out && x.stock <= 0
+                                  "
+                                >
+                                  {{
+                                    commonService.store_properties?.auto_tags
+                                      ?.sold_out
+                                  }}
                                 </span>
-                                <ng-container *ngIf="x.stock>0">
-                                  <span class="span_label" *ngIf="commonService.store_properties?.auto_tags?.new_arrival && x.created_on>commonService.currDate">
-                                    {{commonService.store_properties?.auto_tags?.new_arrival}}
+                                <ng-container *ngIf="x.stock > 0">
+                                  <span
+                                    class="span_label"
+                                    *ngIf="
+                                      commonService.store_properties?.auto_tags
+                                        ?.new_arrival &&
+                                      x.created_on > commonService.currDate
+                                    "
+                                  >
+                                    {{
+                                      commonService.store_properties?.auto_tags
+                                        ?.new_arrival
+                                    }}
                                   </span>
-                                  <span class="span_label" *ngIf="commonService.store_properties?.auto_tags?.on_sale && x.disc_status">
-                                    {{commonService.store_properties?.auto_tags?.on_sale}}
+                                  <span
+                                    class="span_label"
+                                    *ngIf="
+                                      commonService.store_properties?.auto_tags
+                                        ?.on_sale && x.disc_status
+                                    "
+                                  >
+                                    {{
+                                      commonService.store_properties?.auto_tags
+                                        ?.on_sale
+                                    }}
                                   </span>
-                                  <span class="span_label" *ngFor="let tag of x.badge_list | orderAsc: 'rank';">{{tag.name}}</span>
+                                  <span
+                                    class="span_label"
+                                    *ngFor="
+                                      let tag of x.badge_list | orderAsc: 'rank'
+                                    "
+                                    >{{ tag.name }}</span
+                                  >
                                 </ng-container>
                               </div>
                               <!-- image -->
-                              <img loading="lazy" width="100%" height="100%" appLqimgLoad appDeferLoad [ImagelazyLoad]="imgBaseUrl+x.image_list[0].image" alt="{{(x.image_list[0].img_alt)? x.image_list[0].img_alt: 'Image'}}">
-                              <img loading="lazy" width="100%" height="100%" appLqimgLoad appDeferLoad *ngIf="commonService?.desktop_device && x.image_list.length > 1" [ImagelazyLoad]="imgBaseUrl+x.image_list[1]?.image" alt="{{(x.image_list[1].img_alt)? x.image_list[1].img_alt: 'Image'}}" class="image-hover">
-                              <figcaption *ngIf="template_setting?.purchase_badge">
+                              <img
+                                loading="lazy"
+                                width="100%"
+                                height="100%"
+                                appLqimgLoad
+                                appDeferLoad
+                                [ImagelazyLoad]="
+                                  imgBaseUrl + x.image_list[0].image
+                                "
+                                alt="{{
+                                  x.image_list[0].img_alt
+                                    ? x.image_list[0].img_alt
+                                    : 'Image'
+                                }}"
+                              />
+                              <img
+                                loading="lazy"
+                                width="100%"
+                                height="100%"
+                                appLqimgLoad
+                                appDeferLoad
+                                *ngIf="
+                                  commonService?.desktop_device &&
+                                  x.image_list.length > 1
+                                "
+                                [ImagelazyLoad]="
+                                  imgBaseUrl + x.image_list[1]?.image
+                                "
+                                alt="{{
+                                  x.image_list[1].img_alt
+                                    ? x.image_list[1].img_alt
+                                    : 'Image'
+                                }}"
+                                class="image-hover"
+                              />
+                              <figcaption
+                                *ngIf="template_setting?.purchase_badge"
+                              >
                                 <span class="swipe-btn">
-                                  <span class="swipe-btn-txt">Purchase
+                                  <span class="swipe-btn-txt"
+                                    >Purchase
                                     <i class="material-icons">shopping_bag</i>
                                   </span>
                                 </span>
                               </figcaption>
                             </figure>
                             <div class="product-content">
-                              <h3 *ngIf="x.brand">{{x.brand}}</h3>
-                              <h4>{{x.name}}</h4>
+                              <h3 *ngIf="x.brand">{{ x.brand }}</h3>
+                              <h4>{{ x.name }}</h4>
                               <div>
-                                <ng-container *ngTemplateOutlet="homeProductCardPrices; context: { $implicit: x }"></ng-container>
+                                <ng-container
+                                  *ngTemplateOutlet="
+                                    homeProductCardPrices;
+                                    context: { $implicit: x }
+                                  "
+                                ></ng-container>
                                 <!-- <div *ngIf="template_setting?.purchase_txt" class="purchase-div">
                                   <a>PURCHASE</a>
                                 </div> -->
@@ -696,49 +1898,140 @@
     <!-- #Multi-tab Featured Products -->
 
     <!-- Multi-tab Featured Section -->
-    <section *ngIf="segment.type=='multiple_featured_section' && segment.multitab_list?.length" class="primary-section feature-sec-margin multi-tab-featured" [ngClass]="(i>1)? 'wow fadeInUp': null">
+    <section
+      *ngIf="
+        segment.type == 'multiple_featured_section' &&
+        segment.multitab_list?.length
+      "
+      class="primary-section feature-sec-margin multi-tab-featured"
+      [ngClass]="i > 1 ? 'wow fadeInUp' : null"
+    >
       <div class="container-fluid">
         <div class="row">
-          <div *ngIf="segment.heading" class="col-12 px-0 d-flex justify-content-between align-items-end">
+          <div
+            *ngIf="segment.heading"
+            class="col-12 px-0 d-flex justify-content-between align-items-end"
+          >
             <div class="titles custom-title w-auto">
-              <p *ngIf="segment.sub_heading" [innerHTML]="segment.sub_heading"></p>
-              <h2 class="mb-0 mt-2">{{segment.heading}}</h2>              
+              <p
+                *ngIf="segment.sub_heading"
+                [innerHTML]="segment.sub_heading"
+              ></p>
+              <h2 class="mb-0 mt-2">{{ segment.heading }}</h2>
             </div>
           </div>
           <div class="col-12 px-0">
             <div class="tabs">
               <tabset>
-                <ng-container *ngFor="let tab of segment.multitab_list; let j=index;">
-                  <tab heading="{{tab?.name}}">
-                    <div style="position: unset;" class="swiper-container swipe_arrow featured-sections multi-slider product-slider px-max" [ngClass]="commonService.desktop_device? 'desktoptabslider_'+(i+1)+(j+1): 'tabslider_'+(i+1)+(j+1)" appHomeSwiper>
+                <ng-container
+                  *ngFor="let tab of segment.multitab_list; let j = index"
+                >
+                  <tab heading="{{ tab?.name }}">
+                    <div
+                      style="position: unset"
+                      class="swiper-container swipe_arrow featured-sections multi-slider product-slider px-max"
+                      [ngClass]="
+                        commonService.desktop_device
+                          ? 'desktoptabslider_' + (i + 1) + (j + 1)
+                          : 'tabslider_' + (i + 1) + (j + 1)
+                      "
+                      appHomeSwiper
+                    >
                       <div class="swiper-wrapper">
-                        <div *ngFor="let x of tab.image_list; let k=index;" class="swiper-slide p-0">
+                        <div
+                          *ngFor="let x of tab.image_list; let k = index"
+                          class="swiper-slide p-0"
+                        >
                           <div class="product-box cursor h-100 p-0">
-                            <a (click)="commonService.onPageRedirect(x);" class="prod-div h-100">
+                            <a
+                              (click)="commonService.onPageRedirect(x)"
+                              class="prod-div h-100"
+                            >
                               <figure class="mb-0">
-                                <img loading="lazy" width="100%" height="100%" appLqimgLoad appDeferLoad [ImagelazyLoad]="imgBaseUrl+x.desktop_img" alt="{{(x.img_alt)? x.img_alt: 'Image'}}">
-                                <div *ngIf="x?.content_status && x?.content_details?.heading" class="category-grid-text d-flex" [ngClass]="{
-                                  'align-items-start': x?.position=='t_l' || x?.position=='t_c' || x?.position=='t_r',
-                                  'align-items-center': x?.position=='m_l' || x?.position=='m_c' || x?.position=='m_r',
-                                  'align-items-end': x?.position=='b_l' || x?.position=='b_c' || x?.position=='b_r',
-                                  'justify-content-start': x?.position=='t_l' || x?.position=='m_l' || x?.position=='b_l',
-                                  'justify-content-center': x?.position=='t_c' || x?.position=='m_c' || x?.position=='b_c',
-                                  'justify-content-end': x?.position=='t_r' || x?.position=='m_r' || x?.position=='b_r',
-                                  'text-left': x?.position!='t_c' && x?.position!='m_c' && x?.position!='b_c'
-                                }">
-                                  <p class="mb-0" [ngClass]="(x?.content_details?.text_color=='dark')? 'text-dark': 'text-light'">{{ x.content_details.heading }}</p>
+                                <img
+                                  loading="lazy"
+                                  width="100%"
+                                  height="100%"
+                                  appLqimgLoad
+                                  appDeferLoad
+                                  [ImagelazyLoad]="imgBaseUrl + x.desktop_img"
+                                  alt="{{ x.img_alt ? x.img_alt : 'Image' }}"
+                                />
+                                <div
+                                  *ngIf="
+                                    x?.content_status &&
+                                    x?.content_details?.heading
+                                  "
+                                  class="category-grid-text d-flex"
+                                  [ngClass]="{
+                                    'align-items-start':
+                                      x?.position == 't_l' ||
+                                      x?.position == 't_c' ||
+                                      x?.position == 't_r',
+                                    'align-items-center':
+                                      x?.position == 'm_l' ||
+                                      x?.position == 'm_c' ||
+                                      x?.position == 'm_r',
+                                    'align-items-end':
+                                      x?.position == 'b_l' ||
+                                      x?.position == 'b_c' ||
+                                      x?.position == 'b_r',
+                                    'justify-content-start':
+                                      x?.position == 't_l' ||
+                                      x?.position == 'm_l' ||
+                                      x?.position == 'b_l',
+                                    'justify-content-center':
+                                      x?.position == 't_c' ||
+                                      x?.position == 'm_c' ||
+                                      x?.position == 'b_c',
+                                    'justify-content-end':
+                                      x?.position == 't_r' ||
+                                      x?.position == 'm_r' ||
+                                      x?.position == 'b_r',
+                                    'text-left':
+                                      x?.position != 't_c' &&
+                                      x?.position != 'm_c' &&
+                                      x?.position != 'b_c',
+                                  }"
+                                >
+                                  <p
+                                    class="mb-0"
+                                    [ngClass]="
+                                      x?.content_details?.text_color == 'dark'
+                                        ? 'text-dark'
+                                        : 'text-light'
+                                    "
+                                  >
+                                    {{ x.content_details.heading }}
+                                  </p>
                                 </div>
                               </figure>
                             </a>
                           </div>
                         </div>
                       </div>
-                      <ng-container *ngIf="commonService?.screen_width>=992">
-                        <div id="swipe_next_{{i+1}}{{j+1}}" class="swiper-button swiper-button-next">
-                         <lucide-icon name="chevron-right" [size]="20" stroke="1" color="black"></lucide-icon>
+                      <ng-container *ngIf="commonService?.screen_width >= 992">
+                        <div
+                          id="swipe_next_{{ i + 1 }}{{ j + 1 }}"
+                          class="swiper-button swiper-button-next"
+                        >
+                          <lucide-icon
+                            name="chevron-right"
+                            [size]="20"
+                            stroke="1"
+                            color="black"
+                          ></lucide-icon>
                         </div>
-                        <div id="swipe_prev_{{i+1}}{{j+1}}" class="swiper-button swiper-button-prev">
-                         <lucide-icon name="chevron-left" [size]="20" stroke="1" color="black"></lucide-icon>
+                        <div
+                          id="swipe_prev_{{ i + 1 }}{{ j + 1 }}"
+                          class="swiper-button swiper-button-prev"
+                        >
+                          <lucide-icon
+                            name="chevron-left"
+                            [size]="20"
+                            stroke="1"
+                            color="black"
+                          ></lucide-icon>
                         </div>
                       </ng-container>
                     </div>
@@ -753,27 +2046,82 @@
     <!-- #Multi-tab Featured Section -->
 
     <!-- Highlighted Section -->
-    <section *ngIf="segment.type=='highlighted_section' && segment.image_list?.length" class="primary-section highlight-sec-margin single-highlighted-sec highlighted-sec" [ngClass]="(i>1)? 'wow fadeInUp': null">
+    <section
+      *ngIf="
+        segment.type == 'highlighted_section' && segment.image_list?.length
+      "
+      class="primary-section highlight-sec-margin single-highlighted-sec highlighted-sec"
+      [ngClass]="i > 1 ? 'wow fadeInUp' : null"
+    >
       <div class="container">
-        <div class="row" (click)="(segment.image_list[0]?.btn_status)? '': commonService.onPageRedirect(segment.image_list[0]);" [ngClass]="{
-          'flex-row-reverse': segment.image_list[0].position=='right' && commonService.desktop_device,
-          'flex-column-reverse pt-3': segment.image_list[0].position=='right' && !commonService.desktop_device
-        }">
-          <div class="col-md-6 d-flex flex-column align-items-start justify-content-center px-0">
+        <div
+          class="row"
+          (click)="
+            segment.image_list[0]?.btn_status
+              ? ''
+              : commonService.onPageRedirect(segment.image_list[0])
+          "
+          [ngClass]="{
+            'flex-row-reverse':
+              segment.image_list[0].position == 'right' &&
+              commonService.desktop_device,
+            'flex-column-reverse pt-3':
+              segment.image_list[0].position == 'right' &&
+              !commonService.desktop_device,
+          }"
+        >
+          <div
+            class="col-md-6 d-flex flex-column align-items-start justify-content-center px-0"
+          >
             <div class="landing-highlighted w-100">
               <figure>
-                <img loading="lazy" width="100%" height="100%" appLqimgLoad appDeferLoad [ImagelazyLoad]="imgBaseUrl+segment.image_list[0].desktop_img" alt="{{(segment.image_list[0].img_alt)? segment.image_list[0].img_alt: 'Image'}}">
+                <img
+                  loading="lazy"
+                  width="100%"
+                  height="100%"
+                  appLqimgLoad
+                  appDeferLoad
+                  [ImagelazyLoad]="
+                    imgBaseUrl + segment.image_list[0].desktop_img
+                  "
+                  alt="{{
+                    segment.image_list[0].img_alt
+                      ? segment.image_list[0].img_alt
+                      : 'Image'
+                  }}"
+                />
               </figure>
             </div>
           </div>
-          <div class="col-md-6 d-flex flex-column align-items-start justify-content-center">
+          <div
+            class="col-md-6 d-flex flex-column align-items-start justify-content-center"
+          >
             <div class="highlighted-text-width">
-              <div *ngIf="segment.heading" class="landing-highlighted-text d-flex flex-column text-left">
-                <h2>{{segment.heading}}</h2>
-                <h5 class="des__right" *ngIf="segment.image_list[0].position=='right'">Celebrate elegance, gift tradition</h5>
-                <h6 *ngIf="segment.sub_heading" [innerHTML]="segment.sub_heading"></h6>
+              <div
+                *ngIf="segment.heading"
+                class="landing-highlighted-text d-flex flex-column text-left"
+              >
+                <h2>{{ segment.heading }}</h2>
+                <h5
+                  class="des__right"
+                  *ngIf="segment.image_list[0].position == 'right'"
+                >
+                  Celebrate elegance, gift tradition
+                </h5>
+                <h6
+                  *ngIf="segment.sub_heading"
+                  [innerHTML]="segment.sub_heading"
+                ></h6>
               </div>
-              <button *ngIf="segment.image_list[0].link_status && segment.image_list[0].btn_status && segment.image_list[0].btn_text" (click)="commonService.onPageRedirect(segment.image_list[0]);" class="primary-btn">
+              <button
+                *ngIf="
+                  segment.image_list[0].link_status &&
+                  segment.image_list[0].btn_status &&
+                  segment.image_list[0].btn_text
+                "
+                (click)="commonService.onPageRedirect(segment.image_list[0])"
+                class="primary-btn"
+              >
                 {{ segment.image_list[0].btn_text }}
               </button>
             </div>
@@ -784,36 +2132,89 @@
     <!-- #Highlighted Section -->
 
     <!-- Multi-Highlighted Section -->
-    <section *ngIf="segment.type=='multiple_highlighted_section' && segment.image_list?.length" class="primary-section highlight-sec-margin highlighted-sec slider-highlighted-sec" [ngClass]="(i>1)? 'wow fadeInUp': null">
-      <div class="{{template_setting?.body_type}}">
+    <section
+      *ngIf="
+        segment.type == 'multiple_highlighted_section' &&
+        segment.image_list?.length
+      "
+      class="primary-section highlight-sec-margin highlighted-sec slider-highlighted-sec"
+      [ngClass]="i > 1 ? 'wow fadeInUp' : null"
+    >
+      <div class="{{ template_setting?.body_type }}">
         <div class="row">
           <div *ngIf="segment.heading" class="col-12">
             <div class="titles">
-              <h2>{{segment.heading}}</h2>
-              <p *ngIf="segment.sub_heading" [innerHTML]="segment.sub_heading"></p>
+              <h2>{{ segment.heading }}</h2>
+              <p
+                *ngIf="segment.sub_heading"
+                [innerHTML]="segment.sub_heading"
+              ></p>
               <span></span>
             </div>
           </div>
           <div class="col-12">
-            <div class="swiper-container" [ngClass]="(segment.image_list?.length>1 && commonService.desktop_device)? 'desktopcarousal_'+(i+1): (segment.image_list?.length>1)? 'carousal_'+(i+1): ''" appHomeSwiper>
+            <div
+              class="swiper-container"
+              [ngClass]="
+                segment.image_list?.length > 1 && commonService.desktop_device
+                  ? 'desktopcarousal_' + (i + 1)
+                  : segment.image_list?.length > 1
+                    ? 'carousal_' + (i + 1)
+                    : ''
+              "
+              appHomeSwiper
+            >
               <div class="swiper-wrapper">
-                <div *ngFor="let x of segment.image_list; let j=index;" class="swiper-slide">
-                  <div class="row" (click)="(x?.btn_status)? '': commonService.onPageRedirect(x);" [ngClass]="(x.position=='right')? 'flex-row-reverse': ''">
-                    <div class="col-md-6 d-flex flex-column align-items-start justify-content-center">
+                <div
+                  *ngFor="let x of segment.image_list; let j = index"
+                  class="swiper-slide"
+                >
+                  <div
+                    class="row"
+                    (click)="
+                      x?.btn_status ? '' : commonService.onPageRedirect(x)
+                    "
+                    [ngClass]="x.position == 'right' ? 'flex-row-reverse' : ''"
+                  >
+                    <div
+                      class="col-md-6 d-flex flex-column align-items-start justify-content-center"
+                    >
                       <div class="landing-highlighted w-100">
                         <figure>
-                          <img loading="lazy" width="100%" height="100%" appImgLazyLoad [ImagelazyLoad]="imgBaseUrl+x.desktop_img" alt="{{(x.img_alt)? x.img_alt: 'Image'}}">
+                          <img
+                            loading="lazy"
+                            width="100%"
+                            height="100%"
+                            appImgLazyLoad
+                            [ImagelazyLoad]="imgBaseUrl + x.desktop_img"
+                            alt="{{ x.img_alt ? x.img_alt : 'Image' }}"
+                          />
                         </figure>
                       </div>
                     </div>
-                    <div class="col-md-6 d-flex flex-column align-items-start justify-content-center">
+                    <div
+                      class="col-md-6 d-flex flex-column align-items-start justify-content-center"
+                    >
                       <div class="highlighted-text-width">
-                        <div *ngIf="x.content_details?.heading" class="landing-highlighted-text d-flex flex-column text-left">
-                          <h2>{{x.content_details.heading}}</h2>
-                          <h6 *ngIf="x.content_details?.sub_heading" [innerHTML]="x.content_details.sub_heading"></h6>
-                          <p *ngIf="x.content_details?.description" [innerHTML]="x.content_details.description"></p>
+                        <div
+                          *ngIf="x.content_details?.heading"
+                          class="landing-highlighted-text d-flex flex-column text-left"
+                        >
+                          <h2>{{ x.content_details.heading }}</h2>
+                          <h6
+                            *ngIf="x.content_details?.sub_heading"
+                            [innerHTML]="x.content_details.sub_heading"
+                          ></h6>
+                          <p
+                            *ngIf="x.content_details?.description"
+                            [innerHTML]="x.content_details.description"
+                          ></p>
                         </div>
-                        <button *ngIf="x.link_status && x.btn_status && x.btn_text" (click)="commonService.onPageRedirect(x);" class="primary-btn">
+                        <button
+                          *ngIf="x.link_status && x.btn_status && x.btn_text"
+                          (click)="commonService.onPageRedirect(x)"
+                          class="primary-btn"
+                        >
                           {{ x.btn_text }}
                         </button>
                       </div>
@@ -821,10 +2222,24 @@
                   </div>
                 </div>
               </div>
-              <div id="swipe_pagination_{{i+1}}" class="swiper-pagination"></div>
-              <ng-container *ngIf="commonService?.desktop_device && segment.image_list?.length>1">
-                <div id="swipe_next_{{i+1}}" class="swiper-button swiper-button-next"></div>
-                <div id="swipe_prev_{{i+1}}" class="swiper-button swiper-button-prev"></div>
+              <div
+                id="swipe_pagination_{{ i + 1 }}"
+                class="swiper-pagination"
+              ></div>
+              <ng-container
+                *ngIf="
+                  commonService?.desktop_device &&
+                  segment.image_list?.length > 1
+                "
+              >
+                <div
+                  id="swipe_next_{{ i + 1 }}"
+                  class="swiper-button swiper-button-next"
+                ></div>
+                <div
+                  id="swipe_prev_{{ i + 1 }}"
+                  class="swiper-button swiper-button-prev"
+                ></div>
               </ng-container>
             </div>
           </div>
@@ -834,80 +2249,174 @@
     <!-- #Multi-Highlighted Section -->
 
     <!-- Secondary Banner -->
-    <section *ngIf="segment.type=='secondary' && segment.image_list?.length" class="primary-section" [ngClass]="(i>1)? 'wow fadeInUp': null">
+    <section
+      *ngIf="segment.type == 'secondary' && segment.image_list?.length"
+      class="primary-section"
+      [ngClass]="i > 1 ? 'wow fadeInUp' : null"
+    >
       <div class="container">
-        <div class="row grey-background">            
-            <div class="col-xl-6 col-12">
-              <div class="welcome-content h-100">
-                <div class="text h-100" [ngClass]="(segment.image_list[0]?.content_details?.text_color=='dark')? 'text-dark': 'text-light'">
-                  <div class="d-flex flex-column justify-content-center align-items-start h-100">
-                    <h2>{{segment.image_list[0].content_details?.heading}}</h2>
-                    <p *ngIf="segment.image_list[0].content_details?.sub_heading" [innerHTML]="segment.image_list[0].content_details.sub_heading"></p>
-                    <button class="primary-btn" (click)="commonService.onPageRedirect(segment.image_list[0]);">Shop Now</button>
-                  </div>
+        <div class="row grey-background">
+          <div class="col-xl-6 col-12">
+            <div class="welcome-content h-100">
+              <div
+                class="text h-100"
+                [ngClass]="
+                  segment.image_list[0]?.content_details?.text_color == 'dark'
+                    ? 'text-dark'
+                    : 'text-light'
+                "
+              >
+                <div
+                  class="d-flex flex-column justify-content-center align-items-start h-100"
+                >
+                  <h2>{{ segment.image_list[0].content_details?.heading }}</h2>
+                  <p
+                    *ngIf="segment.image_list[0].content_details?.sub_heading"
+                    [innerHTML]="
+                      segment.image_list[0].content_details.sub_heading
+                    "
+                  ></p>
+                  <button
+                    class="primary-btn"
+                    (click)="
+                      commonService.onPageRedirect(segment.image_list[0])
+                    "
+                  >
+                    Shop Now
+                  </button>
                 </div>
               </div>
             </div>
-            <div class="col-xl-6 col-12 px-0">
-              <div class="welcome-img">
-                <figure class="mb-0">
-                  <img loading="lazy" width="100%" height="100%" appLqimgLoad appDeferLoad [ImagelazyLoad]="imgBaseUrl+segment.image_list[0].desktop_img" alt="{{(segment.image_list[0].img_alt)? segment.image_list[0].img_alt: 'Image'}}">
-                </figure>
-              </div>
+          </div>
+          <div class="col-xl-6 col-12 px-0">
+            <div class="welcome-img">
+              <figure class="mb-0">
+                <img
+                  loading="lazy"
+                  width="100%"
+                  height="100%"
+                  appLqimgLoad
+                  appDeferLoad
+                  [ImagelazyLoad]="
+                    imgBaseUrl + segment.image_list[0].desktop_img
+                  "
+                  alt="{{
+                    segment.image_list[0].img_alt
+                      ? segment.image_list[0].img_alt
+                      : 'Image'
+                  }}"
+                />
+              </figure>
             </div>
+          </div>
         </div>
       </div>
     </section>
     <!-- #Secondary Banner -->
 
     <!-- Testimonial -->
-    <section *ngIf="segment.type=='testimonial' && segment.image_list?.length>=swiperService.testimonial?.card_count" class="primary-section testimonial-sec feature-slide-sec" [ngClass]="(i>1)? 'wow fadeInUp': null">
+    <section
+      *ngIf="
+        segment.type == 'testimonial' &&
+        segment.image_list?.length >= swiperService.testimonial?.card_count
+      "
+      class="primary-section testimonial-sec feature-slide-sec"
+      [ngClass]="i > 1 ? 'wow fadeInUp' : null"
+    >
       <div class="container-fluid max-width-full parent-testi">
         <div class="row">
-          <div *ngIf="segment.heading" class="col-md-5  px-0 d-flex justify-content-start align-items-start">
+          <div
+            *ngIf="segment.heading"
+            class="col-md-5 px-0 d-flex justify-content-start align-items-start"
+          >
             <div class="titles custom-title w-auto">
-              <h2>{{segment.heading}}</h2>
-              <p *ngIf="segment.sub_heading" [innerHTML]="segment.sub_heading"></p>
+              <h2>{{ segment.heading }}</h2>
+              <p
+                *ngIf="segment.sub_heading"
+                [innerHTML]="segment.sub_heading"
+              ></p>
             </div>
           </div>
           <div class="col-md-7 grid-img px-0">
             <figure>
-                <img src="assets/images/testimonial-copy.jpg" alt="testimonial" class="w-100">
+              <img
+                src="assets/images/testimonial-copy.jpg"
+                alt="testimonial"
+                class="w-100"
+              />
             </figure>
-          </div>         
+          </div>
         </div>
-          <div class="col-xl-6 col-md-6 col-12 slider--">
-            <div class="swiper-container testimonial-container swipe_arrow" [ngClass]="commonService.desktop_device? 'desktoptestimonialslider_'+(i+1): 'testimonialslider_'+(i+1) " appHomeSwiper>
-              <div class="swiper-wrapper">
-                <div *ngFor="let x of segment.image_list; let j=index;" class="swiper-slide p-0">
-                  <div class="testimonial d-flex flex-column justify-content-center w-100" [ngClass]="template_setting?.p_card? '': ''">
-                    <div class="testimonial-profile">
-                      <div class="d-flex align-items-center">
-                        <img loading="lazy" width="100%" height="100%" appLqimgLoad appDeferLoad [ImagelazyLoad]="imgBaseUrl+x.desktop_img" alt="{{(x.img_alt)? x.img_alt: 'Image'}}">
-                        <div *ngIf="x?.content_details" class="ml-3">
-                          <p class="mb-0">{{ x.content_details.heading }}</p>
-                        </div>
-                      </div>
-                      <div class="double-codes">
-                        <img src="assets/images/left-quote.svg" alt="Quote">                        
+        <div class="col-xl-6 col-md-6 col-12 slider--">
+          <div
+            class="swiper-container testimonial-container swipe_arrow"
+            [ngClass]="
+              commonService.desktop_device
+                ? 'desktoptestimonialslider_' + (i + 1)
+                : 'testimonialslider_' + (i + 1)
+            "
+            appHomeSwiper
+          >
+            <div class="swiper-wrapper">
+              <div
+                *ngFor="let x of segment.image_list; let j = index"
+                class="swiper-slide p-0"
+              >
+                <div
+                  class="testimonial d-flex flex-column justify-content-center w-100"
+                  [ngClass]="template_setting?.p_card ? '' : ''"
+                >
+                  <div class="testimonial-profile">
+                    <div class="d-flex align-items-center">
+                      <img
+                        loading="lazy"
+                        width="100%"
+                        height="100%"
+                        appLqimgLoad
+                        appDeferLoad
+                        [ImagelazyLoad]="imgBaseUrl + x.desktop_img"
+                        alt="{{ x.img_alt ? x.img_alt : 'Image' }}"
+                      />
+                      <div *ngIf="x?.content_details" class="ml-3">
+                        <p class="mb-0">{{ x.content_details.heading }}</p>
                       </div>
                     </div>
-                    <div class="testimonial-desc" *ngIf="x?.content_details">                     
-                      <p class="mt-4">{{ x.content_details.description }}</p>
+                    <div class="double-codes">
+                      <img src="assets/images/left-quote.svg" alt="Quote" />
                     </div>
                   </div>
+                  <div class="testimonial-desc" *ngIf="x?.content_details">
+                    <p class="mt-4">{{ x.content_details.description }}</p>
+                  </div>
                 </div>
-              </div> 
-              <div class="testi-arrow">
-                <div id="swipe_next_{{i+1}}" class="swiper-button swiper-button-next">
-                  <lucide-icon name="chevron-right" [size]="20" stroke="1" color="white"></lucide-icon>
-                </div>
-                <div id="swipe_prev_{{i+1}}" class="swiper-button swiper-button-prev">
-                  <lucide-icon name="chevron-left" [size]="20" stroke="1" color="black"></lucide-icon>
-                </div>
-              </div>                   
+              </div>
+            </div>
+            <div class="testi-arrow">
+              <div
+                id="swipe_next_{{ i + 1 }}"
+                class="swiper-button swiper-button-next"
+              >
+                <lucide-icon
+                  name="chevron-right"
+                  [size]="20"
+                  stroke="1"
+                  color="white"
+                ></lucide-icon>
+              </div>
+              <div
+                id="swipe_prev_{{ i + 1 }}"
+                class="swiper-button swiper-button-prev"
+              >
+                <lucide-icon
+                  name="chevron-left"
+                  [size]="20"
+                  stroke="1"
+                  color="black"
+                ></lucide-icon>
+              </div>
             </div>
           </div>
+        </div>
       </div>
     </section>
     <!-- #Testimonial -->
@@ -929,55 +2438,135 @@
     <!-- #Flexible Segment -->
 
     <!-- blogs -->
-    <section *ngIf="segment.type=='blogs' && segment.image_list?.length" class="primary-section news" [ngClass]="(i>1)? 'wow fadeInUp': null">
+    <section
+      *ngIf="segment.type == 'blogs' && segment.image_list?.length"
+      class="primary-section news"
+      [ngClass]="i > 1 ? 'wow fadeInUp' : null"
+    >
       <div class="container-fluid">
-        <div class="row">         
-            <div *ngIf="segment.heading" class="col-12 px-0 d-flex justify-content-between align-items-end">
-              <div class="titles custom-title w-auto pl-0" >
-                <h2>{{segment.heading}}</h2>
-                <p *ngIf="segment.sub_heading" [innerHTML]="segment.sub_heading"></p>
-              </div>            
-              <div class="blog-slider-btn">
-                <button class="primary-btn outline-btn" routerLink="/blogs" type="button">
-                  View All
-                </button>
-              </div>
+        <div class="row">
+          <div
+            *ngIf="segment.heading"
+            class="col-12 px-0 d-flex justify-content-between align-items-end"
+          >
+            <div class="titles custom-title w-auto pl-0">
+              <h2>{{ segment.heading }}</h2>
+              <p
+                *ngIf="segment.sub_heading"
+                [innerHTML]="segment.sub_heading"
+              ></p>
             </div>
-          <ng-container *ngIf="segment.blogs_type=='grid'">
+            <div class="blog-slider-btn">
+              <button
+                class="primary-btn outline-btn"
+                routerLink="/blogs"
+                type="button"
+              >
+                View All
+              </button>
+            </div>
+          </div>
+          <ng-container *ngIf="segment.blogs_type == 'grid'">
             <div class="row d-flex flex-wrap align-items-stretch">
-              <div *ngFor="let x of segment.image_list;" class="col-12" [ngClass]="{
-                'col-md-3': segment.section_grid_type=='grid_3', 'col-md-4': segment.section_grid_type=='grid_2', 'col-md-6': segment.section_grid_type=='grid_1'
-              }">
+              <div
+                *ngFor="let x of segment.image_list"
+                class="col-12"
+                [ngClass]="{
+                  'col-md-3': segment.section_grid_type == 'grid_3',
+                  'col-md-4': segment.section_grid_type == 'grid_2',
+                  'col-md-6': segment.section_grid_type == 'grid_1',
+                }"
+              >
                 <div class="news-box">
                   <figure>
-                    <a routerLink="{{ x.seo_status ? '/blogs/'+x.seo_details.page_url : '/blogs/'+x._id }}">
-                      <img loading="lazy" width="100%" height="100%" appLqimgLoad appDeferLoad [ImagelazyLoad]="imgBaseUrl+x.image" alt="{{(x.img_alt)? x.img_alt: 'Image'}}">
+                    <a
+                      routerLink="{{
+                        x.seo_status
+                          ? '/blogs/' + x.seo_details.page_url
+                          : '/blogs/' + x._id
+                      }}"
+                    >
+                      <img
+                        loading="lazy"
+                        width="100%"
+                        height="100%"
+                        appLqimgLoad
+                        appDeferLoad
+                        [ImagelazyLoad]="imgBaseUrl + x.image"
+                        alt="{{ x.img_alt ? x.img_alt : 'Image' }}"
+                      />
                     </a>
                     <figcaption>
-                      <small>{{x.created_on | date: "MMM dd, yyyy"}}</small>
+                      <small>{{ x.created_on | date: "MMM dd, yyyy" }}</small>
                       <h3>
-                        <a routerLink="{{ x.seo_status ? '/blogs/'+x.seo_details.page_url : '/blogs/'+x._id }}">{{x.name}}</a>
+                        <a
+                          routerLink="{{
+                            x.seo_status
+                              ? '/blogs/' + x.seo_details.page_url
+                              : '/blogs/' + x._id
+                          }}"
+                          >{{ x.name }}</a
+                        >
                       </h3>
                     </figcaption>
                   </figure>
                 </div>
-              </div> 
-            </div>          
+              </div>
+            </div>
           </ng-container>
 
-          <div class="col-12 px-0" *ngIf="segment.blogs_type=='slider'">
-            <div class="swiper-container" [ngClass]="commonService.desktop_device? 'desktopblogslider_'+(i+1): 'blogslider_'+(i+1)" appHomeSwiper>
+          <div class="col-12 px-0" *ngIf="segment.blogs_type == 'slider'">
+            <div
+              class="swiper-container"
+              [ngClass]="
+                commonService.desktop_device
+                  ? 'desktopblogslider_' + (i + 1)
+                  : 'blogslider_' + (i + 1)
+              "
+              appHomeSwiper
+            >
               <div class="swiper-wrapper">
-                <div *ngFor="let x of segment.image_list; let j=index;" class="swiper-slide">
-                  <div class="news-box" routerLink="{{ x.seo_status ? '/blogs/'+x.seo_details.page_url : '/blogs/'+x._id }}">
+                <div
+                  *ngFor="let x of segment.image_list; let j = index"
+                  class="swiper-slide"
+                >
+                  <div
+                    class="news-box"
+                    routerLink="{{
+                      x.seo_status
+                        ? '/blogs/' + x.seo_details.page_url
+                        : '/blogs/' + x._id
+                    }}"
+                  >
                     <figure>
-                      <a routerLink="{{ x.seo_status ? '/blogs/'+x.seo_details.page_url : '/blogs/'+x._id }}">
-                        <img loading="lazy" width="100%" height="100%" appLqimgLoad appDeferLoad [ImagelazyLoad]="imgBaseUrl+x.image" alt="{{(x.img_alt)? x.img_alt: 'Image'}}">
+                      <a
+                        routerLink="{{
+                          x.seo_status
+                            ? '/blogs/' + x.seo_details.page_url
+                            : '/blogs/' + x._id
+                        }}"
+                      >
+                        <img
+                          loading="lazy"
+                          width="100%"
+                          height="100%"
+                          appLqimgLoad
+                          appDeferLoad
+                          [ImagelazyLoad]="imgBaseUrl + x.image"
+                          alt="{{ x.img_alt ? x.img_alt : 'Image' }}"
+                        />
                       </a>
                       <figcaption>
-                        <small>{{x.created_on | date: "MMM dd, yyyy"}}</small>
+                        <small>{{ x.created_on | date: "MMM dd, yyyy" }}</small>
                         <h3>
-                          <a routerLink="{{ x.seo_status ? '/blogs/'+x.seo_details.page_url : '/blogs/'+x._id }}">{{x.name}}</a>
+                          <a
+                            routerLink="{{
+                              x.seo_status
+                                ? '/blogs/' + x.seo_details.page_url
+                                : '/blogs/' + x._id
+                            }}"
+                            >{{ x.name }}</a
+                          >
                         </h3>
                       </figcaption>
                     </figure>
@@ -990,9 +2579,20 @@
                   </div>
                 </div> -->
               </div>
-              <ng-container *ngIf="commonService?.desktop_device && segment.image_list?.length>1">
-                <div id="swipe_next_{{i+1}}" class="swiper-button swiper-button-next"></div>
-                <div id="swipe_prev_{{i+1}}" class="swiper-button swiper-button-prev"></div>
+              <ng-container
+                *ngIf="
+                  commonService?.desktop_device &&
+                  segment.image_list?.length > 1
+                "
+              >
+                <div
+                  id="swipe_next_{{ i + 1 }}"
+                  class="swiper-button swiper-button-next"
+                ></div>
+                <div
+                  id="swipe_prev_{{ i + 1 }}"
+                  class="swiper-button swiper-button-prev"
+                ></div>
               </ng-container>
             </div>
           </div>
@@ -1002,45 +2602,106 @@
     <!-- #blogs -->
 
     <!-- shopping assistant -->
-    <section *ngIf="commonService.ys_features.indexOf('shopping_assistant')!=-1 && segment.type=='shopping_assistant' && commonService.ai_styles.length" class="primary-section ai-styling">
-      <div class="{{template_setting?.body_type}}">
+    <section
+      *ngIf="
+        commonService.ys_features.indexOf('shopping_assistant') != -1 &&
+        segment.type == 'shopping_assistant' &&
+        commonService.ai_styles.length
+      "
+      class="primary-section ai-styling"
+    >
+      <div class="{{ template_setting?.body_type }}">
         <div class="row">
           <div class="col-md-6">
             <div class="ai-styling-image">
               <div class="card-list">
                 <div class="inner-card">
                   <a class="card-image" target="_blank">
-                    <img loading="lazy" width="100%" height="100%" appLqimgLoad appDeferLoad [ImagelazyLoad]="imgBaseUrl+segment.shopping_assistant_config.image"
-                    alt="{{(segment.shopping_assistant_config.img_alt)? segment.shopping_assistant_config.img_alt: 'Image'}}">
+                    <img
+                      loading="lazy"
+                      width="100%"
+                      height="100%"
+                      appLqimgLoad
+                      appDeferLoad
+                      [ImagelazyLoad]="
+                        imgBaseUrl + segment.shopping_assistant_config.image
+                      "
+                      alt="{{
+                        segment.shopping_assistant_config.img_alt
+                          ? segment.shopping_assistant_config.img_alt
+                          : 'Image'
+                      }}"
+                    />
                   </a>
                 </div>
               </div>
             </div>
           </div>
-          <div class="col-md-6 d-flex flex-column align-items-center justify-content-center">
-            <div class="ai-highlighted-text w-100 mt-5 mb-3 d-flex flex-column justify-content-start align-items-start">
-              <h6 class="mb-3" *ngIf="segment.sub_heading" [innerHTML]="segment.sub_heading"></h6>
-              <h2 class="mb-3" *ngIf="segment.heading">{{segment.heading}}</h2>
-              <p class="shop-for mb-2" *ngIf="segment.shopping_assistant_config.prompt">{{segment.shopping_assistant_config.prompt}}</p>
-              <section *ngIf="segment.shopping_assistant_config.changing_text.length" class="rw-wrapper mb-3">
+          <div
+            class="col-md-6 d-flex flex-column align-items-center justify-content-center"
+          >
+            <div
+              class="ai-highlighted-text w-100 mt-5 mb-3 d-flex flex-column justify-content-start align-items-start"
+            >
+              <h6
+                class="mb-3"
+                *ngIf="segment.sub_heading"
+                [innerHTML]="segment.sub_heading"
+              ></h6>
+              <h2 class="mb-3" *ngIf="segment.heading">
+                {{ segment.heading }}
+              </h2>
+              <p
+                class="shop-for mb-2"
+                *ngIf="segment.shopping_assistant_config.prompt"
+              >
+                {{ segment.shopping_assistant_config.prompt }}
+              </p>
+              <section
+                *ngIf="segment.shopping_assistant_config.changing_text.length"
+                class="rw-wrapper mb-3"
+              >
                 <h2 class="rw-sentence">
                   <div class="rw-words rw-words-1">
-                    <ng-container *ngFor="let txt of segment.shopping_assistant_config.changing_text;">
+                    <ng-container
+                      *ngFor="
+                        let txt of segment.shopping_assistant_config
+                          .changing_text
+                      "
+                    >
                       <span>{{ txt.value }}</span>
                     </ng-container>
-                    <ng-container *ngFor="let txt of segment.shopping_assistant_config.changing_text;">
+                    <ng-container
+                      *ngFor="
+                        let txt of segment.shopping_assistant_config
+                          .changing_text
+                      "
+                    >
                       <span>{{ txt.value }}</span>
                     </ng-container>
                   </div>
                 </h2>
               </section>
-              <p class="mb-3" *ngIf="segment.shopping_assistant_config.sub_text" [innerHTML]="segment.shopping_assistant_config.sub_text"></p>
+              <p
+                class="mb-3"
+                *ngIf="segment.shopping_assistant_config.sub_text"
+                [innerHTML]="segment.shopping_assistant_config.sub_text"
+              ></p>
               <div class="ai-play-btn w-100 d-flex mt-3 mb-3">
-                <a (click)="openAiStyleModal(styleModal);" class="hbtn hbtn-naked fresco hbtn-icon-block hbtn-icon-top hbtn-icon-xxlg hbtn-icon-circle hbtn-icon-solid hbtn-icon-ripple">
+                <a
+                  (click)="openAiStyleModal(styleModal)"
+                  class="hbtn hbtn-naked fresco hbtn-icon-block hbtn-icon-top hbtn-icon-xxlg hbtn-icon-circle hbtn-icon-solid hbtn-icon-ripple"
+                >
                   <span class="hbtn-icon font-size-6">
-                    <i class="material-icons" style="font-size:30px!important">play_arrow</i>
+                    <i class="material-icons" style="font-size: 30px !important"
+                      >play_arrow</i
+                    >
                   </span>
-                  <span class="ml-3" *ngIf="segment.shopping_assistant_config.btn_text">{{segment.shopping_assistant_config.btn_text}}</span>
+                  <span
+                    class="ml-3"
+                    *ngIf="segment.shopping_assistant_config.btn_text"
+                    >{{ segment.shopping_assistant_config.btn_text }}</span
+                  >
                 </a>
               </div>
             </div>
@@ -1051,27 +2712,67 @@
     <!-- #shopping assistant -->
 
     <!-- Shop The Look -->
-    <section *ngIf="commonService.ys_features.indexOf('shop_the_look')!=-1 && segment.type=='shop_the_look' && segment.image_list?.length" class="primary-section shop-the-look-sec" [ngClass]="(i>1)? 'wow fadeInUp': null">
-      <div class="{{template_setting?.body_type}}">
+    <section
+      *ngIf="
+        commonService.ys_features.indexOf('shop_the_look') != -1 &&
+        segment.type == 'shop_the_look' &&
+        segment.image_list?.length
+      "
+      class="primary-section shop-the-look-sec"
+      [ngClass]="i > 1 ? 'wow fadeInUp' : null"
+    >
+      <div class="{{ template_setting?.body_type }}">
         <div class="row">
           <div *ngIf="segment.heading" class="col-12">
             <div class="titles">
-              <h2>{{segment.heading}}</h2>
-              <p *ngIf="segment.sub_heading" [innerHTML]="segment.sub_heading"></p>
+              <h2>{{ segment.heading }}</h2>
+              <p
+                *ngIf="segment.sub_heading"
+                [innerHTML]="segment.sub_heading"
+              ></p>
               <span></span>
             </div>
           </div>
           <div class="col-12 p-0">
-            <div class="swiper-container multi-slider product-slider shop-the-look-inner" [ngClass]="commonService.desktop_device? 'desktopshoplookslider_'+(i+1): 'shoplookslider_'+(i+1)" appHomeSwiper>
+            <div
+              class="swiper-container multi-slider product-slider shop-the-look-inner"
+              [ngClass]="
+                commonService.desktop_device
+                  ? 'desktopshoplookslider_' + (i + 1)
+                  : 'shoplookslider_' + (i + 1)
+              "
+              appHomeSwiper
+            >
               <div class="swiper-wrapper">
-                <div *ngFor="let x of segment.image_list; let j=index;" class="swiper-slide">
+                <div
+                  *ngFor="let x of segment.image_list; let j = index"
+                  class="swiper-slide"
+                >
                   <div class="product-box cursor">
                     <a class="prod-div">
                       <figure>
-                        <img loading="lazy" width="100%" height="100%" appLqimgLoad appDeferLoad [ImagelazyLoad]="imgBaseUrl+x.desktop_img" alt="{{(x.img_alt)? x.img_alt: 'Image'}}">
-                        <div *ngIf="x.points_list?.length" class="related-picker-wrapper">
-                          <ng-container *ngFor="let p of x.points_list;">
-                            <span (click)="commonService.onPageRedirect(p);" class="material-icons related-picker" [ngStyle]="{'left': p.x_pos+'%', 'top': p.y_pos+'%'}">
+                        <img
+                          loading="lazy"
+                          width="100%"
+                          height="100%"
+                          appLqimgLoad
+                          appDeferLoad
+                          [ImagelazyLoad]="imgBaseUrl + x.desktop_img"
+                          alt="{{ x.img_alt ? x.img_alt : 'Image' }}"
+                        />
+                        <div
+                          *ngIf="x.points_list?.length"
+                          class="related-picker-wrapper"
+                        >
+                          <ng-container *ngFor="let p of x.points_list">
+                            <span
+                              (click)="commonService.onPageRedirect(p)"
+                              class="material-icons related-picker"
+                              [ngStyle]="{
+                                left: p.x_pos + '%',
+                                top: p.y_pos + '%',
+                              }"
+                            >
                               add
                             </span>
                           </ng-container>
@@ -1081,9 +2782,15 @@
                   </div>
                 </div>
               </div>
-              <ng-container *ngIf="commonService?.screen_width>=992">
-                <div id="swipe_next_{{i+1}}" class="swiper-button swiper-button-next"></div>
-                <div id="swipe_prev_{{i+1}}" class="swiper-button swiper-button-prev"></div>
+              <ng-container *ngIf="commonService?.screen_width >= 992">
+                <div
+                  id="swipe_next_{{ i + 1 }}"
+                  class="swiper-button swiper-button-next"
+                ></div>
+                <div
+                  id="swipe_prev_{{ i + 1 }}"
+                  class="swiper-button swiper-button-prev"
+                ></div>
               </ng-container>
             </div>
           </div>
@@ -1093,20 +2800,40 @@
     <!-- #Shop The Look -->
 
     <!-- Video Section -->
-    <section *ngIf="segment.type=='video_section' && plyrLoaded" class="primary-section home-video-sec" [ngClass]="(i>1)? 'wow fadeInUp': null">
-      <div class="{{template_setting?.body_type}}">
+    <section
+      *ngIf="segment.type == 'video_section' && plyrLoaded"
+      class="primary-section home-video-sec"
+      [ngClass]="i > 1 ? 'wow fadeInUp' : null"
+    >
+      <div class="{{ template_setting?.body_type }}">
         <div class="row">
           <div *ngIf="segment.heading" class="col-12">
             <div class="titles">
-              <h2>{{segment.heading}}</h2>
-              <p *ngIf="segment.sub_heading" [innerHTML]="segment.sub_heading"></p>
+              <h2>{{ segment.heading }}</h2>
+              <p
+                *ngIf="segment.sub_heading"
+                [innerHTML]="segment.sub_heading"
+              ></p>
               <span></span>
             </div>
           </div>
-          <div *ngIf="segment.video_details?.thumbnail && segment.video_details?.src" class="col-md-10 offset-md-1">
+          <div
+            *ngIf="
+              segment.video_details?.thumbnail && segment.video_details?.src
+            "
+            class="col-md-10 offset-md-1"
+          >
             <div class="home-video-inner">
-              <video id="vs-{{segment._id}}" controls muted poster="{{imgBaseUrl+segment.video_details.thumbnail}}">
-                <source src="{{imgBaseUrl+segment.video_details.src}}" type="video/mp4">
+              <video
+                id="vs-{{ segment._id }}"
+                controls
+                muted
+                poster="{{ imgBaseUrl + segment.video_details.thumbnail }}"
+              >
+                <source
+                  src="{{ imgBaseUrl + segment.video_details.src }}"
+                  type="video/mp4"
+                />
               </video>
             </div>
           </div>
@@ -1163,7 +2890,6 @@
       </div>
     </section> -->
     <!-- #Instagram -->
-
   </ng-container>
   <!-- #LAYOUTS -->
 
@@ -1189,7 +2915,6 @@
     </div>
   </section> -->
   <!-- #seo links -->
-
 </section>
 
 <section class="primary-section location">
@@ -1199,27 +2924,47 @@
         <div class="titles">
           <h2>Visit Our Store</h2>
           <p class="mb-0">Walk into a world of heritage, silk, and style</p>
-        </div>   
+        </div>
       </div>
-      <div *ngIf="commonService.contact_page_info?.map_url" class="col-12 px-0 map">
-        <iframe [src]="commonService.contact_page_info.map_url" width="100%" height="500" frameborder="0" style="border:3px solid #D99550" allowfullscreen></iframe>
+      <div
+        *ngIf="commonService.contact_page_info?.map_url"
+        class="col-12 px-0 map"
+      >
+        <iframe
+          [src]="commonService.contact_page_info.map_url"
+          width="100%"
+          height="500"
+          frameborder="0"
+          style="border: 3px solid #d99550"
+          allowfullscreen
+        ></iframe>
       </div>
     </div>
   </div>
 </section>
 
 <!-- AI Filter -->
-<div bsModal #styleModal="bs-modal" class="modal fade" [config]="{backdrop: 'static'}" tabindex="-1" role="dialog" aria-labelledby="dialog-style">
+<div
+  bsModal
+  #styleModal="bs-modal"
+  class="modal fade"
+  [config]="{ backdrop: 'static' }"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="dialog-style"
+>
   <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
-    <div *ngIf="commonService.ys_features.indexOf('shopping_assistant')!=-1" class="modal-content">
-
+    <div
+      *ngIf="commonService.ys_features.indexOf('shopping_assistant') != -1"
+      class="modal-content"
+    >
       <div class="modal-header">
         <div>
           <h5 class="modal-title">AI STYLING ASSISTANT</h5>
           <p class="m-0">Tell us about yourself</p>
         </div>
         <div class="d-flex">
-          <i class="material-icons" (click)="styleModal.hide();">close</i>
+          <i class="material-icons" (click)="styleModal.hide()">close</i>
         </div>
       </div>
 
@@ -1227,22 +2972,77 @@
         <div *ngIf="commonService?.ai_styles[styleIndex]" class="row">
           <div class="col-md-12 mt-4">
             <h5>{{ commonService?.ai_styles[styleIndex]?.heading }}</h5>
-            <p *ngIf="commonService?.ai_styles[styleIndex]?.sub_heading">{{ commonService?.ai_styles[styleIndex]?.sub_heading }}</p>
+            <p *ngIf="commonService?.ai_styles[styleIndex]?.sub_heading">
+              {{ commonService?.ai_styles[styleIndex]?.sub_heading }}
+            </p>
             <div class="row">
-              <div *ngFor="let x of commonService.ai_styles[styleIndex].filtered_option_list; let i=index;" class="col-lg-3 col-md-4 col-6 d-flex mb-3">
+              <div
+                *ngFor="
+                  let x of commonService.ai_styles[styleIndex]
+                    .filtered_option_list;
+                  let i = index
+                "
+                class="col-lg-3 col-md-4 col-6 d-flex mb-3"
+              >
                 <div class="primary-card customize-model p-3">
                   <label class="store-label m-0">
                     <!-- Radio -->
-                    <input *ngIf="commonService?.ai_styles[styleIndex]?.type=='either_or'" type="radio" name="option" class="option-input radio" value="{{x._id}}"
-                    [checked]="commonService.ai_styles[styleIndex].selected_option==x._id" (change)="commonService.ai_styles[styleIndex].selected_option=x._id; getRadioNextList(x._id);" />
+                    <input
+                      *ngIf="
+                        commonService?.ai_styles[styleIndex]?.type ==
+                        'either_or'
+                      "
+                      type="radio"
+                      name="option"
+                      class="option-input radio"
+                      value="{{ x._id }}"
+                      [checked]="
+                        commonService.ai_styles[styleIndex].selected_option ==
+                        x._id
+                      "
+                      (change)="
+                        commonService.ai_styles[styleIndex].selected_option =
+                          x._id;
+                        getRadioNextList(x._id)
+                      "
+                    />
                     <!-- Checkbox -->
-                    <input *ngIf="commonService?.ai_styles[styleIndex]?.type!='either_or'" type="checkbox" class="option-input checkbox" name="option"
-                    [(ngModel)]="x.aistyle_option_checked" (change)="getCheckboxNextList();" />
+                    <input
+                      *ngIf="
+                        commonService?.ai_styles[styleIndex]?.type !=
+                        'either_or'
+                      "
+                      type="checkbox"
+                      class="option-input checkbox"
+                      name="option"
+                      [(ngModel)]="x.aistyle_option_checked"
+                      (change)="getCheckboxNextList()"
+                    />
                     <!-- Content -->
-                    <img loading="lazy" width="100%" height="100%" imgBroken *ngIf="x.image" [src]="imgBaseUrl+x.image" class="img-fluid" alt="model">
-                    <img loading="lazy" width="100%" height="100%" imgBroken class="addon-icon opacity6" *ngIf="!x.image" src="assets/images/addon.svg" alt="addon">
-                    <h6 class="text-center m-0">{{x.heading}}</h6>
-                    <p *ngIf="x.sub_heading" class="text-center m-0">{{x.sub_heading}}</p>
+                    <img
+                      loading="lazy"
+                      width="100%"
+                      height="100%"
+                      imgBroken
+                      *ngIf="x.image"
+                      [src]="imgBaseUrl + x.image"
+                      class="img-fluid"
+                      alt="model"
+                    />
+                    <img
+                      loading="lazy"
+                      width="100%"
+                      height="100%"
+                      imgBroken
+                      class="addon-icon opacity6"
+                      *ngIf="!x.image"
+                      src="assets/images/addon.svg"
+                      alt="addon"
+                    />
+                    <h6 class="text-center m-0">{{ x.heading }}</h6>
+                    <p *ngIf="x.sub_heading" class="text-center m-0">
+                      {{ x.sub_heading }}
+                    </p>
                   </label>
                 </div>
               </div>
@@ -1254,16 +3054,47 @@
       <div class="modal-footer flex-column">
         <div class="proceed-sec d-flex justify-content-between w-100 m-0">
           <!-- left btn -->
-          <button *ngIf="styleIndex==0" (click)="styleModal.hide();" class="primary-btn">Close</button>
-          <button *ngIf="styleIndex>0" (click)="styleIndex=styleIndex-1; commonService?.scrollModalTop(0);" class="primary-btn">Previous</button>
+          <button
+            *ngIf="styleIndex == 0"
+            (click)="styleModal.hide()"
+            class="primary-btn"
+          >
+            Close
+          </button>
+          <button
+            *ngIf="styleIndex > 0"
+            (click)="
+              styleIndex = styleIndex - 1; commonService?.scrollModalTop(0)
+            "
+            class="primary-btn"
+          >
+            Previous
+          </button>
           <!-- #left btn -->
           <!-- right btn -->
-          <button *ngIf="commonService?.ai_styles[styleIndex+1]?.filtered_option_list?.length" (click)="onStyleNext();" class="primary-btn">Next</button>
-          <button *ngIf="!commonService?.ai_styles[styleIndex+1]?.filtered_option_list?.length" (click)="styleModal.hide(); onStylingFilter();" class="primary-btn">Submit</button>
+          <button
+            *ngIf="
+              commonService?.ai_styles[styleIndex + 1]?.filtered_option_list
+                ?.length
+            "
+            (click)="onStyleNext()"
+            class="primary-btn"
+          >
+            Next
+          </button>
+          <button
+            *ngIf="
+              !commonService?.ai_styles[styleIndex + 1]?.filtered_option_list
+                ?.length
+            "
+            (click)="styleModal.hide(); onStylingFilter()"
+            class="primary-btn"
+          >
+            Submit
+          </button>
           <!-- #right btn -->
         </div>
       </div>
-
     </div>
   </div>
 </div>

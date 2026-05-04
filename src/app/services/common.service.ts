@@ -6,7 +6,7 @@ import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { StoreApiService } from './store-api.service';
 import { environment } from '../../environments/environment';
-declare const CryptoJS: any;
+import CryptoJS from 'crypto-js';
 declare const $: any;
 
 @Injectable({

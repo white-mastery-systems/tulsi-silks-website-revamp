@@ -1,25 +1,55 @@
-.titles h2{
-    margin-top:-10px;
+.titles h2 {
+  margin-top: -10px;
 }
 
-/* Positioning context for off-screen H1 (no layout gap above hero). */
 .home-section {
   position: relative;
 }
 
-/*
- * WCAG “visually hidden”: text stays in DOM for search engines & screen readers.
- * Avoids display:none / [hidden], which remove content from the accessibility tree.
- */
-.home-page-title.visually-hidden {
+/* Page H1 overlaid at top of hero slider (above slides / overlay z-index). */
+.home-section .home-slider {
+  position: relative;
+}
+
+.home-slider-top-heading {
   position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  clip-path: inset(50%);
-  border: 0;
+  top: clamp(0.5rem, 1.6vw, 1.25rem);
+  left: 0;
+  right: 0;
+  z-index: 6;
+  pointer-events: none;
+  text-align: center;
+  padding: clamp(0.75rem, 2.8vw, 1.5rem) 0.75rem 0.5rem;
+}
+
+.home-slider-top-heading__title {
+  font-family: "Montaga", "Georgia", serif;
+  /* Single line: shrink on narrow viewports instead of wrapping */
+  font-size: clamp(0.7rem, 2.65vw, 1.75rem);
+  font-weight: 400;
+  line-height: 1.15;
+  letter-spacing: 0.02em;
+  margin: 0 auto;
+  max-width: min(96vw, 52rem);
+  color: #fff;
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.55),
+    0 2px 16px rgba(0, 0, 0, 0.35);
+}
+
+@media (max-width: 576px) {
+  .home-slider-top-heading__title {
+    /* Mobile: slightly larger baseline while staying single-line. */
+    font-size: clamp(0.95rem, 3.6vw, 1.35rem);
+  }
+}
+
+/* When page H1 is overlaid, push slide captions down a bit to avoid overlap. */
+.home-section .home-slider.has-page-h1 {
+  .home-slider-text {
+    padding-top: clamp(3.25rem, 8vw, 5.5rem);
+  }
 }
