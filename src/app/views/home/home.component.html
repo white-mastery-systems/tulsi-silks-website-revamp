@@ -56,14 +56,82 @@
       template_setting?.primary_slider &&
       commonService?.primary_main_slider?.length
     "
-    class="dynamic-height primary-section home-slider has-page-h1"
+    class="dynamic-height primary-section home-slider"
     [style.height]="fsHeroHeightStyle"
   >
-    <div class="home-slider-top-heading" aria-labelledby="home-main-heading">
-      <h1 id="home-main-heading" class="home-slider-top-heading__title">
-        {{ homeMainHeading }}
-      </h1>
-    </div>
+    <!-- Hero copy: single H1/subheading/CTA sourced from first slider item -->
+    <ng-container *ngIf="commonService.primary_main_slider?.[0] as firstSlide">
+      <div
+        *ngIf="firstSlide?.content_status || firstSlide?.btn_status"
+        class="home-slider-text d-flex"
+        [ngClass]="{
+          'align-items-start':
+            firstSlide?.position == 't_l' ||
+            firstSlide?.position == 't_c' ||
+            firstSlide?.position == 't_r',
+          'align-items-center':
+            firstSlide?.position == 'm_l' ||
+            firstSlide?.position == 'm_c' ||
+            firstSlide?.position == 'm_r',
+          'align-items-end':
+            firstSlide?.position == 'b_l' ||
+            firstSlide?.position == 'b_c' ||
+            firstSlide?.position == 'b_r',
+          'justify-content-start text-left':
+            firstSlide?.position == 't_l' ||
+            firstSlide?.position == 'm_l' ||
+            firstSlide?.position == 'b_l',
+          'justify-content-center':
+            firstSlide?.position == 't_c' ||
+            firstSlide?.position == 'm_c' ||
+            firstSlide?.position == 'b_c',
+          'justify-content-end text-right':
+            firstSlide?.position == 't_r' ||
+            firstSlide?.position == 'm_r' ||
+            firstSlide?.position == 'b_r'
+        }"
+      >
+        <div
+          class="mr-2 ml-2 mt-2 mb-2"
+          [ngClass]="
+            firstSlide?.position == 'm_l' ||
+            firstSlide?.position == 'm_c' ||
+            firstSlide?.position == 'm_r'
+              ? 'mt--10'
+              : ''
+          "
+        >
+          <h1
+            *ngIf="firstSlide?.content_status && firstSlide?.content_details?.heading"
+            class="home-slider-heading"
+            [ngClass]="
+              firstSlide?.content_details?.text_color == 'dark'
+                ? 'text-dark'
+                : 'text-light'
+            "
+          >
+            {{ firstSlide.content_details.heading }}
+          </h1>
+          <p
+            *ngIf="firstSlide?.content_status && firstSlide?.content_details?.sub_heading"
+            [ngClass]="
+              firstSlide?.content_details?.text_color == 'dark'
+                ? 'text-dark'
+                : 'text-light'
+            "
+            [innerHTML]="firstSlide.content_details.sub_heading"
+          ></p>
+          <button
+            *ngIf="firstSlide?.btn_status && firstSlide?.btn_text"
+            (click)="commonService.onPageRedirect(firstSlide)"
+            class="primary-btn"
+          >
+            {{ firstSlide.btn_text }}
+          </button>
+        </div>
+      </div>
+    </ng-container>
+
     <div
       class="swiper-container dynamic-height"
       [style.height]="fsHeroHeightStyle"
@@ -94,75 +162,6 @@
               [ImagelazyLoad]="imgBaseUrl + x.mobile_img"
               alt="{{ x.img_alt ? x.img_alt : 'slider' }}"
             />
-            <div
-              *ngIf="x?.content_status || x?.btn_status"
-              class="home-slider-text d-flex"
-              [ngClass]="{
-                'align-items-start':
-                  x?.position == 't_l' ||
-                  x?.position == 't_c' ||
-                  x?.position == 't_r',
-                'align-items-center':
-                  x?.position == 'm_l' ||
-                  x?.position == 'm_c' ||
-                  x?.position == 'm_r',
-                'align-items-end':
-                  x?.position == 'b_l' ||
-                  x?.position == 'b_c' ||
-                  x?.position == 'b_r',
-                'justify-content-start text-left':
-                  x?.position == 't_l' ||
-                  x?.position == 'm_l' ||
-                  x?.position == 'b_l',
-                'justify-content-center':
-                  x?.position == 't_c' ||
-                  x?.position == 'm_c' ||
-                  x?.position == 'b_c',
-                'justify-content-end text-right':
-                  x?.position == 't_r' ||
-                  x?.position == 'm_r' ||
-                  x?.position == 'b_r',
-              }"
-            >
-              <div
-                class="mr-2 ml-2 mt-2 mb-2"
-                [ngClass]="
-                  x?.position == 'm_l' ||
-                  x?.position == 'm_c' ||
-                  x?.position == 'm_r'
-                    ? 'mt--10'
-                    : ''
-                "
-              >
-                <h2
-                  *ngIf="x?.content_status && x?.content_details?.heading"
-                  class="home-slider-heading"
-                  [ngClass]="
-                    x?.content_details?.text_color == 'dark'
-                      ? 'text-dark'
-                      : 'text-light'
-                  "
-                >
-                  {{ x.content_details.heading }}
-                </h2>
-                <p
-                  *ngIf="x?.content_status && x?.content_details?.sub_heading"
-                  [ngClass]="
-                    x?.content_details?.text_color == 'dark'
-                      ? 'text-dark'
-                      : 'text-light'
-                  "
-                  [innerHTML]="x.content_details.sub_heading"
-                ></p>
-                <button
-                  *ngIf="x?.btn_status && x?.btn_text"
-                  (click)="commonService.onPageRedirect(x)"
-                  class="primary-btn"
-                >
-                  {{ x.btn_text }}
-                </button>
-              </div>
-            </div>
           </ng-container>
           <!-- desktop -->
           <ng-container *ngIf="commonService.screen_width > maxWidth">
@@ -175,70 +174,6 @@
               [ImagelazyLoad]="imgBaseUrl + x.desktop_img"
               alt="{{ x.img_alt ? x.img_alt : 'slider' }}"
             />
-            <div
-              *ngIf="x?.content_status || x?.btn_status"
-              class="home-slider-text d-flex"
-              [ngClass]="{
-                'align-items-start':
-                  x?.position == 't_l' ||
-                  x?.position == 't_c' ||
-                  x?.position == 't_r',
-                'align-items-center':
-                  x?.position == 'm_l' ||
-                  x?.position == 'm_c' ||
-                  x?.position == 'm_r',
-                'align-items-end':
-                  x?.position == 'b_l' ||
-                  x?.position == 'b_c' ||
-                  x?.position == 'b_r',
-                'justify-content-start':
-                  x?.position == 't_l' ||
-                  x?.position == 'm_l' ||
-                  x?.position == 'b_l',
-                'justify-content-center':
-                  x?.position == 't_c' ||
-                  x?.position == 'm_c' ||
-                  x?.position == 'b_c',
-                'justify-content-end':
-                  x?.position == 't_r' ||
-                  x?.position == 'm_r' ||
-                  x?.position == 'b_r',
-                'text-left':
-                  x?.position != 't_c' &&
-                  x?.position != 'm_c' &&
-                  x?.position != 'b_c',
-              }"
-            >
-              <div class="mr-8 ml-8 mt-5 mb-5">
-                <h2
-                  *ngIf="x?.content_status && x?.content_details?.heading"
-                  class="home-slider-heading"
-                  [ngClass]="
-                    x?.content_details?.text_color == 'dark'
-                      ? 'text-dark'
-                      : 'text-light'
-                  "
-                >
-                  {{ x.content_details.heading }}
-                </h2>
-                <p
-                  *ngIf="x?.content_status && x?.content_details?.sub_heading"
-                  [ngClass]="
-                    x?.content_details?.text_color == 'dark'
-                      ? 'text-dark'
-                      : 'text-light'
-                  "
-                  [innerHTML]="x.content_details.sub_heading"
-                ></p>
-                <button
-                  *ngIf="x?.btn_status && x?.btn_text"
-                  (click)="commonService.onPageRedirect(x)"
-                  class="primary-btn"
-                >
-                  {{ x.btn_text }}
-                </button>
-              </div>
-            </div>
           </ng-container>
         </div>
       </div>
@@ -265,18 +200,8 @@
       <section
         *ngIf="segment.image_list?.length"
         class="dynamic-height primary-section home-slider"
-        [class.has-page-h1]="showHomeH1OnLayoutSegment(segment)"
         [style.height]="fsHeroHeightStyle"
       >
-        <div
-          *ngIf="showHomeH1OnLayoutSegment(segment)"
-          class="home-slider-top-heading"
-          aria-labelledby="home-main-heading-layout"
-        >
-          <h1 id="home-main-heading-layout" class="home-slider-top-heading__title">
-            {{ homeMainHeading }}
-          </h1>
-        </div>
         <div
           class="swiper-container dynamic-height"
           [style.height]="fsHeroHeightStyle"
@@ -305,7 +230,7 @@
                   alt="{{ x.img_alt ? x.img_alt : 'slider' }}"
                 />
                 <div
-                  *ngIf="x?.content_status || x?.btn_status"
+                  *ngIf="j === 0 && (x?.content_status || x?.btn_status)"
                   class="home-slider-text d-flex"
                   [ngClass]="{
                     'align-items-start':
@@ -388,7 +313,7 @@
                   alt="{{ x.img_alt ? x.img_alt : 'slider' }}"
                 />
                 <div
-                  *ngIf="x?.content_status || x?.btn_status"
+                  *ngIf="j === 0 && (x?.content_status || x?.btn_status)"
                   class="home-slider-text d-flex"
                   [ngClass]="{
                     'align-items-start':

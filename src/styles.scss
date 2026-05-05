@@ -18,6 +18,26 @@
 @import "assets/css/swiper.css";
 @import "assets/css/quill-core.css";
 
+/* Keyboard-only focus ring (does not show on mouse click). */
+:root {
+  --focus-ring: #d99550;
+  --focus-ring-halo: rgba(217, 149, 80, 0.28);
+}
+
+/* Single-layer ring with subtle halo. */
+:where(a, button, input, textarea, select, [tabindex]):focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px var(--focus-ring-halo);
+  border-radius: 8px;
+}
+
+/* Mouse focus should not show a ring. */
+:where(a, button, input, textarea, select, [tabindex]):focus:not(:focus-visible) {
+  outline: none;
+  box-shadow: none;
+}
+
 .blur-up {
   -webkit-filter: blur(3px);
   filter: blur(3px);

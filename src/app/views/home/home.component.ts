@@ -21,8 +21,14 @@ declare const Plyr: any;
 
 export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
 
+  /** Confirmed homepage SEO copy (fallback when API hasn’t loaded yet). */
+  private static readonly HOME_H1_FALLBACK = 'Premium Sarees in Chennai, Crafted for Every Occasion';
+
   /** Matches `index.html` preload for `.dynamic-height` when masthead is not measurable yet. */
   private static readonly MASTHEAD_FALLBACK_PX = 80;
+
+  /** Desktop-only cap so hero doesn't consume entire viewport. */
+  private static readonly DESKTOP_HERO_MAX_PX = 640;
 
   /**
    * Bound in template for full-bleed hero (`fs_slider`) so SSR / view-source never emits invalid CSS.
@@ -58,8 +64,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     if (typeof raw === 'string' && raw.trim()) {
       return raw.trim();
     }
-    const name = this.commonService.store_details?.name;
-    return typeof name === 'string' && name.trim() ? name.trim() : 'Home';
+    return HomeComponent.HOME_H1_FALLBACK;
   }
 
   /** Built-in hero block (`primary_main_slider`) — page H1 sits on this slider when shown. */
@@ -690,7 +695,15 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     const raw = this.getMastheadHeightPx();
     const n = Number(raw);
     const mastHeight = Number.isFinite(n) && n >= 0 ? Math.trunc(n) : HomeComponent.MASTHEAD_FALLBACK_PX;
-    this.fullBleedHeroHeightCss = `calc(100vh - ${mastHeight}px)`;
+    const vw =
+      typeof window !== 'undefined'
+        ? window.innerWidth || this.document.documentElement?.clientWidth || 0
+        : 0;
+    const base = `calc(100vh - ${mastHeight}px)`;
+    this.fullBleedHeroHeightCss =
+      vw > this.maxWidth
+        ? `min(${base}, ${HomeComponent.DESKTOP_HERO_MAX_PX}px)`
+        : base;
     this.document.body.style.marginTop = `${mastHeight}px`;
   }
 
