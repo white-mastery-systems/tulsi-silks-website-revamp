@@ -89,13 +89,15 @@
 
 .mini-cart .cart-count {
   padding: 27px 20px 10px;
-  h4 {
+  h4,
+  .cart-count-title {
     font-size: 1rem;
     margin-bottom: 0;
     padding: 2px;
     display: flex;
     align-items: center;
-    span {
+    span,
+    .cart-count-badge {
       font-size: 0.875rem;
       background: $accent;
       color: $accent-txt;

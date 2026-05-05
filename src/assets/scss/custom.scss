@@ -2540,7 +2540,7 @@ a.active::after {
   border-bottom: 0;
 }
 
-.product-box .product-content h4{
+.product-box .product-content h3.product-title{
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -2552,7 +2552,7 @@ a.active::after {
     }
   }
 }
-.product-box .product-content h3 {
+.product-box .product-content .product-brand {
   font-size: 1rem;
   font-weight: bold;
   text-transform: uppercase;

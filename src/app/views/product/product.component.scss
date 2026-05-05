@@ -149,7 +149,8 @@
       }
     }
     .product-details{
-      h4{
+      h4,
+      h3{
         font-size: 16px;
       }
       p{
@@ -187,7 +188,7 @@
         padding-left: 0!important;  
       }
 
-       h4, p, p.product-price{
+       h4, h3, p, p.product-price{
           font-size: 14px!important;
         } 
 

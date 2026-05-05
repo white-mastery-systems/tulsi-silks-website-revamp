@@ -149,14 +149,16 @@ article, aside, footer, header, nav, section { width: 100%; float: left; positio
   .cart-count {
     padding-bottom: 27px;
     padding-top: 10px;
-    h4 {
+    h4,
+    .cart-count-title {
       font-size: 1rem;
       font-weight: 700;
       margin-bottom: 0;
       padding: 2px;
       display: flex;
       align-items: center;
-      span {
+      span,
+      .cart-count-badge {
         font-size: 0.875rem;
         background: $accent;
         color: $accent-txt;
@@ -185,8 +187,10 @@ article, aside, footer, header, nav, section { width: 100%; float: left; positio
       }
     }
     .cart-count {
-      h4 {
-        span {
+      h4,
+      .cart-count-title {
+        span,
+        .cart-count-badge {
           font-size: 0.575rem;
         }
       }
@@ -212,7 +216,8 @@ article, aside, footer, header, nav, section { width: 100%; float: left; positio
 .product-box .product-image figcaption{width: 100%; position: absolute; left: 0; bottom: 0; text-align: center;}
 .product-box .product-image figcaption a{ height: 30px; line-height: 32px; padding: 0 8px; background: #fff; display: inline-block;}
 .product-box .product-content{ width: 100%; float: left; text-align: left;margin-top: 5px;}
-.product-box .product-content h4{ width:100%; float:left; font-size:18px; font-weight:400;opacity: .7;}
+.product-box .product-content h3,
+.product-box .product-content h3.product-title{ width:100%; float:left; font-size:18px; font-weight:400;opacity: .7;}
 /* .product-box .product-content small{ width:100%; float:left; font-size:12px; opacity: 0.5; margin-bottom: 10px;} */
 .product-box .product-content div{ width: 100%; height: 18px; float: left; line-height: 18px; overflow: hidden;}
 .product-box .product-content span{ width:100%; float:left; font-size:1rem; font-weight:500;color: #000;}

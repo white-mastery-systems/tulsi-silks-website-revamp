@@ -393,10 +393,13 @@
         <div class="cart-header">
           <div class="cart-product-list slim-scroll">
             <div class="cart-count">
-              <h4>Shopping Bag
-                <span>{{cartService.cart_list?.length}}
-                  {{(cartService.cart_list?.length>1)? 'items': 'item'}}</span>
-              </h4>
+              <p class="cart-count-title">
+                Shopping Bag
+                <span class="cart-count-badge">
+                  {{cartService.cart_list?.length}}
+                  {{(cartService.cart_list?.length>1)? 'items': 'item'}}
+                </span>
+              </p>
             </div>
             <div class="cart-inner" *ngFor="let x of cartService.cart_list | slice:0:2; let i=index;">
               <div class="thumb">

@@ -1112,8 +1112,8 @@
                         </figcaption>
                       </figure>
                       <div class="product-content">
-                        <h3 *ngIf="x.brand">{{ x.brand }}</h3>
-                        <h4>{{ x.name }}</h4>
+                        <p *ngIf="x.brand" class="product-brand">{{ x.brand }}</p>
+                        <h3 class="product-title">{{ x.name }}</h3>
                         <div>
                           <ng-container
                             *ngTemplateOutlet="
@@ -1343,8 +1343,8 @@
                     </figcaption>
                   </figure>
                   <div class="product-content">
-                    <h3 *ngIf="x.brand">{{ x.brand }}</h3>
-                    <h4>{{ x.name }}</h4>
+                    <p *ngIf="x.brand" class="product-brand">{{ x.brand }}</p>
+                    <h3 class="product-title">{{ x.name }}</h3>
                     <div>
                       <ng-container
                         *ngTemplateOutlet="
@@ -1591,8 +1591,8 @@
                                 </figcaption>
                               </figure>
                               <div class="product-content">
-                                <h3 *ngIf="x.brand">{{ x.brand }}</h3>
-                                <h4>{{ x.name }}</h4>
+                                <p *ngIf="x.brand" class="product-brand">{{ x.brand }}</p>
+                                <h3 class="product-title">{{ x.name }}</h3>
                                 <div>
                                   <ng-container
                                     *ngTemplateOutlet="
@@ -1794,8 +1794,8 @@
                               </figcaption>
                             </figure>
                             <div class="product-content">
-                              <h3 *ngIf="x.brand">{{ x.brand }}</h3>
-                              <h4>{{ x.name }}</h4>
+                              <p *ngIf="x.brand" class="product-brand">{{ x.brand }}</p>
+                              <h3 class="product-title">{{ x.name }}</h3>
                               <div>
                                 <ng-container
                                   *ngTemplateOutlet="
