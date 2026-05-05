@@ -1,4 +1,4 @@
-<section class="home-section">
+<section class="home-section" aria-label="Homepage content">
   <!-- Single template for product card prices on home (featured + multi-tab sliders/grids). -->
   <ng-template #homeProductCardPrices let-p>
     <span *ngIf="p.disc_status" class="strike">{{
@@ -57,6 +57,7 @@
       commonService?.primary_main_slider?.length
     "
     class="dynamic-height primary-section home-slider"
+    aria-label="Homepage hero"
     [style.height]="fsHeroHeightStyle"
   >
     <!-- Hero copy: single H1/subheading/CTA sourced from first slider item -->
@@ -165,6 +166,7 @@
       <section
         *ngIf="segment.image_list?.length"
         class="dynamic-height primary-section home-slider"
+        aria-label="Homepage slider"
         [style.height]="fsHeroHeightStyle"
       >
         <div
@@ -370,7 +372,7 @@
     <!-- #Main Slider -->
 
     <!-- About Segment -->
-    <section *ngIf="i == 1" class="primary-section">
+    <section *ngIf="i == 1" class="primary-section" aria-labelledby="home-about-title">
       <div class="container">
         <div class="row">
           <div class="col-md-12 about-section">
@@ -385,7 +387,7 @@
               <!-- <h2>30 Years of Timeless Excellence, Where Every Saree Is Truly Unique</h2>
               <p>For over 30 years, Tulsi Silks has been weaving tradition into every saree, with each uniquely handcrafted piece reflecting a legacy of timeless elegance and unmatched craftsmanship</p>               
               <button routerLink="/about-us" class="primary-btn mt-3">Learn More</button> -->
-              <h2>Draped in Legacy Since 1993</h2>
+              <h2 id="home-about-title">Draped in Legacy Since 1993</h2>
               <p>
                 What began with a deep understanding of textiles has grown into
                 a name trusted across generations, bringing together heritage
@@ -407,13 +409,15 @@
       <section
         *ngIf="segment.type == 'section' && segment.image_list?.length"
         class="grid-categories grid-sec-margin primary-section"
+        [attr.aria-labelledby]="segment?.heading ? 'home-' + segment.type + '-title-' + i : null"
+        [attr.aria-label]="segment?.heading ? null : 'Homepage section'"
         [ngClass]="i > 1 ? 'wow fadeInUp' : null"
       >
         <div class="page-width">
           <div class="row">
             <div *ngIf="segment?.heading" class="col-12 px-0">
               <div class="titles custom-title w-auto">
-                <h2>{{ segment.heading }}</h2>
+                <h2 [attr.id]="'home-' + segment.type + '-title-' + i">{{ segment.heading }}</h2>
                 <p
                   class="mb-0"
                   *ngIf="segment.sub_heading"
@@ -652,13 +656,15 @@
         segment.image_list?.length >= swiperService.featured_section?.card_count
       "
       class="primary-section feature-sec-margin feature-slide-sec"
+      [attr.aria-labelledby]="segment.heading ? 'home-' + segment.type + '-title-' + i : null"
+      [attr.aria-label]="segment.heading ? null : 'Featured sections'"
       [ngClass]="i > 1 ? 'wow fadeInUp' : null"
     >
       <div class="container-fluid">
         <div class="row">
           <div *ngIf="segment.heading" class="col-12 px-0 swipe_arrow">
             <div class="titles custom-title">
-              <h2>{{ segment.heading }}</h2>
+              <h2 [attr.id]="'home-' + segment.type + '-title-' + i">{{ segment.heading }}</h2>
               <p
                 *ngIf="segment.sub_heading"
                 [innerHTML]="segment.sub_heading"
@@ -791,6 +797,8 @@
           swiperService.featured_products?.card_count
       "
       class="primary-section product__slider feature-sec-margin"
+      [attr.aria-labelledby]="segment.heading ? 'home-' + segment.type + '-title-' + i : null"
+      [attr.aria-label]="segment.heading ? null : 'Featured products'"
       [ngClass]="{
         'background-grey': i === 2 || i === 4,
         'wow fadeInUp': i > 1,
@@ -817,7 +825,7 @@
               class="titles custom-title w-auto"
               [ngClass]="segment.blogs_type == 'grid' ? 'pl-0' : ''"
             >
-              <h2>{{ segment.heading }}</h2>
+              <h2 [attr.id]="'home-' + segment.type + '-title-' + i">{{ segment.heading }}</h2>
               <p
                 *ngIf="segment.sub_heading"
                 [innerHTML]="segment.sub_heading"
@@ -867,7 +875,7 @@
                 class="titles custom-title w-auto"
                 [ngClass]="segment.blogs_type == 'grid' ? 'pl-0' : ''"
               >
-                <h2>{{ segment.heading }}</h2>
+                <h2 [attr.id]="'home-' + segment.type + '-title-' + i">{{ segment.heading }}</h2>
                 <p
                   *ngIf="segment.sub_heading"
                   [innerHTML]="segment.sub_heading"
@@ -1150,7 +1158,7 @@
               class="titles custom-title w-auto"
               [ngClass]="segment.blogs_type == 'grid' ? 'pl-0' : ''"
             >
-              <h2>{{ segment.heading }}</h2>
+              <h2 [attr.id]="'home-' + segment.type + '-title-' + i">{{ segment.heading }}</h2>
               <p
                 *ngIf="segment.sub_heading"
                 [innerHTML]="segment.sub_heading"
@@ -1347,6 +1355,8 @@
         segment.multitab_list?.length
       "
       class="primary-section feature-sec-margin multi-tab-featured"
+      [attr.aria-labelledby]="segment.heading ? 'home-' + segment.type + '-title-' + i : null"
+      [attr.aria-label]="segment.heading ? null : 'Featured products tabs'"
       [ngClass]="i > 1 ? 'wow fadeInUp' : null"
     >
       <div class="container-fluid">
@@ -1360,7 +1370,7 @@
                 *ngIf="segment.sub_heading"
                 [innerHTML]="segment.sub_heading"
               ></p>
-              <h2 class="mb-0 mt-2">{{ segment.heading }}</h2>
+              <h2 class="mb-0 mt-2" [attr.id]="'home-' + segment.type + '-title-' + i">{{ segment.heading }}</h2>
             </div>
             <div
               *ngIf="commonService?.screen_width >= 992"
@@ -1794,6 +1804,8 @@
         segment.multitab_list?.length
       "
       class="primary-section feature-sec-margin multi-tab-featured"
+      [attr.aria-labelledby]="segment.heading ? 'home-' + segment.type + '-title-' + i : null"
+      [attr.aria-label]="segment.heading ? null : 'Featured sections tabs'"
       [ngClass]="i > 1 ? 'wow fadeInUp' : null"
     >
       <div class="container-fluid">
@@ -1807,7 +1819,7 @@
                 *ngIf="segment.sub_heading"
                 [innerHTML]="segment.sub_heading"
               ></p>
-              <h2 class="mb-0 mt-2">{{ segment.heading }}</h2>
+              <h2 class="mb-0 mt-2" [attr.id]="'home-' + segment.type + '-title-' + i">{{ segment.heading }}</h2>
             </div>
           </div>
           <div class="col-12 px-0">
@@ -1941,6 +1953,8 @@
         segment.type == 'highlighted_section' && segment.image_list?.length
       "
       class="primary-section highlight-sec-margin single-highlighted-sec highlighted-sec"
+      [attr.aria-labelledby]="segment.heading ? 'home-' + segment.type + '-title-' + i : null"
+      [attr.aria-label]="segment.heading ? null : 'Highlighted section'"
       [ngClass]="i > 1 ? 'wow fadeInUp' : null"
     >
       <div class="container">
@@ -1991,7 +2005,7 @@
                 *ngIf="segment.heading"
                 class="landing-highlighted-text d-flex flex-column text-left"
               >
-                <h2>{{ segment.heading }}</h2>
+                <h2 [attr.id]="'home-' + segment.type + '-title-' + i">{{ segment.heading }}</h2>
                 <p
                   class="subtitle des__right"
                   *ngIf="segment.image_list[0].position == 'right'"
@@ -2029,13 +2043,15 @@
         segment.image_list?.length
       "
       class="primary-section highlight-sec-margin highlighted-sec slider-highlighted-sec"
+      [attr.aria-labelledby]="segment.heading ? 'home-' + segment.type + '-title-' + i : null"
+      [attr.aria-label]="segment.heading ? null : 'Highlighted slider'"
       [ngClass]="i > 1 ? 'wow fadeInUp' : null"
     >
       <div class="{{ template_setting?.body_type }}">
         <div class="row">
           <div *ngIf="segment.heading" class="col-12">
             <div class="titles">
-              <h2>{{ segment.heading }}</h2>
+              <h2 [attr.id]="'home-' + segment.type + '-title-' + i">{{ segment.heading }}</h2>
               <p
                 *ngIf="segment.sub_heading"
                 [innerHTML]="segment.sub_heading"
@@ -2144,6 +2160,8 @@
     <section
       *ngIf="segment.type == 'secondary' && segment.image_list?.length"
       class="primary-section"
+      [attr.aria-labelledby]="segment.image_list?.[0]?.content_details?.heading ? 'home-' + segment.type + '-title-' + i : null"
+      [attr.aria-label]="segment.image_list?.[0]?.content_details?.heading ? null : 'Promotional banner'"
       [ngClass]="i > 1 ? 'wow fadeInUp' : null"
     >
       <div class="container">
@@ -2161,7 +2179,7 @@
                 <div
                   class="d-flex flex-column justify-content-center align-items-start h-100"
                 >
-                  <h2>{{ segment.image_list[0].content_details?.heading }}</h2>
+                  <h2 [attr.id]="'home-' + segment.type + '-title-' + i">{{ segment.image_list[0].content_details?.heading }}</h2>
                   <p
                     *ngIf="segment.image_list[0].content_details?.sub_heading"
                     [innerHTML]="
@@ -2213,6 +2231,8 @@
         segment.image_list?.length >= swiperService.testimonial?.card_count
       "
       class="primary-section testimonial-sec feature-slide-sec"
+      [attr.aria-labelledby]="segment.heading ? 'home-' + segment.type + '-title-' + i : null"
+      [attr.aria-label]="segment.heading ? null : 'Testimonials'"
       [ngClass]="i > 1 ? 'wow fadeInUp' : null"
     >
       <div class="container-fluid max-width-full parent-testi">
@@ -2222,7 +2242,7 @@
             class="col-md-5 px-0 d-flex justify-content-start align-items-start"
           >
             <div class="titles custom-title w-auto">
-              <h2>{{ segment.heading }}</h2>
+              <h2 [attr.id]="'home-' + segment.type + '-title-' + i">{{ segment.heading }}</h2>
               <p
                 *ngIf="segment.sub_heading"
                 [innerHTML]="segment.sub_heading"
@@ -2333,6 +2353,8 @@
     <section
       *ngIf="segment.type == 'blogs' && segment.image_list?.length"
       class="primary-section news"
+      [attr.aria-labelledby]="segment.heading ? 'home-' + segment.type + '-title-' + i : null"
+      [attr.aria-label]="segment.heading ? null : 'Blog posts'"
       [ngClass]="i > 1 ? 'wow fadeInUp' : null"
     >
       <div class="container-fluid">
@@ -2342,7 +2364,7 @@
             class="col-12 px-0 d-flex justify-content-between align-items-end"
           >
             <div class="titles custom-title w-auto pl-0">
-              <h2>{{ segment.heading }}</h2>
+              <h2 [attr.id]="'home-' + segment.type + '-title-' + i">{{ segment.heading }}</h2>
               <p
                 *ngIf="segment.sub_heading"
                 [innerHTML]="segment.sub_heading"
@@ -2501,6 +2523,8 @@
         commonService.ai_styles.length
       "
       class="primary-section ai-styling"
+      [attr.aria-labelledby]="segment.heading ? 'home-' + segment.type + '-title-' + i : null"
+      [attr.aria-label]="segment.heading ? null : 'Shopping assistant'"
     >
       <div class="{{ template_setting?.body_type }}">
         <div class="row">
@@ -2540,7 +2564,7 @@
                 *ngIf="segment.sub_heading"
                 [innerHTML]="segment.sub_heading"
               ></p>
-              <h2 class="mb-3" *ngIf="segment.heading">
+              <h2 class="mb-3" *ngIf="segment.heading" [attr.id]="'home-' + segment.type + '-title-' + i">
                 {{ segment.heading }}
               </h2>
               <p
@@ -2552,6 +2576,7 @@
               <section
                 *ngIf="segment.shopping_assistant_config.changing_text.length"
                 class="rw-wrapper mb-3"
+                aria-label="Shopping assistant prompts"
               >
                 <h2 class="rw-sentence">
                   <div class="rw-words rw-words-1">
@@ -2611,13 +2636,15 @@
         segment.image_list?.length
       "
       class="primary-section shop-the-look-sec"
+      [attr.aria-labelledby]="segment.heading ? 'home-' + segment.type + '-title-' + i : null"
+      [attr.aria-label]="segment.heading ? null : 'Shop the look'"
       [ngClass]="i > 1 ? 'wow fadeInUp' : null"
     >
       <div class="{{ template_setting?.body_type }}">
         <div class="row">
           <div *ngIf="segment.heading" class="col-12">
             <div class="titles">
-              <h2>{{ segment.heading }}</h2>
+              <h2 [attr.id]="'home-' + segment.type + '-title-' + i">{{ segment.heading }}</h2>
               <p
                 *ngIf="segment.sub_heading"
                 [innerHTML]="segment.sub_heading"
@@ -2695,13 +2722,15 @@
     <section
       *ngIf="segment.type == 'video_section' && plyrLoaded"
       class="primary-section home-video-sec"
+      [attr.aria-labelledby]="segment.heading ? 'home-' + segment.type + '-title-' + i : null"
+      [attr.aria-label]="segment.heading ? null : 'Video'"
       [ngClass]="i > 1 ? 'wow fadeInUp' : null"
     >
       <div class="{{ template_setting?.body_type }}">
         <div class="row">
           <div *ngIf="segment.heading" class="col-12">
             <div class="titles">
-              <h2>{{ segment.heading }}</h2>
+              <h2 [attr.id]="'home-' + segment.type + '-title-' + i">{{ segment.heading }}</h2>
               <p
                 *ngIf="segment.sub_heading"
                 [innerHTML]="segment.sub_heading"
@@ -2809,12 +2838,12 @@
   <!-- #seo links -->
 </section>
 
-<section class="primary-section location">
+<section class="primary-section location" aria-labelledby="home-location-title">
   <div class="container">
     <div class="row">
       <div class="col-12 px-0 d-flex justify-content-center align-items-center">
         <div class="titles">
-          <h2>Visit Our Store</h2>
+          <h2 id="home-location-title">Visit Our Store</h2>
           <p class="mb-0">Walk into a world of heritage, silk, and style</p>
         </div>
       </div>
