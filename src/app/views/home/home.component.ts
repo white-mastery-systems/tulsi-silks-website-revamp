@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterViewInit, OnDestroy, Inject, PLATFORM_ID, DOCUMENT } from '@angular/core';
+import { Component, OnInit, AfterViewInit, OnDestroy, Inject, PLATFORM_ID, DOCUMENT, ElementRef, QueryList, ViewChildren } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
@@ -57,6 +57,151 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     }, 150);
   };
   currType: string; activeIndex = 0;
+
+  /** ARIA tabs state for the "Shop by Occasion" homepage block. */
+  occasionActiveIndex = 0;
+
+  @ViewChildren('occasionTab') private occasionTabEls!: QueryList<ElementRef<HTMLElement>>;
+
+  @ViewChildren('mtfpTab') private mtfpTabEls!: QueryList<ElementRef<HTMLElement>>;
+
+  private slugify(name: unknown): string {
+    const raw = typeof name === 'string' ? name : '';
+    const slug = raw
+      .trim()
+      .toLowerCase()
+      .replace(/&/g, 'and')
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '');
+    return slug || 'tab';
+  }
+
+  getOccasionTabId(name: unknown): string {
+    return `home-occasion-tab-${this.slugify(name)}`;
+  }
+
+  getOccasionPanelId(name: unknown): string {
+    return `home-occasion-panel-${this.slugify(name)}`;
+  }
+
+  setOccasionActiveIndex(next: number): void {
+    const tabs = this.occasionTabEls?.toArray() ?? [];
+    const max = Math.max(0, tabs.length - 1);
+    const clamped = Number.isFinite(next) ? Math.min(Math.max(0, next), max) : 0;
+    this.occasionActiveIndex = clamped;
+    // Keep focus on the active tab after activation (Enter/Space/click).
+    setTimeout(() => this.focusOccasionTab(clamped));
+  }
+
+  private focusOccasionTab(index: number): void {
+    const el = this.occasionTabEls?.toArray()?.[index]?.nativeElement;
+    if (el && typeof (el as any).focus === 'function') {
+      el.focus();
+    }
+  }
+
+  onOccasionTabKeydown(event: KeyboardEvent, index: number, count: number): void {
+    const key = event.key;
+    if (!count || count < 1) return;
+
+    const last = count - 1;
+    const nextIndex = (n: number) => (n + count) % count;
+
+    switch (key) {
+      case 'ArrowRight':
+      case 'Right': // legacy
+        event.preventDefault();
+        this.focusOccasionTab(nextIndex(index + 1));
+        return;
+      case 'ArrowLeft':
+      case 'Left': // legacy
+        event.preventDefault();
+        this.focusOccasionTab(nextIndex(index - 1));
+        return;
+      case 'Home':
+        event.preventDefault();
+        this.focusOccasionTab(0);
+        return;
+      case 'End':
+        event.preventDefault();
+        this.focusOccasionTab(last);
+        return;
+      case 'Enter':
+      case ' ':
+      case 'Spacebar': // legacy
+        event.preventDefault();
+        this.setOccasionActiveIndex(index);
+        return;
+      default:
+        return;
+    }
+  }
+
+  /** Tabs data for "Multi-tab Featured Products" section. */
+  getMtfpTabs(segment: any): any[] {
+    const list = Array.isArray(segment?.multitab_list) ? segment.multitab_list : [];
+    const min = this.swiperService?.multi_tab_featured_products?.card_count ?? 0;
+    return list.filter((t: any) => (t?.product_list?.length ?? 0) >= min);
+  }
+
+  getMtfpTabId(sectionIndex: number, tabName: unknown): string {
+    return `home-mtfp-tab-${sectionIndex}-${this.slugify(tabName)}`;
+  }
+
+  getMtfpPanelId(sectionIndex: number, tabName: unknown): string {
+    return `home-mtfp-panel-${sectionIndex}-${this.slugify(tabName)}`;
+  }
+
+  setMtfpActiveIndex(next: number, count: number): void {
+    const max = Math.max(0, (count ?? 0) - 1);
+    const clamped = Number.isFinite(next) ? Math.min(Math.max(0, next), max) : 0;
+    this.activeIndex = clamped;
+    setTimeout(() => this.focusMtfpTab(clamped));
+  }
+
+  private focusMtfpTab(index: number): void {
+    const el = this.mtfpTabEls?.toArray()?.[index]?.nativeElement;
+    if (el && typeof (el as any).focus === 'function') {
+      el.focus();
+    }
+  }
+
+  onMtfpTabKeydown(event: KeyboardEvent, index: number, count: number): void {
+    const key = event.key;
+    if (!count || count < 1) return;
+
+    const last = count - 1;
+    const nextIndex = (n: number) => (n + count) % count;
+
+    switch (key) {
+      case 'ArrowRight':
+      case 'Right':
+        event.preventDefault();
+        this.focusMtfpTab(nextIndex(index + 1));
+        return;
+      case 'ArrowLeft':
+      case 'Left':
+        event.preventDefault();
+        this.focusMtfpTab(nextIndex(index - 1));
+        return;
+      case 'Home':
+        event.preventDefault();
+        this.focusMtfpTab(0);
+        return;
+      case 'End':
+        event.preventDefault();
+        this.focusMtfpTab(last);
+        return;
+      case 'Enter':
+      case ' ':
+      case 'Spacebar':
+        event.preventDefault();
+        this.setMtfpActiveIndex(index, count);
+        return;
+      default:
+        return;
+    }
+  }
 
   /** Visible H1 copy from store SEO (fallback: store name, then “Home”). */
   get homeMainHeading(): string {

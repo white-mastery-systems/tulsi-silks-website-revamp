@@ -1377,10 +1377,10 @@
               class="cursor d-flex justify-content-center align-items-center"
             >
               <ng-container
-                *ngFor="let tab of segment.multitab_list; let j = index"
+                *ngFor="let tab of getMtfpTabs(segment); let j = index"
               >
                 <button
-                  *ngIf="tab.activeIndex === j"
+                  *ngIf="activeIndex === j"
                   class="primary-btn outline-btn"
                   (click)="exploreAll(tab)"
                   type="button"
@@ -1392,37 +1392,56 @@
           </div>
           <div class="col-12 px-0">
             <div class="tabs">
-              <tabset>
-                <ng-container
-                  *ngFor="let tab of segment.multitab_list; let j = index"
+              <!-- Accessible ARIA tabs (Multi-tab Featured Products). -->
+              <ul class="nav nav-tabs" role="tablist">
+                <li
+                  *ngFor="let tab of getMtfpTabs(segment); let j = index"
+                  role="presentation"
+                  [class.active]="activeIndex === j"
                 >
-                  <tab
-                    *ngIf="
-                      tab?.product_list?.length >=
-                      swiperService.multi_tab_featured_products?.card_count
-                    "
-                    heading="{{ tab?.name }}"
+                  <a
+                    #mtfpTab
+                    href="#"
+                    role="tab"
+                    [id]="getMtfpTabId(i, tab?.name)"
+                    [attr.aria-controls]="getMtfpPanelId(i, tab?.name)"
+                    [attr.aria-selected]="activeIndex === j"
+                    [attr.tabindex]="activeIndex === j ? 0 : -1"
+                    [class.active]="activeIndex === j"
+                    (click)="$event.preventDefault(); setMtfpActiveIndex(j, getMtfpTabs(segment).length)"
+                    (keydown)="onMtfpTabKeydown($event, j, getMtfpTabs(segment).length)"
                   >
-                    <!-- slider -->
-                    <div
-                      *ngIf="
-                        tab.blogs_type == 'slider' &&
-                        tab?.product_list?.length >=
-                          swiperService.multi_tab_featured_products?.card_count
-                      "
-                      class="swiper-container multi-slider product-slider px-max"
-                      [ngClass]="
-                        commonService.desktop_device
-                          ? 'desktoptabslider_' + (i + 1) + (j + 1)
-                          : 'tabslider_' + (i + 1) + (j + 1)
-                      "
-                      appHomeSwiper
-                    >
-                      <div class="swiper-wrapper">
-                        <div
-                          *ngFor="let x of tab.product_list; let k = index"
-                          class="swiper-slide p-0"
-                        >
+                    <span>{{ tab?.name }}</span>
+                  </a>
+                </li>
+              </ul>
+
+              <div class="tab-content">
+                <div
+                  *ngFor="let tab of getMtfpTabs(segment); let j = index"
+                  class="tab-pane"
+                  role="tabpanel"
+                  [id]="getMtfpPanelId(i, tab?.name)"
+                  [attr.aria-labelledby]="getMtfpTabId(i, tab?.name)"
+                  [hidden]="activeIndex !== j"
+                  [class.active]="activeIndex === j"
+                >
+                  <!-- slider -->
+                  <div
+                    *ngIf="tab.blogs_type == 'slider'"
+                    class="swiper-container multi-slider product-slider px-max"
+                    [ngClass]="
+                      commonService.desktop_device
+                        ? 'desktoptabslider_' + (i + 1) + (j + 1)
+                        : 'tabslider_' + (i + 1) + (j + 1)
+                    "
+                    appHomeSwiper
+                  >
+                    <div class="swiper-wrapper">
+                      <div
+                        *ngFor="let x of tab.product_list; let k = index"
+                        class="swiper-slide p-0"
+                      >
                           <!--Wishlist icon-->
                           <div class="product_labellist wishlist-main">
                             <span
@@ -1614,24 +1633,25 @@
                         ></div>
                       </ng-container>
                     </div>
-                    <!-- grid -->
+
+                  <!-- grid -->
+                  <div
+                    *ngIf="tab.blogs_type == 'grid'"
+                    class="row d-flex flex-wrap align-items-stretch"
+                    style="margin-left: -7px; margin-right: -7px"
+                  >
                     <div
-                      *ngIf="tab.blogs_type == 'grid'"
-                      class="row d-flex flex-wrap align-items-stretch"
-                      style="margin-left: -7px; margin-right: -7px"
+                      *ngFor="
+                        let x of tab.product_list | slice: 0 : 4;
+                        let j = index
+                      "
+                      class="col-md-3 px-0 col-6 feature-grid"
                     >
                       <div
-                        *ngFor="
-                          let x of tab.product_list | slice: 0 : 4;
-                          let j = index
-                        "
-                        class="col-md-3 px-0 col-6 feature-grid"
+                        appMouseHover
+                        class="product-box cursor h-100 d-flex flex-column"
+                        [ngClass]="template_setting?.p_card ? '' : ''"
                       >
-                        <div
-                          appMouseHover
-                          class="product-box cursor h-100 d-flex flex-column"
-                          [ngClass]="template_setting?.p_card ? '' : ''"
-                        >
                           <!--Wishlist icon-->
                           <div class="product_labellist wishlist-main">
                             <span
@@ -1787,9 +1807,8 @@
                         </div>
                       </div>
                     </div>
-                  </tab>
-                </ng-container>
-              </tabset>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -1824,11 +1843,41 @@
           </div>
           <div class="col-12 px-0">
             <div class="tabs">
-              <tabset>
-                <ng-container
-                  *ngFor="let tab of segment.multitab_list; let j = index"
-                >
-                  <tab heading="{{ tab?.name }}">
+              <!-- Accessible ARIA tabs (Shop by Occasion). -->
+              <ng-container *ngIf="segment?.heading === 'Shop by Occasion'; else defaultTabset">
+                <ul class="nav nav-tabs" role="tablist">
+                  <li
+                    *ngFor="let tab of segment.multitab_list; let j = index"
+                    role="presentation"
+                    [class.active]="occasionActiveIndex === j"
+                  >
+                    <a
+                      #occasionTab
+                      href="#"
+                      role="tab"
+                      [id]="getOccasionTabId(tab?.name)"
+                      [attr.aria-controls]="getOccasionPanelId(tab?.name)"
+                      [attr.aria-selected]="occasionActiveIndex === j"
+                      [attr.tabindex]="occasionActiveIndex === j ? 0 : -1"
+                      [class.active]="occasionActiveIndex === j"
+                      (click)="$event.preventDefault(); setOccasionActiveIndex(j)"
+                      (keydown)="onOccasionTabKeydown($event, j, segment.multitab_list.length)"
+                    >
+                      <span>{{ tab?.name }}</span>
+                    </a>
+                  </li>
+                </ul>
+
+                <div class="tab-content">
+                  <div
+                    *ngFor="let tab of segment.multitab_list; let j = index"
+                    class="tab-pane"
+                    role="tabpanel"
+                    [id]="getOccasionPanelId(tab?.name)"
+                    [attr.aria-labelledby]="getOccasionTabId(tab?.name)"
+                    [hidden]="occasionActiveIndex !== j"
+                    [class.active]="occasionActiveIndex === j"
+                  >
                     <div
                       style="position: unset"
                       class="swiper-container swipe_arrow featured-sections multi-slider product-slider px-max"
@@ -1937,9 +1986,128 @@
                         </div>
                       </ng-container>
                     </div>
-                  </tab>
-                </ng-container>
-              </tabset>
+                  </div>
+                </div>
+              </ng-container>
+
+              <ng-template #defaultTabset>
+                <tabset>
+                  <ng-container
+                    *ngFor="let tab of segment.multitab_list; let j = index"
+                  >
+                    <tab heading="{{ tab?.name }}">
+                      <div
+                        style="position: unset"
+                        class="swiper-container swipe_arrow featured-sections multi-slider product-slider px-max"
+                        [ngClass]="
+                          commonService.desktop_device
+                            ? 'desktoptabslider_' + (i + 1) + (j + 1)
+                            : 'tabslider_' + (i + 1) + (j + 1)
+                        "
+                        appHomeSwiper
+                      >
+                        <div class="swiper-wrapper">
+                          <div
+                            *ngFor="let x of tab.image_list; let k = index"
+                            class="swiper-slide p-0"
+                          >
+                            <div class="product-box cursor h-100 p-0">
+                              <a
+                                (click)="commonService.onPageRedirect(x)"
+                                class="prod-div h-100"
+                              >
+                                <figure class="mb-0">
+                                  <img
+                                    loading="lazy"
+                                    width="100%"
+                                    height="100%"
+                                    appLqimgLoad
+                                    appDeferLoad
+                                    [ImagelazyLoad]="imgBaseUrl + x.desktop_img"
+                                    alt="{{ x.img_alt ? x.img_alt : 'Image' }}"
+                                  />
+                                  <div
+                                    *ngIf="
+                                      x?.content_status &&
+                                      x?.content_details?.heading
+                                    "
+                                    class="category-grid-text d-flex"
+                                    [ngClass]="{
+                                      'align-items-start':
+                                        x?.position == 't_l' ||
+                                        x?.position == 't_c' ||
+                                        x?.position == 't_r',
+                                      'align-items-center':
+                                        x?.position == 'm_l' ||
+                                        x?.position == 'm_c' ||
+                                        x?.position == 'm_r',
+                                      'align-items-end':
+                                        x?.position == 'b_l' ||
+                                        x?.position == 'b_c' ||
+                                        x?.position == 'b_r',
+                                      'justify-content-start':
+                                        x?.position == 't_l' ||
+                                        x?.position == 'm_l' ||
+                                        x?.position == 'b_l',
+                                      'justify-content-center':
+                                        x?.position == 't_c' ||
+                                        x?.position == 'm_c' ||
+                                        x?.position == 'b_c',
+                                      'justify-content-end':
+                                        x?.position == 't_r' ||
+                                        x?.position == 'm_r' ||
+                                        x?.position == 'b_r',
+                                      'text-left':
+                                        x?.position != 't_c' &&
+                                        x?.position != 'm_c' &&
+                                        x?.position != 'b_c',
+                                    }"
+                                  >
+                                    <p
+                                      class="mb-0"
+                                      [ngClass]="
+                                        x?.content_details?.text_color == 'dark'
+                                          ? 'text-dark'
+                                          : 'text-light'
+                                      "
+                                    >
+                                      {{ x.content_details.heading }}
+                                    </p>
+                                  </div>
+                                </figure>
+                              </a>
+                            </div>
+                          </div>
+                        </div>
+                        <ng-container *ngIf="commonService?.screen_width >= 992">
+                          <div
+                            id="swipe_next_{{ i + 1 }}{{ j + 1 }}"
+                            class="swiper-button swiper-button-next"
+                          >
+                            <lucide-icon
+                              name="chevron-right"
+                              [size]="20"
+                              stroke="1"
+                              color="black"
+                            ></lucide-icon>
+                          </div>
+                          <div
+                            id="swipe_prev_{{ i + 1 }}{{ j + 1 }}"
+                            class="swiper-button swiper-button-prev"
+                          >
+                            <lucide-icon
+                              name="chevron-left"
+                              [size]="20"
+                              stroke="1"
+                              color="black"
+                            ></lucide-icon>
+                          </div>
+                        </ng-container>
+                      </div>
+                    </tab>
+                  </ng-container>
+                </tabset>
+              </ng-template>
             </div>
           </div>
         </div>
