@@ -95,11 +95,19 @@
         <!-- address  &&  contact -->
         <div class="col-lg-3 col-md-4">
           <div>
-            <h6 *ngIf="commonService.footer_config.address_config?.title" class="footer-title" [innerHtml]="commonService.footer_config.address_config.title"></h6>
+            <p
+              *ngIf="commonService.footer_config.address_config?.title"
+              class="footer-label"
+              [innerHtml]="commonService.footer_config.address_config.title"
+            ></p>
             <p *ngIf="commonService.footer_config.address_config?.content" [innerHtml]="commonService.footer_config.address_config.content"></p>
           </div>
           <div class="mt-4">          
-            <h6 *ngIf="commonService.footer_config.contact_config?.title" class="footer-title" [innerHtml]="commonService.footer_config.contact_config.title"></h6>
+            <p
+              *ngIf="commonService.footer_config.contact_config?.title"
+              class="footer-label"
+              [innerHtml]="commonService.footer_config.contact_config.title"
+            ></p>
             <p *ngIf="commonService.footer_config.contact_config?.content" [innerHtml]="commonService.footer_config.contact_config.content"></p>
           </div>
         </div>
