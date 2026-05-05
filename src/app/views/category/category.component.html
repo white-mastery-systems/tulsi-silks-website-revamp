@@ -157,7 +157,7 @@
                       <div class="card-body">
                         <h3>{{ x.heading }}</h3>
                         <p *ngIf="x.sub_heading">{{x.sub_heading}}</p>
-                        <button class="view-all">View All</button>
+                        <button class="view-all" [attr.aria-label]="'View all ' + x.heading">View All</button>
                       </div>
                     </div>
                   </div>
@@ -184,7 +184,7 @@
                         <div class="card-body">
                           <h3>{{ x.heading }}</h3>
                           <p *ngIf="x.sub_heading">{{x.sub_heading}}</p>
-                          <button class="view-all">View All</button>
+                          <button class="view-all" [attr.aria-label]="'View all ' + x.heading">View All</button>
                         </div>
                       </div>  
                     </div>
@@ -222,7 +222,7 @@
                       <p *ngIf="x.sub_heading">{{x.sub_heading}}</p>
                     </div>
                     <div class="pt-2">
-                      <button class="view-all" style="margin-top:auto">View All</button>
+                      <button class="view-all" style="margin-top:auto" [attr.aria-label]="'View all ' + x.heading">View All</button>
                     </div>
                   </div>
                 </div>

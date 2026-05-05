@@ -91,6 +91,7 @@
             *ngIf="firstSlide?.btn_status && firstSlide?.btn_text"
             (click)="commonService.onPageRedirect(firstSlide)"
             class="primary-btn"
+            [attr.aria-label]="firstSlide?.btn_text ? (firstSlide.btn_text + (firstSlide?.content_details?.heading ? ' — ' + firstSlide.content_details.heading : '')) : null"
           >
             {{ firstSlide.btn_text }}
           </button>
@@ -262,6 +263,7 @@
                       *ngIf="x?.btn_status && x?.btn_text"
                       (click)="commonService.onPageRedirect(x)"
                       class="primary-btn"
+                      [attr.aria-label]="x?.btn_text ? (x.btn_text + (x?.content_details?.heading ? ' — ' + x.content_details.heading : '')) : null"
                     >
                       {{ x.btn_text }}
                     </button>
@@ -340,6 +342,7 @@
                       *ngIf="x?.btn_status && x?.btn_text"
                       (click)="commonService.onPageRedirect(x)"
                       class="primary-btn"
+                      [attr.aria-label]="x?.btn_text ? (x.btn_text + (x?.content_details?.heading ? ' — ' + x.content_details.heading : '')) : null"
                     >
                       {{ x.btn_text }}
                     </button>
@@ -394,7 +397,7 @@
                 weaves, evolving styles, and a way of service that feels
                 personal.
               </p>
-              <button routerLink="/about-us" class="primary-btn mt-3">
+              <button routerLink="/about-us" class="primary-btn mt-3" aria-label="Read our story">
                 Our Story
               </button>
             </div>
@@ -473,7 +476,7 @@
                               : 'Customer testimonial'
                         }}"
                       />
-                      <!-- <div *ngIf="x?.content_status && x?.content_details?.heading" class="category-grid-text d-flex flex-column" [ngClass]="{
+                      <!-- <div *ngIf="x?.content_status && x?.content_details?.heading" class="category-grid-text d-flex flex-column" [ngClass]={
                         'align-items-start': x?.position=='t_l' || x?.position=='t_c' || x?.position=='t_r',
                         'align-items-center': x?.position=='m_l' || x?.position=='m_c' || x?.position=='m_r',
                         'align-items-end': x?.position=='b_l' || x?.position=='b_c' || x?.position=='b_r',
@@ -483,7 +486,7 @@
                         'text-left': x?.position!='t_c' && x?.position!='m_c' && x?.position!='b_c'
                       }">
                         <p class="m-3" [ngClass]="(x?.content_details?.text_color=='dark')? 'text-dark': 'text-light'">{{ x.content_details.heading }}</p>
-                        <button class="primary-btn">Shop Now</button>
+                        <button class="primary-btn" aria-label="Shop now">Shop Now</button>
                       </div> -->
                       <div class="category-grid-text">
                         <div class="inner-content">
@@ -504,6 +507,7 @@
                             <button
                               routerLink="/sections/by-fabrics"
                               class="primary-btn"
+                              aria-label="Shop fabrics"
                             >
                               Shop Now
                             </button>
@@ -516,6 +520,7 @@
                             <button
                               routerLink="/sections/by-crafts"
                               class="primary-btn"
+                              aria-label="Shop crafts"
                             >
                               Shop Now
                             </button>
@@ -849,6 +854,7 @@
                 class="primary-btn"
                 (click)="exploreAll(segment)"
                 type="button"
+                [attr.aria-label]="segment?.heading ? ('View all — ' + segment.heading) : 'View all'"
               >
                 View All
               </button>
@@ -864,6 +870,7 @@
                 class="primary-btn outline-btn"
                 (click)="exploreAll(segment)"
                 type="button"
+                [attr.aria-label]="segment?.heading ? ('View all — ' + segment.heading) : 'View all'"
               >
                 View All
               </button>
@@ -895,6 +902,7 @@
                   class="primary-btn outline-btn"
                   (click)="exploreAll(segment)"
                   type="button"
+                  [attr.aria-label]="segment?.heading ? ('View all — ' + segment.heading) : 'View all'"
                 >
                   View All
                 </button>
@@ -1390,6 +1398,7 @@
                   class="primary-btn outline-btn"
                   (click)="exploreAll(tab)"
                   type="button"
+                  [attr.aria-label]="tab?.name ? ('View all — ' + tab.name) : 'View all'"
                 >
                   View All
                 </button>
@@ -1622,6 +1631,7 @@
                               class="primary-btn"
                               (click)="exploreAll(tab)"
                               type="button"
+                              [attr.aria-label]="tab?.name ? ('View all — ' + tab.name) : 'View all'"
                             >
                               View All
                             </button>
@@ -2200,6 +2210,7 @@
                 "
                 (click)="commonService.onPageRedirect(segment.image_list[0])"
                 class="primary-btn"
+                [attr.aria-label]="segment.image_list?.[0]?.btn_text ? (segment.image_list[0].btn_text + (segment?.heading ? ' — ' + segment.heading : '')) : null"
               >
                 {{ segment.image_list[0].btn_text }}
               </button>
@@ -2296,6 +2307,7 @@
                           *ngIf="x.link_status && x.btn_status && x.btn_text"
                           (click)="commonService.onPageRedirect(x)"
                           class="primary-btn"
+                          [attr.aria-label]="x?.btn_text ? (x.btn_text + (x?.content_details?.heading ? ' — ' + x.content_details.heading : '')) : null"
                         >
                           {{ x.btn_text }}
                         </button>
@@ -2365,6 +2377,7 @@
                     (click)="
                       commonService.onPageRedirect(segment.image_list[0])
                     "
+                    [attr.aria-label]="segment.image_list?.[0]?.content_details?.heading ? ('Shop now — ' + segment.image_list[0].content_details.heading) : 'Shop now'"
                   >
                     Shop Now
                   </button>
@@ -2555,6 +2568,7 @@
                 class="primary-btn outline-btn"
                 routerLink="/blogs"
                 type="button"
+                aria-label="View all blog posts"
               >
                 View All
               </button>
@@ -2591,7 +2605,11 @@
                       />
                     </a>
                     <figcaption>
-                      <small>{{ x.created_on | date: "MMM dd, yyyy" }}</small>
+                      <time
+                        class="article-date"
+                        [attr.datetime]="x.created_on | date: 'yyyy-MM-dd'"
+                        >{{ x.created_on | date: "MMM dd, yyyy" }}</time
+                      >
                       <h3>
                         <a
                           routerLink="{{
@@ -2651,7 +2669,11 @@
                         />
                       </a>
                       <figcaption>
-                        <small>{{ x.created_on | date: "MMM dd, yyyy" }}</small>
+                        <time
+                          class="article-date"
+                          [attr.datetime]="x.created_on | date: 'yyyy-MM-dd'"
+                          >{{ x.created_on | date: "MMM dd, yyyy" }}</time
+                        >
                         <h3>
                           <a
                             routerLink="{{
@@ -2669,7 +2691,7 @@
                 <!-- view all -->
                 <!-- <div class="swiper-slide">
                   <div class="news-box p-3 d-flex justify-content-center align-items-center">
-                    <button class="primary-btn" type="button" routerLink="/blogs">View All</button>
+                    <button class="primary-btn" type="button" routerLink="/blogs" aria-label="View all blog posts">View All</button>
                   </div>
                 </div> -->
               </div>
@@ -3160,6 +3182,7 @@
             *ngIf="styleIndex == 0"
             (click)="styleModal.hide()"
             class="primary-btn"
+            aria-label="Close styling assistant"
           >
             Close
           </button>
@@ -3169,6 +3192,7 @@
               styleIndex = styleIndex - 1; commonService?.scrollModalTop(0)
             "
             class="primary-btn"
+            aria-label="Previous step"
           >
             Previous
           </button>
@@ -3181,6 +3205,7 @@
             "
             (click)="onStyleNext()"
             class="primary-btn"
+            aria-label="Next step"
           >
             Next
           </button>
@@ -3191,6 +3216,7 @@
             "
             (click)="styleModal.hide(); onStylingFilter()"
             class="primary-btn"
+            aria-label="Submit styling assistant"
           >
             Submit
           </button>
