@@ -63,44 +63,9 @@
     <ng-container *ngIf="commonService.primary_main_slider?.[0] as firstSlide">
       <div
         *ngIf="firstSlide?.content_status || firstSlide?.btn_status"
-        class="home-slider-text d-flex"
-        [ngClass]="{
-          'align-items-start':
-            firstSlide?.position == 't_l' ||
-            firstSlide?.position == 't_c' ||
-            firstSlide?.position == 't_r',
-          'align-items-center':
-            firstSlide?.position == 'm_l' ||
-            firstSlide?.position == 'm_c' ||
-            firstSlide?.position == 'm_r',
-          'align-items-end':
-            firstSlide?.position == 'b_l' ||
-            firstSlide?.position == 'b_c' ||
-            firstSlide?.position == 'b_r',
-          'justify-content-start text-left':
-            firstSlide?.position == 't_l' ||
-            firstSlide?.position == 'm_l' ||
-            firstSlide?.position == 'b_l',
-          'justify-content-center':
-            firstSlide?.position == 't_c' ||
-            firstSlide?.position == 'm_c' ||
-            firstSlide?.position == 'b_c',
-          'justify-content-end text-right':
-            firstSlide?.position == 't_r' ||
-            firstSlide?.position == 'm_r' ||
-            firstSlide?.position == 'b_r'
-        }"
+        class="home-slider-text hero-static-copy d-flex align-items-center justify-content-center text-center"
       >
-        <div
-          class="mr-2 ml-2 mt-2 mb-2"
-          [ngClass]="
-            firstSlide?.position == 'm_l' ||
-            firstSlide?.position == 'm_c' ||
-            firstSlide?.position == 'm_r'
-              ? 'mt--10'
-              : ''
-          "
-        >
+        <div class="hero-static-copy__inner">
           <h1
             *ngIf="firstSlide?.content_status && firstSlide?.content_details?.heading"
             class="home-slider-heading"
@@ -2027,16 +1992,17 @@
                 class="landing-highlighted-text d-flex flex-column text-left"
               >
                 <h2>{{ segment.heading }}</h2>
-                <h5
-                  class="des__right"
+                <p
+                  class="subtitle des__right"
                   *ngIf="segment.image_list[0].position == 'right'"
                 >
                   Celebrate elegance, gift tradition
-                </h5>
-                <h6
+                </p>
+                <p
                   *ngIf="segment.sub_heading"
+                  class="story-body"
                   [innerHTML]="segment.sub_heading"
-                ></h6>
+                ></p>
               </div>
               <button
                 *ngIf="
@@ -2126,10 +2092,11 @@
                           class="landing-highlighted-text d-flex flex-column text-left"
                         >
                           <h2>{{ x.content_details.heading }}</h2>
-                          <h6
+                          <p
                             *ngIf="x.content_details?.sub_heading"
+                            class="story-body"
                             [innerHTML]="x.content_details.sub_heading"
-                          ></h6>
+                          ></p>
                           <p
                             *ngIf="x.content_details?.description"
                             [innerHTML]="x.content_details.description"
@@ -2568,11 +2535,11 @@
             <div
               class="ai-highlighted-text w-100 mt-5 mb-3 d-flex flex-column justify-content-start align-items-start"
             >
-              <h6
-                class="mb-3"
+              <p
+                class="story-body mb-3"
                 *ngIf="segment.sub_heading"
                 [innerHTML]="segment.sub_heading"
-              ></h6>
+              ></p>
               <h2 class="mb-3" *ngIf="segment.heading">
                 {{ segment.heading }}
               </h2>

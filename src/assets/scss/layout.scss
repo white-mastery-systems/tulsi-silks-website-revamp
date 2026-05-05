@@ -917,7 +917,16 @@ span{
       font-weight: 400;
       color: #000000;
     }
-    h6 {
+    h5,
+    .subtitle {
+      opacity: 1;
+      margin-bottom: 0px;
+      font-size: 18px;
+      line-height: 2;
+      font-weight: 400;
+    }
+    h6,
+    .story-body {
       opacity: 1;
       margin-bottom: 0px;
       font-size: 18px;
@@ -1088,7 +1097,8 @@ span{
       text-align: start;
       font-weight: bold;
     }
-    h6 {
+    h6,
+    .story-body {
       opacity: 0.5;
       margin-bottom: 15px;
     }

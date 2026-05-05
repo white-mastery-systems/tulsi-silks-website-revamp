@@ -1032,9 +1032,14 @@ p.error-msg {
   .testimonial-sec{
     margin-bottom: 0px !important;
   }
-  .highlighted-sec .landing-highlighted-text h6{
-    line-height: 1.5;
-    font-size: 1rem !important;
+  .highlighted-sec .landing-highlighted-text h6,
+  .highlighted-sec .landing-highlighted-text .story-body{
+    /* Keep legacy “sub_heading” typography consistent after switching h6 -> p */
+    line-height: 2;
+    font-size: 18px;
+    font-weight: 400;
+    margin-bottom: 0;
+    opacity: 1;
   }
 }
 // ----------------CART END------------------
@@ -2361,6 +2366,7 @@ option {
 .des__right{
   color: #000000;
   margin-bottom: 12px;
+  font-size: 1.25rem !important;
 }
 
 @media only screen and (max-width: 768px) {
