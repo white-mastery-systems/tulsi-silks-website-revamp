@@ -12,28 +12,28 @@
               <ul class="footer-menu footer-social">
                 <li>
                   <a href="https://www.instagram.com/tulsisilks/?hl=en" target="_blank">
-                    <img src="assets/images/icons/tulsi-insta.svg" width="100%" height="100%" draggable="false" alt="">
+                    <img src="assets/images/icons/tulsi-insta.svg" width="100%" height="100%" draggable="false" alt="Follow Tulsi Silks on Instagram">
                   </a>
                 </li>
                 <li>
                   <a href="https://www.facebook.com/TulsiSilks/" target="_blank">
-                    <img src="assets/images/icons/tulsi-facebook.svg" width="100%" height="100%" draggable="false" alt="">
+                    <img src="assets/images/icons/tulsi-facebook.svg" width="100%" height="100%" draggable="false" alt="Follow Tulsi Silks on Facebook">
                   </a>
                 </li>
                 <li>
                   <a href="https://x.com/i/flow/login?redirect_after_login=%2Ftulsisilks" target="_blank">
-                    <img src="assets/images/icons/tulsi-twitter.svg" width="100%" height="100%" draggable="false" alt="">
+                    <img src="assets/images/icons/tulsi-twitter.svg" width="100%" height="100%" draggable="false" alt="Follow Tulsi Silks on X (Twitter)">
                   </a>
                 </li>
                 <li>
                   <a href="https://in.pinterest.com/tulsisilks0070/" target="_blank">
-                    <img src="assets/images/icons/tulsi-print.svg" width="100%" height="100%" draggable="false" alt="">
+                    <img src="assets/images/icons/tulsi-print.svg" width="100%" height="100%" draggable="false" alt="Follow Tulsi Silks on Pinterest">
                   </a>
                 </li>
               </ul>
             </div>
             <div *ngIf="commonService.ys_features.indexOf('newsletter')!=-1 && commonService.application_setting?.newsletter_status && !commonService.application_setting?.newsletter_config?.open_onload" class="zindex-0">
-              <button type="button" (click)="subscribeForm={}; subscribeModal.show();" class="secondary-btn w-100">Subscribe</button>
+              <button type="button" (click)="openSubscribeModal(subscribeModal)" class="secondary-btn w-100">Subscribe</button>
             </div>
           </div>
         </div>
@@ -187,17 +187,33 @@
 </ng-container>
 
 <!-- newsletter subscription -->
-<a [hidden]="true" id="openSubscribeModal" (click)="subscribeForm={}; subscribeModal.show();"></a>
-<div bsModal #subscribeModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="subscribe-model">
+<a [hidden]="true" id="openSubscribeModal" (click)="openSubscribeModal(subscribeModal)"></a>
+<div
+  bsModal
+  #subscribeModal="bs-modal"
+  class="modal fade"
+  tabindex="-1"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="newsletter-dialog-title"
+  (onShown)="onSubscribeModalShown()"
+  (onHidden)="onSubscribeModalHidden()"
+>
   <div class="modal-dialog modal-lg modal-dialog-centered">
-    <div class="modal-content home-news-letter">
+    <div #subscribeModalContent class="modal-content home-news-letter" (keydown)="onSubscribeModalKeydown($event)">
       <!-- before submit -->
       <ng-container *ngIf="!subscribeForm.alert_msg && commonService.application_setting.newsletter_config">
         <div class="modal-header d-flex align-items-center justify-content-end ">
-          <div class="close" (click)="subscribeModal.hide();">
-            <img src="assets/images/x.png" alt="close">
+          <button
+            #subscribeCloseBtn
+            type="button"
+            class="close newsletter-close-btn"
+            aria-label="Close newsletter popup"
+            (click)="closeSubscribeModal(subscribeModal)"
+          >
+            <img src="assets/images/x.png" alt="" />
             <!-- <i class="material-icons">close</i> -->
-          </div>
+          </button>
         </div>
         <div class="modal-body popup-padding">
           <div class="row justify-content-center align-items-center">
@@ -208,7 +224,7 @@
               <div class="widget newsletter d-flex flex-column align-items-center justify-content-center newsletter-body" align="center">
                 <!-- <h4 class="widget-title">{{ commonService.application_setting.newsletter_config.heading }}</h4> -->
                 <img src="assets/images/logo.png" class="logo" alt="footer-logo">
-                <h2 class="title">Join the Tulsi Family</h2>
+                <h2 id="newsletter-dialog-title" class="title">Join the Tulsi Family</h2>
                 <figure *ngIf="commonService.application_setting.newsletter_config.image" class="w-100">
                   <img width="100%" height="100%" class="w-100" appImgLazyLoad [ImagelazyLoad]="imgBaseUrl+commonService.application_setting.newsletter_config.image" alt="subscribe-banner">
                 </figure>
@@ -228,7 +244,7 @@
                   </div>
                 </form>
                 <div *ngIf="!commonService.application_setting.newsletter_config.subscription_status">
-                  <button (click)="subscribeModal.hide(); linkNavigate(commonService.application_setting.newsletter_config);" class="primary-btn d-flex justify-content-center align-items-center" type="button">
+                  <button (click)="closeSubscribeModal(subscribeModal); linkNavigate(commonService.application_setting.newsletter_config);" class="primary-btn d-flex justify-content-center align-items-center" type="button">
                     {{ commonService.application_setting.newsletter_config.btn_text }}
                   </button>
                 </div>

@@ -465,7 +465,13 @@
                         appLqimgLoad
                         appDeferLoad
                         [ImagelazyLoad]="imgBaseUrl + x.desktop_img"
-                        alt="{{ x.img_alt ? x.img_alt : 'Image' }}"
+                        alt="{{
+                          x.content_details?.heading
+                            ? 'Customer testimonial — ' + x.content_details.heading
+                            : x.img_alt
+                              ? x.img_alt
+                              : 'Customer testimonial'
+                        }}"
                       />
                       <!-- <div *ngIf="x?.content_status && x?.content_details?.heading" class="category-grid-text d-flex flex-column" [ngClass]="{
                         'align-items-start': x?.position=='t_l' || x?.position=='t_c' || x?.position=='t_r',
@@ -2455,7 +2461,13 @@
                         appLqimgLoad
                         appDeferLoad
                         [ImagelazyLoad]="imgBaseUrl + x.desktop_img"
-                        alt="{{ x.img_alt ? x.img_alt : 'Image' }}"
+                        alt="{{
+                          x.content_details?.heading
+                            ? 'Customer testimonial — ' + x.content_details.heading
+                            : x.img_alt
+                              ? x.img_alt
+                              : 'Customer testimonial'
+                        }}"
                       />
                       <div *ngIf="x?.content_details" class="ml-3">
                         <p class="mb-0">{{ x.content_details.heading }}</p>
@@ -3021,6 +3033,7 @@
       >
         <iframe
           [src]="commonService.contact_page_info.map_url"
+          title="Tulsi Silks store location map"
           width="100%"
           height="500"
           frameborder="0"

@@ -81,6 +81,19 @@
   pointer-events: auto;
 }
 
+/* Newsletter modal: visible keyboard focus for close button. */
+.home-news-letter .newsletter-close-btn {
+  background: transparent;
+  border: 0;
+  padding: 0.25rem;
+  border-radius: 10px;
+}
+
+.home-news-letter .newsletter-close-btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.95);
+}
+
 .blur-up {
   -webkit-filter: blur(3px);
   filter: blur(3px);
