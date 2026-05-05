@@ -38,6 +38,49 @@
   box-shadow: none;
 }
 
+/* Skip link: first focusable element for keyboard users. */
+.skip-link {
+  position: absolute;
+  left: 0.75rem;
+  top: 0.75rem;
+  z-index: 10000;
+  padding: 0.75rem 1rem;
+  border-radius: 10px;
+  background: #111;
+  color: #fff !important;
+  text-decoration: none;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+  transform: translateY(-200%);
+  opacity: 0;
+  transition:
+    transform 220ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    opacity 160ms ease;
+  will-change: transform, opacity;
+  pointer-events: none;
+}
+
+.skip-link:link,
+.skip-link:visited,
+.skip-link:hover,
+.skip-link:active {
+  color: #fff !important;
+}
+
+.skip-link:hover,
+.skip-link:focus-visible {
+  box-shadow:
+    0 10px 26px rgba(0, 0, 0, 0.2),
+    0 0 0 3px rgba(255, 255, 255, 0.9);
+}
+
+.skip-link:focus-visible {
+  transform: translateY(0);
+  opacity: 1;
+  pointer-events: auto;
+}
+
 .blur-up {
   -webkit-filter: blur(3px);
   filter: blur(3px);
