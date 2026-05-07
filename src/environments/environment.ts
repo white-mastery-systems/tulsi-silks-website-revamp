@@ -4,7 +4,7 @@ export const environment = {
   header_type: 'type-5',
   footer: 'light', // dark or light
   store_id: "5d30013a5c83a702392c4c8b",
-  ws_url: 'https://yourstore.io/api',
+  ws_url: 'https://ys-staging-api.pripod.com',
   img_baseurl: 'https://yourstore.io/api/',
   img_host: "https://yourstore.io", // for _s split
   gtag_tracking: false,

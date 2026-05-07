@@ -695,7 +695,7 @@
                   name="chevron-right"
                   [size]="20"
                   stroke="1"
-                  color="white"
+                  color="black"
                 ></lucide-icon>
               </div>
               <div
@@ -922,7 +922,7 @@
                   name="chevron-right"
                   [size]="20"
                   stroke="1"
-                  color="white"
+                  color="#fff"
                 ></lucide-icon>
               </div>
               <div
@@ -933,7 +933,7 @@
                   name="chevron-left"
                   [size]="20"
                   stroke="1"
-                  color="black"
+                  color="#fff"
                 ></lucide-icon>
               </div>
             </ng-container>
@@ -2422,81 +2422,14 @@
       [attr.aria-label]="segment.heading ? null : 'Testimonials'"
       [ngClass]="i > 1 ? 'wow fadeInUp' : null"
     >
-      <div class="container-fluid max-width-full parent-testi">
+      <div class="container-fluid px-max">
         <div class="row">
-          <div
-            *ngIf="segment.heading"
-            class="col-md-5 px-0 d-flex justify-content-start align-items-start"
-          >
-            <div class="titles custom-title w-auto">
+          <div *ngIf="segment.heading" class="col-12 swipe_arrow">
+            <div class="titles custom-title">
               <h2 [attr.id]="'home-' + segment.type + '-title-' + i">{{ segment.heading }}</h2>
-              <p
-                *ngIf="segment.sub_heading"
-                [innerHTML]="segment.sub_heading"
-              ></p>
+              <p *ngIf="segment.sub_heading" [innerHTML]="segment.sub_heading"></p>
             </div>
-          </div>
-          <div class="col-md-7 grid-img px-0">
-            <figure>
-              <img
-                src="assets/images/testimonial-copy.jpg"
-                alt="testimonial"
-                class="w-100"
-              />
-            </figure>
-          </div>
-        </div>
-        <div class="col-xl-6 col-md-6 col-12 slider--">
-          <div
-            class="swiper-container testimonial-container swipe_arrow"
-            [ngClass]="
-              commonService.desktop_device
-                ? 'desktoptestimonialslider_' + (i + 1)
-                : 'testimonialslider_' + (i + 1)
-            "
-            appHomeSwiper
-          >
-            <div class="swiper-wrapper">
-              <div
-                *ngFor="let x of segment.image_list; let j = index"
-                class="swiper-slide p-0"
-              >
-                <div
-                  class="testimonial d-flex flex-column justify-content-center w-100"
-                  [ngClass]="template_setting?.p_card ? '' : ''"
-                >
-                  <div class="testimonial-profile">
-                    <div class="d-flex align-items-center">
-                      <img
-                        loading="lazy"
-                        width="100%"
-                        height="100%"
-                        appLqimgLoad
-                        appDeferLoad
-                        [ImagelazyLoad]="imgBaseUrl + x.desktop_img"
-                        alt="{{
-                          x.content_details?.heading
-                            ? 'Customer testimonial — ' + x.content_details.heading
-                            : x.img_alt
-                              ? x.img_alt
-                              : 'Customer testimonial'
-                        }}"
-                      />
-                      <div *ngIf="x?.content_details" class="ml-3">
-                        <p class="mb-0">{{ x.content_details.heading }}</p>
-                      </div>
-                    </div>
-                    <div class="double-codes">
-                      <img src="assets/images/left-quote.svg" alt="Quote" />
-                    </div>
-                  </div>
-                  <div class="testimonial-desc" *ngIf="x?.content_details">
-                    <p class="mt-4">{{ x.content_details.description }}</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="testi-arrow">
+            <ng-container *ngIf="commonService?.desktop_device && segment.image_list?.length > 1">
               <div
                 id="swipe_next_{{ i + 1 }}"
                 class="swiper-button swiper-button-next"
@@ -2519,8 +2452,84 @@
                   color="black"
                 ></lucide-icon>
               </div>
+            </ng-container>
+          </div>
+        </div>
+
+        <div
+          class="swiper-container testimonial-container swipe_arrow px-max"
+          [ngClass]="
+            commonService.desktop_device
+              ? 'desktoptestimonialslider_' + (i + 1)
+              : 'testimonialslider_' + (i + 1)
+          "
+          appHomeSwiper
+        >
+          <div class="swiper-wrapper">
+            <div
+              *ngFor="let x of segment.image_list; let j = index"
+              class="swiper-slide testimonial-slide"
+            >
+              <article class="testimonial-card">
+                <figure class="testimonial-card__media">
+                  <img
+                    loading="lazy"
+                    width="100%"
+                    height="100%"
+                    appLqimgLoad
+                    appDeferLoad
+                    [ImagelazyLoad]="imgBaseUrl + x.desktop_img"
+                    alt="{{
+                      x.content_details?.heading
+                        ? 'Customer testimonial — ' + x.content_details.heading
+                        : x.img_alt
+                          ? x.img_alt
+                          : 'Customer testimonial'
+                    }}"
+                  />
+                </figure>
+
+                <div class="testimonial-card__body" *ngIf="x?.content_details">
+                  <div
+                    class="testimonial-card__stars"
+                    [attr.aria-label]="
+                      (x.content_details.review_star || 0) + ' out of 5 stars'
+                    "
+                  >
+                    <ng-container *ngFor="let s of [1, 2, 3, 4, 5]">
+                      <span
+                        class="testimonial-star"
+                        [class.is-filled]="(x.content_details.review_star || 0) >= s"
+                        aria-hidden="true"
+                        >★</span
+                      >
+                    </ng-container>
+                  </div>
+
+                  <p class="testimonial-card__name">{{ x.content_details.heading }}</p>
+
+                  <blockquote class="testimonial-card__quote">
+                    “{{ x.content_details.description }}”
+                  </blockquote>
+
+                  <button
+                    *ngIf="x.btn_status && x.btn_text"
+                    type="button"
+                    class="primary-btn outline-btn testimonial-card__cta"
+                    [attr.aria-label]="
+                      x.btn_text +
+                      (x.content_details?.heading ? ' — ' + x.content_details.heading : '')
+                    "
+                    (click)="commonService.onPageRedirect(x)"
+                  >
+                    {{ x.btn_text }}
+                  </button>
+                </div>
+              </article>
             </div>
           </div>
+
+          <!-- arrows rendered in title row (swipe_arrow) -->
         </div>
       </div>
     </section>

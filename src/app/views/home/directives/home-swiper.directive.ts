@@ -58,10 +58,10 @@ export class HomeSwiperDirective {
   testimonial: any = {
     auto_play: false,
     break_points: {
-      1024: { slidesPerView: 1, spaceBetween: 15 },
-      768: { slidesPerView: 1, spaceBetween: 15 },
-      640: { slidesPerView: 1, spaceBetween: 15 },
-      320: { slidesPerView: 1, spaceBetween: 15 }
+      1024: { slidesPerView: 4, spaceBetween: 20 },
+      768: { slidesPerView: 2, spaceBetween: 16 },
+      640: { slidesPerView: 1.5, spaceBetween: 14 },
+      320: { slidesPerView: 1.1, spaceBetween: 12 }
     }
   };
   
