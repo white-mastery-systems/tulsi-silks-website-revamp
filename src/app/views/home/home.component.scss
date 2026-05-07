@@ -101,6 +101,50 @@
   }
 }
 
+/* Home blog section: cleaner card spacing + typography. */
+.home-section .news {
+  .news-box figure {
+    background: #fff;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+  }
+
+  .news-box figure img {
+    margin-bottom: 0;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+  }
+
+  .news-box figure figcaption {
+    padding: 0.9rem 0.95rem 1rem;
+    margin-top: 0;
+  }
+
+  .news-box figure figcaption .article-date {
+    margin-bottom: 0.45rem;
+  }
+
+  .news-box figure figcaption h3 {
+    margin: 0;
+    font-size: 1rem;
+    line-height: 1.45;
+    font-weight: 600;
+  }
+
+  .news-box figure figcaption h3 a {
+    display: -webkit-box;
+    line-clamp: 2;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  /* Slider: match featured slider gutters */
+  .swiper-container {
+    padding-left: 15px;
+    padding-right: 15px;
+  }
+}
+
 /* Testimonials: card slider like provided design. */
 .testimonial-sec {
   background: #d99550;

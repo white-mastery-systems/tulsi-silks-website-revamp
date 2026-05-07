@@ -10,9 +10,9 @@
   min-height: $announcement-bar-mh;
 }
 .top-news p {
-  padding: 5px;
+  padding: 10px 12px;
   text-align: center;
-  font-size: 0.625rem;
+  font-size: 0.8125rem;
   letter-spacing: 0.15em;
   color: $announce-text;
 }
@@ -214,9 +214,7 @@
     }
   }
 
-  .feature-grid {
-    // margin-bottom:30px;
-  }
+  // .feature-grid { margin-bottom:30px; }
 
   .feature-sec-margin{
     .featured-sections{
@@ -1498,9 +1496,7 @@ span{
       display: flex;
       align-items: center;
       justify-content: center;
-      h2 {
-        // color: #ffffff;
-      }
+      // h2 { color: #ffffff; }
       p {
         // color: #ffffff;
         text-align: center;
