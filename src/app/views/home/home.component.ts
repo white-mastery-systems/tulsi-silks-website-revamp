@@ -65,6 +65,12 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
 
   @ViewChildren('mtfpTab') private mtfpTabEls!: QueryList<ElementRef<HTMLElement>>;
 
+  @ViewChildren('flexibleContent') private flexibleContentEls!: QueryList<ElementRef<HTMLElement>>;
+
+  flexibleExpandedByIndex: Record<number, boolean> = {};
+  flexibleShowToggleByIndex: Record<number, boolean> = {};
+  private flexibleMeasureTimer: ReturnType<typeof setTimeout> | undefined;
+
   private slugify(name: unknown): string {
     const raw = typeof name === 'string' ? name : '';
     const slug = raw
@@ -384,14 +390,45 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngAfterViewInit(): void {
     if (!isPlatformBrowser(this.platformId)) return;
-    if (environment.template_setting.primary_slider !== 'fs_slider') return;
-    this.setSliderHeight();
-    window.addEventListener('resize', this.boundOnWindowResize);
-    const head = this.document.getElementById('headroom-head');
-    if (typeof ResizeObserver !== 'undefined' && head) {
-      this.headerResizeObserver = new ResizeObserver(() => this.setSliderHeight());
-      this.headerResizeObserver.observe(head);
+    this.refreshFlexibleToggles();
+
+    if (environment.template_setting.primary_slider === 'fs_slider') {
+      this.setSliderHeight();
+      window.addEventListener('resize', this.boundOnWindowResize);
+      const head = this.document.getElementById('headroom-head');
+      if (typeof ResizeObserver !== 'undefined' && head) {
+        this.headerResizeObserver = new ResizeObserver(() => this.setSliderHeight());
+        this.headerResizeObserver.observe(head);
+      }
     }
+  }
+
+  toggleFlexibleExpanded(index: number): void {
+    this.flexibleExpandedByIndex[index] = !this.flexibleExpandedByIndex[index];
+  }
+
+  private refreshFlexibleToggles(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+    if (this.flexibleMeasureTimer !== undefined) {
+      clearTimeout(this.flexibleMeasureTimer);
+    }
+    this.flexibleMeasureTimer = setTimeout(() => {
+      this.flexibleMeasureTimer = undefined;
+      const els = this.flexibleContentEls?.toArray() ?? [];
+      const isMobile = (this.commonService?.screen_width ?? 0) <= 767;
+      const collapsedMax = isMobile ? 360 : 520;
+      els.forEach((ref, idx) => {
+        const el = ref?.nativeElement;
+        if (!el) return;
+        const contentHeight = el.scrollHeight || 0;
+        this.flexibleShowToggleByIndex[idx] = contentHeight > collapsedMax + 24;
+        if (!this.flexibleShowToggleByIndex[idx]) {
+          this.flexibleExpandedByIndex[idx] = true;
+        } else if (this.flexibleExpandedByIndex[idx] === undefined) {
+          this.flexibleExpandedByIndex[idx] = false;
+        }
+      });
+    }, 50);
   }
 
   /** Pixel height of `#headroom-head` for full-bleed slider offset; safe on missing DOM / SSR. */
@@ -737,6 +774,9 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
           }
         }
       }
+    }
+    if (isPlatformBrowser(this.platformId)) {
+      setTimeout(() => this.refreshFlexibleToggles(), 150);
     }
   }
 

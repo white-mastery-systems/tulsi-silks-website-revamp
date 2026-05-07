@@ -408,16 +408,15 @@
     <!-- #About Segment -->
 
     <!-- Section Grid -->
-    <ng-container *ngIf="segment.section_grid_type == 'grid_1'">
-      <section
-        *ngIf="segment.type == 'section' && segment.image_list?.length"
-        class="grid-categories grid-sec-margin primary-section"
-        [attr.aria-labelledby]="segment?.heading ? 'home-' + segment.type + '-title-' + i : null"
-        [attr.aria-label]="segment?.heading ? null : 'Homepage section'"
-        [ngClass]="i > 1 ? 'wow fadeInUp' : null"
-      >
-        <div class="page-width">
-          <div class="row">
+    <section
+      *ngIf="segment.type == 'section' && segment.image_list?.length"
+      class="grid-categories grid-sec-margin primary-section section-grid section-grid--{{ segment.section_grid_type }}"
+      [attr.aria-labelledby]="segment?.heading ? 'home-' + segment.type + '-title-' + i : null"
+      [attr.aria-label]="segment?.heading ? null : 'Homepage section'"
+      [ngClass]="i > 1 ? 'wow fadeInUp' : null"
+    >
+      <div class="page-width">
+        <div class="row">
             <div *ngIf="segment?.heading" class="col-12 px-0">
               <div class="titles custom-title w-auto">
                 <h2 [attr.id]="'home-' + segment.type + '-title-' + i">{{ segment.heading }}</h2>
@@ -468,13 +467,7 @@
                         appLqimgLoad
                         appDeferLoad
                         [ImagelazyLoad]="imgBaseUrl + x.desktop_img"
-                        alt="{{
-                          x.content_details?.heading
-                            ? 'Customer testimonial — ' + x.content_details.heading
-                            : x.img_alt
-                              ? x.img_alt
-                              : 'Customer testimonial'
-                        }}"
+                        alt="{{ x.img_alt ? x.img_alt : x.content_details?.heading ? x.content_details.heading : 'Category' }}"
                       />
                       <!-- <div *ngIf="x?.content_status && x?.content_details?.heading" class="category-grid-text d-flex flex-column" [ngClass]={
                         'align-items-start': x?.position=='t_l' || x?.position=='t_c' || x?.position=='t_r',
@@ -500,31 +493,21 @@
                           >
                             {{ x.content_details.heading }}
                           </h2>
-                          <ng-container *ngIf="j === 0">
-                            <p>
-                              Fine fabrics that speak the language of tradition
-                            </p>
-                            <button
-                              routerLink="/sections/by-fabrics"
-                              class="primary-btn"
-                              aria-label="Shop fabrics"
-                            >
-                              Shop Now
-                            </button>
-                          </ng-container>
-                          <ng-container *ngIf="j === 1">
-                            <p>
-                              Handcrafted sarees that celebrate India’s rich
-                              textile heritage
-                            </p>
-                            <button
-                              routerLink="/sections/by-crafts"
-                              class="primary-btn"
-                              aria-label="Shop crafts"
-                            >
-                              Shop Now
-                            </button>
-                          </ng-container>
+                          <p *ngIf="x?.content_details?.description">
+                            {{ x.content_details.description }}
+                          </p>
+                          <button
+                            *ngIf="x?.btn_status && x?.btn_text"
+                            type="button"
+                            class="primary-btn"
+                            (click)="commonService.onPageRedirect(x)"
+                            [attr.aria-label]="
+                              x?.btn_text +
+                              (x?.content_details?.heading ? ' — ' + x.content_details.heading : '')
+                            "
+                          >
+                            {{ x.btn_text }}
+                          </button>
                         </div>
                       </div>
                     </figure>
@@ -533,38 +516,49 @@
               </ng-container>
             </ng-container>
 
-            <!-- <div *ngIf="segment.section_grid_type=='grid_7' || segment.section_grid_type=='grid_9' || segment.section_grid_type=='grid_12'" class="col-12">
+            <div *ngIf="segment.section_grid_type == 'grid_7'" class="col-12">
               <div class="grids">
                 <div class="grid-sizer"></div>
-                <ng-container *ngFor="let x of segment.image_list; let j=index;">
-                  <div class="grid-item" [ngClass]="{
-                    'double': segment?.section_grid_type=='grid_7' && j===0 || segment?.section_grid_type=='grid_7' && j===1 || segment?.section_grid_type=='grid_12' && j===0,
-                    'four': segment?.section_grid_type=='grid_9' && j===4,
-                    'trible': segment.section_grid_type=='grid_9' && j!=4,
-                    'col-6' : segment?.section_grid_type=='grid_12' && j>0 || segment?.section_grid_type=='grid_7' && j>1
-                  }">
-                    <div class="category">
-                      <a (click)="(x.link_type!='internal')? commonService.onPageRedirect(x): null;" [routerLink]="(x.link_type=='internal')? x.link: null">
-                        <figure>
-                          <img loading="lazy" width="100%" height="100%" appLqimgLoad appDeferLoad [ImagelazyLoad]="imgBaseUrl+x.desktop_img" alt="{{(x.img_alt)? x.img_alt: 'Image'}}">
-                          <div *ngIf="x?.content_status && x?.content_details?.heading" class="category-grid-text d-flex" [ngClass]="{
-                            'align-items-start': x?.position=='t_l' || x?.position=='t_c' || x?.position=='t_r',
-                            'align-items-center': x?.position=='m_l' || x?.position=='m_c' || x?.position=='m_r',
-                            'align-items-end': x?.position=='b_l' || x?.position=='b_c' || x?.position=='b_r',
-                            'justify-content-start': x?.position=='t_l' || x?.position=='m_l' || x?.position=='b_l',
-                            'justify-content-center': x?.position=='t_c' || x?.position=='m_c' || x?.position=='b_c',
-                            'justify-content-end': x?.position=='t_r' || x?.position=='m_r' || x?.position=='b_r',
-                            'text-left': x?.position!='t_c' && x?.position!='m_c' && x?.position!='b_c'
-                          }">
-                            <p class="m-3" [ngClass]="(x?.content_details?.text_color=='dark')? 'text-dark': 'text-light'">{{ x.content_details.heading }}</p>
-                          </div>
-                        </figure>
-                      </a>
+                <ng-container *ngFor="let x of segment.image_list; let j = index">
+                  <div
+                    class="grid-item"
+                    [ngClass]="{
+                      'double': j === 0 || j === 1,
+                      'col-6': j > 1,
+                    }"
+                  >
+                    <div class="category cursor" (click)="commonService.onPageRedirect(x)">
+                      <figure>
+                        <img
+                          loading="lazy"
+                          width="100%"
+                          height="100%"
+                          appLqimgLoad
+                          appDeferLoad
+                          [ImagelazyLoad]="imgBaseUrl + x.desktop_img"
+                          alt="{{ x.img_alt ? x.img_alt : x.content_details?.heading ? x.content_details.heading : 'Category' }}"
+                        />
+                        <div
+                          *ngIf="x?.content_status && x?.content_details?.heading"
+                          class="category-grid-text d-flex"
+                        >
+                          <p
+                            class="m-3"
+                            [ngClass]="
+                              x?.content_details?.text_color == 'dark'
+                                ? 'text-dark'
+                                : 'text-light'
+                            "
+                          >
+                            {{ x.content_details.heading }}
+                          </p>
+                        </div>
+                      </figure>
                     </div>
                   </div>
                 </ng-container>
               </div>
-            </div> -->
+            </div>
 
             <div
               *ngIf="
@@ -654,10 +648,9 @@
                 </ng-container>
               </div>
             </div>
-          </div>
         </div>
-      </section>
-    </ng-container>
+      </div>
+    </section>
     <!-- #Section Grid -->
 
     <!-- Featured Sections -->
@@ -854,9 +847,12 @@
                 class="primary-btn"
                 (click)="exploreAll(segment)"
                 type="button"
-                [attr.aria-label]="segment?.heading ? ('View all — ' + segment.heading) : 'View all'"
+                [attr.aria-label]="
+                  (segment?.btn_text ? segment.btn_text : 'View all') +
+                  (segment?.heading ? ' — ' + segment.heading : '')
+                "
               >
-                View All
+                {{ segment?.btn_text ? segment.btn_text : 'View All' }}
               </button>
             </div>
             <div
@@ -870,9 +866,12 @@
                 class="primary-btn outline-btn"
                 (click)="exploreAll(segment)"
                 type="button"
-                [attr.aria-label]="segment?.heading ? ('View all — ' + segment.heading) : 'View all'"
+                [attr.aria-label]="
+                  (segment?.btn_text ? segment.btn_text : 'View all') +
+                  (segment?.heading ? ' — ' + segment.heading : '')
+                "
               >
-                View All
+                {{ segment?.btn_text ? segment.btn_text : 'View All' }}
               </button>
             </div>
           </div>
@@ -902,9 +901,12 @@
                   class="primary-btn outline-btn"
                   (click)="exploreAll(segment)"
                   type="button"
-                  [attr.aria-label]="segment?.heading ? ('View all — ' + segment.heading) : 'View all'"
+                  [attr.aria-label]="
+                    (segment?.btn_text ? segment.btn_text : 'View all') +
+                    (segment?.heading ? ' — ' + segment.heading : '')
+                  "
                 >
-                  View All
+                  {{ segment?.btn_text ? segment.btn_text : 'View All' }}
                 </button>
               </div>
             </div>
@@ -2192,15 +2194,24 @@
                 <h2 [attr.id]="'home-' + segment.type + '-title-' + i">{{ segment.heading }}</h2>
                 <p
                   class="subtitle des__right"
-                  *ngIf="segment.image_list[0].position == 'right'"
+                  *ngIf="
+                    segment.image_list[0].position == 'right' && segment.sub_heading
+                  "
                 >
-                  Celebrate elegance, gift tradition
+                  {{ segment.sub_heading }}
                 </p>
                 <p
-                  *ngIf="segment.sub_heading"
+                  *ngIf="
+                    segment.sub_heading && segment.image_list[0].position != 'right'
+                  "
                   class="story-body"
                   [innerHTML]="segment.sub_heading"
                 ></p>
+                <div
+                  *ngIf="segment.description"
+                  class="story-body"
+                  [innerHTML]="segment.description"
+                ></div>
               </div>
               <button
                 *ngIf="
@@ -2536,24 +2547,59 @@
     <!-- #Testimonial -->
 
     <!-- Flexible Segment -->
-    <!-- <section *ngIf="segment.type=='flexible'" class="primary-section" [ngClass]="(i>1)? 'wow fadeInUp': null">
-      <div class="{{template_setting?.body_type}}">
+    <section
+      *ngIf="segment.type == 'flexible' && segment.content"
+      class="primary-section"
+      [attr.aria-labelledby]="segment?.name ? 'home-flexible-title-' + i : null"
+      [attr.aria-label]="segment?.name ? null : 'Homepage content'"
+      [ngClass]="i > 1 ? 'wow fadeInUp' : null"
+    >
+      <div class="{{ template_setting?.body_type }}">
         <div class="row">
           <div class="col-md-12">
+            <h2
+              *ngIf="segment?.name"
+              class="sr-only"
+              [attr.id]="'home-flexible-title-' + i"
+            >
+              {{ segment.name }}
+            </h2>
             <div class="ql-container flexible-section">
-              <div class="ql-editor">
+              <div
+                #flexibleContent
+                class="ql-editor flexible-section__content"
+                [class.is-expanded]="flexibleExpandedByIndex[i]"
+                [class.is-collapsed]="!flexibleExpandedByIndex[i]"
+              >
                 <div [innerHTML]="segment.content"></div>
               </div>
+            </div>
+            <div
+              *ngIf="flexibleShowToggleByIndex[i]"
+              class="flexible-section__toggle"
+            >
+              <button
+                type="button"
+                class="primary-btn outline-btn"
+                (click)="toggleFlexibleExpanded(i)"
+                [attr.aria-expanded]="!!flexibleExpandedByIndex[i]"
+                [attr.aria-label]="
+                  (flexibleExpandedByIndex[i] ? 'Show less' : 'Show more') +
+                  (segment?.name ? ' — ' + segment.name : '')
+                "
+              >
+                {{ flexibleExpandedByIndex[i] ? 'Show Less' : 'Show More' }}
+              </button>
             </div>
           </div>
         </div>
       </div>
-    </section> -->
+    </section>
     <!-- #Flexible Segment -->
 
     <!-- blogs -->
     <section
-      *ngIf="segment.type == 'blogs' && segment.image_list?.length"
+      *ngIf="segment.type == 'blogs'"
       class="primary-section news"
       [attr.aria-labelledby]="segment.heading ? 'home-' + segment.type + '-title-' + i : null"
       [attr.aria-label]="segment.heading ? null : 'Blog posts'"
