@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterViewInit, OnDestroy, Inject, PLATFORM_ID, DOCUMENT, ElementRef, QueryList, ViewChildren } from '@angular/core';
+import { Component, OnInit, AfterViewInit, OnDestroy, Inject, PLATFORM_ID, DOCUMENT, ElementRef, QueryList, ViewChildren, HostListener } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
@@ -70,6 +70,9 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   flexibleExpandedByIndex: Record<number, boolean> = {};
   flexibleShowToggleByIndex: Record<number, boolean> = {};
   private flexibleMeasureTimer: ReturnType<typeof setTimeout> | undefined;
+
+  showScrollTop = false;
+  private readonly scrollTopThresholdPx = 500;
 
   private slugify(name: unknown): string {
     const raw = typeof name === 'string' ? name : '';
@@ -391,6 +394,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   ngAfterViewInit(): void {
     if (!isPlatformBrowser(this.platformId)) return;
     this.refreshFlexibleToggles();
+    this.updateScrollTopVisibility();
 
     if (environment.template_setting.primary_slider === 'fs_slider') {
       this.setSliderHeight();
@@ -400,6 +404,30 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
         this.headerResizeObserver = new ResizeObserver(() => this.setSliderHeight());
         this.headerResizeObserver.observe(head);
       }
+    }
+  }
+
+  @HostListener('window:scroll')
+  onWindowScroll(): void {
+    this.updateScrollTopVisibility();
+  }
+
+  private updateScrollTopVisibility(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+    const y =
+      window.scrollY ||
+      this.document.documentElement?.scrollTop ||
+      this.document.body?.scrollTop ||
+      0;
+    this.showScrollTop = y > this.scrollTopThresholdPx;
+  }
+
+  scrollToTop(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+    try {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } catch {
+      window.scrollTo(0, 0);
     }
   }
 

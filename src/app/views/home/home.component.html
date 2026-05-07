@@ -3282,3 +3282,13 @@
   </div>
 </div>
 <!-- #AI Filter -->
+
+<button
+  *ngIf="showScrollTop"
+  type="button"
+  class="home-scroll-top"
+  (click)="scrollToTop()"
+  aria-label="Scroll to top"
+>
+  <lucide-icon name="arrow-up" [size]="20" stroke="2"></lucide-icon>
+</button>

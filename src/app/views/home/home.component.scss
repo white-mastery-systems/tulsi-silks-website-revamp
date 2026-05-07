@@ -145,6 +145,60 @@
   }
 }
 
+.home-scroll-top{
+  position: fixed;
+  right: clamp(0.9rem, 2vw, 1.25rem);
+  bottom: clamp(1rem, 2.2vw, 1.4rem);
+  z-index: 10001;
+
+  width: 54px;
+  height: 54px;
+  border-radius: 999px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  background: #1a181e;
+  color: #fff;
+  border: none;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
+  -webkit-tap-highlight-color: transparent;
+
+  transition: transform 180ms ease, box-shadow 180ms ease, background-color 180ms ease, border-color 180ms ease;
+}
+
+.home-scroll-top lucide-icon{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff !important;
+}
+
+.home-scroll-top svg{
+  width: 20px;
+  height: 20px;
+  stroke: #fff !important;
+  fill: none !important;
+}
+
+.home-scroll-top:hover{
+  transform: translateY(-2px);
+  box-shadow: 0 16px 36px rgba(0,0,0,0.34);
+}
+
+.home-scroll-top:focus-visible{
+  outline: 2px solid rgba(0, 0, 0, 0.3);
+  outline-offset: 3px;
+}
+
+@media (max-width: 576px){
+  .home-scroll-top{
+    width: 50px;
+    height: 50px;
+  }
+}
+
 /* Testimonials: card slider like provided design. */
 .testimonial-sec {
   background: #d99550;
