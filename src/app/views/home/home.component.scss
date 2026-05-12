@@ -216,20 +216,6 @@
   color: #fff;
 }
 
-.testimonial-sec .swipe_arrow {
-  .swiper-button-prev,
-  .swiper-button-next {
-    background-color: #000 !important;
-    border: 1px solid rgba(0, 0, 0, 0.12);
-  }
-
-  .swiper-button-prev.swiper-button-disabled,
-  .swiper-button-next.swiper-button-disabled {
-    background-color: #f2f2f2;
-    border-color: rgba(0, 0, 0, 0.08);
-  }
-}
-
 .testimonial-sec .testimonial-container {
   padding: 1rem 0 2.25rem;
 }
@@ -326,5 +312,52 @@
   }
   .testimonial-card__media img {
     height: 260px;
+  }
+}
+
+/* Home: single swiper prev/next style for every section (hero, featured, products, tabs, blogs, shop the look, testimonials, etc.) */
+.home-section {
+  .swiper-button-prev,
+  .swiper-button-next {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 38px !important;
+    height: 38px !important;
+    min-width: 38px;
+    min-height: 38px;
+    padding: 8px !important;
+    box-sizing: border-box;
+    border-radius: 50% !important;
+    background-color: #000 !important;
+    border: none !important;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.18);
+    z-index: 5;
+    transition: background-color 0.2s ease, opacity 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  /* Lucide templates use black stroke; invert reads as a light chevron on the black disc */
+  .swiper-button-prev lucide-icon,
+  .swiper-button-next lucide-icon {
+    filter: invert(1) !important;
+  }
+
+  .swiper-button-prev.swiper-button-disabled,
+  .swiper-button-next.swiper-button-disabled {
+    background-color: #e0e0e0 !important;
+    opacity: 0.8 !important;
+    pointer-events: none;
+    cursor: not-allowed;
+    box-shadow: none !important;
+
+    lucide-icon {
+      filter: none !important;
+      color: #000 !important;
+    }
+
+    svg {
+      stroke: #000 !important;
+      opacity: 1;
+    }
   }
 }
