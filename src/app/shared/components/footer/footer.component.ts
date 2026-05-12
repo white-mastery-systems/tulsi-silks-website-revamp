@@ -18,6 +18,16 @@ export class FooterComponent {
   imgBaseUrl: string = environment.img_baseurl;
   currentYear: any = (new Date()).getFullYear();
 
+  /** Shown below address/contact in footer (brick-and-mortar hours). */
+  readonly footerOpeningHoursLine = 'Open: Mon–Sat, 9:30 am – 7:30 pm';
+
+  /** Brand column: short story below logo (Tulsi). */
+  readonly footerBrandIntro =
+    'Weavers of heritage Kancheepuram silks since 1978. Every saree carries a thread of tradition, handcrafted for the woman who values authenticity.';
+
+  /** Line under social icons in brand column. */
+  readonly footerSocialCaption = 'Follow for saree styling inspiration';
+
   /** API-driven; `tel:+91…` via `CommonService.getFooterPrimaryPhone()`. */
   get footerPhone(): { telHref: string; display: string } | null {
     return this.commonService.getFooterPrimaryPhone();
