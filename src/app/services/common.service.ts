@@ -282,7 +282,8 @@ export class CommonService {
       let script = this.document.createElement("script");
       script.type = "application/ld+json";
       script.id = id;
-      script.text =  `${JSON.stringify(schema)}`;
+      /** Keeps markup valid if JSON strings ever contain `</` (e.g. `</script>`). */
+      script.text = JSON.stringify(schema).replace(/</g, "\\u003c");
       this.document.getElementsByTagName("head")[0].appendChild(script);
     }
   }
@@ -343,11 +344,11 @@ export class CommonService {
     if(!image) image = environment.img_baseurl+this.social_logo;
     this.title.setTitle(seoDetails.page_title);
     this.meta.updateTag({ name: 'description', content: seoDetails.meta_desc ?? '' });
-    const kw = Array.isArray(seoDetails.meta_keywords) ? seoDetails.meta_keywords.join(', ') : (seoDetails.meta_keywords || '');
-    this.meta.updateTag({ name: 'keywords', content: kw });
     this.meta.updateTag({ property: 'og:title', content: seoDetails.page_title });
     this.meta.updateTag({ property: 'og:description', content: seoDetails.meta_desc });
     this.meta.updateTag({ property: 'og:image', content: image });
+    this.meta.updateTag({ property: 'og:image:width', content: '1200' });
+    this.meta.updateTag({ property: 'og:image:height', content: '630' });
   }
 
   transformHtml(content) {

@@ -24,12 +24,9 @@ function patchHeadForSeo(doc: Document, seo: Record<string, unknown>, commonServ
   };
 
   const metaDesc = (seo['meta_desc'] as string) ?? '';
-  const kwRaw = seo['meta_keywords'];
-  const kw = Array.isArray(kwRaw) ? kwRaw.join(', ') : String(kwRaw ?? '');
 
   setContent('meta[name="theme-color"]', String(seo['tile_color'] ?? ''));
   setContent('meta[name="description"]', metaDesc);
-  setContent('meta[name="keywords"]', kw);
   setContent('meta[property="og:site_name"]', title);
   setContent('meta[property="og:title"]', title);
   setContent('meta[property="og:description"]', metaDesc);
@@ -39,6 +36,8 @@ function patchHeadForSeo(doc: Document, seo: Record<string, unknown>, commonServ
       ? `${environment.img_baseurl}${commonService.social_logo}`
       : `${environment.img_baseurl}uploads/${commonService.store_id}/social_logo.jpg`;
   setContent('meta[property="og:image"]', logo);
+  setContent('meta[property="og:image:width"]', '1200');
+  setContent('meta[property="og:image:height"]', '630');
 }
 
 /**

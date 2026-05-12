@@ -79,8 +79,6 @@ function injectStoreSeoIntoHtml(html: string, apiJson: any): string {
   }
   const title = escapeHtmlAttr(seo.page_title);
   const desc = escapeHtmlAttr(seo.meta_desc ?? '');
-  const kwRaw = seo.meta_keywords;
-  const kw = escapeHtmlAttr(Array.isArray(kwRaw) ? kwRaw.join(', ') : String(kwRaw ?? ''));
   const tile = escapeHtmlAttr(String(seo.tile_color ?? ''));
   const ogImg = escapeHtmlAttr(`${environment.img_baseurl}uploads/${environment.store_id}/social_logo.jpg`);
 
@@ -88,11 +86,12 @@ function injectStoreSeoIntoHtml(html: string, apiJson: any): string {
   out = out.replace(/<title[^>]*>[\s\S]*?<\/title>/i, `<title>${title}</title>`);
   out = out.replace(/<meta name="theme-color"[^>]*>/i, `<meta name="theme-color" content="${tile}">`);
   out = out.replace(/<meta name="description"[^>]*>/i, `<meta name="description" content="${desc}">`);
-  out = out.replace(/<meta name="keywords"[^>]*>/i, `<meta name="keywords" content="${kw}">`);
   out = out.replace(/<meta property="og:site_name"[^>]*>/i, `<meta property="og:site_name" content="${title}">`);
   out = out.replace(/<meta property="og:title"[^>]*>/i, `<meta property="og:title" content="${title}">`);
   out = out.replace(/<meta property="og:description"[^>]*>/i, `<meta property="og:description" content="${desc}">`);
   out = out.replace(/<meta property="og:image"[^>]*>/i, `<meta property="og:image" content="${ogImg}">`);
+  out = out.replace(/<meta property="og:image:width"[^>]*>/i, `<meta property="og:image:width" content="1200">`);
+  out = out.replace(/<meta property="og:image:height"[^>]*>/i, `<meta property="og:image:height" content="630">`);
   return out;
 }
 

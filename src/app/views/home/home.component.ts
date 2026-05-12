@@ -10,6 +10,7 @@ import { SwiperService } from '../../services/swiper.service';
 import { WishlistService } from '../../services/wishlist.service';
 import { CurrencyConversionService } from '../../services/currency-conversion.service';
 import { DynamicAssetLoaderService } from '../../services/dynamic-asset-loader.service';
+import { buildHomePageJsonLd } from '../../seo/home-page-json-ld';
 declare const Plyr: any;
 
 @Component({
@@ -252,104 +253,6 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     return firstHero === segment;
   }
 
-  homeSchema: any = [
-    {
-      "@context": "https://schema.org",
-      "@type": "Organization",
-      "@id": "https://tulsisilks.co.in/#organization",
-      "name": "Tulsi Silks",
-      "url": "https://tulsisilks.co.in/",
-      "logo": "https://yourstore.io/api/uploads/5d30013a5c83a702392c4c8b/logo.png",
-      "sameAs": [
-        "https://www.instagram.com/tulsisilks/",
-        "https://x.com/TulsiSilks",
-        "https://www.facebook.com/tulsisilks"
-      ],
-      "foundingDate": "1993",
-      "founders": [
-        { "@type": "Person", "name": "Suresh Parekh" },
-        { "@type": "Person", "name": "Santosh Parekh" }
-      ],
-      "contactPoint": [
-        {
-          "@type": "ContactPoint",
-          "contactType": "customer service",
-          "telephone": "+91-9791019822",
-          "email": "orders@tulsisilks.com",
-          "areaServed": "IN",
-          "availableLanguage": ["en","ta","hi","te","mwr"]
-        }
-      ]
-    },
-    {
-      "@context": "https://schema.org",
-      "@type": "Store",
-      "@id": "https://tulsisilks.co.in/#store",
-      "name": "Tulsi Silks Saree Store",
-      "url": "https://tulsisilks.co.in/",
-      "image": "https://yourstore.io/api/uploads/5d30013a5c83a702392c4c8b/logo.png",
-      "telephone": "+91-9791019822",
-      "email": "orders@tulsisilks.com",
-      "parentOrganization": { "@id": "https://tulsisilks.co.in/#organization" },
-      "additionalType": "https://www.wikidata.org/wiki/Q1153805",
-      "priceRange": "₹₹₹",
-      "currenciesAccepted": "INR",
-      "paymentAccepted": "UPI, Credit Card, Debit Card, NetBanking, Cash",
-      "address": {
-        "@type": "PostalAddress",
-        "streetAddress": "68, Luz Church Rd",
-        "addressLocality": "Mylapore",
-        "addressRegion": "Tamil Nadu",
-        "postalCode": "600004",
-        "addressCountry": "IN"
-      },
-      "geo": { "@type": "GeoCoordinates", "latitude": 13.037367, "longitude": 80.262608 },
-      "hasMap": "https://maps.google.com/?q=13.037367,80.262608",
-      "openingHoursSpecification": [
-        {
-          "@type": "OpeningHoursSpecification",
-          "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"],
-          "opens": "09:30",
-          "closes": "19:30"
-        },
-        {
-          "@type": "OpeningHoursSpecification",
-          "dayOfWeek": "Sunday",
-          "opens": "10:00",
-          "closes": "19:00"
-        }
-      ],
-      "sameAs": [
-        "https://www.instagram.com/tulsisilks/",
-        "https://x.com/TulsiSilks",
-        "https://www.facebook.com/tulsisilks"
-      ]
-    },
-    {
-      "@context": "https://schema.org",
-      "@type": "MerchantReturnPolicy",
-      "@id": "https://tulsisilks.co.in/#return-policy",
-      "name": "Tulsi Silks Return Policy",
-      "merchantReturnDays": 7,
-      "returnMethod": "https://schema.org/ReturnByMail",
-      "returnFees": "https://schema.org/FreeReturn",
-      "applicableCountry": "IN"
-    },
-    {
-      "@context": "https://schema.org",
-      "@type": "WebSite",
-      "@id": "https://tulsisilks.co.in/#website",
-      "url": "https://tulsisilks.co.in/",
-      "name": "Tulsi Silks",
-      "publisher": { "@id": "https://tulsisilks.co.in/#organization" },
-      "potentialAction": {
-        "@type": "SearchAction",
-        "target": "https://tulsisilks.co.in/search?q={search_term_string}",
-        "query-input": "required name=search_term_string"
-      }
-    }
-  ];
-
   constructor(
     @Inject(PLATFORM_ID) private platformId: Object, private storeApi: StoreApiService, public swiperService: SwiperService,
     private sanitizer: DomSanitizer, public commonService: CommonService, private router: Router, public ws: WishlistService,
@@ -366,8 +269,8 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnInit(): void {
     this.setSliderHeight();
-    // JSON-LD
-    this.commonService.createJsonLD("home-jsonld", this.homeSchema);
+    // JSON-LD — canonical graph in src/app/seo/home-page-json-ld.ts
+    this.commonService.createJsonLD('home-jsonld', buildHomePageJsonLd());
     if(!this.commonService.contact_page_info) {
       this.pageLoader = true;
       this.storeApi.CONTACT_PAGE_INFO().subscribe(result => {
@@ -519,63 +422,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
       this.findCurrency();
       setTimeout(() => { this.initializeSwiper(this.commonService.layout_list); }, 100);
     }
-    // website schema
-    let webSchema = {
-      "@context": "https://schema.org/",
-      "@type": "WebSite",
-      "name": this.commonService.store_details?.name,
-      "url": this.commonService.origin,
-      "potentialAction": {
-        "@type": "SearchAction",
-        "target": this.commonService.origin+"/search?q={query}",
-        "query-input": "required name=query"
-      }
-    };
-    this.commonService.createJsonLD("web-jsonld", webSchema);
-    // business schema
-    let businessSchema = {
-      "@context": "https://schema.org",
-      "@type": "LocalBusiness",
-      "name": "Tulsi Silks",
-      "image": "https://yourstore.io/api/uploads/5d30013a5c83a702392c4c8b/logo.png?v=654TRTYR654",
-      "@id": "",
-      "url": "https://tulsisilks.co.in/",
-      "telephone": "04424991086",
-      "priceRange": "$$$",
-      "address": {
-        "@type": "PostalAddress",
-        "streetAddress": "68, Luz Church Rd, Kapali Thottam, Mylapore,",
-        "addressLocality": "Chennai",
-        "postalCode": "600004",
-        "addressCountry": "IN"
-      },
-      "geo": {
-        "@type": "GeoCoordinates",
-        "latitude": 13.03802082439817,
-        "longitude": 80.26062611851863
-      },
-      "openingHoursSpecification": {
-        "@type": "OpeningHoursSpecification",
-        "dayOfWeek": [
-          "Monday",
-          "Tuesday",
-          "Wednesday",
-          "Thursday",
-          "Friday",
-          "Saturday"
-        ],
-        "opens": "09:30",
-        "closes": "19:30"
-      },
-      "sameAs": [
-        "https://www.facebook.com/TulsiSilks/",
-        "https://www.instagram.com/tulsisilks/",
-        "https://twitter.com/tulsisilks",
-        "https://www.youtube.com/channel/UCQSUU3UkKL2ZFixxSoJdqoA",
-        "https://tulsisilks.co.in/"
-      ] 
-    };
-    this.commonService.createJsonLD("business-jsonld", businessSchema);
+    // Homepage entity JSON-LD is injected once from buildHomePageJsonLd() — no duplicate WebSite / LocalBusiness here.
     // breadcrumb
     let bcList = [{ name: "Home", position: 1, link: "/" }];
     this.commonService.breadCrumbList(bcList);
@@ -1016,6 +863,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     this.storeSubscription.unsubscribe();
     this.commonService.removeElement('home-jsonld');
     this.commonService.removeElement('business-jsonld');
+    this.commonService.removeElement('web-jsonld');
   }
 
 }
