@@ -17,6 +17,12 @@ export class FooterComponent {
   subscribeForm: any = {};
   imgBaseUrl: string = environment.img_baseurl;
   currentYear: any = (new Date()).getFullYear();
+
+  /** API-driven; `tel:+91…` via `CommonService.getFooterPrimaryPhone()`. */
+  get footerPhone(): { telHref: string; display: string } | null {
+    return this.commonService.getFooterPrimaryPhone();
+  }
+
   private lastFocusedEl: HTMLElement | null = null;
   private subscribeModalOpen = false;
 

@@ -27,20 +27,21 @@ export class ContactUsComponent implements OnInit {
     "@type": "LocalBusiness",
     "name": "Tulsi Silks",
     "image": "https://yourstore.io/api/uploads/5d30013a5c83a702392c4c8b/logo.png?v=20241016221",
-    "@id": "https://tulsisilks.co.in/",
+    "@id": "https://tulsisilks.co.in/#localbusiness",
     "url": "https://tulsisilks.co.in/",
-    "telephone": "044 24991086",
+    "telephone": "+918072444353",
     "address": {
       "@type": "PostalAddress",
-      "streetAddress": "68, Luz Church Rd, Mylapore",
+      "streetAddress": "68, Luz Church Rd, CIT Colony, Mylapore",
       "addressLocality": "Chennai",
+      "addressRegion": "Tamil Nadu",
       "postalCode": "600004",
       "addressCountry": "IN"
     },
     "geo": {
       "@type": "GeoCoordinates",
-      "latitude": 13.037742798998826,
-      "longitude": 80.26028970552234
+      "latitude": 13.037926566822968,
+      "longitude": 80.26039417116382
     },
     "openingHoursSpecification": {
       "@type": "OpeningHoursSpecification",
@@ -56,8 +57,8 @@ export class ContactUsComponent implements OnInit {
       "closes": "19:30"
     },
     "sameAs": [
-      "https://www.facebook.com/TulsiSilks/",
-      "https://twitter.com/tulsisilks",
+      "https://www.facebook.com/tulsisilks/",
+      "https://x.com/TulsiSilks",
       "https://www.instagram.com/tulsisilks/",
       "https://in.pinterest.com/tulsisilks0070/"
     ] 

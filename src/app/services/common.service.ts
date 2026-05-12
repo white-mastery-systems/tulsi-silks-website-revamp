@@ -7,7 +7,27 @@ import { Subject } from 'rxjs';
 import { StoreApiService } from './store-api.service';
 import { environment } from '../../environments/environment';
 import CryptoJS from 'crypto-js';
+import { buildHomePageJsonLd, HomeJsonLdInput } from '../seo/home-page-json-ld';
 declare const $: any;
+
+const HOME_JSON_LD_DEFAULTS = {
+  organizationName: 'Tulsi Silks',
+  storeName: 'Tulsi Silks Saree Store',
+  email: 'orders@tulsisilks.com',
+  telephone: '+918072444353',
+  streetAddress: '68, Luz Church Rd, CIT Colony, Mylapore',
+  addressLocality: 'Chennai',
+  addressRegion: 'Tamil Nadu',
+  postalCode: '600004',
+  addressCountry: 'IN',
+  latitude: 13.037926566822968,
+  longitude: 80.26039417116382,
+  sameAs: [
+    'https://www.instagram.com/tulsisilks/',
+    'https://x.com/TulsiSilks',
+    'https://www.facebook.com/tulsisilks',
+  ] as const,
+};
 
 @Injectable({
   providedIn: 'root'
@@ -304,7 +324,291 @@ export class CommonService {
     if(result.length > 1) output += "." + result[1];
     return output+".00";
   }
-  /* JSON LD */
+
+  /**
+   * Footer tap-to-call from store APIs.
+   * Order: `footer_config.contact_config` → `store_details.company_details` → `application_setting.chat_config.mobile`.
+   * Optional labels: `phone_display`, `phone_label`, `contact_display` on contact_config or company_details.
+   */
+  getFooterPrimaryPhone(): { telHref: string; display: string } | null {
+    const fc = this.footer_config?.contact_config as Record<string, unknown> | undefined;
+    const cd = this.store_details?.company_details as Record<string, unknown> | undefined;
+    const chat = this.application_setting?.chat_config as Record<string, unknown> | undefined;
+
+    const pick = (...vals: unknown[]): string => {
+      for (const v of vals) {
+        if (v != null && String(v).trim()) return String(v).trim();
+      }
+      return '';
+    };
+
+    let raw = pick(
+      fc?.['mobile'],
+      fc?.['contact_no'],
+      fc?.['phone'],
+      cd?.['mobile'],
+      cd?.['contact_no'],
+      cd?.['phone'],
+    );
+    const dialRaw = pick(fc?.['dial_code'], cd?.['dial_code']);
+
+    if (!raw && chat?.['mobile']) {
+      raw = String(chat['mobile']);
+    }
+
+    if (!raw) return null;
+
+    const digitsOnly = (s: string) => s.replace(/\D/g, '').replace(/^0+/, '');
+    const national = digitsOnly(raw);
+    const dialDigits = dialRaw ? digitsOnly(dialRaw) : '';
+
+    if (!national || national.length < 8) return null;
+
+    let e164Digits = national;
+    if (dialDigits.length && national.length <= 10 && !national.startsWith(dialDigits)) {
+      e164Digits = dialDigits + national;
+    } else if (!dialDigits.length && national.length === 10) {
+      const country = String(this.store_details?.country ?? '');
+      if (country === 'India' || country === 'IN') e164Digits = '91' + national;
+    }
+
+    const telHref = `tel:+${e164Digits}`;
+
+    const displayOverride = pick(
+      fc?.['phone_display'],
+      fc?.['phone_label'],
+      fc?.['contact_display'],
+      cd?.['phone_display'],
+      cd?.['contact_display'],
+    );
+    const display = displayOverride || this.formatIntlPhoneDisplay(e164Digits);
+
+    return { telHref, display };
+  }
+
+  private formatIntlPhoneDisplay(e164Digits: string): string {
+    if (e164Digits.startsWith('91') && e164Digits.length === 12) {
+      const rest = e164Digits.slice(2);
+      return `+91 ${rest.slice(0, 5)} ${rest.slice(5)}`;
+    }
+    return `+${e164Digits}`;
+  }
+
+  /** Strip HTML for plain-text schema fields (footer `address_config.content` is often HTML). */
+  private stripHtmlForSchema(value: string): string {
+    return value.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+  }
+
+  private parseSameAs(raw: unknown): string[] {
+    if (Array.isArray(raw)) {
+      return raw
+        .map((x) => {
+          if (x == null) return '';
+          if (typeof x === 'string') return x.trim();
+          if (typeof x === 'object' && x !== null && 'url' in (x as object)) {
+            return String((x as { url?: unknown }).url ?? '').trim();
+          }
+          return String(x).trim();
+        })
+        .filter(Boolean);
+    }
+    if (typeof raw === 'string' && raw.trim()) {
+      return raw
+        .split(/[,;\n]/)
+        .map((s) => s.trim())
+        .filter(Boolean);
+    }
+    return [];
+  }
+
+  private collectSameAsForSchema(): string[] {
+    const fc = this.footer_config?.contact_config as Record<string, unknown> | undefined;
+    const foot = this.footer_config as Record<string, unknown> | undefined;
+    const cd = this.store_details?.company_details as Record<string, unknown> | undefined;
+    for (const raw of [fc?.['same_as'], fc?.['sameAs'], foot?.['same_as'], cd?.['same_as']]) {
+      const list = this.parseSameAs(raw);
+      if (list.length) return list;
+    }
+    return [...HOME_JSON_LD_DEFAULTS.sameAs];
+  }
+
+  getCanonicalOrigin(): string {
+    const d = environment.domain;
+    if (typeof d === 'string' && d.trim()) {
+      const t = d.trim();
+      if (t.startsWith('http://') || t.startsWith('https://')) {
+        return t.replace(/\/$/, '');
+      }
+      return `https://${t.replace(/\/$/, '')}`;
+    }
+    if (typeof this.origin === 'string' && /^https?:\/\//.test(this.origin)) {
+      return this.origin.replace(/\/$/, '');
+    }
+    return 'https://tulsisilks.co.in';
+  }
+
+  private getLogoUrlForSchema(): string {
+    const path = this.store_logo || this.social_logo;
+    const base = environment.img_baseurl || '';
+    if (!path) {
+      return `${base}uploads/${this.store_id}/logo.png`;
+    }
+    const p = String(path);
+    if (p.startsWith('http://') || p.startsWith('https://')) return p;
+    return `${base}${p.replace(/^\//, '')}`;
+  }
+
+  /** E.164 `+…` for JSON-LD `telephone`, aligned with `getFooterPrimaryPhone()`. */
+  getSchemaTelephoneE164(): string {
+    const fp = this.getFooterPrimaryPhone();
+    if (fp?.telHref?.startsWith('tel:+')) {
+      return fp.telHref.slice(4);
+    }
+    return HOME_JSON_LD_DEFAULTS.telephone;
+  }
+
+  buildHomeJsonLdInput(): HomeJsonLdInput {
+    const origin = this.getCanonicalOrigin();
+    const ac = this.footer_config?.address_config as Record<string, unknown> | undefined;
+    const fc = this.footer_config?.contact_config as Record<string, unknown> | undefined;
+    const cd = this.store_details?.company_details as Record<string, unknown> | undefined;
+    const sd = this.store_details as Record<string, unknown> | undefined;
+    const cpi = this.contact_page_info as Record<string, unknown> | undefined;
+
+    const pickStr = (...vals: unknown[]): string => {
+      for (const v of vals) {
+        if (v == null) continue;
+        const s = String(v).trim();
+        if (s) return this.stripHtmlForSchema(s);
+      }
+      return '';
+    };
+
+    const pickNum = (...vals: unknown[]): number | null => {
+      for (const v of vals) {
+        if (v == null || v === '') continue;
+        const n = typeof v === 'number' ? v : parseFloat(String(v));
+        if (Number.isFinite(n)) return n;
+      }
+      return null;
+    };
+
+    const orgName = pickStr(sd?.['name'], HOME_JSON_LD_DEFAULTS.organizationName) || HOME_JSON_LD_DEFAULTS.organizationName;
+    const storeName =
+      pickStr(cd?.['store_display_name'], cd?.['store_name'], `${orgName} Saree Store`) || HOME_JSON_LD_DEFAULTS.storeName;
+
+    const telephone = this.getSchemaTelephoneE164();
+    const email =
+      pickStr(fc?.['email'], cd?.['email'], cpi?.['email'], HOME_JSON_LD_DEFAULTS.email) || HOME_JSON_LD_DEFAULTS.email;
+
+    const streetAddress =
+      pickStr(
+        ac?.['street_address'],
+        ac?.['streetAddress'],
+        ac?.['address_line_1'],
+        ac?.['line1'],
+        cd?.['street_address'],
+        cd?.['streetAddress'],
+        cd?.['address'],
+        cpi?.['address'],
+        cpi?.['streetAddress'],
+        ac?.['content'],
+        HOME_JSON_LD_DEFAULTS.streetAddress,
+      ) || HOME_JSON_LD_DEFAULTS.streetAddress;
+
+    const addressLocality =
+      pickStr(
+        ac?.['city'],
+        ac?.['locality'],
+        ac?.['addressLocality'],
+        cd?.['city'],
+        sd?.['city'],
+        cpi?.['city'],
+        HOME_JSON_LD_DEFAULTS.addressLocality,
+      ) || HOME_JSON_LD_DEFAULTS.addressLocality;
+
+    const addressRegion =
+      pickStr(
+        ac?.['state'],
+        ac?.['region'],
+        ac?.['addressRegion'],
+        cd?.['state'],
+        sd?.['state'],
+        cpi?.['state'],
+        HOME_JSON_LD_DEFAULTS.addressRegion,
+      ) || HOME_JSON_LD_DEFAULTS.addressRegion;
+
+    const postalCode =
+      pickStr(
+        ac?.['pincode'],
+        ac?.['postal_code'],
+        ac?.['postalCode'],
+        ac?.['zip'],
+        cd?.['pincode'],
+        cd?.['postal_code'],
+        cpi?.['pincode'],
+        cpi?.['postal_code'],
+        HOME_JSON_LD_DEFAULTS.postalCode,
+      ) || HOME_JSON_LD_DEFAULTS.postalCode;
+
+    const countryRaw = pickStr(
+      ac?.['country'],
+      cd?.['country'],
+      sd?.['country'],
+      HOME_JSON_LD_DEFAULTS.addressCountry,
+    );
+    let addressCountry = HOME_JSON_LD_DEFAULTS.addressCountry;
+    if (countryRaw) {
+      const u = countryRaw.toLowerCase();
+      if (u === 'india' || u === 'in') addressCountry = 'IN';
+      else if (countryRaw.length === 2) addressCountry = countryRaw.toUpperCase();
+    }
+
+    const latitude =
+      pickNum(
+        ac?.['latitude'],
+        ac?.['lat'],
+        cd?.['latitude'],
+        cd?.['lat'],
+        cpi?.['latitude'],
+        cpi?.['lat'],
+        sd?.['latitude'],
+      ) ?? HOME_JSON_LD_DEFAULTS.latitude;
+    const longitude =
+      pickNum(
+        ac?.['longitude'],
+        ac?.['lng'],
+        ac?.['lon'],
+        cd?.['longitude'],
+        cd?.['lng'],
+        cpi?.['longitude'],
+        cpi?.['lng'],
+        sd?.['longitude'],
+      ) ?? HOME_JSON_LD_DEFAULTS.longitude;
+
+    return {
+      origin,
+      organizationName: orgName,
+      storeName,
+      logoUrl: this.getLogoUrlForSchema(),
+      telephone,
+      email,
+      streetAddress,
+      addressLocality,
+      addressRegion,
+      postalCode,
+      addressCountry,
+      latitude,
+      longitude,
+      sameAs: this.collectSameAsForSchema(),
+    };
+  }
+
+  applyHomePageJsonLd(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+    this.removeElement('home-jsonld');
+    this.createJsonLD('home-jsonld', buildHomePageJsonLd(this.buildHomeJsonLdInput()));
+  }
 
   getCountryList() {
     return new Promise((resolve, reject) => {

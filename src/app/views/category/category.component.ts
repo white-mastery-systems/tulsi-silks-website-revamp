@@ -58,7 +58,7 @@ export class CategoryComponent implements OnInit {
           {
             "@type": "ContactPoint",
             "contactType": "customer service",
-            "telephone": "+91-9791019822",
+            "telephone": "+918072444353",
             "availableLanguage": [
               "en",
               "ta",
@@ -70,23 +70,9 @@ export class CategoryComponent implements OnInit {
         ],
         "sameAs": [
           "https://www.instagram.com/tulsisilks/",
-          "https://www.facebook.com/TulsiSilks/"
+          "https://x.com/TulsiSilks",
+          "https://www.facebook.com/tulsisilks"
         ]
-      },
-      {
-        "@type": "WebSite",
-        "@id": "https://tulsisilks.co.in/#website",
-        "url": "https://tulsisilks.co.in/",
-        "name": "Tulsi Silks",
-        "inLanguage": "en-IN",
-        "publisher": {
-          "@id": "https://tulsisilks.co.in/#organization"
-        },
-        "potentialAction": {
-          "@type": "SearchAction",
-          "target": "https://tulsisilks.co.in/search?q={search_term_string}",
-          "query-input": "required name=search_term_string"
-        }
       },
       {
         "@type": "BreadcrumbList"
@@ -94,6 +80,7 @@ export class CategoryComponent implements OnInit {
       {
         "@type": "CollectionPage",
         "inLanguage": "en-IN",
+        "isPartOf": { "@id": "https://tulsisilks.co.in/#website" },
         "mainEntity": {
           "@type": "ItemList",
           "itemListElement": []
@@ -105,17 +92,18 @@ export class CategoryComponent implements OnInit {
         "name": "Tulsi Silks",
         "url": "https://tulsisilks.co.in/",
         "logo": "https://tulsisilks.co.in/assets/images/logo.png",
-        "telephone": "+91-9791019822",
+        "telephone": "+918072444353",
         "email": "orders@tulsisilks.com",
         "sameAs": [
           "https://www.instagram.com/tulsisilks/",
-          "https://www.facebook.com/TulsiSilks/",
+          "https://x.com/TulsiSilks",
+          "https://www.facebook.com/tulsisilks/",
           "https://www.google.com/maps?cid=5155564344403189918",
           "https://www.google.com/m/storepages?q=tulsisilks.co.in&c=IN&hl=en-IN"
         ],
         "address": {
           "@type": "PostalAddress",
-          "streetAddress": "68, Luz Church Rd, Kapali Thottam, Mylapore",
+          "streetAddress": "68, Luz Church Rd, CIT Colony, Mylapore",
           "addressLocality": "Chennai",
           "addressRegion": "Tamil Nadu",
           "postalCode": "600004",
@@ -123,8 +111,8 @@ export class CategoryComponent implements OnInit {
         },
         "geo": {
           "@type": "GeoCoordinates",
-          "latitude": 13.0377511,
-          "longitude": 80.260277
+          "latitude": 13.037926566822968,
+          "longitude": 80.26039417116382
         },
         "openingHoursSpecification": [
           {
@@ -139,15 +127,9 @@ export class CategoryComponent implements OnInit {
             ],
             "opens": "09:30",
             "closes": "19:30"
-          },
-          {
-            "@type": "OpeningHoursSpecification",
-            "dayOfWeek": "Sunday",
-            "opens": "10:00",
-            "closes": "19:00"
           }
         ],
-        "hasMap": "https://www.google.com/maps/search/?api=1&query=13.0377511,80.260277",
+        "hasMap": "https://www.google.com/maps/search/?api=1&query=13.037926566822968,80.26039417116382",
         "areaServed": [
           {
             "@type": "Country",
@@ -898,15 +880,15 @@ export class CategoryComponent implements OnInit {
 
   setCategorySchema() {
     // breadcrumb
-    this.categorySchema['@graph'][2]['@id'] = "https://tulsisilks.co.in"+this.pageUrl+"#breadcrumbs";
-    this.categorySchema['@graph'][2]['itemListElement'] = [{
+    this.categorySchema['@graph'][1]['@id'] = "https://tulsisilks.co.in"+this.pageUrl+"#breadcrumbs";
+    this.categorySchema['@graph'][1]['itemListElement'] = [{
       "@type": "ListItem",
       "position": 1,
       "name": "Home",
       "item": "https://tulsisilks.co.in/"
     }];
     if(this.isKanjivaram) {
-      this.categorySchema['@graph'][2]['itemListElement'].push({
+      this.categorySchema['@graph'][1]['itemListElement'].push({
         "@type": "ListItem",
         "position": 2,
         "name": "Kanjivaram Silk Sarees",
@@ -914,7 +896,7 @@ export class CategoryComponent implements OnInit {
       });
     }
     else if(this.isBanarasi) {
-      this.categorySchema['@graph'][2]['itemListElement'].push({
+      this.categorySchema['@graph'][1]['itemListElement'].push({
         "@type": "ListItem",
         "position": 2,
         "name": "Banarasi Silk Sarees",
@@ -922,32 +904,32 @@ export class CategoryComponent implements OnInit {
       });
     }
      else if(this.isOrganza) {
-      this.categorySchema['@graph'][2]['itemListElement'].push({
+      this.categorySchema['@graph'][1]['itemListElement'].push({
         "@type": "ListItem",
         "position": 2,
         "name": "Organza Sarees",
         "item": "https://tulsisilks.co.in/category/organza-sarees"
       });
     }
-    this.categorySchema['@graph'][2]['itemListElement'].push({
+    this.categorySchema['@graph'][1]['itemListElement'].push({
       "@type": "ListItem",
-      "position": this.categorySchema['@graph'][2]['itemListElement'].length+1,
+      "position": this.categorySchema['@graph'][1]['itemListElement'].length+1,
       "name": this.category_details.name,
       "item": "https://tulsisilks.co.in"+this.pageUrl
     });
     // item list
-    this.categorySchema['@graph'][3]['@id'] = "https://tulsisilks.co.in"+this.pageUrl+"#collection";
-    this.categorySchema['@graph'][3]['url'] = "https://tulsisilks.co.in"+this.pageUrl;
-    this.categorySchema['@graph'][3]['name'] = this.category_details.name;
-    this.categorySchema['@graph'][3]['description'] = this.category_details.seo_details?.meta_desc || '';
-    this.categorySchema['@graph'][3]['mainEntity']['itemListElement'] = [];
+    this.categorySchema['@graph'][2]['@id'] = "https://tulsisilks.co.in"+this.pageUrl+"#collection";
+    this.categorySchema['@graph'][2]['url'] = "https://tulsisilks.co.in"+this.pageUrl;
+    this.categorySchema['@graph'][2]['name'] = this.category_details.name;
+    this.categorySchema['@graph'][2]['description'] = this.category_details.seo_details?.meta_desc || '';
+    this.categorySchema['@graph'][2]['mainEntity']['itemListElement'] = [];
 
     let pageItemList = this.parent_list.sort((a, b) => 0 - (a.rank > b.rank ? 1 : -1)).slice(0, this.pageSize);
     let ind = 0;
     for(let itemData of pageItemList)
     {
       ind++;
-      this.categorySchema['@graph'][3]['mainEntity']['itemListElement'].push(
+      this.categorySchema['@graph'][2]['mainEntity']['itemListElement'].push(
         {
           "@type": "ListItem",
           "position": ind,
@@ -1034,7 +1016,7 @@ export class CategoryComponent implements OnInit {
     if(tempList.length > 1) {
       let minPrice = this.decimalPipe.transform(tempList[0].discounted_price, '1.0-0');
       let maxPrice = this.decimalPipe.transform(tempList[tempList.length-1].discounted_price, '1.0-0');
-      this.categorySchema['@graph'][4]['priceRange'] = "INR "+minPrice+" - INR "+maxPrice;
+      this.categorySchema['@graph'][3]['priceRange'] = "INR "+minPrice+" - INR "+maxPrice;
     }
 
     // JSON-LD

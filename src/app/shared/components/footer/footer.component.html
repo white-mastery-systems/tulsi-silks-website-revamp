@@ -104,13 +104,22 @@
             ></p>
             <p *ngIf="commonService.footer_config.address_config?.content" [innerHtml]="commonService.footer_config.address_config.content"></p>
           </div>
-          <div class="mt-4">          
+          <div class="mt-4 footer-contact-block">
             <p
               *ngIf="commonService.footer_config.contact_config?.title"
               class="footer-label"
               [innerHtml]="commonService.footer_config.contact_config.title"
             ></p>
-            <p *ngIf="commonService.footer_config.contact_config?.content" [innerHtml]="commonService.footer_config.contact_config.content"></p>
+            <!-- <p class="footer-primary-phone mb-0 mt-2" *ngIf="footerPhone as fp">
+              <a
+                class="footer-tel-link"
+                [href]="fp.telHref"
+                [attr.aria-label]="'Call ' + (commonService.store_details?.name || 'us') + ' at ' + fp.display"
+              >
+                {{ fp.display }}
+              </a>
+            </p> -->
+            <p class="footer-contact-extra mt-2 mb-0" *ngIf="commonService.footer_config.contact_config?.content" [innerHtml]="commonService.footer_config.contact_config.content"></p>
           </div>
         </div>
 

@@ -10,7 +10,6 @@ import { SwiperService } from '../../services/swiper.service';
 import { WishlistService } from '../../services/wishlist.service';
 import { CurrencyConversionService } from '../../services/currency-conversion.service';
 import { DynamicAssetLoaderService } from '../../services/dynamic-asset-loader.service';
-import { buildHomePageJsonLd } from '../../seo/home-page-json-ld';
 declare const Plyr: any;
 
 @Component({
@@ -269,8 +268,8 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnInit(): void {
     this.setSliderHeight();
-    // JSON-LD — canonical graph in src/app/seo/home-page-json-ld.ts
-    this.commonService.createJsonLD('home-jsonld', buildHomePageJsonLd());
+    // JSON-LD — rebuilt when `applyHomePageJsonLd()` runs (initial + after store/footer APIs).
+    this.commonService.applyHomePageJsonLd();
     if(!this.commonService.contact_page_info) {
       this.pageLoader = true;
       this.storeApi.CONTACT_PAGE_INFO().subscribe(result => {
@@ -422,10 +421,8 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
       this.findCurrency();
       setTimeout(() => { this.initializeSwiper(this.commonService.layout_list); }, 100);
     }
-    // Homepage entity JSON-LD is injected once from buildHomePageJsonLd() — no duplicate WebSite / LocalBusiness here.
-    // breadcrumb
-    let bcList = [{ name: "Home", position: 1, link: "/" }];
-    this.commonService.breadCrumbList(bcList);
+    this.commonService.applyHomePageJsonLd();
+    // Homepage JSON-LD — no separate BreadcrumbList (avoids duplicate with single-item crumbs).
   }
 
   updateLayoutList(layoutList) {
