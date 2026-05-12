@@ -28,6 +28,12 @@ export class FooterComponent {
   /** Line under social icons in brand column. */
   readonly footerSocialCaption = 'Follow for saree styling inspiration';
 
+  /**
+   * `appImgIntersection` rootMargin for the Yourstore band logo — expands the bottom
+   * of the viewport so the real SVG starts loading before the band is on screen (helps slow networks).
+   */
+  readonly bandLogoIntersectionMargin = '0px 0px 560px 0px';
+
   /** API-driven; `tel:+91…` via `CommonService.getFooterPrimaryPhone()`. */
   get footerPhone(): { telHref: string; display: string } | null {
     return this.commonService.getFooterPrimaryPhone();

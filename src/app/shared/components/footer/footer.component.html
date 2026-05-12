@@ -161,7 +161,17 @@
     <div class="yourstore-inner">
       <div class="yourstore-inner-div">
         <a href="https://yourstore.io" class="yourstore-text" target="_blank">
-          <img appImgIntersection ImagelazyLoad="assets/images/ys-logos/band-icon.svg" draggable="false" class="yourstore-logo band-txt" alt="Yourstore ecommerce platform" width="25" height="20">
+          <img
+            appImgIntersection
+            [intersectionRootMargin]="bandLogoIntersectionMargin"
+            ImagelazyLoad="assets/images/ys-logos/band-icon.svg"
+            draggable="false"
+            class="yourstore-logo band-txt"
+            alt="Yourstore ecommerce platform"
+            width="25"
+            height="20"
+            decoding="async"
+          />
           <span class="band-txt">Powered by yourstore</span>
         </a>
       </div>

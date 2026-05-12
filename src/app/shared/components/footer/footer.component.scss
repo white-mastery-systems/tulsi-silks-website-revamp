@@ -57,3 +57,23 @@
     color: inherit;
   }
 }
+
+/* Yourstore band (`appImgIntersection`): reserve box + alignment while placeholder → SVG swaps */
+.yourstore--band {
+  .yourstore-text {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+  }
+
+  .yourstore-logo {
+    display: inline-block;
+    vertical-align: middle;
+    object-fit: contain;
+    flex-shrink: 0;
+    max-width: 45px;
+    min-width: 25px;
+    min-height: 20px;
+    background: rgba(255, 255, 255, 0.06);
+  }
+}
