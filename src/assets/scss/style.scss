@@ -262,6 +262,19 @@ article, aside, footer, header, nav, section { width: 100%; float: left; positio
 .grid-categories .category figure img{ width:100%;transition: transform 1s ease-in-out;}
 .grid-categories .category:hover img{ transform: scale(1.1);transition: transform 1s ease-in-out;}
 
+/* GRID 1 – 4:3 aspect ratio images */
+.section-grid--grid_1 {
+  figure {
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
+}
+
 /* GRID 7 (Homepage Categories) – keep legacy layout, improve spacing */
 .section-grid--grid_7{
   .grids{
