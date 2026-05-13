@@ -1,4 +1,4 @@
-<section class="home-section" aria-label="Homepage content">
+﻿<section class="home-section" aria-label="Homepage content">
   <!-- Single template for product card prices on home (featured + multi-tab sliders/grids). -->
   <ng-template #homeProductCardPrices let-p>
     <span *ngIf="p.disc_status" class="strike">{{
@@ -2494,30 +2494,10 @@
               class="swiper-slide testimonial-slide"
             >
               <article class="testimonial-card">
-                <figure class="testimonial-card__media">
-                  <img
-                    loading="lazy"
-                    width="100%"
-                    height="100%"
-                    appLqimgLoad
-                    appDeferLoad
-                    [ImagelazyLoad]="imgBaseUrl + x.desktop_img"
-                    alt="{{
-                      x.content_details?.heading
-                        ? 'Customer testimonial — ' + x.content_details.heading
-                        : x.img_alt
-                          ? x.img_alt
-                          : 'Customer testimonial'
-                    }}"
-                  />
-                </figure>
-
                 <div class="testimonial-card__body" *ngIf="x?.content_details">
                   <div
                     class="testimonial-card__stars"
-                    [attr.aria-label]="
-                      (x.content_details.review_star || 0) + ' out of 5 stars'
-                    "
+                    [attr.aria-label]="(x.content_details.review_star || 0) + ' out of 5 stars'"
                   >
                     <ng-container *ngFor="let s of [1, 2, 3, 4, 5]">
                       <span
@@ -2529,20 +2509,33 @@
                     </ng-container>
                   </div>
 
-                  <p class="testimonial-card__name">{{ x.content_details.heading }}</p>
-
                   <blockquote class="testimonial-card__quote">
                     “{{ x.content_details.description }}”
                   </blockquote>
+
+                  <div class="testimonial-card__author">
+                    <figure class="testimonial-card__media">
+                      <img
+                        loading="lazy"
+                        width="48"
+                        height="48"
+                        appLqimgLoad
+                        appDeferLoad
+                        [ImagelazyLoad]="imgBaseUrl + x.desktop_img"
+                        [attr.alt]="x.content_details?.heading ? 'Customer - ' + x.content_details.heading : (x.img_alt || 'Customer testimonial')"
+                      />
+                    </figure>
+                    <div class="testimonial-card__author-info">
+                      <p class="testimonial-card__name">{{ x.content_details.heading }}</p>
+                      <span class="testimonial-card__source">Google review</span>
+                    </div>
+                  </div>
 
                   <button
                     *ngIf="x.btn_status && x.btn_text"
                     type="button"
                     class="primary-btn outline-btn testimonial-card__cta"
-                    [attr.aria-label]="
-                      x.btn_text +
-                      (x.content_details?.heading ? ' — ' + x.content_details.heading : '')
-                    "
+                    [attr.aria-label]="x.btn_text + (x.content_details?.heading ? ' - ' + x.content_details.heading : '')"
                     (click)="commonService.onPageRedirect(x)"
                   >
                     {{ x.btn_text }}

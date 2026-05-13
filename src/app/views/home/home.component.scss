@@ -199,16 +199,33 @@
   }
 }
 
-/* Testimonials: card slider like provided design. */
+/* Testimonials: dark Google-Reviews style, theme-matched */
 .testimonial-sec {
-  background: #d99550;
+  background: #1f1b24;
   padding: clamp(2rem, 4vw, 3rem) 0;
+
+  .swiper-button-prev,
+  .swiper-button-next {
+    background-color: rgba(255, 255, 255, 0.12) !important;
+    border: 1px solid rgba(255, 255, 255, 0.22) !important;
+    box-shadow: none !important;
+
+    lucide-icon {
+      filter: invert(1) !important;
+    }
+  }
+
+  .swiper-button-prev.swiper-button-disabled,
+  .swiper-button-next.swiper-button-disabled {
+    background-color: rgba(255, 255, 255, 0.06) !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+  }
 }
 
 .testimonial-sec .titles {
   padding-left: 0;
   padding-right: 0;
-  text-align: left;
+  text-align: center;
 }
 
 .testimonial-sec .titles h2,
@@ -227,73 +244,108 @@
 
 .testimonial-card {
   width: 100%;
-  background: #fff;
-  border-radius: 0;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
   overflow: hidden;
-  // box-shadow: 0 10px 28px rgba(0, 0, 0, 0.18);
+  box-shadow: none;
   max-width: 340px;
   display: flex;
   flex-direction: column;
   height: 100%;
 }
 
-.testimonial-card__media img {
-  display: block;
-  width: 100%;
-  height: 240px;
-  object-fit: cover;
-}
-
 .testimonial-card__body {
-  /* Match featured product card feel (slightly roomier). */
-  padding: 1.05rem 1.1rem 1.15rem;
-  text-align: center;
+  padding: 1.5rem;
   display: flex;
   flex-direction: column;
   flex: 1 1 auto;
+  gap: 1rem;
 }
 
 .testimonial-card__stars {
   display: flex;
-  justify-content: center;
+  justify-content: flex-start;
   gap: 0.22rem;
-  margin: 0.15rem 0 0.5rem;
+  margin: 0;
 }
 
 .testimonial-star {
-  font-size: 1.05rem;
+  font-size: 1.1rem;
   line-height: 1;
-  color: rgba(217, 149, 80, 0.35);
+  color: rgba(255, 215, 0, 0.25);
 }
 
 .testimonial-star.is-filled {
-  color: #d99550;
-}
-
-.testimonial-card__name {
-  font-weight: 700;
-  margin: 0.15rem 0 0.25rem;
-  font-size: 1.125rem;
+  color: #ffd700;
 }
 
 .testimonial-card__quote {
   margin: 0;
-  font-size: 0.95rem;
-  line-height: 1.55;
-  opacity: 0.9;
+  font-size: 1rem;
+  line-height: 1.65;
+  color: rgba(255, 255, 255, 0.88);
+  font-style: italic;
+  flex: 1;
+}
+
+.testimonial-card__author {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  margin-top: auto;
+}
+
+.testimonial-card__media {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  overflow: hidden;
+  flex-shrink: 0;
+  margin: 0;
+}
+
+.testimonial-card__media img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.testimonial-card__author-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.testimonial-card__name {
+  font-weight: 600;
+  margin: 0;
+  font-size: 0.9rem;
+  color: #fff;
+}
+
+.testimonial-card__source {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.45);
+  line-height: 1;
 }
 
 .testimonial-card__cta {
-  margin-top: auto;
-  align-self: center;
+  margin-top: 1rem;
+  align-self: flex-start;
   width: auto;
-  padding-top: 10px !important;
-  border: 0;
-  background: transparent;
-  color: #000;
+  padding: 7px 20px !important;
+  border: 1px solid rgba(255, 255, 255, 0.5) !important;
+  border-radius: 4px;
+  background: transparent !important;
+  color: #fff !important;
   font-weight: 500;
-  // text-decoration: underline;
-  // text-underline-offset: 6px;
+  font-size: 0.85rem;
+  letter-spacing: 0.03em;
+  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
 }
 
 .testimonial-card__cta:focus-visible {
@@ -302,16 +354,15 @@
 }
 
 .testimonial-card__cta:hover {
-  text-decoration-thickness: 2px;
+  background: #fff !important;
+  color: #1f1b24 !important;
+  border-color: #fff !important;
+  text-decoration: none;
 }
 
 @media (min-width: 992px) {
   .testimonial-card {
-    /* 4-up desktop: allow Swiper to control widths, keep consistent height/spacing. */
     max-width: none;
-  }
-  .testimonial-card__media img {
-    height: 260px;
   }
 }
 
