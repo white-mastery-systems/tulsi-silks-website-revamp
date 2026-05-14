@@ -1,4 +1,4 @@
-<section *ngIf="pageLoader">
+﻿<section *ngIf="pageLoader">
   <app-loading-spinner></app-loading-spinner>
 </section>
 
@@ -27,7 +27,9 @@
 
   <section class="common-site-section tulsi-blog-detail-surface premium-blog-detail__surface">
     <div class="{{template_setting?.body_type}}">
-      <div class="premium-blog-detail__shell tulsi-blog-detail">
+      <div class="row premium-blog-detail__layout-row">
+        <div class="col-lg-9 col-12">
+          <div class="premium-blog-detail__shell tulsi-blog-detail premium-blog-detail__shell--content">
         <header class="premium-blog-detail__header">
           <div class="premium-blog-detail__meta premium-blog-detail__meta--lede">
             <span>{{ blog_details.created_on | date: "dd MMMM yyyy" }}</span>
@@ -290,6 +292,27 @@
 
             </div>
           </div>
+          </div>
+        </div>
+        <div class="col-lg-3 col-12 premium-blog-detail__sidebar-col">
+          <div class="premium-blog-detail__aside premium-blog-detail__aside-card" *ngIf="relatedBlogs.length || relatedBlogsLoading">
+            <h6 class="premium-blog-detail__aside-title">Related Posts</h6>
+            <ul class="premium-blog-detail__aside-list" *ngIf="!relatedBlogsLoading">
+              <li *ngFor="let rb of relatedBlogs" class="premium-blog-detail__related-item">
+                <a class="premium-blog-detail__related-link" [routerLink]="relatedBlogLinkArray(rb)">
+                  <figure class="premium-blog-detail__related-thumb" *ngIf="rb.image || rb.coverImage">
+                    <img [src]="imgBaseUrl + (rb.image || rb.coverImage || '')" alt="{{rb.name}}" loading="lazy" />
+                  </figure>
+                  <div class="premium-blog-detail__related-info">
+                    <p class="premium-blog-detail__related-date">{{ rb.created_on | date: "dd MMM yyyy" }}</p>
+                    <p class="premium-blog-detail__related-name">{{ rb.name }}</p>
+                  </div>
+                </a>
+              </li>
+            </ul>
+            <p class="premium-blog-detail__related-loading" *ngIf="relatedBlogsLoading">Loading...</p>
+          </div>
+        </div>
       </div>
     </div>
   </section>
