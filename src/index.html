@@ -19,18 +19,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="icon" type="image/x-icon" id="appFavicon" href="">
     <link rel="preconnect" href="https://yourstore.io" crossorigin="">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
-    <!-- <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin=""> -->
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Material+Icons|Material+Icons+Outlined&display=swap">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montaga&display=swap">
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin="">
+    <link rel="dns-prefetch" href="https://www.clarity.ms">
+    <!-- Non-blocking font loading: preload as style, swap to stylesheet on load -->
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Material+Icons&display=swap" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Icons&display=swap"></noscript>
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Material+Icons+Outlined&display=swap" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Icons+Outlined&display=swap"></noscript>
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Montaga&display=swap" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montaga&display=swap"></noscript>
     <link rel="canonical" href="" id="ccLink">
-    <script type="text/javascript">
-      (function(c,l,a,r,i,t,y){
-      c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
-      t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
-      y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
-      })(window, document, "clarity", "script", "rb61edlc5d");
-    </script>
     <style>
       body { margin: 0; }
       .disp-none { display: none; }
@@ -46,6 +46,16 @@
     </style>
   </head>
   <body>
+    <!-- Microsoft Clarity — deferred to after page content to avoid blocking FCP -->
+    <script>
+      window.addEventListener('load', function() {
+        (function(c,l,a,r,i,t,y){
+        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+        })(window, document, "clarity", "script", "rb61edlc5d");
+      });
+    </script>
     <!-- <img width="100%" height="100%" class="disp-none" id="store_logo" src="" alt="img">
     <img width="100%" height="100%" class="disp-none" id="desktop_primary_slider" src="" alt="img">
     <img width="100%" height="100%" class="disp-none" id="mobile_primary_slider" src="" alt="img">

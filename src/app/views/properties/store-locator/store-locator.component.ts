@@ -60,6 +60,7 @@ export class StoreLocatorComponent implements OnInit, OnDestroy {
         "longitude": 80.26039417116382
       },
       "hasMap": "https://maps.google.com/?q=13.037926566822968,80.26039417116382",
+      "paymentAccepted": "Cash, Credit Card, Debit Card, UPI, NFC",
       "openingHoursSpecification": [{
         "@type": "OpeningHoursSpecification",
         "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
