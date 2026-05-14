@@ -3,7 +3,7 @@ import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { BrowserModule, HammerModule } from '@angular/platform-browser';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 
 import { QuicklinkModule } from 'ngx-quicklink';
 import { DeviceDetectorService } from 'ngx-device-detector';
@@ -20,13 +20,13 @@ import { serverSeoInitializerFactory, SERVER_SEO_INITIALIZER_DEPS } from './serv
   imports: [
     BrowserModule,
     HammerModule,
-    BrowserAnimationsModule,
     AppRoutingModule,
     QuicklinkModule,
     SharedModule,
     FormsModule,
   ],
   providers: [
+    provideAnimationsAsync(),
     {
       provide: APP_INITIALIZER,
       multi: true,

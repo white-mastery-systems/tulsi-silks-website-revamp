@@ -686,6 +686,26 @@ export class CommonService {
     this.scrollModalTop(500);
   }
 
+  /** Returns a router path for use as [routerLink] so anchor tags get a real href for crawlers.
+   *  Returns null when no link applies (external links handled separately by onPageRedirect). */
+  getRedirectPath(x: any): string | null {
+    if (!x?.link_status) return null;
+    switch (x.link_type) {
+      case 'category': {
+        if (!x.category_id) return null;
+        const cat = this.catalog_list?.find((c: any) => c._id === x.category_id);
+        if (cat?.seo_status && cat?.seo_details?.page_url) return '/category/' + cat.seo_details.page_url;
+        return '/category/' + x.category_id;
+      }
+      case 'product':
+        return x.product_id ? '/product/' + x.product_id : null;
+      case 'internal':
+        return x.link || null;
+      default:
+        return null;
+    }
+  }
+
   onPageRedirect(x) {
     if(x && x.link_status) {
       if(x.link_type == 'category')

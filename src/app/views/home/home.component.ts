@@ -271,20 +271,29 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     // JSON-LD — rebuilt when `applyHomePageJsonLd()` runs (initial + after store/footer APIs).
     this.commonService.applyHomePageJsonLd();
     if(!this.commonService.contact_page_info) {
-      this.pageLoader = true;
-      this.storeApi.CONTACT_PAGE_INFO().subscribe(result => {
-        setTimeout(() => { this.pageLoader = false; }, 500);
-        if(result.status) {
-          this.commonService.contact_page_info = result.data;
-          if(this.commonService.contact_page_info.map_url) {
-            this.commonService.contact_page_info.map_url = this.sanitizer.bypassSecurityTrustResourceUrl(this.commonService.contact_page_info.map_url);
+      // Defer this non-critical API call until the browser is idle so it doesn't
+      // compete with hero image loading and first-render work (reduces TBT).
+      const fetchContactInfo = () => {
+        this.pageLoader = true;
+        this.storeApi.CONTACT_PAGE_INFO().subscribe(result => {
+          setTimeout(() => { this.pageLoader = false; }, 500);
+          if(result.status) {
+            this.commonService.contact_page_info = result.data;
+            if(this.commonService.contact_page_info.map_url) {
+              this.commonService.contact_page_info.map_url = this.sanitizer.bypassSecurityTrustResourceUrl(this.commonService.contact_page_info.map_url);
+            }
           }
-        }
-        else {
-          console.log("response", result);
-          this.commonService.contact_page_info = {};
-        }
-      });
+          else {
+            console.log("response", result);
+            this.commonService.contact_page_info = {};
+          }
+        });
+      };
+      if (isPlatformBrowser(this.platformId) && 'requestIdleCallback' in window) {
+        (window as any).requestIdleCallback(fetchContactInfo, { timeout: 3000 });
+      } else {
+        fetchContactInfo();
+      }
     }
     
   }
