@@ -574,7 +574,8 @@
 }
 
 .common-site-section.premium-blog-detail__surface {
-  overflow-x: hidden;
+  /* clip unlike hidden does not create a scroll container, so position:sticky still works on children */
+  overflow-x: clip;
   overflow-y: visible !important;
 }
 
