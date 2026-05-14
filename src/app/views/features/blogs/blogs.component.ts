@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { environment } from '../../../../environments/environment';
 import { StoreApiService } from '../../../services/store-api.service';
 import { CommonService } from '../../../services/common.service';
@@ -10,7 +10,7 @@ import { CommonService } from '../../../services/common.service';
     standalone: false
 })
 
-export class BlogsComponent implements OnInit {
+export class BlogsComponent implements OnInit, OnDestroy {
 
   page: number = 1; pageSize: number = 12;
   pageLoader: boolean; list: any = [];
@@ -59,6 +59,23 @@ export class BlogsComponent implements OnInit {
         this.seo_details = result.seo_details;
         if(this.seo_details.status) this.commonService.setSiteMetaData(this.seo_details, null);
         else this.commonService.getStoreSeoDetails();
+        // ItemList schema for blog listing
+        this.commonService.removeElement('blogs-itemlist-jsonld');
+        const itemListSchema = {
+          "@context": "https://schema.org",
+          "@type": "ItemList",
+          "name": "Tulsi Silks Journal",
+          "url": this.commonService.origin + "/blogs",
+          "itemListElement": this.list.map((blog: any, i: number) => ({
+            "@type": "ListItem",
+            "position": i + 1,
+            "url": this.commonService.origin + (blog.seo_status && blog.seo_details?.page_url
+              ? '/blogs/' + blog.seo_details.page_url
+              : '/blogs/' + blog._id),
+            "name": blog.name
+          }))
+        };
+        this.commonService.createJsonLD('blogs-itemlist-jsonld', itemListSchema);
       }
       else console.log("response", result);
       setTimeout(() => { this.pageLoader = false; }, 500);
@@ -67,7 +84,11 @@ export class BlogsComponent implements OnInit {
     this.commonService.breadCrumbList(this.bcList);
   }
 
-  onSelectBlog(x) {
+  ngOnDestroy() {
+    this.commonService.removeElement('blogs-itemlist-jsonld');
+  }
+
+  onSelectBlog(x: any) {
     // set page attributes
     this.commonService.blog_page_attr = {
       list: this.list, seo_details: this.seo_details, page: this.page, total_pages: this.totalPages,

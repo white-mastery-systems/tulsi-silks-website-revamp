@@ -593,6 +593,7 @@ export class CategoryComponent implements OnInit {
         "acceptedAnswer": { "@type": "Answer", "text": el.answer }
       });
     });
+    this.commonService.removeElement('category-faq-jsonld');
     this.commonService.createJsonLD("category-faq-jsonld", this.categoryFAQSchema);
   }
 
@@ -1019,7 +1020,8 @@ export class CategoryComponent implements OnInit {
       this.categorySchema['@graph'][3]['priceRange'] = "INR "+minPrice+" - INR "+maxPrice;
     }
 
-    // JSON-LD
+    // JSON-LD — remove first so SPA navigation between categories always injects a fresh block
+    this.commonService.removeElement('category-jsonld');
     this.commonService.createJsonLD("category-jsonld", this.categorySchema);
   }
 

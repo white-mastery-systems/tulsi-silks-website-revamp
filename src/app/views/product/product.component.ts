@@ -87,6 +87,7 @@ export class ProductComponent implements OnInit {
     this.activeRoute.params.subscribe((params: Params) => {
       this.pageUrl = this.router.url.split('?')[0];
       this.shippingExists = false;
+      this.commonService.removeElement('product-jsonld');
       this.removeMetaProperties(); this.psInitiated = false;
       this.params = params; this.swipeProductIndex = 0; this.swipe_product_list = []; this.activeImgIndex = 0;
       this.category_details = {}; this.related_products = []; this.reviews = [];this.page = 1; this.review_sort = 'rating';
@@ -250,6 +251,9 @@ export class ProductComponent implements OnInit {
                   this.avg_review = totalRating/this.reviews.length;
                   if(this.avg_review % 1) this.avg_review = this.avg_review.toFixed(1);
                   this.sorting(this.review_sort);
+                  // Rebuild product schema now that rating data is available
+                  this.commonService.removeElement('product-jsonld');
+                  this.createJsonLd();
                 }
               });
             }
@@ -354,6 +358,7 @@ export class ProductComponent implements OnInit {
   // JSON LD
   createJsonLd() {
     let productSchema: any = {
+      "@context": "https://schema.org",
       "@type": "Product",
       "@id": this.commonService.origin+this.pageUrl+"#product",
       "name": this.productDetails.name,
@@ -365,8 +370,6 @@ export class ProductComponent implements OnInit {
         "@type": "Brand",
         "name": "Tulsi Silks"
       },
-      // "material": "Kanjivaram silk",
-      // "color": "Red and Orange",
       "additionalProperty": [],
       "offers": {
         "@type": "Offer",
@@ -374,27 +377,26 @@ export class ProductComponent implements OnInit {
         "priceCurrency": "INR",
         "price": this.productDetails.discounted_price.toFixed(2),
         "availability": "https://schema.org/InStock",
-        "itemCondition": "https://schema.org/NewCondition"
+        "itemCondition": "https://schema.org/NewCondition",
+        "seller": { "@type": "Organization", "name": "Tulsi Silks" }
       },
       "mainEntityOfPage": {
         "@type": "WebPage",
         "@id": this.commonService.origin+this.pageUrl
       }
     };
-    if(!this.productDetails.stock) productSchema['offers']['availability'] = "https://schema.org/OutofStock";
+    if(!this.productDetails.stock) productSchema['offers']['availability'] = "https://schema.org/OutOfStock";
     if(this.productDetails.tag_status && this.productDetails.tag_list.length) {
       let tagData = this.productDetails.tag_list.find(el => el["5d3057b12d12374382fc07a0"].length);
       if(tagData) productSchema["color"] = this.formatColors(tagData["5d3057b12d12374382fc07a0"]);
     }
     if(this.productDetails.image_list?.length) {
-      for(let iData of this.productDetails.image_list)
-      {
+      for(let iData of this.productDetails.image_list) {
         productSchema.image.push(environment.img_baseurl+iData.image);
       }
     }
     if(this.productDetails.footnote_list?.length) {
-      for(let fData of this.productDetails.footnote_list)
-      {
+      for(let fData of this.productDetails.footnote_list) {
         let fHeading = fData.name;
         if(fHeading=="Measurements Saree") fHeading = "Saree Measurements";
         else if(fHeading=="Measurements Dupatta") fHeading = "Dupatta Measurements";
@@ -403,6 +405,27 @@ export class ProductComponent implements OnInit {
         else if(fHeading=="Measurement Pavadai") fHeading = "Pavadai Measurements";
         productSchema['additionalProperty'].push({ "@type": "PropertyValue", "name": fHeading, "value": fData.value });
       }
+    }
+    // AggregateRating + Review — available after the REVIEWS API resolves
+    if(this.avg_review != null && this.reviews?.length) {
+      productSchema['aggregateRating'] = {
+        "@type": "AggregateRating",
+        "ratingValue": String(this.avg_review),
+        "bestRating": "5",
+        "worstRating": "1",
+        "reviewCount": String(this.reviews.length)
+      };
+      productSchema['review'] = this.reviews.slice(0, 5).map(r => {
+        const body = (r.description || '').replace(/<br \/>/gi, ' ').replace(/<[^>]*>/g, '').trim();
+        const entry: any = {
+          "@type": "Review",
+          "author": { "@type": "Person", "name": r.customer_name || 'Customer' },
+          "reviewRating": { "@type": "Rating", "ratingValue": String(r.rating), "bestRating": "5", "worstRating": "1" }
+        };
+        if(body) entry['reviewBody'] = body;
+        if(r.created_on) entry['datePublished'] = new Date(r.created_on).toISOString().split('T')[0];
+        return entry;
+      });
     }
     this.commonService.createJsonLD("product-jsonld", productSchema);
   }

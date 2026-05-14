@@ -281,20 +281,19 @@ export class BlogDetailsComponent implements OnInit {
     else this.commonService.getStoreSeoDetails();
     // schema
     if(!this.blog_details.updatedAt) this.blog_details.updatedAt = new Date();
-    let blogSchema = {
+    const blogAuthor = (this.blog_details.author && String(this.blog_details.author).trim())
+      ? { "@type": "Person", "name": String(this.blog_details.author).trim() }
+      : { "@type": "Organization", "name": this.commonService.store_details?.name, "url": this.commonService.origin };
+    let blogSchema: any = {
       "@context": "https://schema.org",
       "@type": "BlogPosting",
       "mainEntityOfPage": {
         "@type": "WebPage",
         "@id": this.commonService.origin+this.router.url.split('?')[0]
       },
-      "headline": this.blog_details.seo_details?.page_title,
-      "image": this.imgBaseUrl + (this.blog_details.image || this.blog_details.coverImage || ''),  
-      "author": {
-        "@type": "Organization",
-        "name": this.commonService.store_details?.name,
-        "url": this.commonService.origin,
-      },  
+      "headline": this.blog_details.seo_details?.page_title || this.blog_details.name,
+      "image": this.imgBaseUrl + (this.blog_details.image || this.blog_details.coverImage || ''),
+      "author": blogAuthor,
       "publisher": {
         "@type": "Organization",
         "name": this.commonService.store_details?.name,
@@ -306,6 +305,9 @@ export class BlogDetailsComponent implements OnInit {
       "datePublished": this.datePipe.transform(new Date(this.blog_details.created_on), 'yyyy-MM-ddTHH:mmZ'),
       "dateModified": this.datePipe.transform(new Date(this.blog_details.updatedAt), 'yyyy-MM-ddTHH:mmZ')
     };
+    if(this.blog_details.seo_details?.meta_desc) blogSchema['description'] = this.blog_details.seo_details.meta_desc;
+    if(Array.isArray(this.blog_details.tags) && this.blog_details.tags.length) blogSchema['keywords'] = this.blog_details.tags.join(', ');
+    this.commonService.removeElement('blog-jsonld');
     this.commonService.createJsonLD('blog-jsonld', blogSchema);
     // breadcrumb
     this.bcList = [
@@ -323,15 +325,16 @@ export class BlogDetailsComponent implements OnInit {
       let faqSchema = {
         "@context": "https://schema.org",
         "@type": "FAQPage",
-        "mainEntity": []
+        "mainEntity": [] as any[]
       };
-      this.blog_details.faqs.forEach(el => {
+      this.blog_details.faqs.forEach((el: any) => {
         faqSchema.mainEntity.push({
           "@type": "Question",
           "name": el.ques,
           "acceptedAnswer": { "@type": "Answer", "text": el.answer }
         });
       });
+      this.commonService.removeElement('blog-faq-jsonld');
       this.commonService.createJsonLD("blog-faq-jsonld", faqSchema);
     }
   }

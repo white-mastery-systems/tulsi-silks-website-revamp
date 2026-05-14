@@ -241,6 +241,7 @@ export class CommonService {
           item: this.origin + el.link
         });
       });
+      this.removeElement('bc-jsonld');
       this.createJsonLD('bc-jsonld', bcSchema);
     }
   }

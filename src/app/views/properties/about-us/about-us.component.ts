@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterViewInit, PLATFORM_ID, Inject, DOCUMENT } from '@angular/core';
+import { Component, OnInit, AfterViewInit, OnDestroy, PLATFORM_ID, Inject, DOCUMENT } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { CommonService } from '../../../services/common.service';
 import { environment } from '../../../../environments/environment';
@@ -22,7 +22,7 @@ interface HeritageItem {
     standalone: false
 })
 
-export class AboutUsComponent implements OnInit, AfterViewInit {
+export class AboutUsComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private static readonly MASTHEAD_FALLBACK_PX = 80;
 
@@ -85,6 +85,44 @@ export class AboutUsComponent implements OnInit, AfterViewInit {
       this.screen_width = window.innerWidth;
       this.loadSliderData();
     }
+    // Organization schema
+    const orgSchema = {
+      "@context": "https://schema.org",
+      "@type": "ClothingStore",
+      "@id": this.commonService.origin + "/#organization",
+      "name": "Tulsi Silks",
+      "url": this.commonService.origin,
+      "foundingDate": "1993",
+      "founder": [
+        { "@type": "Person", "name": "Suresh Parekh" },
+        { "@type": "Person", "name": "Santosh Parekh" }
+      ],
+      "description": "Tulsi Silks is a premier saree retailer established in 1993, specialising in handwoven Kanjivaram and traditional Indian silk sarees, based in Mylapore, Chennai.",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "68, Luz Church Rd, CIT Colony, Mylapore",
+        "addressLocality": "Chennai",
+        "addressRegion": "Tamil Nadu",
+        "postalCode": "600004",
+        "addressCountry": "IN"
+      },
+      "sameAs": [
+        "https://www.facebook.com/TulsiSilks/",
+        "https://x.com/tulsisilks",
+        "https://www.instagram.com/tulsisilks/?hl=en",
+        "https://in.pinterest.com/tulsisilks0070/"
+      ]
+    };
+    this.commonService.createJsonLD('about-org-jsonld', orgSchema);
+    // Breadcrumb
+    this.commonService.breadCrumbList([
+      { name: 'Home', position: 1, link: '/' },
+      { name: 'About Us', position: 2, link: '/about-us' }
+    ]);
+  }
+
+  ngOnDestroy(): void {
+    this.commonService.removeElement('about-org-jsonld');
   }
 
   ngAfterViewInit(): void {
