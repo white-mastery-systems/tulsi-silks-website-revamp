@@ -23,6 +23,13 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
     <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin="">
     <link rel="dns-prefetch" href="https://www.clarity.ms">
+    <!-- Preload LCP hero — URL is deterministic (store_id baked at build time) -->
+    <link rel="preload" as="image"
+      href="https://yourstore.io/api/uploads/5d30013a5c83a702392c4c8b/layouts/mobile_primary_slider.jpg"
+      media="(max-width: 720px)" fetchpriority="high">
+    <link rel="preload" as="image"
+      href="https://yourstore.io/api/uploads/5d30013a5c83a702392c4c8b/layouts/desktop_primary_slider.jpg"
+      media="(min-width: 721px)" fetchpriority="high">
     <!-- Non-blocking font loading: preload as style, swap to stylesheet on load -->
     <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Material+Icons&display=swap" onload="this.onload=null;this.rel='stylesheet'">
     <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Icons&display=swap"></noscript>
@@ -32,7 +39,8 @@
     <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montaga&display=swap"></noscript>
     <link rel="canonical" href="" id="ccLink">
     <style>
-      body { margin: 0; }
+      /* 80px matches MASTHEAD_FALLBACK_PX — prevents CLS when Angular sets body.marginTop on hydration */
+      body { margin: 0; margin-top: 80px; }
       .disp-none { display: none; }
       .dynamic-height { height: calc(100vh - 80px); }
       #pre-bg {
@@ -74,5 +82,18 @@
     </script> -->
     <div id="pre-bg"></div>
     <app-root id="app-root"></app-root>
+    <script>
+      // When SSR has rendered content into app-root, the pre-bg overlay is no longer
+      // needed — hide it immediately so the SSR content is the LCP element.
+      // (Angular also removes it in app.component.ngOnInit, but that waits for
+      // full JS bootstrap, delaying first paint by 1-2s on slow connections.)
+      (function() {
+        var ar = document.getElementById('app-root');
+        if (ar && ar.childElementCount > 0) {
+          var pb = document.getElementById('pre-bg');
+          if (pb) pb.style.display = 'none';
+        }
+      })();
+    </script>
   </body>
 </html>

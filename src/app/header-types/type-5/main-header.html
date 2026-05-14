@@ -41,7 +41,7 @@
 
               <!-- mobile menu list -->
               <li *ngFor="let menu of commonService.menu_list | orderAsc: 'rank'; let i=index;" [ngClass]="{ 'has-children mega-menu slim-scroll': menu?.sec_count, 'pos-relative': menu?.sec_count<=2 }">
-                <a class="sub-arrow-sec" (mouseenter)="(!menu?.sec_count && commonService.desktop_device)? commonService.resetMegaMenu(): ''" (click)="(!menu?.sec_count)? commonService.onPageRedirect(menu): ''">
+                <a class="sub-arrow-sec" [routerLink]="commonService.getRedirectPath(menu)" (mouseenter)="(!menu?.sec_count && commonService.desktop_device)? commonService.resetMegaMenu(): ''" (click)="(!menu?.sec_count)? commonService.onPageRedirect(menu): ''">
                   {{menu.name}}
                   <i *ngIf="menu?.sec_count"><lucide-icon name="chevron-right" [size]="16" class="ms-1 align-middle"></lucide-icon> </i>
                   <ng-container *ngIf="menu?.sec_count && commonService?.screen_width>=992">
@@ -69,7 +69,7 @@
                   </li>
                   <!-- sections without category -->
                   <li *ngIf="menu?.sections_in_one_col">
-                    <a *ngFor="let sec of menu.sections | orderAsc: 'rank';" (click)="commonService.onPageRedirect(sec);">{{ sec.name }}</a>
+                    <a *ngFor="let sec of menu.sections | orderAsc: 'rank';" [routerLink]="commonService.getRedirectPath(sec)" (click)="commonService.onPageRedirect(sec);">{{ sec.name }}</a>
                   </li>
                   <!-- section with category -->
                   <ng-container *ngIf="!menu?.sections_in_one_col">
@@ -80,8 +80,8 @@
                       </a> -->
                       <a class="sub-arrow-sec last-sec" [ngClass]="(sec.link_status)? 'has-link': null">
                         <a (click)="(sec.link_status && sec.link_type!='internal')? commonService.onPageRedirect(sec): null;"
-                        [routerLink]="(sec.link_type=='internal')? sec.link: null" style="height: auto; margin-bottom: 0; gap: unset; width: 100%;">
-                          <span class="cat-name">{{ sec.name }}</span> 
+                        [routerLink]="commonService.getRedirectPath(sec)" style="height: auto; margin-bottom: 0; gap: unset; width: 100%;">
+                          <span class="cat-name">{{ sec.name }}</span>
                         </a>
                         <i *ngIf="sec?.categories?.length" [ngClass]="(sec.link_status)? 'has-link': null">
                           <lucide-icon name="chevron-right" [size]="16" class="ms-1 align-middle"></lucide-icon>
@@ -103,8 +103,8 @@
                           </a> -->
                           <a class="sub-arrow-sec last-sec" [ngClass]="(cat.link_status)? 'has-link': null">
                             <a (click)="(cat.link_status && cat.link_type!='internal')? commonService.onPageRedirect(cat): null;"
-                            [routerLink]="(cat.link_type=='internal')? cat.link: null" style="height: auto; margin-bottom: 0; gap: unset; width: 100%;">
-                              <span class="cat-name">{{ cat.name }}</span> 
+                            [routerLink]="commonService.getRedirectPath(cat)" style="height: auto; margin-bottom: 0; gap: unset; width: 100%;">
+                              <span class="cat-name">{{ cat.name }}</span>
                             </a>
                             <i *ngIf="cat?.sub_categories?.length" [ngClass]="(cat.link_status)? 'has-link': null">
                               <lucide-icon name="chevron-right" [size]="16" class="ms-1 align-middle"></lucide-icon>
@@ -114,13 +114,13 @@
                             <li class="go-back">
                               <a>
                                 <i style="margin-right:15px;">
-                                  <lucide-icon name="chevron-left" [size]="16" class="ms-1 align-middle"></lucide-icon> 
+                                  <lucide-icon name="chevron-left" [size]="16" class="ms-1 align-middle"></lucide-icon>
                                 </i>
-                                <span>{{ cat.name }}</span>                                  
+                                <span>{{ cat.name }}</span>
                               </a>
                             </li>
                             <li class="see-all" *ngFor="let sub_cat of cat.sub_categories | orderAsc: 'rank';">
-                              <a (click)="commonService.onPageRedirect(sub_cat);">{{ sub_cat.name }}</a>
+                              <a [routerLink]="commonService.getRedirectPath(sub_cat)" (click)="commonService.onPageRedirect(sub_cat);">{{ sub_cat.name }}</a>
                             </li>
                           </ul>
                         </li>
@@ -203,7 +203,7 @@
                 <!-- desktop menu list-->
                 <li *ngFor="let menu of commonService.menu_list | orderAsc: 'rank'; let i=index;" [ngClass]="{ 'has-children mega-menu slim-scroll': menu?.sec_count, 'pos-relative': menu?.sec_count<=2 }">
                   <a (mouseenter)="(!menu?.sec_count && commonService.desktop_device)? commonService.resetMegaMenu(): ''"
-                  [routerLink]="(!menu?.sec_count && menu.link_type=='internal')? menu.link: null"
+                  [routerLink]="commonService.getRedirectPath(menu)"
                   (click)="(!menu?.sec_count && menu.link_type!='internal')? commonService.onPageRedirect(menu): null;">
                     {{menu.name}}
                     <ng-container *ngIf="menu?.sec_count && commonService?.screen_width>=992">
@@ -226,13 +226,13 @@
                     </li>
                     <!-- sections without category -->
                     <li *ngIf="menu?.sections_in_one_col">
-                      <a *ngFor="let sec of menu.sections | orderAsc: 'rank';" [routerLink]="(sec.link_type=='internal')? sec.link: null" (click)="(sec.link_type!='internal')? commonService.onPageRedirect(sec): null;">{{ sec.name }}</a>
+                      <a *ngFor="let sec of menu.sections | orderAsc: 'rank';" [routerLink]="commonService.getRedirectPath(sec)" (click)="(sec.link_type!='internal')? commonService.onPageRedirect(sec): null;">{{ sec.name }}</a>
                     </li>
                     <!-- section with category -->
                     <ng-container *ngIf="!menu?.sections_in_one_col">
                       <li class="slim-scroll" *ngFor="let sec of menu.sections | orderAsc: 'rank';" [ngClass]="(sec?.categories?.length)? 'has-children' : ''">
                         <a (click)="(!sec.categories.length && sec.link_type!='internal')? commonService.onPageRedirect(sec): null;"
-                        [routerLink]="(sec.link_type=='internal')? sec.link: null">{{ sec.name }}</a>
+                        [routerLink]="commonService.getRedirectPath(sec)">{{ sec.name }}</a>
                         <ul class="is-hidden slim-scroll" style="overflow-y:scroll!important;min-height: 300px;max-height:72vh;overflow-x:hidden">
                           <li class="go-back">
                             <a>{{sec.name}}</a>
@@ -240,8 +240,8 @@
                           <li class="slim-scroll" *ngFor="let cat of sec.categories | orderAsc: 'rank';" [ngClass]="(cat?.sub_categories?.length)? 'has-children' : ''">
                             <a class="last-sec" [ngClass]="(cat.link_status)? 'has-link': null">
                               <a (click)="(cat.link_status && cat.link_type!='internal')? commonService.onPageRedirect(cat): null;"
-                              [routerLink]="(cat.link_type=='internal')? cat.link: null" style="height: auto; margin-bottom: 0; gap: unset; width: 100%;">
-                                <span class="cat-name">{{ cat.name }}</span> 
+                              [routerLink]="commonService.getRedirectPath(cat)" style="height: auto; margin-bottom: 0; gap: unset; width: 100%;">
+                                <span class="cat-name">{{ cat.name }}</span>
                               </a>
                               <i *ngIf="cat?.sub_categories?.length" [ngClass]="(cat.link_status)? 'has-link': null">
                                 <lucide-icon name="chevron-right" [size]="16" class="ms-1 align-middle"></lucide-icon>
@@ -255,7 +255,7 @@
                                 </a>
                               </li>
                               <li class="see-all" *ngFor="let sub_cat of cat.sub_categories | orderAsc: 'rank';">
-                                <a [routerLink]="(sub_cat.link_type=='internal')? sub_cat.link: null" (click)="(sub_cat.link_type!='internal')? commonService.onPageRedirect(sub_cat): null;">{{ sub_cat.name }}</a>
+                                <a [routerLink]="commonService.getRedirectPath(sub_cat)" (click)="(sub_cat.link_type!='internal')? commonService.onPageRedirect(sub_cat): null;">{{ sub_cat.name }}</a>
                               </li>
                             </ul>
                           </li>

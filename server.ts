@@ -6,6 +6,7 @@ import express from 'express';
 import { existsSync } from 'fs';
 import https from 'https';
 import { join } from 'path';
+import { createGzip, createBrotliCompress, constants as zlibConstants } from 'zlib';
 
 import { environment } from './src/environments/environment';
 import bootstrap from './src/main.server';
@@ -391,7 +392,27 @@ export function app(): express.Express {
             console.error('[SSR] store SEO inject failed:', err?.message ?? e);
           }
         }
-        res.send(out);
+        const ae = String(req.headers['accept-encoding'] || '');
+        res.setHeader('Content-Type', 'text/html; charset=utf-8');
+        res.setHeader('Vary', 'Accept-Encoding');
+        // Allow browsers/CDN to cache SSR HTML for 60s, then revalidate.
+        // stale-while-revalidate lets CDN serve stale while fetching fresh copy in background.
+        res.setHeader('Cache-Control', 'public, max-age=60, stale-while-revalidate=300');
+        if (ae.includes('br')) {
+          res.setHeader('Content-Encoding', 'br');
+          const br = createBrotliCompress({
+            params: { [zlibConstants.BROTLI_PARAM_QUALITY]: 4 },
+          });
+          br.pipe(res);
+          br.end(out);
+        } else if (ae.includes('gzip')) {
+          res.setHeader('Content-Encoding', 'gzip');
+          const gz = createGzip({ level: 6 });
+          gz.pipe(res);
+          gz.end(out);
+        } else {
+          res.send(out);
+        }
       })
       .catch((err) => next(err));
   });
