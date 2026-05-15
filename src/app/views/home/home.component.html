@@ -119,19 +119,25 @@
           *ngFor="let x of commonService.primary_main_slider; let j = index"
           (click)="x?.btn_status ? '' : commonService.onPageRedirect(x)"
         >
-          <!-- mobile -->
-          <ng-container *ngIf="commonService.screen_width <= maxWidth">
-            <div class="banner_overlay"></div>
-            <!-- first slide: load eagerly — it is the LCP element -->
-            <img *ngIf="j === 0"
-              width="100%"
-              height="100%"
-              fetchpriority="high"
-              class="img--fitscreen"
-              [src]="imgBaseUrl + x.mobile_img"
-              alt="{{ x.img_alt ? x.img_alt : 'slider' }}"
-            />
-            <img *ngIf="j > 0"
+          <div class="banner_overlay"></div>
+          <!-- First slide: <picture> renders in SSR without needing screen_width,
+               and the browser picks the variant that matches the <link rel="preload">
+               in index.html → guaranteed cache hit → LCP at FCP time. -->
+          <ng-container *ngIf="j === 0">
+            <picture style="display:block;width:100%;height:100%">
+              <source media="(max-width: 720px)" [srcset]="imgBaseUrl + x.mobile_img">
+              <img
+                fetchpriority="high"
+                class="img--fitscreen"
+                [src]="imgBaseUrl + x.desktop_img"
+                alt="{{ x.img_alt ? x.img_alt : 'slider' }}"
+              />
+            </picture>
+          </ng-container>
+          <!-- Subsequent slides: lazy-loaded, screen_width is always set by the time
+               the user can swipe to them. -->
+          <ng-container *ngIf="j > 0 && commonService.screen_width <= maxWidth">
+            <img
               width="100%"
               height="100%"
               appImgLazyLoad
@@ -141,19 +147,8 @@
               alt="{{ x.img_alt ? x.img_alt : 'slider' }}"
             />
           </ng-container>
-          <!-- desktop -->
-          <ng-container *ngIf="commonService.screen_width > maxWidth">
-            <div class="banner_overlay"></div>
-            <!-- first slide: load eagerly — it is the LCP element -->
-            <img *ngIf="j === 0"
-              width="100%"
-              height="100%"
-              fetchpriority="high"
-              class="img--fitscreen"
-              [src]="imgBaseUrl + x.desktop_img"
-              alt="{{ x.img_alt ? x.img_alt : 'slider' }}"
-            />
-            <img *ngIf="j > 0"
+          <ng-container *ngIf="j > 0 && commonService.screen_width > maxWidth">
+            <img
               width="100%"
               height="100%"
               appImgLazyLoad
@@ -2421,13 +2416,12 @@
                     "
                   ></p>
                   <button
+                    *ngIf="segment.image_list[0].btn_status !== false"
                     class="primary-btn"
-                    (click)="
-                      commonService.onPageRedirect(segment.image_list[0])
-                    "
-                    [attr.aria-label]="segment.image_list?.[0]?.content_details?.heading ? ('Shop now — ' + segment.image_list[0].content_details.heading) : 'Shop now'"
+                    (click)="commonService.onPageRedirect(segment.image_list[0])"
+                    [attr.aria-label]="(segment.image_list[0].btn_text || 'Shop Now') + (segment.image_list?.[0]?.content_details?.heading ? ' — ' + segment.image_list[0].content_details.heading : '')"
                   >
-                    Shop Now
+                    {{ segment.image_list[0].btn_text || 'Shop Now' }}
                   </button>
                 </div>
               </div>

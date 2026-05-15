@@ -1,4 +1,4 @@
-import { Component, Inject, PLATFORM_ID, HostListener, DOCUMENT } from '@angular/core';
+import { Component, Inject, PLATFORM_ID, HostListener, DOCUMENT, AfterViewInit } from '@angular/core';
 import { Location, isPlatformBrowser } from '@angular/common';
 import { fromEvent, Subscription, interval } from 'rxjs';
 import { Router, NavigationEnd } from '@angular/router';
@@ -23,7 +23,7 @@ declare const WOW: any;
     standalone: false
 })
 
-export class AppComponent {
+export class AppComponent implements AfterViewInit {
 
   template_setting: any = environment.template_setting;
   tempAnnounceBar: string; private subscription: Subscription;
@@ -114,25 +114,33 @@ export class AppComponent {
     this.onScrollEvent();
     this.onResizeEvent();
     if (isPlatformBrowser(this.platformId)) {
-      // network status
       this.commonService.IsBrowser = true;
+    }
+  }
+
+  ngAfterViewInit() {
+    if (!isPlatformBrowser(this.platformId)) return;
+    const idle: (cb: () => void) => void =
+      (window as any).requestIdleCallback ?? ((cb: () => void) => setTimeout(cb, 200));
+    idle(() => {
+      // network status
       this.connectionService.monitor().subscribe(isConnected => {
         this.isConnected = isConnected;
       });
-      // interaction
+      // interaction listeners — deferred so they don't block bootstrap TBT
       fromEvent(document, 'mousemove').subscribe(() => this.onInteract());
       fromEvent(document, 'touchmove').subscribe(() => this.onInteract());
       fromEvent(document, 'scroll').subscribe(() => this.onInteract());
       fromEvent(document, 'click').subscribe(() => this.onInteract());
       // check guest address
       if (sessionStorage.getItem("checkout_address")) {
-        let checkoutAddress = this.commonService.decryptData(sessionStorage.getItem("checkout_address"));
+        const checkoutAddress = this.commonService.decryptData(sessionStorage.getItem("checkout_address"));
         if (!checkoutAddress?.shipping?.country) {
           sessionStorage.removeItem("checkout_address");
           window.location.reload();
         }
       }
-    }
+    });
   }
 
   onInteract() {

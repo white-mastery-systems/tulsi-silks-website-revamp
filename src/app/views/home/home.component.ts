@@ -631,8 +631,6 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
       if(sliderIndex!=-1) {
         let primaryImgList = this.commonService.layout_list[sliderIndex].image_list;
         if(primaryImgList.length) {
-          primaryImgList[0].desktop_img = this.commonService.primary_main_slider[0].desktop_img;
-          primaryImgList[0].mobile_img = this.commonService.primary_main_slider[0].mobile_img;
           this.commonService.primary_main_slider = primaryImgList;
           this.commonService.layout_list.splice(sliderIndex, 1);
         }
