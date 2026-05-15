@@ -20,8 +20,8 @@ const HOME_JSON_LD_DEFAULTS = {
   addressRegion: 'Tamil Nadu',
   postalCode: '600004',
   addressCountry: 'IN',
-  latitude: 13.037926566822968,
-  longitude: 80.26039417116382,
+  latitude: 13.03798928035473,
+  longitude: 80.26038344232762,
   sameAs: [
     'https://www.instagram.com/tulsisilks/',
     'https://x.com/TulsiSilks',

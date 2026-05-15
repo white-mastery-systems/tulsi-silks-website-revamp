@@ -56,10 +56,10 @@ export class StoreLocatorComponent implements OnInit, OnDestroy {
       },
       "geo": {
         "@type": "GeoCoordinates",
-        "latitude": 13.037926566822968,
-        "longitude": 80.26039417116382
+        "latitude": 13.03798928035473,
+        "longitude": 80.26038344232762
       },
-      "hasMap": "https://maps.google.com/?q=13.037926566822968,80.26039417116382",
+      "hasMap": "https://maps.google.com/?q=13.03798928035473,80.26038344232762",
       "paymentAccepted": "Cash, Credit Card, Debit Card, UPI, NFC",
       "openingHoursSpecification": [{
         "@type": "OpeningHoursSpecification",

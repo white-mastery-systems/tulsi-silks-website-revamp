@@ -2,7 +2,7 @@ import { APP_ID, APP_INITIALIZER, NgModule } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
-import { BrowserModule, HammerModule } from '@angular/platform-browser';
+import { BrowserModule } from '@angular/platform-browser';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 
 import { QuicklinkModule } from 'ngx-quicklink';
@@ -19,7 +19,6 @@ import { serverSeoInitializerFactory, SERVER_SEO_INITIALIZER_DEPS } from './serv
   declarations: [AppComponent],
   imports: [
     BrowserModule,
-    HammerModule,
     AppRoutingModule,
     QuicklinkModule,
     SharedModule,

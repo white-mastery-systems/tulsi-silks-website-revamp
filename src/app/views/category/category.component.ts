@@ -111,8 +111,8 @@ export class CategoryComponent implements OnInit {
         },
         "geo": {
           "@type": "GeoCoordinates",
-          "latitude": 13.037926566822968,
-          "longitude": 80.26039417116382
+          "latitude": 13.03798928035473,
+          "longitude": 80.26038344232762
         },
         "openingHoursSpecification": [
           {
@@ -129,7 +129,7 @@ export class CategoryComponent implements OnInit {
             "closes": "19:30"
           }
         ],
-        "hasMap": "https://www.google.com/maps/search/?api=1&query=13.037926566822968,80.26039417116382",
+        "hasMap": "https://www.google.com/maps/search/?api=1&query=13.03798928035473,80.26038344232762",
         "areaServed": [
           {
             "@type": "Country",

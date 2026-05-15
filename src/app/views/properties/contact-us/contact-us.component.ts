@@ -40,8 +40,8 @@ export class ContactUsComponent implements OnInit {
     },
     "geo": {
       "@type": "GeoCoordinates",
-      "latitude": 13.037926566822968,
-      "longitude": 80.26039417116382
+      "latitude": 13.03798928035473,
+      "longitude": 80.26038344232762
     },
     "openingHoursSpecification": {
       "@type": "OpeningHoursSpecification",

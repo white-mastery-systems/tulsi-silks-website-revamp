@@ -23,12 +23,12 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
     <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin="">
     <link rel="dns-prefetch" href="https://www.clarity.ms">
-    <!-- Preload LCP hero — URL is deterministic (store_id baked at build time) -->
+    <!-- Preload LCP hero — _s variants match what Angular renders and are 10-20x smaller -->
     <link rel="preload" as="image"
-      href="https://yourstore.io/api/uploads/5d30013a5c83a702392c4c8b/layouts/mobile_primary_slider.jpg"
+      href="https://yourstore.io/api/uploads/5d30013a5c83a702392c4c8b/layouts/mobile_primary_slider_s.jpg"
       media="(max-width: 720px)" fetchpriority="high">
     <link rel="preload" as="image"
-      href="https://yourstore.io/api/uploads/5d30013a5c83a702392c4c8b/layouts/desktop_primary_slider.jpg"
+      href="https://yourstore.io/api/uploads/5d30013a5c83a702392c4c8b/layouts/desktop_primary_slider_s.jpg"
       media="(min-width: 721px)" fetchpriority="high">
     <!-- Non-blocking font loading: preload as style, swap to stylesheet on load -->
     <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Material+Icons&display=swap" onload="this.onload=null;this.rel='stylesheet'">
@@ -80,7 +80,23 @@
         document.getElementById("mobile_primary_slider").src = "https://yourstore.io/api/uploads/"+parentFolder+"/layouts/mobile_primary_slider_s.jpg?v="+randomNum;
       }
     </script> -->
-    <div id="pre-bg"></div>
+    <div id="pre-bg">
+      <!-- Hero rendered in static HTML so LCP is captured before Angular bootstraps.
+           Preload links above ensure this img is a cache hit on both mobile and desktop. -->
+      <picture>
+        <source
+          media="(max-width: 720px)"
+          srcset="https://yourstore.io/api/uploads/5d30013a5c83a702392c4c8b/layouts/mobile_primary_slider_s.jpg">
+        <img
+          src="https://yourstore.io/api/uploads/5d30013a5c83a702392c4c8b/layouts/desktop_primary_slider_s.jpg"
+          fetchpriority="high"
+          decoding="async"
+          width="1440"
+          height="600"
+          alt="Tulsi Silks"
+          style="width:100%;height:100%;object-fit:cover;display:block;">
+      </picture>
+    </div>
     <app-root id="app-root"></app-root>
     <script>
       // When SSR has rendered content into app-root, the pre-bg overlay is no longer
