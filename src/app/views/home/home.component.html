@@ -51,15 +51,16 @@
   <!-- #Primary Highlights -->
 
   <!-- Primary Main Slider -->
+  <!-- Section always renders so it holds its full-viewport height even before API data
+       arrives. Without this, the hero slot collapses and the newsletter section rises
+       into the initial viewport, becoming the LCP element at 17+ s. -->
   <section
-    *ngIf="
-      template_setting?.primary_slider &&
-      commonService?.primary_main_slider?.length
-    "
+    *ngIf="template_setting?.primary_slider"
     class="dynamic-height primary-section home-slider"
     aria-label="Homepage hero"
     [style.height]="fsHeroHeightStyle"
   >
+  <ng-container *ngIf="commonService?.primary_main_slider?.length">
     <!-- Hero copy: single H1/subheading/CTA sourced from first slider item -->
     <ng-container *ngIf="commonService.primary_main_slider?.[0] as firstSlide">
       <div
@@ -170,6 +171,7 @@
         <div [hidden]="!commonService?.window_loaded" id="primary_prev" class="swiper-button swiper-button-prev"></div>
       </ng-container> -->
     </div>
+  </ng-container>
   </section>
   <!-- #Primary Main Slider -->
 

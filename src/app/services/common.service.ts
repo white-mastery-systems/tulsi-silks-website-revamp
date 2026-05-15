@@ -12,7 +12,7 @@ declare const $: any;
 
 const HOME_JSON_LD_DEFAULTS = {
   organizationName: 'Tulsi Silks',
-  storeName: 'Tulsi Silks Saree Store',
+  storeName: 'Tulsi Silks',
   email: 'orders@tulsisilks.com',
   telephone: '+918072444353',
   streetAddress: '68, Luz Church Rd, CIT Colony, Mylapore',
@@ -459,12 +459,8 @@ export class CommonService {
     return `${base}${p.replace(/^\//, '')}`;
   }
 
-  /** E.164 `+…` for JSON-LD `telephone`, aligned with `getFooterPrimaryPhone()`. */
+  /** E.164 `+…` for JSON-LD `telephone`. Always returns the verified business number. */
   getSchemaTelephoneE164(): string {
-    const fp = this.getFooterPrimaryPhone();
-    if (fp?.telHref?.startsWith('tel:+')) {
-      return fp.telHref.slice(4);
-    }
     return HOME_JSON_LD_DEFAULTS.telephone;
   }
 
@@ -496,7 +492,7 @@ export class CommonService {
 
     const orgName = pickStr(sd?.['name'], HOME_JSON_LD_DEFAULTS.organizationName) || HOME_JSON_LD_DEFAULTS.organizationName;
     const storeName =
-      pickStr(cd?.['store_display_name'], cd?.['store_name'], `${orgName} Saree Store`) || HOME_JSON_LD_DEFAULTS.storeName;
+      pickStr(cd?.['store_display_name'], cd?.['store_name'], `${orgName}`) || HOME_JSON_LD_DEFAULTS.storeName;
 
     const telephone = this.getSchemaTelephoneE164();
     const email =
