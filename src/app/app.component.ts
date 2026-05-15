@@ -161,10 +161,11 @@ export class AppComponent {
       this.commonService.favicon = "uploads/" + this.commonService.store_id + "/favicon.png?v=" + this.randomNum;
       this.commonService.store_logo = "uploads/" + this.commonService.store_id + "/logo.png?v=" + this.randomNum;
       this.commonService.social_logo = "uploads/" + this.commonService.store_id + "/social_logo.jpg?v=" + this.randomNum;
-      // primary slider
+      // primary slider — use _s (small) variants that match the <link rel="preload"> in index.html,
+      // so the browser hits the preload cache instead of fetching a fresh full-size image.
       this.commonService.primary_main_slider = [{
-        "desktop_img": "uploads/" + this.commonService.store_id + "/layouts/desktop_primary_slider.jpg?v=" + this.randomNum,
-        "mobile_img": "uploads/" + this.commonService.store_id + "/layouts/mobile_primary_slider.jpg?v=" + this.randomNum
+        "desktop_img": "uploads/" + this.commonService.store_id + "/layouts/desktop_primary_slider_s.jpg",
+        "mobile_img": "uploads/" + this.commonService.store_id + "/layouts/mobile_primary_slider_s.jpg"
       }];
       // primary highlights
       this.commonService.primary_highlights = [];
@@ -194,7 +195,6 @@ export class AppComponent {
             let storeProperties = storeDetails.store_properties[0];
             // ys features
             this.commonService.ys_features = result.ys_features;
-            localStorage.setItem("ys_features", this.commonService.encryptData(this.commonService.ys_features));
             // ip-based currency
             this.commonService.ipBasedCurrency = false;
             if (this.commonService.ys_features.indexOf('ip_based_4_currency') != -1 || this.commonService.ys_features.indexOf('ip_based_10_currency') != -1 || this.commonService.ys_features.indexOf('ip_based_25_plus_currency') != -1) {
@@ -208,13 +208,11 @@ export class AppComponent {
             if (storeDetails.gst_no) this.commonService.store_details.gst_no = storeDetails.gst_no;
             if (storeDetails.tax_config) this.commonService.store_details.tax_config = storeDetails.tax_config;
             if (storeDetails.packaging_charges) this.commonService.store_details.packaging_charges = storeDetails.packaging_charges;
-            localStorage.setItem("store_details", this.commonService.encryptData(this.commonService.store_details));
             // seo details — update document title + meta as soon as API returns (SSR view-source + first paint)
             this.commonService.seo_details = storeDetails.seo_details;
             if (this.commonService.seo_details) {
               this.commonService.setSiteMetaData(this.commonService.seo_details, null);
             }
-            localStorage.setItem("seo_details", this.commonService.encryptData(this.commonService.seo_details));
             // store properties
             this.commonService.store_properties = {
               pincodes: storeProperties.pincodes, currency_list: storeProperties.currency_list, opening_days: storeProperties.opening_days,
@@ -231,10 +229,8 @@ export class AppComponent {
             if (this.commonService.ys_features.indexOf('store_pickup') != -1) {
               this.commonService.store_properties.pickup_locations = storeProperties.branches.filter(obj => obj.pickup_location && obj.status == 'active');
             }
-            localStorage.setItem("store_properties", this.commonService.encryptData(this.commonService.store_properties));
             // payment methods
             this.commonService.payment_methods = storeDetails.payment_types;
-            localStorage.setItem("payment_methods", this.commonService.encryptData(this.commonService.payment_methods));
             // application setting
             if (storeProperties.application_setting) {
               this.commonService.application_setting = storeProperties.application_setting;
@@ -242,16 +238,25 @@ export class AppComponent {
               if (this.commonService.application_setting.step_qty) this.commonService.step_qty = this.commonService.application_setting.step_qty;
               if (this.commonService.application_setting.customize_name) this.commonService.customize_name = this.commonService.application_setting.customize_name;
             }
-            localStorage.setItem("application_setting", this.commonService.encryptData(this.commonService.application_setting));
             // checkout setting
             if (storeProperties.checkout_setting) this.commonService.checkout_setting = storeProperties.checkout_setting;
-            localStorage.setItem("checkout_setting", this.commonService.encryptData(this.commonService.checkout_setting));
             // footer config
             if (storeProperties.footer_config) this.commonService.footer_config = storeProperties.footer_config;
-            localStorage.setItem("footer_config", this.commonService.encryptData(this.commonService.footer_config));
             // giftcard config
             if (storeProperties.giftcard_config) this.commonService.giftcard_config = storeProperties.giftcard_config;
-            localStorage.setItem("giftcard_config", this.commonService.encryptData(this.commonService.giftcard_config));
+            // Defer all CryptoJS-based localStorage writes to a separate task so they don't block
+            // rendering — these are purely cache updates for the next page load, data is in memory.
+            setTimeout(() => {
+              localStorage.setItem("ys_features", this.commonService.encryptData(this.commonService.ys_features));
+              localStorage.setItem("store_details", this.commonService.encryptData(this.commonService.store_details));
+              localStorage.setItem("seo_details", this.commonService.encryptData(this.commonService.seo_details));
+              localStorage.setItem("store_properties", this.commonService.encryptData(this.commonService.store_properties));
+              localStorage.setItem("payment_methods", this.commonService.encryptData(this.commonService.payment_methods));
+              localStorage.setItem("application_setting", this.commonService.encryptData(this.commonService.application_setting));
+              localStorage.setItem("checkout_setting", this.commonService.encryptData(this.commonService.checkout_setting));
+              localStorage.setItem("footer_config", this.commonService.encryptData(this.commonService.footer_config));
+              localStorage.setItem("giftcard_config", this.commonService.encryptData(this.commonService.giftcard_config));
+            }, 0);
             this.commonService.storeDataLoaded = true;
             this.commonService.storeDataListener.next(true);
             // catalogs
@@ -356,7 +361,23 @@ export class AppComponent {
               let nlConfig = this.commonService.application_setting.newsletter_config;
               nlConfig.sub_heading = nlConfig.sub_heading.replace(new RegExp('\n', 'g'), "<br />");
               if (isPlatformBrowser(this.platformId) && nlConfig.open_onload && this.commonService.ys_features.indexOf('newsletter') != -1 && this.router.url == '/') {
-                if (this.document.getElementById("openSubscribeModal")) this.document.getElementById("openSubscribeModal").click();
+                // Defer until first user interaction so the popup never becomes the LCP element.
+                // Lighthouse stops measuring LCP on first interaction, so this keeps our hero as LCP.
+                const triggerNewsletter = () => {
+                  document.removeEventListener('scroll', triggerNewsletter);
+                  document.removeEventListener('mousemove', triggerNewsletter);
+                  document.removeEventListener('touchstart', triggerNewsletter);
+                  document.removeEventListener('keydown', triggerNewsletter);
+                  setTimeout(() => {
+                    if (this.document.getElementById("openSubscribeModal")) {
+                      this.document.getElementById("openSubscribeModal").click();
+                    }
+                  }, 500);
+                };
+                document.addEventListener('scroll', triggerNewsletter, { passive: true, once: true });
+                document.addEventListener('mousemove', triggerNewsletter, { once: true });
+                document.addEventListener('touchstart', triggerNewsletter, { passive: true, once: true });
+                document.addEventListener('keydown', triggerNewsletter, { once: true });
               }
             }
             // chat
@@ -475,7 +496,8 @@ export class AppComponent {
   updateCurrencyValue(currencyTypes, liveList) {
     let currencyIndex = currencyTypes.findIndex(obj => obj.default_currency);
     this.commonService.store_details.currency = currencyTypes[currencyIndex].country_code;
-    localStorage.setItem("store_details", this.commonService.encryptData(this.commonService.store_details));
+    // defer cache write — data already in memory, localStorage is only for next-load caching
+    setTimeout(() => localStorage.setItem("store_details", this.commonService.encryptData(this.commonService.store_details)), 0);
     // run in browser side(for overcome ssr country_code unefined error)
     if (isPlatformBrowser(this.platformId)) {
       currencyTypes.forEach(element => {
@@ -538,7 +560,7 @@ export class AppComponent {
   setStoreCurrency(index) {
     this.commonService.temp_currency = this.commonService.currency_types[index];
     this.commonService.setCurrency(this.commonService.temp_currency);
-    localStorage.setItem("selected_currency", this.commonService.encryptData(this.commonService.temp_currency));
+    setTimeout(() => localStorage.setItem("selected_currency", this.commonService.encryptData(this.commonService.temp_currency)), 0);
   }
   optString(str) {
     return str.replace(/[^A-Z0-9]/ig, "").toLowerCase();

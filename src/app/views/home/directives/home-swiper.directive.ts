@@ -1,7 +1,6 @@
 import { Directive, ElementRef, Inject, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { DynamicAssetLoaderService } from '../../../services/dynamic-asset-loader.service';
-import { delay } from 'rxjs';
 declare const Swiper: any;
 ​
 @Directive({
@@ -27,10 +26,10 @@ export class HomeSwiperDirective {
   featured_section: any = {
     auto_play: false,
     break_points: {
-      1024: { slidesPerView: 3, spaceBetween: 15 },
+      1024: { slidesPerView: 4, spaceBetween: 15 },
       768: { slidesPerView: 3, spaceBetween: 15 },
-      640: { slidesPerView: 2, spaceBetween: 15 },
-      320: { slidesPerView: 1.5, spaceBetween: 15 }
+      640: { slidesPerView: 1.75, spaceBetween: 15 },
+      320: { slidesPerView: 1.75, spaceBetween: 15 }
     }
   };
 
@@ -38,10 +37,10 @@ export class HomeSwiperDirective {
     auto_play: false,
     spaceBetween: 15,
     break_points: {
-      1024: { slidesPerView: 3, spaceBetween: 15 },
+      1024: { slidesPerView: 4, spaceBetween: 15 },
       768: { slidesPerView: 3, spaceBetween: 15 },
       640: { slidesPerView: 2, spaceBetween: 15 },
-      320: { slidesPerView: 1.5, spaceBetween: 15 }
+      320: { slidesPerView: 1.75, spaceBetween: 15 }
     }
   };
 
@@ -210,7 +209,7 @@ export class HomeSwiperDirective {
     }
   }
 
-  autoPlayEvt(swipeInit) {
+  autoPlayEvt(swipeInit: any) {
     swipeInit.el.addEventListener("mouseover", () => {  
       swipeInit.autoplay.stop();
     });
