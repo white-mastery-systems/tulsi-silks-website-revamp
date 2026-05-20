@@ -25,6 +25,15 @@
       right: 5% !important;
     }
   }
+  .titles-swiper-nav {
+    gap: 8px;
+    .swiper-button-prev,
+    .swiper-button-next {
+      position: static !important;
+      top: auto !important;
+      margin-top: 0 !important;
+    }
+  }
   .swipe_arrow {
     .swiper-button-prev,
     .swiper-container-rtl .swiper-button-next {
@@ -56,6 +65,9 @@
   }
 }
 .slider_type_one{
+  .mobile-button{
+    padding-right: 50px;
+  }
   .swiper-container{
       position: unset;
       .swiper-button-next, .swiper-container-rtl .swiper-button-prev{

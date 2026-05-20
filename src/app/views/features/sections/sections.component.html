@@ -27,7 +27,7 @@
         <ng-container *ngFor="let menu of commonService.menu_list;">
           <ng-container *ngFor="let section of menu.sections;">
             <!-- By Fabrics -->
-            <ng-container *ngIf="params.type=='by-fabrics' && section.name=='By Fabrics'">
+            <ng-container *ngIf="params.type=='by-category' && section.name=='By Category'">
               <div *ngFor="let x of section.categories | orderAsc: 'rank';" class="col-lg-3 col-md-6 col-sm-6 col-12 d-flex">
                 <div class="team-member gift-card cursor">
                   <figure class="mb-0" (click)="!x.btn_status? onSelectDiscount(x): ''">
@@ -40,7 +40,7 @@
               </div>
             </ng-container>
             <!-- By Crafts -->
-            <ng-container *ngIf="params.type=='by-crafts' && section.name=='By Crafts'">
+            <ng-container *ngIf="params.type=='by-colours' && section.name=='By Colours'">
               <div *ngFor="let x of section.categories | orderAsc: 'rank';" class="col-lg-3 col-md-6 col-sm-6 col-12 d-flex">
                 <div class="team-member gift-card cursor">
                   <figure class="mb-0" (click)="!x.btn_status? onSelectDiscount(x): ''">

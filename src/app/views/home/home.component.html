@@ -844,15 +844,35 @@
             class="col-md-3 px-0 d-flex flex-column justify-content-center align-items-start mobile-button"
           >
             <div
-              class="titles custom-title w-auto"
+              class="titles custom-title w-100 d-flex flex-column"
               [ngClass]="segment.blogs_type == 'grid' ? 'pl-0' : ''"
             >
-              <h2 [attr.id]="'home-' + segment.type + '-title-' + i">{{ segment.heading }}</h2>
+              <div class="d-flex align-items-center justify-content-between">
+                <h2 [attr.id]="'home-' + segment.type + '-title-' + i">{{ segment.heading }}</h2>
+                <div
+                  class="product-silder-btn"
+                  *ngIf="
+                    segment.blogs_type != 'grid' &&
+                    commonService?.screen_width <= 767
+                  "
+                >
+                  <button
+                    class="primary-btn outline-btn"
+                    (click)="exploreAll(segment)"
+                    type="button"
+                    [attr.aria-label]="
+                      (segment?.btn_text ? segment.btn_text : 'View all') +
+                      (segment?.heading ? ' — ' + segment.heading : '')
+                    "
+                  >
+                    {{ segment?.btn_text ? segment.btn_text : 'View All' }}
+                  </button>
+                </div>
+              </div>
               <p
                 *ngIf="segment.sub_heading"
                 [innerHTML]="segment.sub_heading"
               ></p>
-              <!-- <span></span> -->
             </div>
             <div
               class="product-silder-btn"
@@ -873,25 +893,6 @@
                 {{ segment?.btn_text ? segment.btn_text : 'View All' }}
               </button>
             </div>
-            <div
-              class="product-silder-btn"
-              *ngIf="
-                segment.blogs_type != 'grid' &&
-                commonService?.screen_width <= 767
-              "
-            >
-              <button
-                class="primary-btn outline-btn"
-                (click)="exploreAll(segment)"
-                type="button"
-                [attr.aria-label]="
-                  (segment?.btn_text ? segment.btn_text : 'View all') +
-                  (segment?.heading ? ' — ' + segment.heading : '')
-                "
-              >
-                {{ segment?.btn_text ? segment.btn_text : 'View All' }}
-              </button>
-            </div>
           </div>
           <div
             *ngIf="segment.heading && segment.slider_type == 'two'"
@@ -902,61 +903,67 @@
               class="d-flex flex-column justify-content-center align-items-start mobile-button"
             >
               <div
-                class="titles custom-title w-auto"
+                class="titles custom-title w-100 d-flex flex-column"
                 [ngClass]="segment.blogs_type == 'grid' ? 'pl-0' : ''"
               >
-                <h2 [attr.id]="'home-' + segment.type + '-title-' + i">{{ segment.heading }}</h2>
+                <div class="d-flex align-items-center justify-content-between">
+                  <h2 [attr.id]="'home-' + segment.type + '-title-' + i">{{ segment.heading }}</h2>
+                  <!-- Desktop: swiper nav buttons sit inline beside the h2 -->
+                  <ng-container
+                    *ngIf="
+                      commonService?.desktop_device &&
+                      segment.product_list?.length > 1
+                    "
+                  >
+                    <div class="d-flex align-items-center titles-swiper-nav">
+                      <div
+                        id="swipe_prev_{{ i + 1 }}"
+                        class="swiper-button swiper-button-prev"
+                      >
+                        <lucide-icon
+                          name="chevron-left"
+                          [size]="20"
+                          stroke="1"
+                          color="black"
+                        ></lucide-icon>
+                      </div>
+                      <div
+                        id="swipe_next_{{ i + 1 }}"
+                        class="swiper-button swiper-button-next"
+                      >
+                        <lucide-icon
+                          name="chevron-right"
+                          [size]="20"
+                          stroke="1"
+                          color="black"
+                        ></lucide-icon>
+                      </div>
+                    </div>
+                  </ng-container>
+                  <!-- Mobile: view all button -->
+                  <div
+                    *ngIf="commonService?.screen_width <= 767"
+                    class="product-silder-btn"
+                  >
+                    <button
+                      class="primary-btn outline-btn"
+                      (click)="exploreAll(segment)"
+                      type="button"
+                      [attr.aria-label]="
+                        (segment?.btn_text ? segment.btn_text : 'View all') +
+                        (segment?.heading ? ' — ' + segment.heading : '')
+                      "
+                    >
+                      {{ segment?.btn_text ? segment.btn_text : 'View All' }}
+                    </button>
+                  </div>
+                </div>
                 <p
                   *ngIf="segment.sub_heading"
                   [innerHTML]="segment.sub_heading"
                 ></p>
               </div>
-              <div
-                *ngIf="commonService?.screen_width <= 767"
-                class="product-silder-btn"
-              >
-                <button
-                  class="primary-btn outline-btn"
-                  (click)="exploreAll(segment)"
-                  type="button"
-                  [attr.aria-label]="
-                    (segment?.btn_text ? segment.btn_text : 'View all') +
-                    (segment?.heading ? ' — ' + segment.heading : '')
-                  "
-                >
-                  {{ segment?.btn_text ? segment.btn_text : 'View All' }}
-                </button>
-              </div>
             </div>
-            <ng-container
-              *ngIf="
-                commonService?.desktop_device &&
-                segment.product_list?.length > 1
-              "
-            >
-              <div
-                id="swipe_next_{{ i + 1 }}"
-                class="swiper-button swiper-button-next"
-              >
-                <lucide-icon
-                  name="chevron-right"
-                  [size]="20"
-                  stroke="1"
-                  color="black"
-                ></lucide-icon>
-              </div>
-              <div
-                id="swipe_prev_{{ i + 1 }}"
-                class="swiper-button swiper-button-prev"
-              >
-                <lucide-icon
-                  name="chevron-left"
-                  [size]="20"
-                  stroke="1"
-                  color="black"
-                ></lucide-icon>
-              </div>
-            </ng-container>
           </div>
           <!-- Products -->
           <div

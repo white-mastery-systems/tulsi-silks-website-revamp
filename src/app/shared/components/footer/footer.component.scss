@@ -28,6 +28,12 @@
   }
 }
 
+@media (min-width: 992px) {
+  :host .footer-address-col {
+    padding-left: 6.5rem !important;
+  }
+}
+
 .footer-contact-block {
   .footer-primary-phone {
     font-size: 1rem;
