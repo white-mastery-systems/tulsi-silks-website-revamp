@@ -1,5 +1,12 @@
 import 'zone.js/node';
 
+// Polyfill browser-only globals used by third-party libs (e.g. ngx-slider) during SSR.
+// Must run before any Angular/component code is imported.
+if (typeof (globalThis as any).requestAnimationFrame === 'undefined') {
+  (globalThis as any).requestAnimationFrame = (cb: (...args: any[]) => void) => setTimeout(cb, 16);
+  (globalThis as any).cancelAnimationFrame  = (id: number) => clearTimeout(id);
+}
+
 import { APP_BASE_HREF } from '@angular/common';
 import { CommonEngine } from '@angular/ssr/node';
 import express from 'express';
@@ -113,12 +120,14 @@ export function app(): express.Express {
     ...new Set([
       'localhost',
       '127.0.0.1',
+      '148.113.6.22',
       'tulsisilks.co.in',
       environment.domain,
       ...(environment.domain ? [`www.${environment.domain}`] : []),
       ...allowedHostsFromEnv,
     ]),
   ];
+  console.log('[SSR] allowedHosts:', commonEngineAllowedHosts);
   const commonEngine = new CommonEngine({
     allowedHosts: commonEngineAllowedHosts,
   });
@@ -414,16 +423,20 @@ export function app(): express.Express {
           res.send(out);
         }
       })
-      .catch((err) => next(err));
+      .catch((err) => {
+        console.error('[SSR] render error for', originalUrl, ':', err?.message ?? err);
+        next(err);
+      });
   });
 
   return server;
 }
 
 function run(): void {
+  const port = Number(process.env['PORT'] ?? environment.port);
   const srv = app();
-  srv.listen(environment.port, () => {
-    console.log(`Node Express server listening on http://localhost:${environment.port}`);
+  srv.listen(port, () => {
+    console.log(`Node Express server listening on http://localhost:${port}`);
   });
 }
 
