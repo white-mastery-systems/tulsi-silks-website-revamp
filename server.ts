@@ -113,7 +113,7 @@ export function app(): express.Express {
     ...new Set([
       'localhost',
       '127.0.0.1',
-      'tulsi.pripod.com',
+      'tulsisilks.co.in',
       environment.domain,
       ...(environment.domain ? [`www.${environment.domain}`] : []),
       ...allowedHostsFromEnv,

@@ -23,7 +23,7 @@ export class FooterComponent {
 
   /** Brand column: short story below logo (Tulsi). */
   readonly footerBrandIntro =
-    'Weavers of heritage Kancheepuram silks since 1978. Every saree carries a thread of tradition, handcrafted for the woman who values authenticity.';
+    'Weavers of heritage since 1993. Every saree carries a thread of tradition, handcrafted for women who value authenticity.';
 
   /** Line under social icons in brand column. */
   readonly footerSocialCaption = 'Follow for saree styling inspiration';
