@@ -164,7 +164,7 @@
     });
 
     //prevent default clicking on direct children of .cd-primary-nav 
-    $('.cd-primary-nav').children('.has-children').children('a').on('click', function (event) {
+    $('.cd-primary-nav').children('.has-children').children('a, button').on('click', function (event) {
       event.preventDefault();
     });
     $(document).on('mouseover', '.mega-menu > a', function (e) {
@@ -173,7 +173,7 @@
         let selected = $(this);
         selected.addClass('selected').next('ul').removeClass('is-hidden').end().parent('.has-children').parent('ul').addClass('moves-out');
         setTimeout(() => {
-          selected.parent('.has-children').siblings('.has-children').children('ul').addClass('is-hidden').end().children('a').removeClass('selected');
+          selected.parent('.has-children').siblings('.has-children').children('ul').addClass('is-hidden').end().children('a, button').removeClass('selected');
         }, 200);
         $('.cd-overlay').addClass('is-visible');
         toggleSearch('close');
@@ -181,7 +181,7 @@
       }
     });
     //open submenu
-    $(document).on('click', '.has-children > a', function (e) {
+    $(document).on('click', '.has-children > a, .has-children > button', function (e) {
       if(!checkWindowWidth()) e.preventDefault();
       let selected = $(this);
       if(e.currentTarget.className.indexOf('has-link') == -1) {
@@ -203,7 +203,7 @@
     function menuChange(selected) {
       if(selected.next('ul').hasClass('is-hidden')) {
         selected.addClass('selected').next('ul').removeClass('is-hidden').end().parent('.has-children').parent('ul').addClass('moves-out');
-        selected.parent('.has-children').siblings('.has-children').children('ul').addClass('is-hidden').end().children('a').removeClass('selected');
+        selected.parent('.has-children').siblings('.has-children').children('ul').addClass('is-hidden').end().children('a, button').removeClass('selected');
         $('.cd-overlay').addClass('is-visible');
       } else {
         selected.removeClass('selected').next('ul').addClass('is-hidden').end().parent('.has-children').parent('ul').removeClass('moves-out');
@@ -224,7 +224,7 @@
       $('.cd-primary-nav').removeClass('nav-active');
       $('.cd-primary-nav').addClass('nav-dismiss');
       $('.has-children ul').addClass('is-hidden');
-      $('.has-children a').removeClass('selected');
+      $('.has-children a, .has-children button').removeClass('selected');
       $('.moves-out').removeClass('moves-out');
       $('.cd-main-content').removeClass('nav-is-visible').one('webkitTransitionEnd otransitionend oTransitionEnd msTransitionEnd transitionend', function () {
         $('body').removeClass('overflow-hidden');

@@ -1073,7 +1073,62 @@ $mobile-final-height: calc(74px + #{$mobile-announcement-bar-mh});
     // .cd-primary-nav .cd-secondary-nav a:hover {
     //   color: #000;
     // }
-  
+
+    .cd-primary-nav .cd-secondary-nav > li > button {
+      background: none;
+      border: none;
+      padding: 0;
+      margin: 0;
+      margin-bottom: 0em;
+      font: inherit;
+      cursor: pointer;
+      width: 100%;
+      text-align: left;
+      color: #D99550 !important;
+      font-weight: 400;
+      font-size: 1rem;
+      line-height: 2;
+      letter-spacing: 1px;
+    }
+
+    .cd-primary-nav .cd-secondary-nav button {
+      background: none;
+      border: none;
+      border-bottom: none;
+      padding: 0;
+      margin: 0;
+      margin-bottom: 10px;
+      font: inherit;
+      cursor: pointer;
+      width: 100%;
+      text-align: left;
+      height: auto;
+      font-size: 0.75rem;
+      line-height: 2;
+      letter-spacing: 1px;
+      word-break: break-word;
+      color: #3d3d3d !important;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 5px;
+    }
+
+    .cd-primary-nav .cd-secondary-nav button span.cat-name {
+      width: 100%;
+      height: 24px;
+      line-height: 24px;
+      background-color: transparent;
+      border: 1px solid #ffffff;
+      padding: 0 6px;
+    }
+
+    .cd-primary-nav .cd-secondary-nav .moves-out > li > button {
+      -webkit-transform: translateX(-100%);
+      transform: translateX(-100%);
+    }
+
+
     .cd-primary-nav .cd-secondary-nav ul {
       /* Force Hardware Acceleration in WebKit */
       -webkit-transform: translateZ(0);
@@ -1500,6 +1555,36 @@ $mobile-final-height: calc(74px + #{$mobile-announcement-bar-mh});
     justify-content: space-between;
     gap:5px;
     padding-right: 0px!important;
+  }
+  button.sub-arrow-sec,
+  button.last-sec {
+    display: block;
+    background: none;
+    border: none;
+    border-bottom: 1px solid #3a3f40;
+    height: 74px;
+    line-height: 74px;
+    padding: 0;
+    margin: 0;
+    font: inherit;
+    color: #000 !important;
+    cursor: pointer;
+    width: 100%;
+    text-align: left;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow: hidden;
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+    will-change: transform, opacity;
+    -webkit-transition: -webkit-transform 0.3s, opacity 0.3s;
+    transition: transform 0.3s, opacity 0.3s;
+  }
+  .cd-primary-nav.moves-out > li > button,
+  .cd-primary-nav ul.moves-out > li > button {
+    -webkit-transform: translateX(-100%);
+    transform: translateX(-100%);
+    opacity: 0;
   }
   }
   

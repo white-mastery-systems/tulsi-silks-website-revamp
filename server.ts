@@ -375,7 +375,18 @@ export function app(): express.Express {
     res.redirect('/category/cotton-sarees');
   });
 
-  server.get('*.*', express.static(distFolder, { maxAge: '1y' }));
+  server.get('*.*', express.static(distFolder, {
+    setHeaders(res, filePath) {
+      if (/\.[0-9a-f]{8,}\.(js|css|woff2?|png|jpg|webp|svg)$/i.test(filePath)) {
+        // Content-hashed bundles: cache forever
+        res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+      } else {
+        // Non-hashed assets (script.js, images, fonts without hash): always revalidate
+        res.setHeader('Cache-Control', 'no-cache');
+      }
+      res.setHeader('Vary', 'Accept-Encoding');
+    }
+  }));
 
   server.get('*', (req, res, next) => {
     const { protocol, originalUrl, baseUrl, headers } = req;

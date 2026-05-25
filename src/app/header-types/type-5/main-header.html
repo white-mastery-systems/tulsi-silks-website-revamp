@@ -83,14 +83,24 @@
                         <span>{{ sec.name }}----</span>
                         <i *ngIf="sec?.categories?.length"><lucide-icon name="chevron-right" [size]="16" class="ms-1 align-middle"></lucide-icon> </i>                         
                       </a> -->
-                      <a class="sub-arrow-sec last-sec" [ngClass]="(sec.link_status)? 'has-link': null"
-                         [routerLink]="commonService.getRedirectPath(sec)"
-                         (click)="(sec.link_status && sec.link_type!='internal')? commonService.onPageRedirect(sec): null;">
-                        <span class="cat-name">{{ sec.name }}</span>
-                        <i *ngIf="sec?.categories?.length" [ngClass]="(sec.link_status)? 'has-link': null">
-                          <lucide-icon name="chevron-right" [size]="16" class="ms-1 align-middle"></lucide-icon>
-                        </i>
-                      </a>
+                      <ng-container *ngIf="commonService.getRedirectPath(sec); else secToggle">
+                        <a class="sub-arrow-sec last-sec has-link"
+                           [routerLink]="commonService.getRedirectPath(sec)"
+                           (click)="(sec.link_type!='internal')? commonService.onPageRedirect(sec): null;">
+                          <span class="cat-name">{{ sec.name }}</span>
+                          <i *ngIf="sec?.categories?.length" class="has-link">
+                            <lucide-icon name="chevron-right" [size]="16" class="ms-1 align-middle"></lucide-icon>
+                          </i>
+                        </a>
+                      </ng-container>
+                      <ng-template #secToggle>
+                        <button type="button" class="sub-arrow-sec last-sec">
+                          <span class="cat-name">{{ sec.name }}</span>
+                          <i *ngIf="sec?.categories?.length">
+                            <lucide-icon name="chevron-right" [size]="16" class="ms-1 align-middle"></lucide-icon>
+                          </i>
+                        </button>
+                      </ng-template>
                       <ul class="is-hidden">
                         <li class="go-back">
                           <span>
@@ -105,14 +115,24 @@
                             <span>{{ cat.name }}</span>
                             <i *ngIf="cat?.sub_categories?.length"><lucide-icon name="chevron-right" [size]="16" class="ms-1 align-middle"></lucide-icon> </i>
                           </a> -->
-                          <a class="sub-arrow-sec last-sec" [ngClass]="(cat.link_status)? 'has-link': null"
-                             [routerLink]="commonService.getRedirectPath(cat)"
-                             (click)="(cat.link_status && cat.link_type!='internal')? commonService.onPageRedirect(cat): null;">
-                            <span class="cat-name">{{ cat.name }}</span>
-                            <i *ngIf="cat?.sub_categories?.length" [ngClass]="(cat.link_status)? 'has-link': null">
-                              <lucide-icon name="chevron-right" [size]="16" class="ms-1 align-middle"></lucide-icon>
-                            </i>
-                          </a>
+                          <ng-container *ngIf="commonService.getRedirectPath(cat); else catToggle">
+                            <a class="sub-arrow-sec last-sec has-link"
+                               [routerLink]="commonService.getRedirectPath(cat)"
+                               (click)="(cat.link_type!='internal')? commonService.onPageRedirect(cat): null;">
+                              <span class="cat-name">{{ cat.name }}</span>
+                              <i *ngIf="cat?.sub_categories?.length" class="has-link">
+                                <lucide-icon name="chevron-right" [size]="16" class="ms-1 align-middle"></lucide-icon>
+                              </i>
+                            </a>
+                          </ng-container>
+                          <ng-template #catToggle>
+                            <button type="button" class="sub-arrow-sec last-sec">
+                              <span class="cat-name">{{ cat.name }}</span>
+                              <i *ngIf="cat?.sub_categories?.length">
+                                <lucide-icon name="chevron-right" [size]="16" class="ms-1 align-middle"></lucide-icon>
+                              </i>
+                            </button>
+                          </ng-template>
                           <ul class="is-hidden">
                             <li class="go-back">
                               <span>
@@ -249,14 +269,24 @@
                             <span>{{sec.name}}</span>
                           </li>
                           <li class="slim-scroll" *ngFor="let cat of sec.categories | orderAsc: 'rank';" [ngClass]="(cat?.sub_categories?.length)? 'has-children' : ''">
-                            <a class="last-sec" [ngClass]="(cat.link_status)? 'has-link': null"
-                               [routerLink]="commonService.getRedirectPath(cat)"
-                               (click)="(cat.link_status && cat.link_type!='internal')? commonService.onPageRedirect(cat): null;">
-                              <span class="cat-name">{{ cat.name }}</span>
-                              <i *ngIf="cat?.sub_categories?.length" [ngClass]="(cat.link_status)? 'has-link': null">
-                                <lucide-icon name="chevron-right" [size]="16" class="ms-1 align-middle"></lucide-icon>
-                              </i>
-                            </a>
+                            <ng-container *ngIf="commonService.getRedirectPath(cat); else deskCatToggle">
+                              <a class="last-sec has-link"
+                                 [routerLink]="commonService.getRedirectPath(cat)"
+                                 (click)="(cat.link_type!='internal')? commonService.onPageRedirect(cat): null;">
+                                <span class="cat-name">{{ cat.name }}</span>
+                                <i *ngIf="cat?.sub_categories?.length" class="has-link">
+                                  <lucide-icon name="chevron-right" [size]="16" class="ms-1 align-middle"></lucide-icon>
+                                </i>
+                              </a>
+                            </ng-container>
+                            <ng-template #deskCatToggle>
+                              <button type="button" class="last-sec">
+                                <span class="cat-name">{{ cat.name }}</span>
+                                <i *ngIf="cat?.sub_categories?.length">
+                                  <lucide-icon name="chevron-right" [size]="16" class="ms-1 align-middle"></lucide-icon>
+                                </i>
+                              </button>
+                            </ng-template>
                             <ul class="is-hidden slim-scroll" style="overflow-y:scroll!important;height: 300px;">
                               <li class="go-back">
                                 <span>

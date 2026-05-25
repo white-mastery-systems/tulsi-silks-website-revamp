@@ -11,3 +11,8 @@
   'mousewheel',
   'touchmove',
 ];
+
+// Disable patching of on-property handlers (element.onclick = fn style).
+// Angular uses addEventListener internally, never on-property handlers, so this is safe.
+// Reduces the number of property descriptors Zone.js wraps on every DOM element.
+(window as any).__Zone_disable_on_property = true;
