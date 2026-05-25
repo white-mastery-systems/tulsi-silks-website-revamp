@@ -1,8 +1,8 @@
 <router-outlet *ngIf="isConnected">
   <div id="reset-menu"></div>
   <ng-container *ngIf="currUrl=='/'">
-    <img width="100" height="100" fetchpriority="high" style="display: none;" src="{{imgBaseUrl}}uploads/{{commonService.store_id}}/layouts/mobile_primary_slider_s.webp?v={{randomNum}}" alt="Banner">
-    <img width="100" height="100" fetchpriority="high" style="display: none;" src="{{imgBaseUrl}}uploads/{{commonService.store_id}}/layouts/mobile_primary_slider.webp?v={{randomNum}}" alt="Banner">
+    <img fetchpriority="high" style="display: none;" src="{{imgBaseUrl}}uploads/{{commonService.store_id}}/layouts/mobile_primary_slider_s.webp?v={{randomNum}}" alt="">
+    <img fetchpriority="high" style="display: none;" src="{{imgBaseUrl}}uploads/{{commonService.store_id}}/layouts/mobile_primary_slider.webp?v={{randomNum}}" alt="">
   </ng-container>
 </router-outlet>
 
