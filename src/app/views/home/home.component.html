@@ -2657,54 +2657,12 @@
             </div>
           </div>
           <ng-container *ngIf="segment.blogs_type == 'grid'">
-            <div class="row d-flex flex-wrap align-items-stretch">
+            <div class="row d-flex flex-wrap align-items-stretch home-blog-grid">
               <div
                 *ngFor="let x of segment.image_list"
-                class="col-12"
-                [ngClass]="{
-                  'col-md-3': segment.section_grid_type == 'grid_3',
-                  'col-md-4': segment.section_grid_type == 'grid_2',
-                  'col-md-6': segment.section_grid_type == 'grid_1',
-                }"
+                class="col-12 col-md-6 col-lg-3 d-flex mb-4"
               >
-                <div class="news-box">
-                  <figure>
-                    <a
-                      routerLink="{{
-                        x.seo_status
-                          ? '/blogs/' + x.seo_details.page_url
-                          : '/blogs/' + x._id
-                      }}"
-                    >
-                      <img
-                        loading="lazy"
-                        width="100%"
-                        height="100%"
-                        appLqimgLoad
-                        appDeferLoad
-                        [ImagelazyLoad]="imgBaseUrl + x.image"
-                        alt="{{ x.img_alt ? x.img_alt : 'Image' }}"
-                      />
-                    </a>
-                    <figcaption>
-                      <time
-                        class="article-date"
-                        [attr.datetime]="x.created_on | date: 'yyyy-MM-dd'"
-                        >{{ x.created_on | date: "MMM dd, yyyy" }}</time
-                      >
-                      <h3>
-                        <a
-                          routerLink="{{
-                            x.seo_status
-                              ? '/blogs/' + x.seo_details.page_url
-                              : '/blogs/' + x._id
-                          }}"
-                          >{{ x.name }}</a
-                        >
-                      </h3>
-                    </figcaption>
-                  </figure>
-                </div>
+                <app-blog-card [item]="x" [imgBaseUrl]="imgBaseUrl"></app-blog-card>
               </div>
             </div>
           </ng-container>
@@ -2722,53 +2680,9 @@
               <div class="swiper-wrapper">
                 <div
                   *ngFor="let x of segment.image_list; let j = index"
-                  class="swiper-slide"
+                  class="swiper-slide d-flex"
                 >
-                  <div
-                    class="news-box"
-                    routerLink="{{
-                      x.seo_status
-                        ? '/blogs/' + x.seo_details.page_url
-                        : '/blogs/' + x._id
-                    }}"
-                  >
-                    <figure>
-                      <a
-                        routerLink="{{
-                          x.seo_status
-                            ? '/blogs/' + x.seo_details.page_url
-                            : '/blogs/' + x._id
-                        }}"
-                      >
-                        <img
-                          loading="lazy"
-                          width="100%"
-                          height="100%"
-                          appLqimgLoad
-                          appDeferLoad
-                          [ImagelazyLoad]="imgBaseUrl + x.image"
-                          alt="{{ x.img_alt ? x.img_alt : 'Image' }}"
-                        />
-                      </a>
-                      <figcaption>
-                        <time
-                          class="article-date"
-                          [attr.datetime]="x.created_on | date: 'yyyy-MM-dd'"
-                          >{{ x.created_on | date: "MMM dd, yyyy" }}</time
-                        >
-                        <h3>
-                          <a
-                            routerLink="{{
-                              x.seo_status
-                                ? '/blogs/' + x.seo_details.page_url
-                                : '/blogs/' + x._id
-                            }}"
-                            >{{ x.name }}</a
-                          >
-                        </h3>
-                      </figcaption>
-                    </figure>
-                  </div>
+                  <app-blog-card [item]="x" [imgBaseUrl]="imgBaseUrl"></app-blog-card>
                 </div>
                 <!-- view all -->
                 <!-- <div class="swiper-slide">
@@ -3103,6 +3017,57 @@
       </div>
     </section> -->
     <!-- #Instagram -->
+
+    <!-- Visit Our Store -->
+    <ng-container *ngIf="segment.type == 'store_locator' && segment.active_status">
+      <section class="primary-section location" [attr.aria-labelledby]="'home-location-title-' + i">
+        <div class="container">
+          <div class="row">
+            <div class="col-12 d-flex justify-content-center">
+              <div class="titles">
+                <h2 [attr.id]="'home-location-title-' + i">{{ segment.heading }}</h2>
+                <p *ngIf="segment.sub_heading" class="mb-0">{{ segment.sub_heading }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="container-fluid px-0">
+          <div class="row no-gutters location-split">
+            <!-- Left: store photo with address overlay -->
+            <div class="col-md-6 location-split__panel">
+              <img
+                *ngIf="segment.store_locator_config?.store_image"
+                [src]="imgBaseUrl + segment.store_locator_config.store_image"
+                alt="Tulsi Silks store"
+                loading="lazy"
+                class="location-split__photo"
+                width="800"
+                height="500"
+              />
+              <div class="location-split__overlay">
+                <address *ngIf="segment.store_locator_config?.address" class="store-address">
+                  {{ segment.store_locator_config.address }}
+                </address>
+              </div>
+            </div>
+            <!-- Right: interactive map -->
+            <div class="col-md-6 location-split__map">
+              <iframe
+                *ngIf="segment.store_locator_config?.safeMapUrl"
+                [src]="segment.store_locator_config.safeMapUrl"
+                title="Tulsi Silks store location map"
+                width="100%"
+                height="100%"
+                frameborder="0"
+                style="border:none;display:block"
+                allowfullscreen
+              ></iframe>
+            </div>
+          </div>
+        </div>
+      </section>
+    </ng-container>
+    <!-- #Visit Our Store -->
   </ng-container>
   <!-- #LAYOUTS -->
 
@@ -3130,51 +3095,6 @@
   <!-- #seo links -->
 </section>
 
-<section class="primary-section location" aria-labelledby="home-location-title">
-  <div class="container">
-    <div class="row">
-      <div class="col-12 d-flex justify-content-center">
-        <div class="titles">
-          <h2 id="home-location-title">Visit Our Store</h2>
-          <p class="mb-0">Walk into a world of heritage, silk, and style</p>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div class="container-fluid px-0">
-    <div class="row no-gutters location-split">
-      <!-- Left: store photo with address overlay -->
-      <div class="col-md-6 location-split__panel">
-        <img
-          src="assets/images/tulsi-store.jpg"
-          alt="Tulsi Silks store"
-          loading="lazy"
-          class="location-split__photo"
-        />
-        <div class="location-split__overlay">
-          <address
-            *ngIf="commonService.footer_config?.address_config?.content"
-            class="store-address"
-            [innerHtml]="commonService.footer_config.address_config.content"
-          ></address>
-        </div>
-      </div>
-      <!-- Right: interactive map -->
-      <div class="col-md-6 location-split__map">
-        <iframe
-          *ngIf="commonService.contact_page_info?.map_url"
-          [src]="commonService.contact_page_info.map_url"
-          title="Tulsi Silks store location map"
-          width="100%"
-          height="100%"
-          frameborder="0"
-          style="border:none;display:block"
-          allowfullscreen
-        ></iframe>
-      </div>
-    </div>
-  </div>
-</section>
 
 <!-- AI Filter -->
 <div

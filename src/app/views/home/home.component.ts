@@ -448,9 +448,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
           if(blogList.length) {
             let bCount = this.swiperService.blogs.card_count;
             if(blogData.blogs_type=='grid') {
-              if(blogData.section_grid_type=='grid_1') bCount = 2;
-              else if(blogData.section_grid_type=='grid_2') bCount = 3;
-              else if(blogData.section_grid_type=='grid_3') bCount = 4;
+              bCount = 4;
             }
             let pendingBlogCount = bCount - blogList.length;
             for(let i=0; i<pendingBlogCount; i++)
@@ -622,6 +620,11 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
       }
       else if(segment.type=="flexible") {
         segment.content = this.sanitizer.bypassSecurityTrustHtml(segment.content);
+      }
+      else if(segment.type === 'store_locator') {
+        if(segment.store_locator_config?.map_iframe_url) {
+          segment.store_locator_config.safeMapUrl = this.sanitizer.bypassSecurityTrustResourceUrl(segment.store_locator_config.map_iframe_url);
+        }
       }
     }
     this.commonService.layout_list = layoutList;

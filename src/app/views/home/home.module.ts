@@ -6,6 +6,7 @@ import { SharedModule } from '../../shared/shared.module';
 import { HomeComponent } from './home.component';
 import { HomeSwiperDirective } from './directives/home-swiper.directive';
 import { HomeHighlightsDirective } from './directives/home-highlights.directive';
+import { SharedBlogUiModule } from '../features/blogs/shared/shared-blog-ui.module';
 
 import { LucideAngularModule, ArrowUp, ChevronLeft, ChevronRight } from 'lucide-angular';
 
@@ -14,6 +15,7 @@ import { LucideAngularModule, ArrowUp, ChevronLeft, ChevronRight } from 'lucide-
   imports: [
     TabsModule.forRoot(),
     SharedModule,
+    SharedBlogUiModule,
     HomeRoutingModule,
     LucideAngularModule.pick({ ArrowUp, ChevronLeft, ChevronRight })
   ]
