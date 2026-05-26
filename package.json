@@ -11,7 +11,9 @@
     "serve:ssr": "node dist/ecommerce/server/main.js",
     "build:ssr": "ng build && ng run ecommerce:server",
     "prerender": "ng run ecommerce:prerender",
-    "analyze": "ng build --configuration production --stats-json && webpack-bundle-analyzer dist/ecommerce/browser/stats.json"
+    "analyze": "ng build --configuration production --stats-json && webpack-bundle-analyzer dist/ecommerce/browser/stats.json",
+    "compress-images": "node scripts/compress-images.js",
+    "compress-images:dry": "node scripts/compress-images.js --dry-run"
   },
   "private": true,
   "engines": {
@@ -63,6 +65,7 @@
     "karma-coverage": "~2.1.0",
     "karma-jasmine": "~4.0.0",
     "karma-jasmine-html-reporter": "~1.7.0",
+    "sharp": "^0.34.5",
     "typescript": "~5.8.3"
   },
   "overrides": {
