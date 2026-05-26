@@ -200,12 +200,16 @@ export class AppComponent implements AfterViewInit, OnDestroy {
       this.commonService.favicon = "uploads/" + this.commonService.store_id + "/favicon.png?v=" + this.randomNum;
       this.commonService.store_logo = "uploads/" + this.commonService.store_id + "/logo.png?v=" + this.randomNum;
       this.commonService.social_logo = "uploads/" + this.commonService.store_id + "/social_logo.jpg?v=" + this.randomNum;
-      // primary slider — use _s (small) variants that match the <link rel="preload"> in index.html,
-      // so the browser hits the preload cache instead of fetching a fresh full-size image.
-      this.commonService.primary_main_slider = [{
-        "desktop_img": "uploads/" + this.commonService.store_id + "/layouts/desktop_primary_slider_s.jpg",
-        "mobile_img": "uploads/" + this.commonService.store_id + "/layouts/mobile_primary_slider_s.jpg"
-      }];
+      // NOTE: We used to set `primary_main_slider` to `_s.jpg` placeholder URLs here as a
+      // fallback before the layout API completes. But this ran on BOTH server (during SSR)
+      // and client (during bootstrap) — the client run was clobbering the SSR-rendered
+      // `.webp` URLs with `_s.jpg`, forcing the browser to swap the hero <img> src,
+      // discard the preloaded `.webp`, fetch the wrong placeholder, and then swap again
+      // a few seconds later when the layout API re-resolved. That double-swap was the
+      // primary cause of LCP 10s on PSI mobile. With provideClientHydration() now active
+      // AND withHttpTransferCacheOptions(), the SSR DOM (with correct .webp URLs) stays
+      // mounted on the client and the layout API response is replayed from the transfer
+      // cache instead of refetched — so no fallback assignment is needed at all here.
       // primary highlights
       this.commonService.primary_highlights = [];
       if (this.template_setting.highlights) {
