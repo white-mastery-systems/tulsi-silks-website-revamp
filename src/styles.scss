@@ -18,6 +18,42 @@
 // swiper.css and quill-core.css are loaded on-demand via DynamicAssetLoaderService
 // to avoid blocking first paint on every page.
 
+/* === Below-the-fold section deferral ===========================================
+   `content-visibility: auto` lets the browser skip layout + paint for elements
+   that are off-screen, dramatically reducing initial-render main-thread time.
+   `contain-intrinsic-size: auto NUMpx` reserves a placeholder height so the
+   scrollbar/page-length is correct on first paint — the browser swaps in the
+   real measured height once the section comes near the viewport.
+
+   Applied ONLY to sections that are reliably below the fold on the home page:
+   testimonials, blogs, flexible content, multi-tab featured. The hero
+   (`.home-slider`) and the first grid (`.section-grid`) are deliberately
+   omitted so LCP/FCP candidates always render eagerly.
+
+   Browsers that don't support `content-visibility` ignore the property — no
+   harm, no fallback path needed. Supported: Chrome 85+, Edge 85+, Safari 18+,
+   Firefox 125+ (covers ~95% of mobile traffic as of late 2025). */
+.testimonial-sec,
+.primary-section.news,
+.flexible-section,
+.multi-tab-featured {
+  content-visibility: auto;
+  /* `auto` lets the browser remember the last-rendered size so subsequent
+     scroll passes don't reflow. 800px is a conservative estimate for
+     typical home sections at desktop width; mobile media query overrides. */
+  contain-intrinsic-size: auto 800px;
+}
+
+@media only screen and (max-width: 767px) {
+  .testimonial-sec,
+  .primary-section.news,
+  .flexible-section,
+  .multi-tab-featured {
+    contain-intrinsic-size: auto 600px;
+  }
+}
+/* =============================================================================== */
+
 /* Keyboard-only focus ring (does not show on mouse click). */
 :root {
   --focus-ring: #d99550;

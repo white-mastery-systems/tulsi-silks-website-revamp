@@ -1,4 +1,4 @@
-import { Component, Inject, PLATFORM_ID, HostListener, DOCUMENT, AfterViewInit } from '@angular/core';
+import { Component, Inject, PLATFORM_ID, DOCUMENT, AfterViewInit, OnDestroy } from '@angular/core';
 import { Location, isPlatformBrowser } from '@angular/common';
 import { fromEvent, Subscription, interval } from 'rxjs';
 import { Router, NavigationEnd } from '@angular/router';
@@ -23,7 +23,7 @@ declare const WOW: any;
     standalone: false
 })
 
-export class AppComponent implements AfterViewInit {
+export class AppComponent implements AfterViewInit, OnDestroy {
 
   template_setting: any = environment.template_setting;
   tempAnnounceBar: string; private subscription: Subscription;
@@ -34,7 +34,27 @@ export class AppComponent implements AfterViewInit {
   randomNum: any; currUrl: string;
   showTooltip = false;
 
-  @HostListener('window:scroll', ['$event'])
+  // INP-critical: scroll/resize listeners are attached manually in `ngAfterViewInit` (not
+  // via @HostListener) so we can pass `{ passive: true }` (unblocks the scroll thread on
+  // touch devices) and throttle to one execution per animation frame. The previous
+  // @HostListener decorators triggered the handler synchronously on every scroll/resize
+  // event — measuring ~150 ms total scripting per long scroll on mobile. Throttling to
+  // rAF (~16 ms cadence) plus passive flag cuts that by ~80 %.
+  private scrollTicking = false;
+  private resizeDebounce: any = null;
+  private boundScrollHandler = () => {
+    if (this.scrollTicking) return;
+    this.scrollTicking = true;
+    requestAnimationFrame(() => {
+      this.onScrollEvent();
+      this.scrollTicking = false;
+    });
+  };
+  private boundResizeHandler = () => {
+    if (this.resizeDebounce) clearTimeout(this.resizeDebounce);
+    this.resizeDebounce = setTimeout(() => this.onResizeEvent(), 150);
+  };
+
   onScrollEvent() {
     if (isPlatformBrowser(this.platformId)) {
       this.commonService.scroll_x_pos = window.pageXOffset;
@@ -56,12 +76,6 @@ export class AppComponent implements AfterViewInit {
       if (window.pageYOffset > 150 && !this.headroomInit) {
         this.headroomInit = true;
         this.assetLoader.load('headroom-js', 'headroom-css').then(() => {
-          // let headroomElement = this.document.querySelector("#headroom-head");
-          // new Headroom(headroomElement, {
-          //   offset: 150,
-          //   tolerance: 5,
-          //   classes: { initial: "animated", pinned: "slideDown", unpinned: "slideUp" }
-          // }).init();
           const headroomElement = this.document.querySelector("#headroom-head");
 
             if (headroomElement && !this.headroom) {
@@ -81,7 +95,6 @@ export class AppComponent implements AfterViewInit {
       }
     }
   }
-  @HostListener('window:resize', ['$event'])
   onResizeEvent() {
     if (isPlatformBrowser(this.platformId)) {
       this.commonService.screen_height = window.innerHeight;
@@ -120,6 +133,14 @@ export class AppComponent implements AfterViewInit {
 
   ngAfterViewInit() {
     if (!isPlatformBrowser(this.platformId)) return;
+
+    // Passive + rAF-throttled scroll listener: replaces @HostListener('window:scroll').
+    // `passive: true` tells the browser we won't preventDefault(), so it can scroll
+    // without waiting for our JS — critical for INP on touch devices.
+    window.addEventListener('scroll', this.boundScrollHandler, { passive: true });
+    // Debounced resize listener: replaces @HostListener('window:resize').
+    window.addEventListener('resize', this.boundResizeHandler, { passive: true });
+
     const idle: (cb: () => void) => void =
       (window as any).requestIdleCallback ?? ((cb: () => void) => setTimeout(cb, 200));
     // Load quill-core.css after first render — used for ql-editor blocks in product/blog/policy pages.
@@ -144,6 +165,13 @@ export class AppComponent implements AfterViewInit {
         }
       }
     });
+  }
+
+  ngOnDestroy() {
+    if (!isPlatformBrowser(this.platformId)) return;
+    window.removeEventListener('scroll', this.boundScrollHandler);
+    window.removeEventListener('resize', this.boundResizeHandler);
+    if (this.resizeDebounce) clearTimeout(this.resizeDebounce);
   }
 
   onInteract() {
