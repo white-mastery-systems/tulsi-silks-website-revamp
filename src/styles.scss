@@ -15,8 +15,8 @@
 // @import "assets/scss/cart/overlay.scss";
 
 @import "assets/css/bootstrap-grid.css";
-@import "assets/css/swiper.css";
-@import "assets/css/quill-core.css";
+// swiper.css and quill-core.css are loaded on-demand via DynamicAssetLoaderService
+// to avoid blocking first paint on every page.
 
 /* Keyboard-only focus ring (does not show on mouse click). */
 :root {

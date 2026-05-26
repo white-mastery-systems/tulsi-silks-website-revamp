@@ -87,7 +87,7 @@ export class HomeSwiperDirective {
 ​
   ngOnInit() {
     if(isPlatformBrowser(this.platformId)) {
-      this.assetLoader.load('swiper-js').then(() => {
+      this.assetLoader.load('swiper-js', 'swiper-css').then(() => {
         this.registerListenerForDomChanges();
         this.fetchSwipeElements();
       }).catch(error => console.log("err", error));

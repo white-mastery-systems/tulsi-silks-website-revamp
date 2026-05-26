@@ -6,6 +6,8 @@ interface Scripts {
 }
 
 export const CssStore: Scripts[] = [
+  { name: 'swiper-css', type: 'css', src: 'assets/css/swiper.css' },
+  { name: 'quill-css', type: 'css', src: 'assets/css/quill-core.css' },
   { name: 'default-skin', type: 'css', src: 'assets/css/default-skin.min.css' },
   { name: 'squarepay', type: 'css', src: 'assets/css/squarepay.css' },
   { name: 'headroom-css', type: 'css', src: 'assets/css/headroom.css' },

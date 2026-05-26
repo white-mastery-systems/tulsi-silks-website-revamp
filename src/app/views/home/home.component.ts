@@ -771,7 +771,11 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
       vw > this.maxWidth
         ? `min(${base}, ${HomeComponent.DESKTOP_HERO_MAX_PX}px)`
         : base;
-    this.document.body.style.marginTop = `${mastHeight}px`;
+    // Skip the write when height already matches to avoid a CLS-triggering repaint.
+    const computed = parseInt(window.getComputedStyle(this.document.body).marginTop || '0', 10);
+    if (mastHeight !== computed) {
+      this.document.body.style.marginTop = `${mastHeight}px`;
+    }
   }
 
   /* AI Styling */

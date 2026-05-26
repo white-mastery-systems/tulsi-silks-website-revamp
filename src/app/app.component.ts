@@ -122,6 +122,9 @@ export class AppComponent implements AfterViewInit {
     if (!isPlatformBrowser(this.platformId)) return;
     const idle: (cb: () => void) => void =
       (window as any).requestIdleCallback ?? ((cb: () => void) => setTimeout(cb, 200));
+    // Load quill-core.css after first render — used for ql-editor blocks in product/blog/policy pages.
+    // Not needed for LCP so defer it out of the critical path.
+    idle(() => this.assetLoader.load('quill-css').catch(() => {}));
     idle(() => {
       // network status
       this.connectionService.monitor().subscribe(isConnected => {
@@ -627,7 +630,12 @@ export class AppComponent implements AfterViewInit {
     setTimeout(() => {
       if (!isPlatformBrowser(this.platformId)) return;
       const mastHeight = this.document.getElementById('headroom-head')?.offsetHeight ?? 0;
-      this.document.body.style.marginTop = mastHeight + 'px';
+      // Compare against computed style (picks up the CSS fallback in index.html) so
+      // we skip the write — and avoid CLS — when the height hasn't actually changed.
+      const computed = parseInt(window.getComputedStyle(this.document.body).marginTop || '0', 10);
+      if (mastHeight !== computed) {
+        this.document.body.style.marginTop = mastHeight + 'px';
+      }
     }, timer);
   }
 
