@@ -19,27 +19,65 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="icon" type="image/x-icon" id="appFavicon" href="">
     <link rel="preconnect" href="https://yourstore.io" crossorigin="">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
     <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin="">
     <link rel="dns-prefetch" href="https://www.clarity.ms">
-    <!-- Preload LCP hero — _s variants match what Angular renders and are 10-20x smaller -->
-    <link rel="preload" as="image"
-      href="https://yourstore.io/api/uploads/5d30013a5c83a702392c4c8b/layouts/mobile_primary_slider_s.jpg"
+    <!-- Preload LCP hero — URLs and type MUST match exactly what Angular's SSR <picture>
+         renders, otherwise the preload is wasted bandwidth and the actual element triggers
+         a second download. Server-side renders mobile_primary_slider.webp (150 KB) for
+         (max-width: 720px) and desktop_primary_slider.webp (361 KB) above that. The `media`
+         attribute is honored as the preload "applies if" gate, so only the matching variant
+         is fetched. -->
+    <link rel="preload" as="image" type="image/webp"
+      href="https://yourstore.io/api/uploads/5d30013a5c83a702392c4c8b/layouts/mobile_primary_slider.webp"
       media="(max-width: 720px)" fetchpriority="high">
-    <link rel="preload" as="image"
-      href="https://yourstore.io/api/uploads/5d30013a5c83a702392c4c8b/layouts/desktop_primary_slider_s.jpg"
+    <link rel="preload" as="image" type="image/webp"
+      href="https://yourstore.io/api/uploads/5d30013a5c83a702392c4c8b/layouts/desktop_primary_slider.webp"
       media="(min-width: 721px)" fetchpriority="high">
-    <!-- The 5 main header icons (menu/search/account/wishlist/cart) are inline SVG via mask-image
-         in styles.scss to avoid font-render flash. `Material Icons` is still loaded because hundreds
-         of templates use <i class="material-icons">name</i> directly (close, delete, search, etc.).
-         The Outlined variant was removed because almost nothing uses it. -->
-    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Material+Icons&display=swap" onload="this.onload=null;this.rel='stylesheet'">
-    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Icons&display=swap"></noscript>
-    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Montaga&display=swap" onload="this.onload=null;this.rel='stylesheet'">
-    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montaga&display=swap"></noscript>
+    <!-- Self-hosted Montaga (12 KB) — used for above-the-fold hero headings. Material Icons
+         is NOT preloaded: it's 128 KB, the above-the-fold icons are inline SVG masks in
+         styles.scss, and the below-the-fold uses (modals, cart, etc.) tolerate a lazy load
+         via @font-face. Removing the Material Icons preload frees ~128 KB of high-priority
+         bandwidth that competes with the LCP hero image on Slow 4G. -->
+    <link rel="preload" as="font" type="font/woff2" href="assets/fonts/montaga.woff2" crossorigin="anonymous">
     <link rel="canonical" href="" id="ccLink">
     <style>
+      /* Self-hosted @font-face — declared inline so the browser sees the font src
+         in the same parse pass as the preload tag above. font-display: swap mirrors
+         what Google Fonts was sending so visible text never goes invisible. The
+         unicode-range on Montaga matches Google Fonts' latin subset (~95% of glyphs
+         we need) to keep the file at 12 KB. */
+      @font-face {
+        font-family: 'Montaga';
+        font-style: normal;
+        font-weight: 400;
+        font-display: swap;
+        src: url('assets/fonts/montaga.woff2') format('woff2');
+        unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+      }
+      @font-face {
+        font-family: 'Material Icons';
+        font-style: normal;
+        font-weight: 400;
+        font-display: swap;
+        src: url('assets/fonts/material-icons.woff2') format('woff2');
+      }
+      /* .material-icons utility class — was provided by Google Fonts CSS, now inline. */
+      .material-icons {
+        font-family: 'Material Icons';
+        font-weight: normal;
+        font-style: normal;
+        font-size: 24px;
+        line-height: 1;
+        letter-spacing: normal;
+        text-transform: none;
+        display: inline-block;
+        white-space: nowrap;
+        word-wrap: normal;
+        direction: ltr;
+        -webkit-font-feature-settings: 'liga';
+        font-feature-settings: 'liga';
+        -webkit-font-smoothing: antialiased;
+      }
       /* Header heights mirror `assets/header/type-5.scss` — match exactly so Angular's
          `setBodyMarginTop` measurement on hydration writes the same px and zero CLS. */
       :root { --ts-mast-h: 74px; }
@@ -85,14 +123,17 @@
       }
     </script> -->
     <div id="pre-bg">
-      <!-- Hero rendered in static HTML so LCP is captured before Angular bootstraps.
-           Preload links above ensure this img is a cache hit on both mobile and desktop. -->
+      <!-- Hero fallback rendered in static HTML in case SSR hasn't populated app-root yet.
+           URLs MUST match the preload tags above AND Angular's SSR-rendered <picture> URLs,
+           so the browser only downloads one hero image (preloaded → reused by both this
+           fallback and Angular's rendered slider). -->
       <picture>
         <source
           media="(max-width: 720px)"
-          srcset="https://yourstore.io/api/uploads/5d30013a5c83a702392c4c8b/layouts/mobile_primary_slider_s.jpg">
+          srcset="https://yourstore.io/api/uploads/5d30013a5c83a702392c4c8b/layouts/mobile_primary_slider.webp"
+          type="image/webp">
         <img
-          src="https://yourstore.io/api/uploads/5d30013a5c83a702392c4c8b/layouts/desktop_primary_slider_s.jpg"
+          src="https://yourstore.io/api/uploads/5d30013a5c83a702392c4c8b/layouts/desktop_primary_slider.webp"
           fetchpriority="high"
           decoding="async"
           width="1440"

@@ -22,9 +22,12 @@ import 'localstorage-polyfill';
 
 (globalThis as { localStorage?: Storage }).localStorage = localStorage;
 
-/** Cached STORE_DETAILS JSON — same endpoint as StoreApiService.STORE_DETAILS(). */
+/** Cached STORE_DETAILS JSON — same endpoint as StoreApiService.STORE_DETAILS().
+ *  Bumped from 2 min → 10 min so we don't hit the upstream API on every SSR
+ *  miss. The store details payload (catalog list, store config) changes at most
+ *  a few times per day, so 10 min lag is invisible to users. */
 let storeDetailsCache: { at: number; json: unknown } | null = null;
-const STORE_DETAILS_TTL_MS = 120_000;
+const STORE_DETAILS_TTL_MS = 600_000;
 
 function fetchStoreDetailsV3(): Promise<any> {
   return new Promise((resolve, reject) => {
@@ -377,9 +380,15 @@ export function app(): express.Express {
 
   server.get('*.*', express.static(distFolder, {
     setHeaders(res, filePath) {
+      const normalized = filePath.replace(/\\/g, '/');
       if (/\.[0-9a-f]{8,}\.(js|css|woff2?|png|jpg|webp|svg)$/i.test(filePath)) {
         // Content-hashed bundles: cache forever
         res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+      } else if (/\/assets\/fonts\/.+\.woff2?$/i.test(normalized)) {
+        // Self-hosted fonts have stable filenames (no content hash) but the file
+        // contents never change unless we explicitly replace them. Cache for 1 year
+        // without `immutable` so we can override by renaming if we ever update.
+        res.setHeader('Cache-Control', 'public, max-age=31536000');
       } else {
         // Non-hashed assets (script.js, images, fonts without hash): always revalidate
         res.setHeader('Cache-Control', 'no-cache');
@@ -415,13 +424,17 @@ export function app(): express.Express {
         const ae = String(req.headers['accept-encoding'] || '');
         res.setHeader('Content-Type', 'text/html; charset=utf-8');
         res.setHeader('Vary', 'Accept-Encoding');
-        // Cache SSR HTML for 3 min on the edge / 10 min stale-revalidation. The longer TTL
-        // keeps the Nginx page cache (see tulsisilks.conf) warm so cold-render TTFB doesn't
-        // hit PSI runs. stale-while-revalidate lets the CDN/Nginx serve the stale copy
-        // instantly while a background worker fetches a fresh one — no user-facing wait.
-        // Personalized data (cart, wishlist, user) is hydrated client-side, so the cached
-        // HTML is safe to share between visitors.
-        res.setHeader('Cache-Control', 'public, max-age=180, stale-while-revalidate=600');
+        // Aggressive cache: 1 h fresh + 24 h stale-while-revalidate. This collapses the
+        // cold-cache PSI problem — by the time PSI re-tests, the entry is still warm,
+        // so TTFB stays ~130 ms (Nginx) instead of 1.5–2.2 s (SSR re-render).
+        // CMS tradeoff: admin content edits propagate to public visitors within 1 h
+        // (worst case 24 h if no traffic). For Tulsi Silks the upstream content
+        // (products, banners, blogs) updates at most a few times per day so this is
+        // an acceptable tradeoff. To purge immediately, restart Nginx or curl with
+        // `PURGE` on the proxy_cache path.
+        // Personalized data (cart, wishlist, user) is hydrated client-side, so the
+        // cached HTML is safe to share between visitors.
+        res.setHeader('Cache-Control', 'public, max-age=3600, stale-while-revalidate=86400');
         if (ae.includes('br')) {
           res.setHeader('Content-Encoding', 'br');
           const br = createBrotliCompress({
