@@ -1,4 +1,4 @@
-import { Component, Inject, PLATFORM_ID, DOCUMENT, AfterViewInit, OnDestroy } from '@angular/core';
+import { Component, Inject, PLATFORM_ID, DOCUMENT, AfterViewInit, OnDestroy, TransferState } from '@angular/core';
 import { Location, isPlatformBrowser } from '@angular/common';
 import { fromEvent, Subscription, interval } from 'rxjs';
 import { Router, NavigationEnd } from '@angular/router';
@@ -13,6 +13,7 @@ import { CartlistService } from './services/cartlist.service';
 import { StoreApiService } from './services/store-api.service';
 import { CurrencyConversionService } from './services/currency-conversion.service';
 import { DynamicAssetLoaderService } from './services/dynamic-asset-loader.service';
+import { SSR_STATE_KEY } from './services/ssr-state.keys';
 declare const Headroom: any;
 declare const WOW: any;
 
@@ -110,7 +111,7 @@ export class AppComponent implements AfterViewInit, OnDestroy {
     private storeApi: StoreApiService, private api: ApiService, public router: Router, public commonService: CommonService,
     public wishService: WishlistService, public cartService: CartlistService, public cc: CurrencyConversionService,
     private swiperService: SwiperService, private location: Location, private connectionService: ConnectionService,
-    private assetLoader: DynamicAssetLoaderService
+    private assetLoader: DynamicAssetLoaderService, private transferState: TransferState
   ) {
     // this.randomNum = localStorage.setItem("random_num", "654TRTYR654")
     // device type
@@ -409,6 +410,38 @@ export class AppComponent implements AfterViewInit, OnDestroy {
                 });
               }
               else console.log("fsl response", result);
+              // Save SSR state snapshot for client-side hydration.
+              // This callback fires AFTER the other sync mutations in the outer
+              // STORE_DETAILS handler (announcement bar setup, updateCurrencyValue,
+              // newsletter setup) have completed, so all the relevant data fields
+              // are populated by the time we serialize. Without this, CommonService
+              // on the client starts with empty arrays, the *ngFor over menu_list
+              // claims 0 items at hydration, and the 6 SSR-rendered menu items
+              // become orphaned DOM → "hasAttribute is not a function" throw.
+              if (!isPlatformBrowser(this.platformId)) {
+                this.transferState.set(SSR_STATE_KEY, {
+                  menu_list: this.commonService.menu_list,
+                  catalog_list: this.commonService.catalog_list,
+                  ys_features: this.commonService.ys_features,
+                  currency_types: this.commonService.currency_types,
+                  application_setting: this.commonService.application_setting,
+                  ipBasedCurrency: this.commonService.ipBasedCurrency,
+                  temp_currency: this.commonService.temp_currency,
+                  selected_currency: this.commonService.selected_currency,
+                  primary_main_slider: this.commonService.primary_main_slider,
+                  store_details: this.commonService.store_details,
+                  store_properties: this.commonService.store_properties,
+                  seo_details: this.commonService.seo_details,
+                  payment_methods: this.commonService.payment_methods,
+                  checkout_setting: this.commonService.checkout_setting,
+                  footer_config: this.commonService.footer_config,
+                  giftcard_config: this.commonService.giftcard_config,
+                  announcementBar: this.commonService.announcementBar,
+                  footer_seo_links: this.commonService.footer_seo_links,
+                  storeLoaded: this.commonService.storeLoaded,
+                  storeDataLoaded: this.commonService.storeDataLoaded,
+                });
+              }
             });
             // announcement bar
             if (this.commonService.application_setting.announcebar_status) {

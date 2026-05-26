@@ -1,4 +1,4 @@
-import { Injectable, Inject, PLATFORM_ID, DOCUMENT } from '@angular/core';
+import { Injectable, Inject, PLATFORM_ID, DOCUMENT, TransferState } from '@angular/core';
 import { Location, isPlatformBrowser, PlatformLocation } from '@angular/common';
 import { DomSanitizer, SafeHtml, Meta, Title } from '@angular/platform-browser';
 import { HttpClient } from '@angular/common/http';
@@ -8,6 +8,7 @@ import { StoreApiService } from './store-api.service';
 import { environment } from '../../environments/environment';
 import CryptoJS from 'crypto-js';
 import { buildHomePageJsonLd, HomeJsonLdInput } from '../seo/home-page-json-ld';
+import { SSR_STATE_KEY, SsrStateSnapshot } from './ssr-state.keys';
 declare const $: any;
 
 const HOME_JSON_LD_DEFAULTS = {
@@ -182,25 +183,60 @@ export class CommonService {
   constructor(
     @Inject(PLATFORM_ID) private platformId: Object, private location: Location, private router: Router, private storeApi: StoreApiService,
     private sanitizer: DomSanitizer, private meta: Meta, private title: Title, private http: HttpClient, @Inject(DOCUMENT) private document,
-    private platformLocation: PlatformLocation
+    private platformLocation: PlatformLocation, private transferState: TransferState
   ) {
+    // Read SSR snapshot FIRST so menu_list / ys_features / currency_types etc. are
+    // populated before Angular's view init runs. This is what allows MainHeader's
+    // *ngFor over menu_list and *ngIf branches to match the SSR-rendered DOM at
+    // hydration time. We MUST also block localStorage from overwriting these values
+    // below: localStorage from a previous visit may have stale data (e.g., older
+    // ys_features without 'currency_variation') that would cause *ngIf branches
+    // to evaluate differently than they did during the current SSR render. That
+    // mismatch is what produces the `hasAttribute is not a function` hydration
+    // error and tears down the menu. See ssr-state.keys.ts for full rationale.
+    let ssrProvided = new Set<string>();
+    if (isPlatformBrowser(this.platformId) && this.transferState.hasKey(SSR_STATE_KEY)) {
+      const snapshot = this.transferState.get(SSR_STATE_KEY, null as unknown as SsrStateSnapshot);
+      if (snapshot) {
+        const apply = <K extends keyof SsrStateSnapshot>(k: K) => {
+          if (snapshot[k] !== undefined) {
+            (this as any)[k] = snapshot[k];
+            ssrProvided.add(k as string);
+          }
+        };
+        apply('menu_list'); apply('catalog_list'); apply('ys_features'); apply('currency_types');
+        apply('application_setting'); apply('ipBasedCurrency'); apply('temp_currency'); apply('selected_currency');
+        apply('primary_main_slider'); apply('store_details'); apply('store_properties'); apply('seo_details');
+        apply('payment_methods'); apply('checkout_setting'); apply('footer_config'); apply('giftcard_config');
+        apply('announcementBar'); apply('footer_seo_links'); apply('storeLoaded'); apply('storeDataLoaded');
+        // Derived state from application_setting that the original localStorage
+        // path used to set — replicate it here so we don't lose them when we
+        // skip the localStorage branch below.
+        if (this.application_setting?.min_qty) this.min_qty = this.application_setting.min_qty;
+        if (this.application_setting?.step_qty) this.step_qty = this.application_setting.step_qty;
+        if (this.application_setting?.customize_name) this.customize_name = this.application_setting.customize_name;
+      }
+    }
     if(localStorage.getItem('customer_token')) this.customer_token = localStorage.getItem('customer_token');
     if(isPlatformBrowser(this.platformId)) {
       if(localStorage.getItem('user_details')) this.user_details = this.decryptData(localStorage.getItem("user_details"));
-      if(localStorage.getItem('store_details')) this.store_details = this.decryptData(localStorage.getItem("store_details"));
-      if(localStorage.getItem('seo_details')) this.seo_details = this.decryptData(localStorage.getItem("seo_details"));
-      if(localStorage.getItem('store_properties')) this.store_properties = this.decryptData(localStorage.getItem("store_properties"));
-      if(localStorage.getItem('application_setting')) {
+      // For each field below, only fall back to localStorage if the SSR snapshot
+      // did NOT provide a value. This preserves hydration correctness on visits
+      // where localStorage may be older / stale than the current SSR render.
+      if(!ssrProvided.has('store_details') && localStorage.getItem('store_details')) this.store_details = this.decryptData(localStorage.getItem("store_details"));
+      if(!ssrProvided.has('seo_details') && localStorage.getItem('seo_details')) this.seo_details = this.decryptData(localStorage.getItem("seo_details"));
+      if(!ssrProvided.has('store_properties') && localStorage.getItem('store_properties')) this.store_properties = this.decryptData(localStorage.getItem("store_properties"));
+      if(!ssrProvided.has('application_setting') && localStorage.getItem('application_setting')) {
         this.application_setting = this.decryptData(localStorage.getItem("application_setting"));
         if(this.application_setting.min_qty) this.min_qty = this.application_setting.min_qty;
         if(this.application_setting.step_qty) this.step_qty = this.application_setting.step_qty;
         if(this.application_setting.customize_name) this.customize_name = this.application_setting.customize_name;
       }
-      if(localStorage.getItem('checkout_setting')) this.checkout_setting = this.decryptData(localStorage.getItem("checkout_setting"));
-      if(localStorage.getItem('footer_config')) this.footer_config = this.decryptData(localStorage.getItem("footer_config"));
-      if(localStorage.getItem('payment_methods')) this.payment_methods = this.decryptData(localStorage.getItem("payment_methods"));
-      if(localStorage.getItem('ys_features')) this.ys_features = this.decryptData(localStorage.getItem("ys_features"));
-      if(localStorage.getItem("selected_currency")) this.setCurrency(this.decryptData(localStorage.getItem("selected_currency")));
+      if(!ssrProvided.has('checkout_setting') && localStorage.getItem('checkout_setting')) this.checkout_setting = this.decryptData(localStorage.getItem("checkout_setting"));
+      if(!ssrProvided.has('footer_config') && localStorage.getItem('footer_config')) this.footer_config = this.decryptData(localStorage.getItem("footer_config"));
+      if(!ssrProvided.has('payment_methods') && localStorage.getItem('payment_methods')) this.payment_methods = this.decryptData(localStorage.getItem("payment_methods"));
+      if(!ssrProvided.has('ys_features') && localStorage.getItem('ys_features')) this.ys_features = this.decryptData(localStorage.getItem("ys_features"));
+      if(!ssrProvided.has('selected_currency') && localStorage.getItem("selected_currency")) this.setCurrency(this.decryptData(localStorage.getItem("selected_currency")));
       if(sessionStorage.getItem('country_list')) this.country_list = this.decryptData(sessionStorage.getItem("country_list"));
       if(sessionStorage.getItem('guest_email')) this.guest_email = this.decryptData(sessionStorage.getItem("guest_email"));
       if(sessionStorage.getItem('guest_token')) this.guest_token = sessionStorage.getItem("guest_token");

@@ -40,7 +40,7 @@
               </ng-container>
 
               <!-- mobile menu list -->
-              <li *ngFor="let menu of commonService.menu_list | orderAsc: 'rank'; let i=index;" [ngClass]="{ 'has-children mega-menu slim-scroll': menu?.sec_count, 'pos-relative': menu?.sec_count<=2 }">
+              <li *ngFor="let menu of commonService.menu_list | orderAsc: 'rank'; let i=index; trackBy: trackByMenuId" [ngClass]="{ 'has-children mega-menu slim-scroll': menu?.sec_count, 'pos-relative': menu?.sec_count<=2 }">
                 <a class="sub-arrow-sec" [routerLink]="commonService.getRedirectPath(menu)" [attr.role]="(menu?.sec_count && !commonService.getRedirectPath(menu)) ? 'button' : null" [attr.tabindex]="(menu?.sec_count && !commonService.getRedirectPath(menu)) ? '0' : null" (mouseenter)="(!menu?.sec_count && commonService.desktop_device)? commonService.resetMegaMenu(): ''" (click)="(!menu?.sec_count)? commonService.onPageRedirect(menu): ''">
                   {{menu.name}}
                   <i *ngIf="menu?.sec_count"><lucide-icon name="chevron-right" [size]="16" class="ms-1 align-middle"></lucide-icon> </i>
@@ -227,7 +227,7 @@
                 </ng-container>
 
                 <!-- desktop menu list-->
-                <li *ngFor="let menu of commonService.menu_list | orderAsc: 'rank'; let i=index;" [ngClass]="{ 'has-children mega-menu slim-scroll': menu?.sec_count, 'pos-relative': menu?.sec_count<=2 }">
+                <li *ngFor="let menu of commonService.menu_list | orderAsc: 'rank'; let i=index; trackBy: trackByMenuId" [ngClass]="{ 'has-children mega-menu slim-scroll': menu?.sec_count, 'pos-relative': menu?.sec_count<=2 }">
                   <a (mouseenter)="(!menu?.sec_count && commonService.desktop_device)? commonService.resetMegaMenu(): ''"
                   [routerLink]="commonService.getRedirectPath(menu)"
                   (click)="(!menu?.sec_count && menu.link_type!='internal')? commonService.onPageRedirect(menu): null;">
