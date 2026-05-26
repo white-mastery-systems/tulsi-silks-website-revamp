@@ -30,19 +30,23 @@
     <link rel="preload" as="image"
       href="https://yourstore.io/api/uploads/5d30013a5c83a702392c4c8b/layouts/desktop_primary_slider_s.jpg"
       media="(min-width: 721px)" fetchpriority="high">
-    <!-- Non-blocking font loading: preload as style, swap to stylesheet on load -->
+    <!-- The 5 main header icons (menu/search/account/wishlist/cart) are inline SVG via mask-image
+         in styles.scss to avoid font-render flash. `Material Icons` is still loaded because hundreds
+         of templates use <i class="material-icons">name</i> directly (close, delete, search, etc.).
+         The Outlined variant was removed because almost nothing uses it. -->
     <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Material+Icons&display=swap" onload="this.onload=null;this.rel='stylesheet'">
     <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Icons&display=swap"></noscript>
-    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Material+Icons+Outlined&display=swap" onload="this.onload=null;this.rel='stylesheet'">
-    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Icons+Outlined&display=swap"></noscript>
     <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Montaga&display=swap" onload="this.onload=null;this.rel='stylesheet'">
     <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montaga&display=swap"></noscript>
     <link rel="canonical" href="" id="ccLink">
     <style>
-      /* 80px matches MASTHEAD_FALLBACK_PX — prevents CLS when Angular sets body.marginTop on hydration */
-      body { margin: 0; margin-top: 80px; }
+      /* Header heights mirror `assets/header/type-5.scss` — match exactly so Angular's
+         `setBodyMarginTop` measurement on hydration writes the same px and zero CLS. */
+      :root { --ts-mast-h: 74px; }
+      @media (min-width: 992px) { :root { --ts-mast-h: 78px; } }
+      body { margin: 0; margin-top: var(--ts-mast-h); }
       .disp-none { display: none; }
-      .dynamic-height { height: calc(100vh - 80px); }
+      .dynamic-height { height: calc(100vh - var(--ts-mast-h)); }
       #pre-bg {
         background-color: #f2f2f2;
         width: 100%;

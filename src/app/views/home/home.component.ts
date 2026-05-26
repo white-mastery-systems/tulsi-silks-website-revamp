@@ -24,8 +24,10 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   /** Confirmed homepage SEO copy (fallback when API hasn’t loaded yet). */
   private static readonly HOME_H1_FALLBACK = 'Premium Sarees in Chennai, Crafted for Every Occasion';
 
-  /** Matches `index.html` preload for `.dynamic-height` when masthead is not measurable yet. */
-  private static readonly MASTHEAD_FALLBACK_PX = 80;
+  /** Matches `index.html` preload for `.dynamic-height` when masthead is not measurable yet.
+   *  Default 74 mirrors the mobile-first fallback (`assets/header/type-5.scss` -> `.cd-main-header { height: 74px }`).
+   *  Desktop measurement (`getMastheadHeightPx`) will refine to 78 once `#headroom-head` is in the DOM. */
+  private static readonly MASTHEAD_FALLBACK_PX = 74;
 
   /** Desktop-only cap so hero doesn't consume entire viewport. */
   private static readonly DESKTOP_HERO_MAX_PX = 640;

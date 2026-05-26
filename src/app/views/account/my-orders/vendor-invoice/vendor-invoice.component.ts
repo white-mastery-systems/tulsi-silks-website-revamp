@@ -5,8 +5,6 @@ import { StoreApiService } from '../../../../services/store-api.service';
 import { CommonService } from '../../../../services/common.service';
 import { CurrencyConversionService } from '../../../../services/currency-conversion.service';
 import { environment } from '../../../../../environments/environment';
-import html2canvas from 'html2canvas';
-import { jsPDF } from "jspdf";
 
 @Component({
     selector: 'app-vendor-invoice',
@@ -151,17 +149,23 @@ export class VendorInvoiceComponent implements OnInit {
     return (onePercentAmount*tax);
   }
 
-  generatePDF() {
-    let data = document.getElementById('contentToConvert');
-    html2canvas(data).then(canvas => {
-      let docWidth = 190;
-      let docHeight = canvas.height*(docWidth/canvas.width);
-      let top = 10; let left = 10;
-      let contentDataURL = canvas.toDataURL('image/png');
-      let doc = new jsPDF('p', 'mm', 'a4');
-      doc.addImage(contentDataURL, 'PNG', left, top, docWidth, docHeight);
-      doc.save(this.invoice_details.order_number+'.pdf');
-    });
+  async generatePDF() {
+    // jspdf + html2canvas together pull in ~1.5 MB (jspdf, html2canvas, canvg, dompurify).
+    // Loading them only when the user actually clicks "Download PDF" keeps them out of the
+    // initial bundle on every other page (homepage, category, product, etc.).
+    const [{ default: html2canvas }, { jsPDF }] = await Promise.all([
+      import('html2canvas'),
+      import('jspdf'),
+    ]);
+    const data = document.getElementById('contentToConvert');
+    const canvas = await html2canvas(data);
+    const docWidth = 190;
+    const docHeight = canvas.height * (docWidth / canvas.width);
+    const top = 10; const left = 10;
+    const contentDataURL = canvas.toDataURL('image/png');
+    const doc = new jsPDF('p', 'mm', 'a4');
+    doc.addImage(contentDataURL, 'PNG', left, top, docWidth, docHeight);
+    doc.save(this.invoice_details.order_number + '.pdf');
   }
 
 }

@@ -262,9 +262,21 @@ article, aside, footer, header, nav, section { width: 100%; float: left; positio
 .grid-categories .category figure img{ width:100%;transition: transform 1s ease-in-out;}
 .grid-categories .category:hover img{ transform: scale(1.1);transition: transform 1s ease-in-out;}
 
-/* GRID 1 – 4:3 aspect ratio images */
-.section-grid--grid_1 {
-  figure {
+/* SECTION GRIDS — reserve aspect ratios so card heights are uniform BEFORE the
+   image network response arrives. Without this, each `<img>` collapses to the
+   intrinsic ratio of whichever bitmap loads (placeholder.svg → _s variant →
+   full), producing layout shift and uneven row heights — especially visible
+   when one card finishes loading the full image while siblings are still on
+   the placeholder. The `figure { aspect-ratio }` reserves the box; `img {
+   width/height: 100%; object-fit: cover }` fills it edge-to-edge once loaded.
+   The selectors mirror `.grid-categories .category figure` specificity (0,2,1)
+   so the legacy `width: 100%; transition: …` rule on `.grid-categories .category
+   figure img` does NOT win over our `height: 100%; object-fit: cover`. */
+
+/* GRID 1 / 2 – 2-up landscape cards (Refine Your Choice, Art of Weaves) */
+.grid-categories.section-grid--grid_1,
+.grid-categories.section-grid--grid_2 {
+  .category figure {
     aspect-ratio: 4 / 3;
     overflow: hidden;
     img {
@@ -272,6 +284,48 @@ article, aside, footer, header, nav, section { width: 100%; float: left; positio
       height: 100%;
       object-fit: cover;
     }
+  }
+}
+
+/* GRID 3 / 4 / 11 – 3-up cards */
+.grid-categories.section-grid--grid_3,
+.grid-categories.section-grid--grid_4,
+.grid-categories.section-grid--grid_11 {
+  .category figure {
+    aspect-ratio: 3 / 4;
+    overflow: hidden;
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
+}
+
+/* GRID 5 / 6 – 4-up portrait cards (Our Collections style) */
+.grid-categories.section-grid--grid_5,
+.grid-categories.section-grid--grid_6 {
+  .category figure {
+    aspect-ratio: 3 / 4;
+    overflow: hidden;
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
+}
+
+/* Featured Sections swiper cards (segment.type == 'featured_section') —
+   matches the `.feature-slide-sec .featured-sections` container in the template.
+   Specificity (0,4,1) beats any `.grid-categories .category figure img` rule. */
+.feature-slide-sec .featured-sections .swiper-slide .product-box figure {
+  aspect-ratio: 3 / 4;
+  overflow: hidden;
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
   }
 }
 

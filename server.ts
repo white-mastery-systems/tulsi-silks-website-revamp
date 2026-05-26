@@ -415,9 +415,13 @@ export function app(): express.Express {
         const ae = String(req.headers['accept-encoding'] || '');
         res.setHeader('Content-Type', 'text/html; charset=utf-8');
         res.setHeader('Vary', 'Accept-Encoding');
-        // Allow browsers/CDN to cache SSR HTML for 60s, then revalidate.
-        // stale-while-revalidate lets CDN serve stale while fetching fresh copy in background.
-        res.setHeader('Cache-Control', 'public, max-age=60, stale-while-revalidate=300');
+        // Cache SSR HTML for 3 min on the edge / 10 min stale-revalidation. The longer TTL
+        // keeps the Nginx page cache (see tulsisilks.conf) warm so cold-render TTFB doesn't
+        // hit PSI runs. stale-while-revalidate lets the CDN/Nginx serve the stale copy
+        // instantly while a background worker fetches a fresh one — no user-facing wait.
+        // Personalized data (cart, wishlist, user) is hydrated client-side, so the cached
+        // HTML is safe to share between visitors.
+        res.setHeader('Cache-Control', 'public, max-age=180, stale-while-revalidate=600');
         if (ae.includes('br')) {
           res.setHeader('Content-Encoding', 'br');
           const br = createBrotliCompress({
