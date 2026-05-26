@@ -15,7 +15,24 @@ import { CurrencyConversionService } from '../../../../services/currency-convers
     selector: 'app-main-header',
     templateUrl: '../../../../' + environment.header_root + '-types/' + environment.header_type + '/main-header.html',
     styleUrls: ['./../../../../' + environment.header_root + '-types/' + environment.header_type + '/main-header.scss'],
-    standalone: false
+    standalone: false,
+    // ngSkipHydration: MainHeaderComponent is the layout component (selector matches the
+    // `path: ''` route in app-routing.module.ts), so its template includes the announcement
+    // bar, header, <router-outlet>, and footer. The template uses heavy ngTemplateOutlet +
+    // deeply nested *ngFor (the mega menu) + *ngIf branching on `screen_width<=991`. Even
+    // with the SSR screen_width seed in app.component.ts (Task 9), this tree still
+    // triggers Angular's hydration to throw `hasAttribute is not a function` somewhere in
+    // the mega-menu *ngFor — likely because `commonService.menu_list` resolves slightly
+    // differently between SSR and client (different reference identity after JSON parse).
+    // The error makes Angular bail on hydration AND leaves a duplicate header in the DOM.
+    //
+    // ngSkipHydration tells Angular: "don't claim the SSR DOM for this view, just destroy
+    // and re-render fresh on the client" — same behavior as pre-hydration. We keep the
+    // HTTP transfer cache (which works at the HttpClient level, independent of component
+    // hydration), so API responses still replay from the cached SSR state instantly. The
+    // cost is one fresh render pass (~200-300 ms TBT on mobile CPU), the benefit is no
+    // duplicate header / no console errors / stable layout.
+    host: { ngSkipHydration: 'true' }
 })
 
 export class MainHeaderComponent {

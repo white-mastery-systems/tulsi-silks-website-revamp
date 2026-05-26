@@ -119,7 +119,7 @@ export class AppComponent implements AfterViewInit, OnDestroy {
     }
     else {
       let iosPlatforms = ["iPad", "iPhone", "iPod", "iPod touch"];
-      if (iosPlatforms.indexOf(navigator.platform) != -1) {
+      if (isPlatformBrowser(this.platformId) && iosPlatforms.indexOf(navigator.platform) != -1) {
         this.commonService.ios = true;
       }
     }
@@ -128,6 +128,26 @@ export class AppComponent implements AfterViewInit, OnDestroy {
     this.onResizeEvent();
     if (isPlatformBrowser(this.platformId)) {
       this.commonService.IsBrowser = true;
+    } else {
+      // SSR fallback: window is undefined on the server, so onResizeEvent() is a no-op
+      // and screen_width stays `undefined`. That breaks hydration for any template using
+      // `*ngIf="screen_width<=991"` — SSR evaluates `undefined<=991` as false (mobile
+      // branch hidden) while the client computes `window.innerWidth<=991` as true
+      // (mobile branch shown). The structural mismatch causes Angular to render a fresh
+      // copy of the affected components alongside the SSR one — visible as duplicate
+      // header icons (search/cart shown twice) on production. Seeding the same value
+      // the client will resolve to keeps SSR and client render identical so hydration
+      // claims the DOM cleanly. Values mirror typical viewports: 1440 for desktop UAs
+      // (Lighthouse desktop = 1350, real desktops 1280+) and 360 for mobile UAs
+      // (Lighthouse mobile = 412, common phones 360-414). Both sides resolve to the
+      // same `<=991` / `>=992` outcome.
+      if (this.deviceService.isDesktop()) {
+        this.commonService.screen_width = 1440;
+        this.commonService.screen_height = 900;
+      } else {
+        this.commonService.screen_width = 360;
+        this.commonService.screen_height = 740;
+      }
     }
   }
 
@@ -200,16 +220,22 @@ export class AppComponent implements AfterViewInit, OnDestroy {
       this.commonService.favicon = "uploads/" + this.commonService.store_id + "/favicon.png?v=" + this.randomNum;
       this.commonService.store_logo = "uploads/" + this.commonService.store_id + "/logo.png?v=" + this.randomNum;
       this.commonService.social_logo = "uploads/" + this.commonService.store_id + "/social_logo.jpg?v=" + this.randomNum;
-      // NOTE: We used to set `primary_main_slider` to `_s.jpg` placeholder URLs here as a
-      // fallback before the layout API completes. But this ran on BOTH server (during SSR)
-      // and client (during bootstrap) — the client run was clobbering the SSR-rendered
-      // `.webp` URLs with `_s.jpg`, forcing the browser to swap the hero <img> src,
-      // discard the preloaded `.webp`, fetch the wrong placeholder, and then swap again
-      // a few seconds later when the layout API re-resolved. That double-swap was the
-      // primary cause of LCP 10s on PSI mobile. With provideClientHydration() now active
-      // AND withHttpTransferCacheOptions(), the SSR DOM (with correct .webp URLs) stays
-      // mounted on the client and the layout API response is replayed from the transfer
-      // cache instead of refetched — so no fallback assignment is needed at all here.
+      // primary slider placeholder — uses the SAME `.webp` URLs that:
+      //   1. <link rel="preload" as="image"> in index.html preloads
+      //   2. The static <picture> in #pre-bg renders
+      //   3. SSR's <picture> in home.component.html renders
+      //   4. The layout API ultimately returns
+      // Because all four match, the browser issues exactly one download for the hero image
+      // (which the preload kicks off), and even though Angular re-renders the header tree
+      // on client bootstrap (ngSkipHydration on MainHeaderComponent), the <img> src stays
+      // identical → no visible swap, no second download, hero stays painted continuously.
+      // The previous version of this code used `_s.jpg` URLs that mismatched the preload,
+      // causing the LCP image to redownload from scratch (LCP ~10 s). Don't change these
+      // back to `_s.jpg` without also reverting the index.html preload and pre-bg <picture>.
+      this.commonService.primary_main_slider = [{
+        "desktop_img": "uploads/" + this.commonService.store_id + "/layouts/desktop_primary_slider.webp",
+        "mobile_img": "uploads/" + this.commonService.store_id + "/layouts/mobile_primary_slider.webp"
+      }];
       // primary highlights
       this.commonService.primary_highlights = [];
       if (this.template_setting.highlights) {
