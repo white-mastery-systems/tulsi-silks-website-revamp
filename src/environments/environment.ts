@@ -58,4 +58,12 @@ export const environment = {
    * Overlay static Editor.js sample only for these blog `_id` values from `/blogs/:blog_id` (Network tab → blog payload `_id`).
    */
   editorJsStaticDemoBlogIds: [] as string[],
+
+  /**
+   * Same-origin hero WebP baked into `src/assets/perf/` (no CMS/API upload needed).
+   * Use a path starting with `/` (e.g. `/assets/perf/mobile_primary_slider.webp`).
+   * Must match `<link rel="preload">` and `#pre-bg` `<picture>` in `src/index.html`.
+   * Set to `null` to use CMS `uploads/<store_id>/layouts/mobile_primary_slider.webp` again.
+   */
+  staticMobileHeroWebpUrl: '/assets/perf/mobile_primary_slider.webp',
 };

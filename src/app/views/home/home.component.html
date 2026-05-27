@@ -125,11 +125,12 @@
                in index.html → guaranteed cache hit → LCP at FCP time. -->
           <ng-container *ngIf="j === 0">
             <picture style="display:block;width:100%;height:100%">
-              <source media="(max-width: 720px)" [srcset]="imgBaseUrl + x.mobile_img">
+              <source media="(max-width: 720px)" [srcset]="resolveUploadedImg(x.mobile_img)">
               <img
                 fetchpriority="high"
+                decoding="async"
                 class="img--fitscreen"
-                [src]="imgBaseUrl + x.desktop_img"
+                [src]="resolveUploadedImg(x.desktop_img)"
                 alt="{{ x.img_alt ? x.img_alt : 'slider' }}"
               />
             </picture>
@@ -138,19 +139,19 @@
                the user can swipe to them. -->
           <ng-container *ngIf="j > 0 && commonService.screen_width <= maxWidth">
             <img
-              appImgLazyLoad
               loading="lazy"
+              decoding="async"
               class="img--fitscreen"
-              [ImagelazyLoad]="imgBaseUrl + x.mobile_img"
+              [src]="resolveUploadedImg(x.mobile_img)"
               alt="{{ x.img_alt ? x.img_alt : 'slider' }}"
             />
           </ng-container>
           <ng-container *ngIf="j > 0 && commonService.screen_width > maxWidth">
             <img
-              appImgLazyLoad
               loading="lazy"
+              decoding="async"
               class="img--fitscreen"
-              [ImagelazyLoad]="imgBaseUrl + x.desktop_img"
+              [src]="resolveUploadedImg(x.desktop_img)"
               alt="{{ x.img_alt ? x.img_alt : 'slider' }}"
             />
           </ng-container>

@@ -51,6 +51,33 @@ export class AppComponent implements AfterViewInit, OnDestroy {
       this.scrollTicking = false;
     });
   };
+  private wowBootstrapStarted = false;
+
+  /** WOW.js hides `.wow` elements with CSS (`visibility:hidden`) until `WOW().init()` runs.
+   * WOW was historically loaded only after `scroll` so `pageYOffset > 0`; users who stay
+   * at y=0 (hero fills viewport — common on desktop) never triggered it, leaving below‑the‑fold
+   * sections invisible. Boot WOW on idle as well — scroll path still eagerly loads once they move. */
+  private ensureWowInitialized(): void {
+    if (
+      !isPlatformBrowser(this.platformId) ||
+      this.commonService.wowjsLoaded ||
+      this.wowBootstrapStarted
+    ) {
+      return;
+    }
+    this.wowBootstrapStarted = true;
+    this.assetLoader
+      .load('wow-js')
+      .then(() => {
+        new WOW().init();
+        this.commonService.wowjsLoaded = true;
+      })
+      .catch((error) => {
+        console.log('wow-js err', error);
+        this.wowBootstrapStarted = false;
+      });
+  }
+
   private boundResizeHandler = () => {
     if (this.resizeDebounce) clearTimeout(this.resizeDebounce);
     this.resizeDebounce = setTimeout(() => this.onResizeEvent(), 150);
@@ -66,12 +93,10 @@ export class AppComponent implements AfterViewInit, OnDestroy {
         if (window.pageYOffset > 100) scrollElem.style.display = 'block';
         else scrollElem.style.display = 'none';
       }
-      // wow js
-      if (window.pageYOffset > 0 && !this.commonService.wowjsLoaded) {
-        this.commonService.wowjsLoaded = true;
-        this.assetLoader.load('wow-js').then(() => {
-          new WOW().init();
-        }).catch(error => console.log("wow-js err", error));
+      // wow js — delegated to ensureWowInitialized (also booted from idle below so y=0
+      // desktops still reveal `.wow` sections).
+      if (window.pageYOffset > 0) {
+        this.ensureWowInitialized();
       }
       // headroom
       if (window.pageYOffset > 150 && !this.headroomInit) {
@@ -162,6 +187,14 @@ export class AppComponent implements AfterViewInit, OnDestroy {
     // Debounced resize listener: replaces @HostListener('window:resize').
     window.addEventListener('resize', this.boundResizeHandler, { passive: true });
 
+    /** Reveal `.wow` sections below the hero without requiring a scroll (see ensureWowInitialized). */
+    const wowIdle = (): void => this.ensureWowInitialized();
+    if (typeof window.requestIdleCallback === 'function') {
+      window.requestIdleCallback(wowIdle, { timeout: 2200 });
+    } else {
+      setTimeout(wowIdle, 400);
+    }
+
     const idle: (cb: () => void) => void =
       (window as any).requestIdleCallback ?? ((cb: () => void) => setTimeout(cb, 200));
     // Load quill-core.css after first render — used for ql-editor blocks in product/blog/policy pages.
@@ -233,9 +266,12 @@ export class AppComponent implements AfterViewInit, OnDestroy {
       // The previous version of this code used `_s.jpg` URLs that mismatched the preload,
       // causing the LCP image to redownload from scratch (LCP ~10 s). Don't change these
       // back to `_s.jpg` without also reverting the index.html preload and pre-bg <picture>.
+      const mobileHero =
+        environment.staticMobileHeroWebpUrl?.trim() ||
+        "uploads/" + this.commonService.store_id + "/layouts/mobile_primary_slider.webp";
       this.commonService.primary_main_slider = [{
         "desktop_img": "uploads/" + this.commonService.store_id + "/layouts/desktop_primary_slider.webp",
-        "mobile_img": "uploads/" + this.commonService.store_id + "/layouts/mobile_primary_slider.webp"
+        "mobile_img": mobileHero
       }];
       // primary highlights
       this.commonService.primary_highlights = [];

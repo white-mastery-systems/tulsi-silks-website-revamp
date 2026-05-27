@@ -31,7 +31,9 @@ Quick reference: done work, deploy steps, and next moves. For narrative and curl
 ## Next wave (biggest remaining wins)
 
 - [ ] **Shrink `main.*.js` further** (~738 KB raw after crypto + quicklink trims; aim below ~650 KB): Lighthouse treemap → more `import()` deferrals.
-- [ ] **Hero image (CDN / CMS)**: compress mobile WebP to a **~60–120 KB** target; optional **AVIF** + correct **`sizes` / `srcset`** on first `<picture>` so preload stays a cache hit.
+- [ ] **Hero image (mobile)**:
+  - **Frontend-only path (no CMS overwrite):** put **`src/assets/perf/mobile_primary_slider.webp`** in the repo (from **`npm run optimize:mobile-hero`** then **`npm run optimize:mobile-hero:install`**). Keep **`environment.staticMobileHeroWebpUrl`** and **`src/index.html`** mobile preload + `#pre-bg` **`srcset`** on the same URL (e.g. `/assets/perf/mobile_primary_slider.webp`). Target **60–120 KB**.
+  - **Or CMS path:** upload **`scripts/output/mobile_primary_slider.webp`** to **`uploads/<store_id>/layouts/mobile_primary_slider.webp`**, set **`staticMobileHeroWebpUrl`** to **`null`**, and revert **`index.html`** mobile URLs to yourstore **`uploads/...`**. Optional AVIF later.
 - [ ] **Regression**: home → category → product → cart → checkout → account after material changes.
 
 ---

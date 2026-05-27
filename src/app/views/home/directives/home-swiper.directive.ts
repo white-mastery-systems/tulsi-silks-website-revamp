@@ -161,8 +161,16 @@ export class HomeSwiperDirective {
         else if(classList[i].includes("pms")) {
           if(this.loadedElements.indexOf(swipeElement) == -1) {
             this.loadedElements.push(swipeElement);
+            const slideCount =
+              typeof this._element.nativeElement.querySelectorAll === 'function'
+                ? this._element.nativeElement.querySelectorAll('.swiper-slide').length
+                : 0;
+            // Avoid Swiper loop + cloned slides unless there are enough real slides — loop clones
+            // could briefly surface neighbour slides stuck on `_s` LQIP + `.blur-up` (looks like soft LCP).
+            const useLoop = slideCount >= 4;
             let swipeConfig: any = {
-              speed: 700, loop: true,
+              speed: 700,
+              loop: useLoop,
               autoplay: { delay: 3000, disableOnInteraction: false },
               pagination: { el: '#primary_pagination', clickable: true },
               navigation: { nextEl: '#primary_next', prevEl: '#primary_prev' }

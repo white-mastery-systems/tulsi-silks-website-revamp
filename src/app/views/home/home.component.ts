@@ -45,6 +45,25 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   styleIndex: number = 0; maxWidth: number = 720;
   imgBaseUrl: string = environment.img_baseurl;
   template_setting = environment.template_setting;
+
+  /** CMS-relative paths (`uploads/...`) prepend `img_baseurl`; `/...` and `http(s)` stay unchanged. */
+  resolveUploadedImg(path: string | undefined): string {
+    if (!path) return '';
+    const p = path.trim();
+    if (!p) return '';
+    if (/^https?:\/\//i.test(p)) return p;
+    if (p.startsWith('/')) return p;
+    return this.imgBaseUrl + p;
+  }
+
+  /** First-slide LCP: use self-hosted asset when configured (CMS cannot replace CDN path). */
+  private patchStaticMobileHeroOnPrimaryList(): void {
+    const u = environment.staticMobileHeroWebpUrl?.trim();
+    const list = this.commonService.primary_main_slider;
+    if (!u || !list?.length) return;
+    const first = list[0];
+    if (first) first.mobile_img = u;
+  }
   plyrLoaded: boolean; subscription: Subscription;
   storeSubscription: Subscription; pageLoader: boolean;
   private headerResizeObserver: ResizeObserver | undefined;
@@ -637,6 +656,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
         let primaryImgList = this.commonService.layout_list[sliderIndex].image_list;
         if(primaryImgList.length) {
           this.commonService.primary_main_slider = primaryImgList;
+          this.patchStaticMobileHeroOnPrimaryList();
           this.commonService.layout_list.splice(sliderIndex, 1);
         }
       }

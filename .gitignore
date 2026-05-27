@@ -28,6 +28,9 @@ yarn-error.log
 !.vscode/extensions.json
 .history/*
 
+# Generated hero WebP for manual CMS upload (run `npm run optimize:mobile-hero`)
+/scripts/output/
+
 # Miscellaneous
 /.angular/cache
 .sass-cache/
@@ -40,3 +43,4 @@ testem.log
 # System files
 .DS_Store
 Thumbs.db
+nul

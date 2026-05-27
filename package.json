@@ -13,7 +13,9 @@
     "prerender": "ng run ecommerce:prerender",
     "analyze": "ng build --configuration production --stats-json && webpack-bundle-analyzer dist/ecommerce/browser/stats.json",
     "compress-images": "node scripts/compress-images.js",
-    "compress-images:dry": "node scripts/compress-images.js --dry-run"
+    "compress-images:dry": "node scripts/compress-images.js --dry-run",
+    "optimize:mobile-hero": "node scripts/optimize-mobile-hero-webp.js",
+    "optimize:mobile-hero:install": "node scripts/install-mobile-hero-asset.js"
   },
   "private": true,
   "engines": {

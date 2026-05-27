@@ -359,7 +359,7 @@
 <ng-template #headerLogo>
   <div class="cd-logo logo">
     <a (click)="commonService.resetMegaMenu();" routerLink="/">
-      <img width="100%" height="100%" appImgLazyLoad class="logo-img" [ImagelazyLoad]="imgBaseUrl+commonService.store_logo" alt="{{commonService.store_details?.name}}">
+      <img fetchpriority="high" width="100%" height="100%" class="logo-img" decoding="async" [src]="imgBaseUrl+commonService.store_logo" alt="{{commonService.store_details?.name}}">
     </a>
   </div>
 </ng-template>

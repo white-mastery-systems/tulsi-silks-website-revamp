@@ -19,6 +19,8 @@ export class ImgLazyLoadDirective implements OnInit, AfterViewInit, OnDestroy {
   public lqip_img : any;
   private observer: IntersectionObserver | null = null;
   private fullSrc = '';
+  /** Same-origin/asset URLs bypass `_s` LQIP + `.blur-up`, which looked like broken LCP on mobile. */
+  private skipIntersectionLqip = false;
 
   constructor(
     private _element: ElementRef,
@@ -27,15 +29,24 @@ export class ImgLazyLoadDirective implements OnInit, AfterViewInit, OnDestroy {
   ) { }
 
   ngOnInit() {
+    this.fullSrc = (this.ImagelazyLoad ?? '').toString();
+
+    if (this.shouldBypassLqipBlur(this.fullSrc)) {
+      this.skipIntersectionLqip = true;
+      this.renderer.setAttribute(this._element.nativeElement, 'src', this.fullSrc);
+      this.renderer.removeClass(this._element.nativeElement, 'lazyload');
+      this.renderer.removeClass(this._element.nativeElement, 'blur-up');
+      return;
+    }
+
     let imgArray = this.ImagelazyLoad.split(environment.img_host);
     if(imgArray.length==2) this.lqip_img = environment.img_host+imgArray[1].split('.').join('_s.');
     else this.lqip_img = "assets/images/placeholder.svg";
-    this.fullSrc = this.ImagelazyLoad;
     this.setInitialAttributes();
   }
 
   ngAfterViewInit() {
-    if (!isPlatformBrowser(this.platformId)) return;
+    if (!isPlatformBrowser(this.platformId) || this.skipIntersectionLqip) return;
     if (typeof IntersectionObserver === 'undefined') {
       this.swapToFull();
       return;
@@ -92,6 +103,18 @@ export class ImgLazyLoadDirective implements OnInit, AfterViewInit, OnDestroy {
       this.observer.disconnect();
       this.observer = null;
     }
+  }
+
+  /**
+   * Yourstore CDN images use `_s` LQIP + blur-up everything else loads at full fidelity immediately
+   * (bundled `/assets`, relative `assets/`, or third-party origins).
+   */
+  private shouldBypassLqipBlur(src: string): boolean {
+    if (!src?.trim()) return false;
+    if (src.startsWith('/')) return true;
+    if (src.startsWith('assets/')) return true;
+    if (/^https?:\/\//i.test(src) && src.indexOf(environment.img_host) === -1) return true;
+    return false;
   }
 
   placeholder() {

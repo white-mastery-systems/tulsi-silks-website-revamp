@@ -51,4 +51,7 @@ export const environment = {
 
   mergeEditorJsStaticDemo: false,
   editorJsStaticDemoBlogIds: [] as string[],
+
+  /** See `environment.ts`. Ship file under `src/assets/perf/mobile_primary_slider.webp` (see `npm run optimize:mobile-hero`). */
+  staticMobileHeroWebpUrl: '/assets/perf/mobile_primary_slider.webp',
 };

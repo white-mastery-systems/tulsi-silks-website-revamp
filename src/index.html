@@ -29,12 +29,10 @@
     <link rel="dns-prefetch" href="https://www.clarity.ms">
     <!-- Preload LCP hero — URLs and type MUST match exactly what Angular's SSR <picture>
          renders, otherwise the preload is wasted bandwidth and the actual element triggers
-         a second download. Server-side renders mobile_primary_slider.webp (150 KB) for
-         (max-width: 720px) and desktop_primary_slider.webp (361 KB) above that. The `media`
-         attribute is honored as the preload "applies if" gate, so only the matching variant
-         is fetched. -->
+         a second download. Mobile: self-hosted `/assets/perf/...` when `environment.staticMobileHeroWebpUrl`
+         is set (no CMS upload). Desktop still uses CDN below. -->
     <link rel="preload" as="image" type="image/webp"
-      href="https://yourstore.io/api/uploads/5d30013a5c83a702392c4c8b/layouts/mobile_primary_slider.webp"
+      href="/assets/perf/mobile_primary_slider.webp"
       media="(max-width: 720px)" fetchpriority="high">
     <link rel="preload" as="image" type="image/webp"
       href="https://yourstore.io/api/uploads/5d30013a5c83a702392c4c8b/layouts/desktop_primary_slider.webp"
@@ -136,7 +134,7 @@
       <picture>
         <source
           media="(max-width: 720px)"
-          srcset="https://yourstore.io/api/uploads/5d30013a5c83a702392c4c8b/layouts/mobile_primary_slider.webp"
+          srcset="/assets/perf/mobile_primary_slider.webp"
           type="image/webp">
         <img
           src="https://yourstore.io/api/uploads/5d30013a5c83a702392c4c8b/layouts/desktop_primary_slider.webp"
