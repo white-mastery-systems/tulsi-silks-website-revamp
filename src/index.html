@@ -38,10 +38,11 @@
     <link rel="preload" as="image" type="image/webp"
       href="https://yourstore.io/api/uploads/5d30013a5c83a702392c4c8b/layouts/desktop_primary_slider.webp"
       media="(min-width: 721px)" fetchpriority="high">
-    <!-- Self-hosted Montaga (12 KB) — used for above-the-fold hero headings. Material Icons
-         load via deferred `material-icons-deferred.css` (see below) so they do not compete
-         with the hero image on the network. -->
+    <!-- Self-hosted Montaga (~12 KB) — hero headings. Material Icons preload + stylesheet are
+         not deferred so pseudo-elements (::after breadcrumbs, accordion arrows) resolve to
+         glyphs instead of ligature text (chevron_right, add, …). -->
     <link rel="preload" as="font" type="font/woff2" href="assets/fonts/montaga.woff2" crossorigin="anonymous">
+    <link rel="preload" as="font" type="font/woff2" href="assets/fonts/material-icons.woff2" crossorigin="anonymous">
     <link rel="canonical" href="" id="ccLink">
     <style>
       /* Self-hosted @font-face — declared inline so the browser sees the font src
@@ -57,7 +58,7 @@
         src: url('assets/fonts/montaga.woff2') format('woff2');
         unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
       }
-      /* Material Icons: non-blocking stylesheet at end of <head> (`material-icons-deferred.css`). */
+      /* Material Icons stylesheet linked below (`material-icons-deferred.css`). */
       /* Header heights mirror `assets/header/type-5.scss` — match exactly so Angular's
          `setBodyMarginTop` measurement on hydration writes the same px and zero CLS. */
       :root { --ts-mast-h: 74px; }
@@ -66,9 +67,7 @@
       .disp-none { display: none; }
       .dynamic-height { height: calc(100vh - var(--ts-mast-h)); }
     </style>
-    <!-- Deferred so Montaga + hero preload win the network on mobile PSI. -->
-    <link rel="stylesheet" href="assets/css/material-icons-deferred.css" media="print" onload="this.media='all'">
-    <noscript><link rel="stylesheet" href="assets/css/material-icons-deferred.css"></noscript>
+    <link rel="stylesheet" href="assets/css/material-icons-deferred.css">
     <style>
       #pre-bg {
         background-color: #f2f2f2;

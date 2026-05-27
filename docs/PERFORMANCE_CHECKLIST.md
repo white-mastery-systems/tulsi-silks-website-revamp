@@ -16,7 +16,7 @@ Quick reference: done work, deploy steps, and next moves. For narrative and curl
 - [x] **Disabled route prefetch** — `NoPreloading` instead of `ngx-quicklink` (fewer competing chunk downloads during homepage PSI / first paint).
 - [x] **Lazy `editorjs-html`** — `blog-renderer` loads it via `import()` so it is not in the initial JS graph; ships as a separate chunk when a blog is opened.
 - [x] **No WOW.js / Headroom.js CDN** — scroll-reveal uses `IntersectionObserver` + `.wow-in-view` (see `custom.scss`); sticky header uses vanilla scroll logic + `headroom.css` bundled in `styles.scss` (no extra CDN script or late `load('headroom-css')` on scroll).
-- [x] **Material Icons deferred** — `material-icons-deferred.css` via non-blocking `<link>`; **removed `preconnect` to cdnjs** so homepage avoids extra TLS for assets not needed at LCP.
+- [x] **Material Icons eager** — **`material-icons.woff2` preloaded** + **`material-icons-deferred.css`** as a normal blocking `<link>` (pseudo-element separators like breadcrumbs/FAQ used to show ligature text `chevron_right`/`add` when the font stylesheet was deferred). **removed `preconnect` to cdnjs** where applicable.
 - [x] **TBT — unpatch `scroll` + passive listeners on Home/Blog Detail** (`zone-flags.ts`, `home.component.ts`, `blog-details.component.ts`): **`NgZone.run()` only when scroll-to-top / scroll-toolbar booleans change**, instead of Angular CD every scroll pixel.
 - For **why the headline PSI score may stay flat** after non–critical-path fixes, see [PSI_SCORE_DIAGNOSIS.md](./PSI_SCORE_DIAGNOSIS.md).
 

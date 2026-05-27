@@ -56,6 +56,66 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     return this.imgBaseUrl + p;
   }
 
+  /**
+   * Thumbnail CDN URL using the `_s` infix (`file.webp` → `file_s.webp`), same contract as ImgLazyLoad.
+   * Non-matching URLs are returned unchanged.
+   */
+  yourstoreLqipAbsolute(absFull: string): string {
+    const u = (absFull ?? '').trim().split(/[?#]/)[0];
+    if (!u) return '';
+    const base = environment.img_baseurl;
+    return u.startsWith(base) ? u.replace(/\.([^.]+)$/, '_s.$1') : absFull.trim();
+  }
+
+  /**
+   * `srcset` for CMS uploads — pairs `_s` + full sources for mobile/desktop paths so Lighthouse can
+   * pick an appropriately sized candidate (yourstore CDN has no dynamic resize API).
+   */
+  uploadSrcset(desktopPath?: string, mobilePath?: string | null): string {
+    const d = this.resolveUploadedImg(desktopPath);
+    const m = this.resolveUploadedImg(mobilePath ?? desktopPath);
+    if (!m && !d) return '';
+    if (!d || m === d) {
+      const one = m || d;
+      const s = this.yourstoreLqipAbsolute(one);
+      return `${s} 480w, ${one} 960w`;
+    }
+    return (
+      `${this.yourstoreLqipAbsolute(m)} 420w, ${m} 840w, ` +
+      `${this.yourstoreLqipAbsolute(d)} 800w, ${d} 1600w`
+    );
+  }
+
+  /** Single-path `srcset` (e.g. product card main image). */
+  uploadSrcsetSingle(imagePath?: string | null): string {
+    return this.uploadSrcset(imagePath ?? undefined, imagePath ?? undefined);
+  }
+
+  /** Plain `src` fallback (prefer mobile asset when provided). */
+  uploadLegacyImgSrc(desktopPath?: string, mobilePath?: string | null): string {
+    const m = this.resolveUploadedImg(mobilePath ?? desktopPath);
+    const d = this.resolveUploadedImg(desktopPath);
+    return m || d;
+  }
+
+  /** `sizes` for section-grid tiles (matches Bootstrap column widths). */
+  sectionGridSizes(segment: { section_grid_type?: string } | null | undefined): string {
+    const g = segment?.section_grid_type;
+    if (g === 'grid_5' || g === 'grid_6') {
+      return '(max-width: 991px) 50vw, 25vw';
+    }
+    if (g === 'grid_8' || g === 'grid_10') {
+      return '(max-width: 767px) 50vw, 45vw';
+    }
+    return '(max-width: 991px) 50vw, 33vw';
+  }
+
+  /** Homepage layout blocks — carousel / half-column / product thumb `sizes`. */
+  readonly SZ_FEATURED_CARD = '(max-width: 767px) 72vw, 28vw';
+  readonly SZ_HALF_COLUMN = '(max-width: 991px) 100vw, 50vw';
+  readonly SZ_PRODUCT_CARD = '(max-width: 767px) 42vw, 24vw';
+  readonly SZ_TESTIMONIAL_FACE = '48px';
+
   /** First-slide LCP: use self-hosted asset when configured (CMS cannot replace CDN path). */
   private patchStaticMobileHeroOnPrimaryList(): void {
     const u = environment.staticMobileHeroWebpUrl?.trim();

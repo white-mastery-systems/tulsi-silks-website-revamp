@@ -453,7 +453,7 @@ p.error-msg {
       display: -ms-flexbox !important;
       display: flex !important;
       &:before {
-        content: "error_outline";
+        content: "\e001"; /* error_outline — codepoint avoids broken ligatures in pseudo-elements */
         font-family: "Material Icons";
         color: $error-txt !important;
       }
@@ -478,7 +478,7 @@ p.error-msg {
       display: -ms-flexbox !important;
       display: flex;
       &:before {
-        content: "check_circle_outline";
+        content: "\e92d"; /* check_circle_outline */
         font-family: "Material Icons";
         color: $sucess-txt !important;
       }
@@ -503,7 +503,7 @@ p.error-msg {
       display: -ms-flexbox !important;
       display: flex !important;
       &:before {
-        content: "error_outline";
+        content: "\e001"; /* error_outline */
         font-family: "Material Icons";
         color: grey !important;
       }
@@ -653,7 +653,7 @@ p.error-msg {
     font-size: 0.875rem;
   }
   li a:after {
-    content: "chevron_right";
+    content: "\e5cc"; /* chevron_right */
     margin-left: 10px;
     font-family: "Material Icons";
     font-size: 0.875rem;
@@ -1739,14 +1739,14 @@ border-radius: 0 !important;
     color: #000000 !important;
   }
   accordion-group.panel.panel-open .panel-heading .panel-title .accordion-toggle:after{
-    content: "expand_less";
+    content: "\e5ce"; /* expand_less */
     font-family: "Material Icons";
     color: #000000 !important;
     font-size: 1.4rem;
     transition: all 0.3s linear;
   }
   accordion-group .panel .panel-heading .panel-title .accordion-toggle:after{
-    content: "expand_more";
+    content: "\e5cf"; /* expand_more */
     font-family: "Material Icons";
     color: #000000 !important;
     font-size: 1.4rem;
@@ -1815,7 +1815,7 @@ accordion-group {
             background: transparent;
           }
           &:after {
-            content: "add";
+            content: "\e145"; /* add */
             font-family: "Material Icons";
             color: $primary-text !important;
             font-size: 1.25rem;
@@ -1823,7 +1823,7 @@ accordion-group {
           }
           &[aria-expanded="true"] {
             &:after {
-              content: "remove";
+              content: "\e15b"; /* remove */
               // transform: rotate(180deg);
             }
           }
@@ -3014,7 +3014,7 @@ a.active::after {
       }
     }
     &::before {
-      content: "verified";
+      content: "\ef76"; /* verified */
       font-family: "Material Icons";
       color: rgb(12, 170, 78);
       font-size: 1.25rem;
@@ -3144,7 +3144,7 @@ a.active::after {
 
 .tab-label::after {
   // content: "\276F";
-  content: "expand_more";
+  content: "\e5cf"; /* expand_more */
   font-family: "Material Icons";
   font-size: 1rem;
   // width: 1em;

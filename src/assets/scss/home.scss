@@ -48,6 +48,16 @@
 }
 }
 .feature-slide-sec{
+  .titles-swiper-nav {
+    gap: 8px;
+    .swiper-button-prev,
+    .swiper-button-next {
+      position: static !important;
+      top: auto !important;
+      transform: none !important;
+      margin-top: 0 !important;
+    }
+  }
   .swipe_arrow{
     .swiper-button-prev.swiper-button-disabled, .swiper-button-next.swiper-button-disabled{
       opacity: 0.8 !important;

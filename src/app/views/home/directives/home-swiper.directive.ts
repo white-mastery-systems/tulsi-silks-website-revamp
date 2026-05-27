@@ -43,8 +43,8 @@ export class HomeSwiperDirective {
 
   private observer: any;
 
-  /** True for primary hero carousel hosts inside `.home-slider` (pms / layout carousal_*). */
-  private readonly homeHeroSwiperHost: boolean;
+  /** Hero + immediately-below-fold carousels: skip idle defer so slides don’t stack before Swiper. */
+  private readonly deferSwiperUrgent: boolean;
 
   /** Batches MutationObserver storms during hydration/layout into one CD frame → less TBT. */
   private observerRafQueued = false;
@@ -122,7 +122,10 @@ export class HomeSwiperDirective {
   };
 
   constructor(@Inject(PLATFORM_ID) private platformId: Object, private _element: ElementRef, private assetLoader: DynamicAssetLoaderService) {
-    this.homeHeroSwiperHost = HomeSwiperDirective.isHomeHeroSwiperHost(this._element.nativeElement);
+    const el = this._element.nativeElement as HTMLElement;
+    this.deferSwiperUrgent =
+      HomeSwiperDirective.isHomeHeroSwiperHost(el) ||
+      HomeSwiperDirective.isFeaturedSectionSwiperHost(el);
   }
 
   private static isHomeHeroSwiperHost(el: HTMLElement): boolean {
@@ -144,6 +147,22 @@ export class HomeSwiperDirective {
     return false;
   }
 
+  /** `featured_section` segment: `.feature-slide-sec .featured-sections` (desktopfeasecslider_ / feasecslider_) */
+  private static isFeaturedSectionSwiperHost(el: HTMLElement): boolean {
+    if (!el?.classList || typeof el.closest !== 'function') {
+      return false;
+    }
+    if (!el.closest('.feature-slide-sec')) {
+      return false;
+    }
+    for (let i = 0; i < el.classList.length; i++) {
+      if (el.classList[i].includes('feasecslider')) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   ngOnInit() {
     if(isPlatformBrowser(this.platformId)) {
       deferSwiperWork(() => {
@@ -151,7 +170,7 @@ export class HomeSwiperDirective {
           this.registerListenerForDomChanges();
           this.fetchSwipeElements();
         }).catch(error => console.log("err", error));
-      }, this.homeHeroSwiperHost);
+      }, this.deferSwiperUrgent);
     }
   }
 

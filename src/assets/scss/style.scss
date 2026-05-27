@@ -329,6 +329,17 @@ article, aside, footer, header, nav, section { width: 100%; float: left; positio
   }
 }
 
+/* Featured "Our Collections" carousel: until Swiper adds horizontal layout, slides stack like blocks → huge gap / clipped image */
+.feature-slide-sec
+  .featured-sections.swiper-container:not(.swiper-container-horizontal):not(
+    .swiper-container-vertical
+  )
+  .swiper-wrapper
+  > .swiper-slide
+  ~ .swiper-slide {
+  display: none !important;
+}
+
 /* GRID 7 (Homepage Categories) – keep legacy layout, improve spacing */
 .section-grid--grid_7{
   .grids{
