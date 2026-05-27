@@ -43,10 +43,11 @@ import { serverSeoInitializerFactory, SERVER_SEO_INITIALIZER_DEPS } from './serv
     // client bootstrap, blowing up TBT and LCP. Components that need to bypass hydration
     // (e.g. third-party DOM libs) can opt out with the `ngSkipHydration` attribute.
     //
-    // withHttpTransferCacheOptions: GET responses Angular makes during SSR are serialized
-    // into the page and replayed instantly on the client — no second network round-trip
-    // for STORE_DETAILS / layout / catalog data. `includePostRequests: false` is the
-    // default; we keep it because POST requests are user-initiated and shouldn't replay.
+    // withHttpTransferCacheOptions: GET responses from SSR replay on the client instantly.
+    // Do NOT omit `details_v3`/`footer_seo_links` here: skipping them delays
+    // `AppComponent`'s STORE_DETAILS subscribe until a full network round-trip, which stalls
+    // `storeDataListener`, layout/hero hydration, and makes LCP on the slider jumpy versus SSR paint.
+    // A safer HTML-size optimisation is skipping duplicate fields in SSR_STATE alone (tracked separately).
     provideClientHydration(
       withHttpTransferCacheOptions({
         includeHeaders: ['Content-Type'],

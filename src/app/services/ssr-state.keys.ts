@@ -8,10 +8,9 @@ import { makeStateKey } from '@angular/core';
 // client sees empty arrays at hydration → Angular bails with
 // `hasAttribute is not a function` and the layout tree destroy+recreates.
 //
-// The HTTP transfer cache (configured via withHttpTransferCacheOptions) already
-// stores the raw STORE_DETAILS response, but it only replays during the
-// subscribe in ngAfterContentInit — which fires AFTER hydration. This explicit
-// snapshot delivers the *processed* state at the right lifecycle moment.
+// The HTTP transfer cache (configured via withHttpTransferCacheOptions) stores raw GET
+// responses for replay on the client. `SSR_STATE_KEY` holds a processed snapshot for
+// hydrate-time menu/layout alignment — see common.service constructor and ssr-state.keys.
 export interface SsrStateSnapshot {
   menu_list?: any[];
   catalog_list?: any[];

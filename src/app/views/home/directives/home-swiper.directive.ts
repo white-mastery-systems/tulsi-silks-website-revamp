@@ -5,7 +5,24 @@ declare const Swiper: any;
 
 /** Pushes carousel setup off the Angular bootstrap stack so LCP paints first.
  * `timeout` caps wait on busy main threads (Lighthouse PSI). */
-function deferSwiperWork(cb: () => void): void {
+function deferSwiperWork(cb: () => void, urgent: boolean): void {
+  if (urgent) {
+    // Primary hero (.home-slider): idle defer stacks slides until Swiper runs — bad LCP/layout.
+    if (typeof queueMicrotask === 'function') {
+      queueMicrotask(() => {
+        if (typeof requestAnimationFrame !== 'undefined') {
+          requestAnimationFrame(() => cb());
+        } else {
+          setTimeout(cb, 0);
+        }
+      });
+    } else if (typeof requestAnimationFrame !== 'undefined') {
+      requestAnimationFrame(() => setTimeout(cb, 0));
+    } else {
+      setTimeout(cb, 0);
+    }
+    return;
+  }
   const win = typeof window !== 'undefined' ? (window as unknown as Window & typeof globalThis) : null;
   const ric = win && (win as Window & { requestIdleCallback?(cb: () => void, opts?: { timeout: number }): number })
     .requestIdleCallback;
@@ -17,7 +34,6 @@ function deferSwiperWork(cb: () => void): void {
     setTimeout(cb, 0);
   }
 }
-​
 @Directive({
     selector: '[appHomeSwiper]',
     standalone: false
@@ -26,6 +42,9 @@ function deferSwiperWork(cb: () => void): void {
 export class HomeSwiperDirective {
 
   private observer: any;
+
+  /** True for primary hero carousel hosts inside `.home-slider` (pms / layout carousal_*). */
+  private readonly homeHeroSwiperHost: boolean;
 
   /** Batches MutationObserver storms during hydration/layout into one CD frame → less TBT. */
   private observerRafQueued = false;
@@ -102,8 +121,29 @@ export class HomeSwiperDirective {
     }
   };
 
-  constructor(@Inject(PLATFORM_ID) private platformId: Object, private _element: ElementRef, private assetLoader: DynamicAssetLoaderService) { }
-​
+  constructor(@Inject(PLATFORM_ID) private platformId: Object, private _element: ElementRef, private assetLoader: DynamicAssetLoaderService) {
+    this.homeHeroSwiperHost = HomeSwiperDirective.isHomeHeroSwiperHost(this._element.nativeElement);
+  }
+
+  private static isHomeHeroSwiperHost(el: HTMLElement): boolean {
+    if (!el?.classList || typeof el.closest !== 'function') {
+      return false;
+    }
+    if (!el.closest('.home-slider')) {
+      return false;
+    }
+    for (let i = 0; i < el.classList.length; i++) {
+      const c = el.classList[i];
+      if (c === 'pms' || c === 'desktop_pms') {
+        return true;
+      }
+      if (c.includes('carousal_')) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   ngOnInit() {
     if(isPlatformBrowser(this.platformId)) {
       deferSwiperWork(() => {
@@ -111,7 +151,7 @@ export class HomeSwiperDirective {
           this.registerListenerForDomChanges();
           this.fetchSwipeElements();
         }).catch(error => console.log("err", error));
-      });
+      }, this.homeHeroSwiperHost);
     }
   }
 

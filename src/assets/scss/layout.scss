@@ -120,6 +120,13 @@
 .home-slider {
   // padding:0 10%;
   margin-bottom: 60px !important;
+  // Before Swiper inits it adds swiper-container-horizontal/vertical; without that,
+  // slides are block-level and stack (broken mobile hero + inflated LCP).
+  .swiper-container:not(.swiper-container-horizontal):not(.swiper-container-vertical) {
+    .swiper-wrapper > .swiper-slide ~ .swiper-slide {
+      display: none !important;
+    }
+  }
   .swiper-container {
     .swiper-slide {
       position: relative;

@@ -128,7 +128,7 @@
               <source media="(max-width: 720px)" [srcset]="resolveUploadedImg(x.mobile_img)">
               <img
                 fetchpriority="high"
-                decoding="async"
+                decoding="sync"
                 class="img--fitscreen"
                 [src]="resolveUploadedImg(x.desktop_img)"
                 alt="{{ x.img_alt ? x.img_alt : 'slider' }}"
