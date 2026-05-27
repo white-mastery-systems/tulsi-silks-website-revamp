@@ -443,7 +443,7 @@ export function app(): express.Express {
             console.error('[SSR] store SEO inject failed:', err?.message ?? e);
           }
         }
-        const ae = String(req.headers['accept-encoding'] || '');
+        const ae = String(req.headers['accept-encoding'] || '').toLowerCase();
         res.setHeader('Content-Type', 'text/html; charset=utf-8');
         res.setHeader('Vary', 'Accept-Encoding');
         // Aggressive cache: 1 h fresh + 24 h stale-while-revalidate. This collapses the
@@ -457,18 +457,24 @@ export function app(): express.Express {
         // Personalized data (cart, wishlist, user) is hydrated client-side, so the
         // cached HTML is safe to share between visitors.
         res.setHeader('Cache-Control', 'public, max-age=3600, stale-while-revalidate=86400');
-        if (ae.includes('br')) {
-          res.setHeader('Content-Encoding', 'br');
-          const br = createBrotliCompress({
-            params: { [zlibConstants.BROTLI_PARAM_QUALITY]: 4 },
-          });
-          br.pipe(res);
-          br.end(out);
-        } else if (ae.includes('gzip')) {
+        // Prefer gzip when the client accepts it (including alongside br). Brotli yields smaller
+        // bodies but compresses large SSR HTML slower → higher TTFB / document latency (PSI).
+        // Order MUST stay aligned with nginx `map $http_accept_encoding $ts_compress_bucket` below.
+        if (ae.includes('gzip')) {
           res.setHeader('Content-Encoding', 'gzip');
           const gz = createGzip({ level: 6 });
           gz.pipe(res);
           gz.end(out);
+        } else if (ae.includes('br')) {
+          res.setHeader('Content-Encoding', 'br');
+          const br = createBrotliCompress({
+            params: {
+              [zlibConstants.BROTLI_PARAM_QUALITY]: 4,
+              [zlibConstants.BROTLI_PARAM_SIZE_HINT]: Buffer.byteLength(out, 'utf8'),
+            },
+          });
+          br.pipe(res);
+          br.end(out);
         } else {
           res.send(out);
         }
