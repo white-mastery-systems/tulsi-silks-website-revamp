@@ -228,6 +228,29 @@
   .ql-editor {
     padding-left: 0 !important;
     padding-right: 0 !important;
+
+    /* Advanced “flexible” segments + any Quill-body links */
+    p a,
+    li a,
+    h2 a,
+    h3 a,
+    blockquote a {
+      color: $tulsi-blog-accent;
+      font-weight: 600;
+      text-decoration: underline solid;
+      text-decoration-color: rgba(107, 83, 68, 0.55);
+      text-underline-offset: 3px;
+
+      &:hover {
+        color: #5a4538;
+        text-decoration-color: rgba(90, 69, 56, 0.85);
+      }
+
+      &:focus-visible {
+        outline: 2px solid rgba(107, 83, 68, 0.4);
+        outline-offset: 2px;
+      }
+    }
   }
 
   ::ng-deep .editorjs-blog-body {
@@ -265,6 +288,32 @@
     ol {
       margin-bottom: 1rem;
       padding-left: 1.25rem;
+    }
+
+    /* Inline links in article body (mirrors blog-renderer host styles) */
+    p a,
+    li a:not(.ej-toc-link),
+    h2 a,
+    h3 a,
+    h4 a,
+    h5 a,
+    blockquote a {
+      color: $tulsi-blog-accent;
+      font-weight: 600;
+      text-decoration: underline solid;
+      text-decoration-color: rgba(107, 83, 68, 0.55);
+      text-underline-offset: 3px;
+      cursor: pointer;
+
+      &:hover {
+        color: #5a4538;
+        text-decoration-color: rgba(90, 69, 56, 0.85);
+      }
+
+      &:focus-visible {
+        outline: 2px solid rgba(107, 83, 68, 0.4);
+        outline-offset: 2px;
+      }
     }
   }
 
@@ -825,6 +874,29 @@
     line-height: 1.72;
     padding-left: 0 !important;
     padding-right: 0 !important;
+
+    /* Legacy Quill HTML — inline links */
+    p a,
+    li a,
+    h2 a,
+    h3 a,
+    blockquote a {
+      color: $tulsi-blog-accent;
+      font-weight: 600;
+      text-decoration: underline solid;
+      text-decoration-color: rgba(107, 83, 68, 0.55);
+      text-underline-offset: 3px;
+
+      &:hover {
+        color: #5a4538;
+        text-decoration-color: rgba(90, 69, 56, 0.85);
+      }
+
+      &:focus-visible {
+        outline: 2px solid rgba(107, 83, 68, 0.4);
+        outline-offset: 2px;
+      }
+    }
   }
 }
 

@@ -48,6 +48,12 @@ export class CommonService {
   storeDataLoaded: boolean;
   public storeDataListener = new Subject<any>();
 
+  /**
+   * Homepage (and partial async fills) binds layout blocks **after** the initial navigation.
+   * `.wow.fadeInUp` stays `visibility:hidden` until {@link AppComponent.rescanWowRevealTargets} observes it.
+   */
+  public wowRevealDomChanged = new Subject<void>();
+
   seo_details: any;
   user_details: any = {};
   store_details: any = {};

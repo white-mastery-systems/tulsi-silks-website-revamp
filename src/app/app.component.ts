@@ -1,6 +1,6 @@
 import { Component, Inject, PLATFORM_ID, DOCUMENT, AfterViewInit, OnDestroy, TransferState } from '@angular/core';
 import { Location, isPlatformBrowser } from '@angular/common';
-import { fromEvent, Subscription, interval } from 'rxjs';
+import { fromEvent, Subscription, interval, merge } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { Router, NavigationEnd } from '@angular/router';
 import { ConnectionService } from 'ng-connection-service';
@@ -94,6 +94,10 @@ export class AppComponent implements AfterViewInit, OnDestroy {
     );
 
     finish();
+
+    // Immediate rescan: initial route can finish (and lazy chunks render `.wow` nodes) before
+    // idle runs; without this, home sections stay `visibility:hidden` indefinitely on ng serve / CSR.
+    requestAnimationFrame(() => this.rescanWowRevealTargets());
 
     const startObserving = (): void => this.rescanWowRevealTargets();
 
@@ -238,9 +242,10 @@ export class AppComponent implements AfterViewInit, OnDestroy {
 
     /** Reveal `.wow` sections via native IntersectionObserver (replaces WOW.js CDN). */
     this.bootstrapWowReveal();
-    this.wowRouteSub = this.router.events
-      .pipe(filter((e): e is NavigationEnd => e instanceof NavigationEnd))
-      .subscribe(() => requestAnimationFrame(() => this.rescanWowRevealTargets()));
+    this.wowRouteSub = merge(
+      this.router.events.pipe(filter((e): e is NavigationEnd => e instanceof NavigationEnd)),
+      this.commonService.wowRevealDomChanged,
+    ).subscribe(() => requestAnimationFrame(() => this.rescanWowRevealTargets()));
 
     const idle: (cb: () => void) => void =
       (window as any).requestIdleCallback ?? ((cb: () => void) => setTimeout(cb, 200));

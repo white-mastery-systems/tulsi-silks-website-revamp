@@ -132,7 +132,7 @@ export class BlogProductCarouselComponent implements OnChanges, OnDestroy, After
     const prevEl = this.btnPrev?.nativeElement;
     const nextEl = this.btnNext?.nativeElement;
     if (!el || !prevEl || !nextEl || this.products.length < 2) return;
-    this.assets.load('swiper-js').then(() => {
+    this.assets.load('swiper-js', 'swiper-css').then(() => {
       const SwiperCtor = (typeof window !== 'undefined' && (window as any).Swiper) as
         | (new (el: Element, opts: object) => { destroy: (a?: boolean, b?: boolean) => void })
         | undefined;

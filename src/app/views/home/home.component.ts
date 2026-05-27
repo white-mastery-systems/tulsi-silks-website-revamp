@@ -555,6 +555,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
             if(blogData.blogs_type=='grid') blogData.image_list = blogList.slice(0, bCount);
             else blogData.image_list = blogList.slice(0, this.template_setting.blog_count);
           }
+          this.scheduleWowRevealDomPatchSignal();
         }
         else console.log("blog response", result);
       });
@@ -584,6 +585,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
             if(instaData.blogs_type=='grid') instaData.image_list = InstaPosts.slice(0, iCount);
             else instaData.image_list = InstaPosts.slice(0, 10);
           }
+          this.scheduleWowRevealDomPatchSignal();
         }
         else console.log("insta response", result);
       });
@@ -756,7 +758,16 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     }
     if (isPlatformBrowser(this.platformId)) {
       setTimeout(() => this.refreshFlexibleToggles(), 150);
+      this.scheduleWowRevealDomPatchSignal();
     }
+  }
+
+  /** Notifies AppComponent to re-run WOW IntersectionObserver after `layout_list` drives new `.wow` nodes. */
+  private scheduleWowRevealDomPatchSignal(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+    requestAnimationFrame(() =>
+      requestAnimationFrame(() => this.commonService.wowRevealDomChanged.next()),
+    );
   }
 
   tabNavigate(x) {

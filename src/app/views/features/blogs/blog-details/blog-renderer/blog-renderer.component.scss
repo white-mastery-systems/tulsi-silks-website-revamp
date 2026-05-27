@@ -11,6 +11,34 @@
   margin-right: auto;
 }
 
+/* Body-copy hyperlinks (Editor.js paragraph / list / quote output) — readable vs plain text */
+:host ::ng-deep .editorjs-blog-body {
+  p a,
+  li a:not(.ej-toc-link),
+  h2 a,
+  h3 a,
+  h4 a,
+  h5 a,
+  blockquote a {
+    color: $tulsi-blog-accent;
+    font-weight: 600;
+    text-decoration: underline solid;
+    text-decoration-color: rgba(107, 83, 68, 0.55);
+    text-underline-offset: 3px;
+    cursor: pointer;
+
+    &:hover {
+      color: #5a4538;
+      text-decoration-color: rgba(90, 69, 56, 0.85);
+    }
+
+    &:focus-visible {
+      outline: 2px solid rgba(107, 83, 68, 0.4);
+      outline-offset: 2px;
+    }
+  }
+}
+
 :host ::ng-deep blockquote {
   margin: 1.75rem 0;
   padding: 0.25rem 0 0.25rem 1.25rem;
