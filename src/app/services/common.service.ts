@@ -6,7 +6,9 @@ import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { StoreApiService } from './store-api.service';
 import { environment } from '../../environments/environment';
-import CryptoJS from 'crypto-js';
+/** Narrow imports vs full `crypto-js` — trims ~half the library from the main bundle. */
+import AES from 'crypto-js/aes';
+import Utf8 from 'crypto-js/enc-utf8';
 import { buildHomePageJsonLd, HomeJsonLdInput } from '../seo/home-page-json-ld';
 import { SSR_STATE_KEY, SsrStateSnapshot } from './ssr-state.keys';
 declare const $: any;
@@ -314,17 +316,19 @@ export class CommonService {
 
   encryptData(data) {
     try {
-      if(isPlatformBrowser(this.platformId)) return CryptoJS.AES.encrypt(JSON.stringify(data), this.cryptoSecretkey).toString();
+      if (isPlatformBrowser(this.platformId)) {
+        return AES.encrypt(JSON.stringify(data), this.cryptoSecretkey).toString();
+      }
     } catch (e) {
       console.log("encrypt err-----", e);
     }
   }
   decryptData(data) {
     try {
-      if(isPlatformBrowser(this.platformId)) {
-        const bytes = CryptoJS.AES.decrypt(data, this.cryptoSecretkey);
-        if(bytes.toString()) {
-          return JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
+      if (isPlatformBrowser(this.platformId)) {
+        const bytes = AES.decrypt(data, this.cryptoSecretkey);
+        if (bytes.toString()) {
+          return JSON.parse(bytes.toString(Utf8));
         }
         return data;
       }

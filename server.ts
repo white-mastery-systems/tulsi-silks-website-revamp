@@ -397,6 +397,28 @@ export function app(): express.Express {
     }
   }));
 
+  // CRITICAL: any URL with a file extension that falls through express.static
+  // (because the file does not exist in distFolder) MUST return a hard 404 —
+  // NEVER let it fall through to the SSR catch-all below.
+  //
+  // Why: when an old content-hashed JS bundle (e.g. main.7a6af9ad...js from a
+  // previous deploy) is requested by a stale cached HTML or a user with stale
+  // browser cache, the SSR catch-all happily rendered the full home page HTML
+  // (755 KB!) and returned it with content-type: text/html. The browser then
+  // either silently refused to execute the response (strict MIME) or wasted
+  // ~750 KB of high-priority bandwidth, dragging LCP to 16+ s on Slow 4G.
+  //
+  // Same problem hit /favicon.ico — the project does not ship a favicon, so
+  // every fresh visit (including every PSI run) was downloading 755 KB of
+  // junk for the default browser favicon request.
+  //
+  // After this middleware: missing static assets return a 22-byte 404 (compresses
+  // to ~30 bytes on the wire) instead of 750 KB of SSR HTML. Frees the network
+  // for the actual LCP image.
+  server.get('*.*', (req, res) => {
+    res.status(404).type('text/plain').send('Not Found');
+  });
+
   server.get('*', (req, res, next) => {
     const { protocol, originalUrl, baseUrl, headers } = req;
     const pathOnly = (originalUrl || '/').split('?')[0];

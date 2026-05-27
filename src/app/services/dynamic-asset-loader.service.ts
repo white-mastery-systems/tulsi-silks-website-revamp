@@ -36,6 +36,14 @@ export class DynamicAssetLoaderService {
 
   private scripts: any = {};
 
+  /** In-flight load promises — guards against parallel `loadAsset()` calls attaching
+   * duplicate &lt;script&gt;/&lt;link&gt; nodes before `onload` flips `.loaded=true`.
+   * On the home page ~15 directives each trigger `swiper-js`/`swiper-css` at once —
+   * without this dedupe Lighthouse sees 10+ redundant Swiper downloads + parse passes,
+   * which directly blows up TBT. */
+  private readonly pendingLoads: Map<string, Promise<{ script: string; loaded: boolean; status: string }>> =
+    new Map();
+
   constructor(@Inject(DOCUMENT) private document) {
     CssStore.forEach((script: any) => {
       this.scripts[script.name] = {
@@ -57,40 +65,58 @@ export class DynamicAssetLoaderService {
   }
 
   loadAsset(name: string) {
-    return new Promise((resolve, reject) => {
-      if(!this.scripts[name].loaded) {
-        let targetElement = (this.scripts[name].type=="js")? "script": "link";
-        let script = this.document.createElement(targetElement);
-        if(this.scripts[name].type=="js") {
-          script.type = 'text/javascript';
-          script.src = this.scripts[name].src;
-        }
-        else {
-          script.rel = 'stylesheet';
-          script.href = this.scripts[name].src;
-        }
-        if(script.readyState) {  //IE
-          script.onreadystatechange = () => {
-            if(script.readyState === "loaded" || script.readyState === "complete") {
-              script.onreadystatechange = null;
-              this.scripts[name].loaded = true;
-              resolve({script: name, loaded: true, status: 'Loaded'});
-            }
-          };
-        }
-        else {  //Others
-          script.onload = () => {
-            this.scripts[name].loaded = true;
-            resolve({script: name, loaded: true, status: 'Loaded'});
-          };
-        }
-        script.onerror = (error: any) => resolve({script: name, loaded: false, status: 'Loaded'});
-        this.document.getElementsByTagName('head')[0].appendChild(script);
+    if (this.scripts[name]?.loaded) {
+      return Promise.resolve({ script: name, loaded: true, status: 'Already Loaded' });
+    }
+
+    let inflight = this.pendingLoads.get(name);
+    if (inflight) {
+      return inflight;
+    }
+
+    inflight = new Promise((resolve) => {
+      const finish = (): void => {
+        this.pendingLoads.delete(name);
+      };
+
+      let targetElement = this.scripts[name].type == 'js' ? 'script' : 'link';
+      let script = this.document.createElement(targetElement);
+      if (this.scripts[name].type == 'js') {
+        script.type = 'text/javascript';
+        script.src = this.scripts[name].src;
+      } else {
+        script.rel = 'stylesheet';
+        script.href = this.scripts[name].src;
       }
-      else {
-        resolve({ script: name, loaded: true, status: 'Already Loaded' });
+
+      const onDone = (): void => {
+        this.scripts[name].loaded = true;
+        finish();
+        resolve({ script: name, loaded: true, status: 'Loaded' });
+      };
+
+      if ((script as any).readyState) {
+        script.onreadystatechange = (): void => {
+          if (
+            script.readyState === 'loaded' ||
+            script.readyState === 'complete'
+          ) {
+            script.onreadystatechange = null;
+            onDone();
+          }
+        };
+      } else {
+        script.onload = (): void => onDone();
       }
+      script.onerror = (): void => {
+        finish();
+        resolve({ script: name, loaded: false, status: 'Error' });
+      };
+      this.document.getElementsByTagName('head')[0].appendChild(script);
     });
+
+    this.pendingLoads.set(name, inflight);
+    return inflight;
   }
 
   unloadAsset(name: string) {
@@ -103,6 +129,7 @@ export class DynamicAssetLoaderService {
         if(allsuspects[i] && allsuspects[i].getAttribute(targetAttr)!=null && allsuspects[i].getAttribute(targetAttr).indexOf(this.scripts[name].src)!=-1)
         allsuspects[i].parentNode.removeChild(allsuspects[i])
       }
+      this.pendingLoads.delete(name);
       this.scripts[name].loaded = false;
       resolve(true);
     });

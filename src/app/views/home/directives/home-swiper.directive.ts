@@ -2,6 +2,21 @@ import { Directive, ElementRef, Inject, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { DynamicAssetLoaderService } from '../../../services/dynamic-asset-loader.service';
 declare const Swiper: any;
+
+/** Pushes carousel setup off the Angular bootstrap stack so LCP paints first.
+ * `timeout` caps wait on busy main threads (Lighthouse PSI). */
+function deferSwiperWork(cb: () => void): void {
+  const win = typeof window !== 'undefined' ? (window as unknown as Window & typeof globalThis) : null;
+  const ric = win && (win as Window & { requestIdleCallback?(cb: () => void, opts?: { timeout: number }): number })
+    .requestIdleCallback;
+  if (typeof ric === 'function') {
+    ric.call(win, cb, { timeout: 2400 });
+  } else if (typeof requestAnimationFrame !== 'undefined') {
+    requestAnimationFrame(() => setTimeout(cb, 0));
+  } else {
+    setTimeout(cb, 0);
+  }
+}
 ​
 @Directive({
     selector: '[appHomeSwiper]',
@@ -11,6 +26,10 @@ declare const Swiper: any;
 export class HomeSwiperDirective {
 
   private observer: any;
+
+  /** Batches MutationObserver storms during hydration/layout into one CD frame → less TBT. */
+  private observerRafQueued = false;
+
   loadedElements: any = [];
   
   highlights: any = {
@@ -87,15 +106,33 @@ export class HomeSwiperDirective {
 ​
   ngOnInit() {
     if(isPlatformBrowser(this.platformId)) {
-      this.assetLoader.load('swiper-js', 'swiper-css').then(() => {
-        this.registerListenerForDomChanges();
-        this.fetchSwipeElements();
-      }).catch(error => console.log("err", error));
+      deferSwiperWork(() => {
+        this.assetLoader.load('swiper-js', 'swiper-css').then(() => {
+          this.registerListenerForDomChanges();
+          this.fetchSwipeElements();
+        }).catch(error => console.log("err", error));
+      });
     }
   }
 
   registerListenerForDomChanges() {
-    this.observer = new MutationObserver(() => this.fetchSwipeElements());
+    if (this.observer) {
+      return;
+    }
+    this.observer = new MutationObserver(() => {
+      if (this.observerRafQueued) {
+        return;
+      }
+      this.observerRafQueued = true;
+      requestAnimationFrame(() => {
+        this.observerRafQueued = false;
+        try {
+          this.fetchSwipeElements();
+        } catch (e) {
+          console.error('[appHomeSwiper] fetchSwipeElements', e);
+        }
+      });
+    });
     const attributes = false; const childList = true; const subtree = true;
     this.observer.observe(this._element.nativeElement, { attributes, childList, subtree });
   }

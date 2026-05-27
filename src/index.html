@@ -17,7 +17,13 @@
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="icon" type="image/x-icon" id="appFavicon" href="">
+    <!-- Inline data-URI favicon so the browser never makes a /favicon.ico request.
+         Empty href="" used to cause an automatic /favicon.ico fallback on some
+         browsers; combined with the missing favicon in dist/, that request was
+         falling through to SSR and downloading 755 KB of home page HTML for the
+         favicon slot. The 1x1 transparent gif here suppresses that. Angular's
+         AppComponent replaces this href at runtime with the store's real favicon. -->
+    <link rel="icon" type="image/gif" id="appFavicon" href="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==">
     <link rel="preconnect" href="https://yourstore.io" crossorigin="">
     <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin="">
     <link rel="dns-prefetch" href="https://www.clarity.ms">

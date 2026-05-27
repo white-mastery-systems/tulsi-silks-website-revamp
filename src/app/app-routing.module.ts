@@ -1,6 +1,5 @@
 import { NgModule } from '@angular/core';
-import { Routes, RouterModule } from '@angular/router';
-import { QuicklinkStrategy } from 'ngx-quicklink';
+import { NoPreloading, Routes, RouterModule } from '@angular/router';
 
 import { GuestGuard } from './guards/guest.guard';
 import { AccountGuard } from './guards/account.guard';
@@ -63,7 +62,14 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes, { initialNavigation: 'enabledBlocking', scrollPositionRestoration: 'enabled', preloadingStrategy: QuicklinkStrategy })],
+  imports: [
+    RouterModule.forRoot(routes, {
+      initialNavigation: 'enabledBlocking',
+      scrollPositionRestoration: 'enabled',
+      /** Quicklink prefetch pulled category/product chunks during homepage PSI runs, competing with LCP. */
+      preloadingStrategy: NoPreloading,
+    }),
+  ],
   exports: [RouterModule]
 })
 

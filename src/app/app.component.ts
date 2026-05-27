@@ -559,7 +559,14 @@ export class AppComponent implements AfterViewInit, OnDestroy {
           }
           if (this.router.url != '/') this.setBodyMarginTop(100);
           if (routeName.indexOf("/order-summary/") == -1) {
-            this.commonService.loadGoogleAnalytics("UA-102000599-1, AW-847341911", 5000);
+            /* Tag Manager competes with LCP on Slow 4G — run only when idle (or fallback timeout). */
+            const runGa = (): void =>
+              this.commonService.loadGoogleAnalytics('UA-102000599-1, AW-847341911', 0);
+            if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
+              window.requestIdleCallback(runGa, { timeout: 10000 });
+            } else {
+              setTimeout(runGa, 8000);
+            }
           }
           // chat
           // let appSetting = this.commonService.application_setting;

@@ -5,7 +5,6 @@ import { provideHttpClient, withInterceptorsFromDi, withFetch } from '@angular/c
 import { BrowserModule, provideClientHydration, withHttpTransferCacheOptions } from '@angular/platform-browser';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 
-import { QuicklinkModule } from 'ngx-quicklink';
 import { DeviceDetectorService } from 'ngx-device-detector';
 import { ConnectionService } from 'ng-connection-service';
 
@@ -20,7 +19,6 @@ import { serverSeoInitializerFactory, SERVER_SEO_INITIALIZER_DEPS } from './serv
   imports: [
     BrowserModule,
     AppRoutingModule,
-    QuicklinkModule,
     SharedModule,
     FormsModule,
   ],
