@@ -290,10 +290,6 @@ export class AppComponent implements AfterViewInit, OnDestroy {
   }
 
   ngOnInit() {
-    if (isPlatformBrowser(this.platformId)) {
-      let bgElem = this.document.getElementById('pre-bg');
-      if (bgElem && bgElem.style.display != "none") bgElem.style.display = "none";
-    }
     if (this.commonService.store_id) {
       // this.randomNum = localStorage.getItem("random_num");
       // if(!this.randomNum) {
@@ -305,17 +301,12 @@ export class AppComponent implements AfterViewInit, OnDestroy {
       this.commonService.store_logo = "uploads/" + this.commonService.store_id + "/logo.png?v=" + this.randomNum;
       this.commonService.social_logo = "uploads/" + this.commonService.store_id + "/social_logo.jpg?v=" + this.randomNum;
       // primary slider placeholder — uses the SAME `.webp` URLs that:
-      //   1. <link rel="preload" as="image"> in index.html preloads
-      //   2. The static <picture> in #pre-bg renders
-      //   3. SSR's <picture> in home.component.html renders
-      //   4. The layout API ultimately returns
-      // Because all four match, the browser issues exactly one download for the hero image
-      // (which the preload kicks off), and even though Angular re-renders the header tree
-      // on client bootstrap (ngSkipHydration on MainHeaderComponent), the <img> src stays
-      // identical → no visible swap, no second download, hero stays painted continuously.
-      // The previous version of this code used `_s.jpg` URLs that mismatched the preload,
-      // causing the LCP image to redownload from scratch (LCP ~10 s). Don't change these
-      // back to `_s.jpg` without also reverting the index.html preload and pre-bg <picture>.
+      //   1. <link rel="preload" as="image"> on `/` injects into index.html
+      //   2. SSR's <picture> in home.component.html renders
+      //   3. The layout API ultimately returns
+      // Keep URLs aligned so preload + `<img>` share one download without an LCP rescan.
+      // The previous version used `_s.jpg` URLs mismatched vs preload (~10 s LCP). Don't revert
+      // to `_s.jpg` without updating the injected preload URLs in index.html too.
       const mobileHero =
         environment.staticMobileHeroWebpUrl?.trim() ||
         "uploads/" + this.commonService.store_id + "/layouts/mobile_primary_slider.webp";

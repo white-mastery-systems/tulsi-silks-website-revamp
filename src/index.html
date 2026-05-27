@@ -17,6 +17,28 @@
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Home-only hero image preloads (no fullscreen overlay — #pre-bg was hiding real layout until JS ran). -->
+    <script>
+      (function () {
+        if (typeof window === 'undefined' || typeof document === 'undefined' || typeof location === 'undefined') return;
+        var raw = location.pathname || '/';
+        var normalized = raw.replace(/\/+$/, '') || '/';
+        var isHome = normalized === '/' || normalized === '';
+        if (!isHome || !document.head) return;
+        function tsPreloadHero(mediaQuery, href) {
+          var l = document.createElement('link');
+          l.rel = 'preload';
+          l.as = 'image';
+          l.type = 'image/webp';
+          l.href = href;
+          l.setAttribute('fetchpriority', 'high');
+          if (mediaQuery) l.media = mediaQuery;
+          document.head.appendChild(l);
+        }
+        tsPreloadHero('(max-width: 720px)', '/assets/perf/mobile_primary_slider.webp');
+        tsPreloadHero('(min-width: 721px)', 'https://yourstore.io/api/uploads/5d30013a5c83a702392c4c8b/layouts/desktop_primary_slider.webp');
+      })();
+    </script>
     <!-- Inline data-URI favicon so the browser never makes a /favicon.ico request.
          Empty href="" used to cause an automatic /favicon.ico fallback on some
          browsers; combined with the missing favicon in dist/, that request was
@@ -28,16 +50,7 @@
     <!-- Deliberately no preconnect to cdnjs: homepage LCP should not open extra TCP/TLS
          slots; jQuery/Swiper load from origin or only after user interaction. -->
     <link rel="dns-prefetch" href="https://www.clarity.ms">
-    <!-- Preload LCP hero — URLs and type MUST match exactly what Angular's SSR <picture>
-         renders, otherwise the preload is wasted bandwidth and the actual element triggers
-         a second download. Mobile: self-hosted `/assets/perf/...` when `environment.staticMobileHeroWebpUrl`
-         is set (no CMS upload). Desktop still uses CDN below. -->
-    <link rel="preload" as="image" type="image/webp"
-      href="/assets/perf/mobile_primary_slider.webp"
-      media="(max-width: 720px)" fetchpriority="high">
-    <link rel="preload" as="image" type="image/webp"
-      href="https://yourstore.io/api/uploads/5d30013a5c83a702392c4c8b/layouts/desktop_primary_slider.webp"
-      media="(min-width: 721px)" fetchpriority="high">
+    <!-- LCP hero preloads on `/` — see script after `<meta name="viewport">` (homepage only). -->
     <!-- Self-hosted Montaga (~12 KB) — hero headings. Material Icons preload + stylesheet are
          not deferred so pseudo-elements (::after breadcrumbs, accordion arrows) resolve to
          glyphs instead of ligature text (chevron_right, add, …). -->
@@ -68,16 +81,6 @@
       .dynamic-height { height: calc(100vh - var(--ts-mast-h)); }
     </style>
     <link rel="stylesheet" href="assets/css/material-icons-deferred.css">
-    <style>
-      #pre-bg {
-        background-color: #f2f2f2;
-        width: 100%;
-        height: 100vh;
-        position: fixed;
-        top: 0;
-        z-index: 1000;
-      }
-    </style>
   </head>
   <body>
     <!-- Microsoft Clarity — deferred to after page content to avoid blocking FCP -->
@@ -106,39 +109,6 @@
         document.getElementById("mobile_primary_slider").src = "https://yourstore.io/api/uploads/"+parentFolder+"/layouts/mobile_primary_slider_s.jpg?v="+randomNum;
       }
     </script> -->
-    <div id="pre-bg">
-      <!-- Hero fallback rendered in static HTML in case SSR hasn't populated app-root yet.
-           URLs MUST match the preload tags above AND Angular's SSR-rendered <picture> URLs,
-           so the browser only downloads one hero image (preloaded → reused by both this
-           fallback and Angular's rendered slider). -->
-      <picture>
-        <source
-          media="(max-width: 720px)"
-          srcset="/assets/perf/mobile_primary_slider.webp"
-          type="image/webp">
-        <img
-          src="https://yourstore.io/api/uploads/5d30013a5c83a702392c4c8b/layouts/desktop_primary_slider.webp"
-          fetchpriority="high"
-          decoding="sync"
-          width="1440"
-          height="600"
-          alt="Tulsi Silks"
-          style="width:100%;height:100%;object-fit:cover;display:block;">
-      </picture>
-    </div>
     <app-root id="app-root"></app-root>
-    <script>
-      // When SSR has rendered content into app-root, the pre-bg overlay is no longer
-      // needed — hide it immediately so the SSR content is the LCP element.
-      // (Angular also removes it in app.component.ngOnInit, but that waits for
-      // full JS bootstrap, delaying first paint by 1-2s on slow connections.)
-      (function() {
-        var ar = document.getElementById('app-root');
-        if (ar && ar.childElementCount > 0) {
-          var pb = document.getElementById('pre-bg');
-          if (pb) pb.style.display = 'none';
-        }
-      })();
-    </script>
   </body>
 </html>

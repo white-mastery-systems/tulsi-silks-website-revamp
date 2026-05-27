@@ -7,9 +7,9 @@ The first homepage hero slide can load **mobile** WebP from this folder instead 
 
    `scripts/output/mobile_primary_slider.webp` → `src/assets/perf/mobile_primary_slider.webp`
 
-3. Keep these in sync (same URL string):
+3. Keep URLs in sync (homepage-only preload script in `index.html`; no fullscreen splash overlay):
 
    - `environment*.ts` → `staticMobileHeroWebpUrl` (e.g. `/assets/perf/mobile_primary_slider.webp`)
-   - `src/index.html` → mobile `<link rel="preload">` and `#pre-bg` `<picture>` `srcset`
+   - `src/index.html` → script after viewport meta injects mobile + desktop preload on `/` only
 
 To use the CMS image again: set `staticMobileHeroWebpUrl` to `null` in both environment files and point `index.html` back to the yourstore.io `uploads/.../mobile_primary_slider.webp` URLs.

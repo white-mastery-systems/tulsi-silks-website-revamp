@@ -172,7 +172,7 @@ async function main() {
   }
   console.log('');
   console.log('Next: copy to src/assets/perf/ via `npm run optimize:mobile-hero:install`,');
-  console.log('      or deploy as a static asset; keep staticMobileHeroWebpUrl + index.html preload/pre-bg URLs in sync.');
+  console.log('      or deploy as a static asset; keep staticMobileHeroWebpUrl + index.html preload URLs in sync.');
   console.log('      (No CMS upload required when using /assets/perf/mobile_primary_slider.webp.)');
 }
 
