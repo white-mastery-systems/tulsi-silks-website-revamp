@@ -25,7 +25,8 @@
          AppComponent replaces this href at runtime with the store's real favicon. -->
     <link rel="icon" type="image/gif" id="appFavicon" href="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==">
     <link rel="preconnect" href="https://yourstore.io" crossorigin="">
-    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin="">
+    <!-- Deliberately no preconnect to cdnjs: homepage LCP should not open extra TCP/TLS
+         slots; jQuery/Swiper load from origin or only after user interaction. -->
     <link rel="dns-prefetch" href="https://www.clarity.ms">
     <!-- Preload LCP hero — URLs and type MUST match exactly what Angular's SSR <picture>
          renders, otherwise the preload is wasted bandwidth and the actual element triggers
@@ -38,10 +39,8 @@
       href="https://yourstore.io/api/uploads/5d30013a5c83a702392c4c8b/layouts/desktop_primary_slider.webp"
       media="(min-width: 721px)" fetchpriority="high">
     <!-- Self-hosted Montaga (12 KB) — used for above-the-fold hero headings. Material Icons
-         is NOT preloaded: it's 128 KB, the above-the-fold icons are inline SVG masks in
-         styles.scss, and the below-the-fold uses (modals, cart, etc.) tolerate a lazy load
-         via @font-face. Removing the Material Icons preload frees ~128 KB of high-priority
-         bandwidth that competes with the LCP hero image on Slow 4G. -->
+         load via deferred `material-icons-deferred.css` (see below) so they do not compete
+         with the hero image on the network. -->
     <link rel="preload" as="font" type="font/woff2" href="assets/fonts/montaga.woff2" crossorigin="anonymous">
     <link rel="canonical" href="" id="ccLink">
     <style>
@@ -58,30 +57,7 @@
         src: url('assets/fonts/montaga.woff2') format('woff2');
         unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
       }
-      @font-face {
-        font-family: 'Material Icons';
-        font-style: normal;
-        font-weight: 400;
-        font-display: swap;
-        src: url('assets/fonts/material-icons.woff2') format('woff2');
-      }
-      /* .material-icons utility class — was provided by Google Fonts CSS, now inline. */
-      .material-icons {
-        font-family: 'Material Icons';
-        font-weight: normal;
-        font-style: normal;
-        font-size: 24px;
-        line-height: 1;
-        letter-spacing: normal;
-        text-transform: none;
-        display: inline-block;
-        white-space: nowrap;
-        word-wrap: normal;
-        direction: ltr;
-        -webkit-font-feature-settings: 'liga';
-        font-feature-settings: 'liga';
-        -webkit-font-smoothing: antialiased;
-      }
+      /* Material Icons: non-blocking stylesheet at end of <head> (`material-icons-deferred.css`). */
       /* Header heights mirror `assets/header/type-5.scss` — match exactly so Angular's
          `setBodyMarginTop` measurement on hydration writes the same px and zero CLS. */
       :root { --ts-mast-h: 74px; }
@@ -89,6 +65,11 @@
       body { margin: 0; margin-top: var(--ts-mast-h); }
       .disp-none { display: none; }
       .dynamic-height { height: calc(100vh - var(--ts-mast-h)); }
+    </style>
+    <!-- Deferred so Montaga + hero preload win the network on mobile PSI. -->
+    <link rel="stylesheet" href="assets/css/material-icons-deferred.css" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="assets/css/material-icons-deferred.css"></noscript>
+    <style>
       #pre-bg {
         background-color: #f2f2f2;
         width: 100%;
@@ -139,7 +120,7 @@
         <img
           src="https://yourstore.io/api/uploads/5d30013a5c83a702392c4c8b/layouts/desktop_primary_slider.webp"
           fetchpriority="high"
-          decoding="async"
+          decoding="sync"
           width="1440"
           height="600"
           alt="Tulsi Silks"

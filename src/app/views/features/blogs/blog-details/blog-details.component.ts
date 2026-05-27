@@ -1,4 +1,16 @@
-import { Component, OnInit, Renderer2, HostListener, ElementRef, Inject, PLATFORM_ID, DOCUMENT } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  Renderer2,
+  HostListener,
+  ElementRef,
+  Inject,
+  PLATFORM_ID,
+  DOCUMENT,
+  AfterViewInit,
+  OnDestroy,
+  NgZone,
+} from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { DomSanitizer } from '@angular/platform-browser';
 import { DatePipe } from '@angular/common';
@@ -20,7 +32,7 @@ declare const $: any;
     standalone: false
 })
 
-export class BlogDetailsComponent implements OnInit {
+export class BlogDetailsComponent implements OnInit, AfterViewInit, OnDestroy {
 
   blog_details: any = {};
   pageLoader: boolean;
@@ -36,6 +48,20 @@ export class BlogDetailsComponent implements OnInit {
   /** Smooth-scroll hash links inside Editor.js rendered HTML (TOC, inline anchors). */
   private ejHashLinkCaptureCleanup?: () => void;
   showScrollTools = false;
+  private readonly scrollToolsThresholdPx = 520;
+  private scrollToolsRafScheduled = false;
+  private readonly boundPassiveBlogScrollTools = (): void => {
+    if (!isPlatformBrowser(this.platformId) || this.scrollToolsRafScheduled) return;
+    this.scrollToolsRafScheduled = true;
+    requestAnimationFrame(() => {
+      this.scrollToolsRafScheduled = false;
+      const next = (window.scrollY || 0) > this.scrollToolsThresholdPx;
+      if (next === this.showScrollTools) return;
+      this.ngZone.run(() => {
+        this.showScrollTools = next;
+      });
+    });
+  };
   private readonly tocAnchorId = 'ej-toc';
   relatedBlogs: any[] = [];
   relatedBlogsLoading = false;
@@ -47,7 +73,8 @@ export class BlogDetailsComponent implements OnInit {
     private readonly hostRef: ElementRef<HTMLElement>,
     private readonly cartService: CartlistService,
     @Inject(DOCUMENT) private readonly document: Document,
-    @Inject(PLATFORM_ID) private readonly platformId: object
+    @Inject(PLATFORM_ID) private readonly platformId: object,
+    private readonly ngZone: NgZone
   ) {
     this.subscription = this.commonService.currency_type.subscribe(() => {
       this.findCurrency();
@@ -107,10 +134,13 @@ export class BlogDetailsComponent implements OnInit {
     else this.pageLoader = true;
   }
 
-  @HostListener('window:scroll')
-  onWindowScroll(): void {
+  ngAfterViewInit(): void {
     if (!isPlatformBrowser(this.platformId)) return;
-    this.showScrollTools = (window.scrollY || 0) > 520;
+    window.addEventListener('scroll', this.boundPassiveBlogScrollTools, { passive: true });
+    // Initial sync (same threshold as former @HostListener).
+    if ((window.scrollY || 0) > this.scrollToolsThresholdPx) {
+      this.showScrollTools = true;
+    }
   }
 
   scrollToTop(): void {
@@ -826,6 +856,9 @@ export class BlogDetailsComponent implements OnInit {
   }
 
   ngOnDestroy() {
+    if (isPlatformBrowser(this.platformId)) {
+      window.removeEventListener('scroll', this.boundPassiveBlogScrollTools);
+    }
     this.ejProductCtaCaptureCleanup?.();
     this.ejHashLinkCaptureCleanup?.();
     this.storeSubscription.unsubscribe();

@@ -9,7 +9,7 @@
     "test": "ng test",
     "dev:ssr": "ng run ecommerce:serve-ssr",
     "serve:ssr": "node dist/ecommerce/server/main.js",
-    "build:ssr": "ng build && ng run ecommerce:server",
+    "build:ssr": "ng build --configuration production && ng run ecommerce:server:production",
     "prerender": "ng run ecommerce:prerender",
     "analyze": "ng build --configuration production --stats-json && webpack-bundle-analyzer dist/ecommerce/browser/stats.json",
     "compress-images": "node scripts/compress-images.js",

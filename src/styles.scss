@@ -15,6 +15,8 @@
 // @import "assets/scss/cart/overlay.scss";
 
 @import "assets/css/bootstrap-grid.css";
+// Sticky-header slide animations (vanilla Headroom replacement — no CDN script).
+@import "assets/css/headroom.css";
 // swiper.css and quill-core.css are loaded on-demand via DynamicAssetLoaderService
 // to avoid blocking first paint on every page.
 

@@ -1,6 +1,5 @@
-import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { ChangeDetectorRef, Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
-import edjsHTML from 'editorjs-html';
 import { createEditorJsCustomParsers } from '../editorjs-custom-parsers';
 import { wrapEditorJsArticleSections } from '../editorjs-section-wrap';
 
@@ -12,6 +11,8 @@ export type BlogRendererSegment =
 /**
  * Renders Editor.js JSON (`content.blocks`) to sanitized HTML using Tulsi custom parsers.
  * `productCarousel` blocks are spliced out and rendered as `app-blog-product-carousel` (Swiper).
+ *
+ * Phase 1 perf: `editorjs-html` is lazy-loaded — it is not bundled into initial `main` / blog route chunk eagerly.
  */
 @Component({
     selector: 'app-blog-renderer',
@@ -25,11 +26,32 @@ export class BlogRendererComponent implements OnChanges {
 
   segments: BlogRendererSegment[] = [];
 
-  constructor(private sanitizer: DomSanitizer) {}
+  /** Default export shape of `editorjs-html`. */
+  private edjsHtmlDefault: ((plugins?: Record<string, unknown>) => { parse: (data: unknown) => string }) | null = null;
+  private edjsHtmlLoadPromise: Promise<(plugins?: Record<string, unknown>) => { parse: (data: unknown) => string }> | null =
+    null;
+
+  constructor(
+    private sanitizer: DomSanitizer,
+    private cdr: ChangeDetectorRef,
+  ) {}
 
   ngOnChanges(changes: SimpleChanges): void {
     if (!changes['blocks'] && !changes['imgBaseUrl']) return;
-    this.buildSegments();
+    void this.buildSegmentsAsync();
+  }
+
+  private getEdjsHTML(): Promise<(plugins?: Record<string, unknown>) => { parse: (data: unknown) => string }> {
+    if (this.edjsHtmlDefault) {
+      return Promise.resolve(this.edjsHtmlDefault);
+    }
+    if (!this.edjsHtmlLoadPromise) {
+      this.edjsHtmlLoadPromise = import('editorjs-html').then((m) => {
+        this.edjsHtmlDefault = m.default;
+        return m.default;
+      });
+    }
+    return this.edjsHtmlLoadPromise;
   }
 
   /** Known-safe block types (editorjs-html defaults + Tulsi custom blocks). */
@@ -58,13 +80,15 @@ export class BlogRendererComponent implements OnChanges {
     'unsupported',
   ]);
 
-  private buildSegments(): void {
+  private async buildSegmentsAsync(): Promise<void> {
     const list = this.blocks;
     if (!list?.length) {
       this.segments = [];
+      this.cdr.markForCheck();
       return;
     }
 
+    const edjsHTML = await this.getEdjsHTML();
     const segments: BlogRendererSegment[] = [];
     let carouselOrdinal = 0;
     let i = 0;
@@ -89,7 +113,7 @@ export class BlogRendererComponent implements OnChanges {
           i++;
         }
         const chunk = list.slice(start, i);
-        const html = this.renderChunkHtml(chunk);
+        const html = this.renderChunkHtml(chunk, edjsHTML);
         if (html) {
           segments.push({
             kind: 'html',
@@ -100,9 +124,10 @@ export class BlogRendererComponent implements OnChanges {
     }
 
     this.segments = segments;
+    this.cdr.markForCheck();
   }
 
-  private renderChunkHtml(chunk: any[]): string {
+  private renderChunkHtml(chunk: any[], edjsHTML: (plugins?: Record<string, unknown>) => { parse: (data: unknown) => string }): string {
     if (!chunk?.length) return '';
     const parser = edjsHTML(createEditorJsCustomParsers(this.imgBaseUrl));
 

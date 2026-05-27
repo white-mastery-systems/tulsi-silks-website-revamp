@@ -3725,7 +3725,7 @@ input[type="tel"] {
   }
 }
 
-// WOW CSS
+// Scroll-reveal (replaces WOW.js — IntersectionObserver adds `.wow-in-view` in AppComponent).
 
 .wow {
   visibility: hidden;
@@ -3733,6 +3733,13 @@ input[type="tel"] {
 .fadeInUp {
   -webkit-animation-name: fadeInUp;
   animation-name: fadeInUp;
+}
+.wow.fadeInUp.wow-in-view {
+  visibility: visible;
+  -webkit-animation-duration: 0.65s;
+  animation-duration: 0.65s;
+  -webkit-animation-fill-mode: both;
+  animation-fill-mode: both;
 }
 
 @-webkit-keyframes fadeInUp {

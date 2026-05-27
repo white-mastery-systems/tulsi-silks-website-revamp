@@ -144,6 +144,9 @@
           },
           "configurations": {
             "production": {
+              "optimization": true,
+              "sourceMap": false,
+              "extractLicenses": true,
               "outputHashing": "media",
               "fileReplacements": [
                 {

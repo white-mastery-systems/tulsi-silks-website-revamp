@@ -14,6 +14,11 @@ Quick reference: done work, deploy steps, and next moves. For narrative and curl
 - [x] **Google Analytics / gtag** injection deferred with **`requestIdleCallback`** (fallback `setTimeout`) instead of a fixed early timer.
 - [x] **Narrow `crypto-js` imports** — only `aes` + `enc-utf8` in `CommonService` (smaller **`main`** than full `crypto-js` entry).
 - [x] **Disabled route prefetch** — `NoPreloading` instead of `ngx-quicklink` (fewer competing chunk downloads during homepage PSI / first paint).
+- [x] **Lazy `editorjs-html`** — `blog-renderer` loads it via `import()` so it is not in the initial JS graph; ships as a separate chunk when a blog is opened.
+- [x] **No WOW.js / Headroom.js CDN** — scroll-reveal uses `IntersectionObserver` + `.wow-in-view` (see `custom.scss`); sticky header uses vanilla scroll logic + `headroom.css` bundled in `styles.scss` (no extra CDN script or late `load('headroom-css')` on scroll).
+- [x] **Material Icons deferred** — `material-icons-deferred.css` via non-blocking `<link>`; **removed `preconnect` to cdnjs** so homepage avoids extra TLS for assets not needed at LCP.
+- [x] **TBT — unpatch `scroll` + passive listeners on Home/Blog Detail** (`zone-flags.ts`, `home.component.ts`, `blog-details.component.ts`): **`NgZone.run()` only when scroll-to-top / scroll-toolbar booleans change**, instead of Angular CD every scroll pixel.
+- For **why the headline PSI score may stay flat** after non–critical-path fixes, see [PSI_SCORE_DIAGNOSIS.md](./PSI_SCORE_DIAGNOSIS.md).
 
 ---
 
@@ -30,7 +35,7 @@ Quick reference: done work, deploy steps, and next moves. For narrative and curl
 
 ## Next wave (biggest remaining wins)
 
-- [ ] **Shrink `main.*.js` further** (~738 KB raw after crypto + quicklink trims; aim below ~650 KB): Lighthouse treemap → more `import()` deferrals.
+- [ ] **Shrink `main.*.js` further** (~740 KB raw; aim below ~650 KB): Lighthouse treemap → more `import()` deferrals (home-only services, third parties, etc.).
 - [ ] **Hero image (mobile)**:
   - **Frontend-only path (no CMS overwrite):** put **`src/assets/perf/mobile_primary_slider.webp`** in the repo (from **`npm run optimize:mobile-hero`** then **`npm run optimize:mobile-hero:install`**). Keep **`environment.staticMobileHeroWebpUrl`** and **`src/index.html`** mobile preload + `#pre-bg` **`srcset`** on the same URL (e.g. `/assets/perf/mobile_primary_slider.webp`). Target **60–120 KB**.
   - **Or CMS path:** upload **`scripts/output/mobile_primary_slider.webp`** to **`uploads/<store_id>/layouts/mobile_primary_slider.webp`**, set **`staticMobileHeroWebpUrl`** to **`null`**, and revert **`index.html`** mobile URLs to yourstore **`uploads/...`**. Optional AVIF later.

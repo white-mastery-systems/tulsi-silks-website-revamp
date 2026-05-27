@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterViewInit, OnDestroy, Inject, PLATFORM_ID, DOCUMENT, ElementRef, QueryList, ViewChildren, HostListener } from '@angular/core';
+import { Component, OnInit, AfterViewInit, OnDestroy, Inject, PLATFORM_ID, DOCUMENT, ElementRef, QueryList, ViewChildren, NgZone } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
@@ -94,6 +94,24 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
 
   showScrollTop = false;
   private readonly scrollTopThresholdPx = 500;
+  private scrollTopRafScheduled = false;
+  private readonly boundPassiveScrollTop = (): void => {
+    if (!isPlatformBrowser(this.platformId) || this.scrollTopRafScheduled) return;
+    this.scrollTopRafScheduled = true;
+    requestAnimationFrame(() => {
+      this.scrollTopRafScheduled = false;
+      const y =
+        window.scrollY ||
+        this.document.documentElement?.scrollTop ||
+        this.document.body?.scrollTop ||
+        0;
+      const next = y > this.scrollTopThresholdPx;
+      if (next === this.showScrollTop) return;
+      this.ngZone.run(() => {
+        this.showScrollTop = next;
+      });
+    });
+  };
 
   private slugify(name: unknown): string {
     const raw = typeof name === 'string' ? name : '';
@@ -276,7 +294,8 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   constructor(
     @Inject(PLATFORM_ID) private platformId: Object, private storeApi: StoreApiService, public swiperService: SwiperService,
     private sanitizer: DomSanitizer, public commonService: CommonService, private router: Router, public ws: WishlistService,
-    public cc: CurrencyConversionService, @Inject(DOCUMENT) private document, private assetLoader: DynamicAssetLoaderService
+    public cc: CurrencyConversionService, @Inject(DOCUMENT) private document, private assetLoader: DynamicAssetLoaderService,
+    private ngZone: NgZone
   ) {
     this.subscription = this.commonService.currency_type.subscribe(() => {
       this.findCurrency();
@@ -327,6 +346,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     if (!isPlatformBrowser(this.platformId)) return;
     this.refreshFlexibleToggles();
     this.updateScrollTopVisibility();
+    window.addEventListener('scroll', this.boundPassiveScrollTop, { passive: true });
 
     if (environment.template_setting.primary_slider === 'fs_slider') {
       this.setSliderHeight();
@@ -337,11 +357,6 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
         this.headerResizeObserver.observe(head);
       }
     }
-  }
-
-  @HostListener('window:scroll')
-  onWindowScroll(): void {
-    this.updateScrollTopVisibility();
   }
 
   private updateScrollTopVisibility(): void {
@@ -886,6 +901,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnDestroy() {
     if (isPlatformBrowser(this.platformId)) {
+      window.removeEventListener('scroll', this.boundPassiveScrollTop);
       window.removeEventListener('resize', this.boundOnWindowResize);
       if (this.sliderHeightResizeTimer !== undefined) {
         clearTimeout(this.sliderHeightResizeTimer);

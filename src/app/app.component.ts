@@ -1,6 +1,7 @@
 import { Component, Inject, PLATFORM_ID, DOCUMENT, AfterViewInit, OnDestroy, TransferState } from '@angular/core';
 import { Location, isPlatformBrowser } from '@angular/common';
 import { fromEvent, Subscription, interval } from 'rxjs';
+import { filter } from 'rxjs/operators';
 import { Router, NavigationEnd } from '@angular/router';
 import { ConnectionService } from 'ng-connection-service';
 import { DeviceDetectorService } from 'ngx-device-detector';
@@ -14,8 +15,6 @@ import { StoreApiService } from './services/store-api.service';
 import { CurrencyConversionService } from './services/currency-conversion.service';
 import { DynamicAssetLoaderService } from './services/dynamic-asset-loader.service';
 import { SSR_STATE_KEY } from './services/ssr-state.keys';
-declare const Headroom: any;
-declare const WOW: any;
 
 @Component({
     selector: 'app-root',
@@ -31,7 +30,10 @@ export class AppComponent implements AfterViewInit, OnDestroy {
   imgBaseUrl: string = environment.img_baseurl;
   isConnected = true; chatLoaded: boolean;
   headroomInit: boolean; intracted: boolean;
-  headroom: any;
+  /** Desktop `/category/*` disables sticky hide/show — header stays unobstructed for filters. */
+  private vanillaHeadroomRouteFrozen = false;
+  /** Last scroll Y sampled when applying vanilla Headroom logic (outside tolerance). */
+  private vanillaHeadroomLastY = 0;
   randomNum: any; currUrl: string;
   showTooltip = false;
 
@@ -51,31 +53,97 @@ export class AppComponent implements AfterViewInit, OnDestroy {
       this.scrollTicking = false;
     });
   };
-  private wowBootstrapStarted = false;
+  private wowRevealObserver: IntersectionObserver | null = null;
+  private wowRevealBootstrapped = false;
+  private wowRouteSub: Subscription | null = null;
 
-  /** WOW.js hides `.wow` elements with CSS (`visibility:hidden`) until `WOW().init()` runs.
-   * WOW was historically loaded only after `scroll` so `pageYOffset > 0`; users who stay
-   * at y=0 (hero fills viewport — common on desktop) never triggered it, leaving below‑the‑fold
-   * sections invisible. Boot WOW on idle as well — scroll path still eagerly loads once they move. */
-  private ensureWowInitialized(): void {
-    if (
-      !isPlatformBrowser(this.platformId) ||
-      this.commonService.wowjsLoaded ||
-      this.wowBootstrapStarted
-    ) {
+  /**
+   * Replaces WOW.js CDN: reveal `.wow.fadeInUp` sections with a single IntersectionObserver.
+   * Sets `commonService.wowjsLoaded` so footer/chat gating keeps working.
+   */
+  private bootstrapWowReveal(): void {
+    if (!isPlatformBrowser(this.platformId) || this.wowRevealBootstrapped) return;
+    this.wowRevealBootstrapped = true;
+
+    const finish = (): void => {
+      this.commonService.wowjsLoaded = true;
+    };
+
+    if (typeof IntersectionObserver === 'undefined') {
+      const revealAll = (): void => {
+        this.document.querySelectorAll('.wow.fadeInUp').forEach((n) => n.classList.add('wow-in-view'));
+        finish();
+      };
+      if (typeof window.requestIdleCallback === 'function') {
+        window.requestIdleCallback(revealAll, { timeout: 2200 });
+      } else {
+        setTimeout(revealAll, 400);
+      }
       return;
     }
-    this.wowBootstrapStarted = true;
-    this.assetLoader
-      .load('wow-js')
-      .then(() => {
-        new WOW().init();
-        this.commonService.wowjsLoaded = true;
-      })
-      .catch((error) => {
-        console.log('wow-js err', error);
-        this.wowBootstrapStarted = false;
-      });
+
+    this.wowRevealObserver = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries) {
+          if (!e.isIntersecting) continue;
+          (e.target as HTMLElement).classList.add('wow-in-view');
+          this.wowRevealObserver?.unobserve(e.target);
+        }
+      },
+      { root: null, rootMargin: '0px 0px -8% 0px', threshold: 0.01 },
+    );
+
+    finish();
+
+    const startObserving = (): void => this.rescanWowRevealTargets();
+
+    if (typeof window.requestIdleCallback === 'function') {
+      window.requestIdleCallback(startObserving, { timeout: 2200 });
+    } else {
+      setTimeout(startObserving, 400);
+    }
+  }
+
+  private rescanWowRevealTargets(): void {
+    if (!isPlatformBrowser(this.platformId) || !this.wowRevealObserver) return;
+    this.document.querySelectorAll('.wow.fadeInUp:not(.wow-in-view)').forEach((n) => {
+      this.wowRevealObserver!.observe(n);
+    });
+  }
+
+  private clearVanillaHeadroomAnimationClasses(): void {
+    const el = this.document.querySelector('#headroom-head');
+    el?.classList.remove('slideUp', 'slideDown');
+  }
+
+  /** Mirrors Headroom.js (offset 150, tolerance 5) without a CDN script — uses `headroom.css` keyframes. */
+  private applyVanillaHeadroom(scrollY: number): void {
+    const el = this.document.querySelector('#headroom-head') as HTMLElement | null;
+    if (!el || this.vanillaHeadroomRouteFrozen) return;
+
+    const OFFSET = 150;
+    const TOLERANCE = 5;
+
+    if (scrollY <= OFFSET) {
+      el.classList.remove('slideUp', 'slideDown');
+      el.classList.add('animated');
+      this.vanillaHeadroomLastY = scrollY;
+      return;
+    }
+
+    const delta = scrollY - this.vanillaHeadroomLastY;
+    if (Math.abs(delta) < TOLERANCE) {
+      return;
+    }
+    this.vanillaHeadroomLastY = scrollY;
+
+    if (delta > 0) {
+      el.classList.remove('slideDown');
+      el.classList.add('animated', 'slideUp');
+    } else {
+      el.classList.remove('slideUp');
+      el.classList.add('animated', 'slideDown');
+    }
   }
 
   private boundResizeHandler = () => {
@@ -93,31 +161,12 @@ export class AppComponent implements AfterViewInit, OnDestroy {
         if (window.pageYOffset > 100) scrollElem.style.display = 'block';
         else scrollElem.style.display = 'none';
       }
-      // wow js — delegated to ensureWowInitialized (also booted from idle below so y=0
-      // desktops still reveal `.wow` sections).
-      if (window.pageYOffset > 0) {
-        this.ensureWowInitialized();
-      }
-      // headroom
-      if (window.pageYOffset > 150 && !this.headroomInit) {
+      if (!this.vanillaHeadroomRouteFrozen && window.pageYOffset > 150 && !this.headroomInit) {
         this.headroomInit = true;
-        this.assetLoader.load('headroom-js', 'headroom-css').then(() => {
-          const headroomElement = this.document.querySelector("#headroom-head");
-
-            if (headroomElement && !this.headroom) {
-              this.headroom = new Headroom(headroomElement, {
-                offset: 150,
-                tolerance: 5,
-                classes: {
-                  initial: "animated",
-                  pinned: "slideDown",
-                  unpinned: "slideUp"
-                }
-              });
-
-              this.headroom.init();
-            }
-        }).catch(error => console.log("err", error));
+        this.vanillaHeadroomLastY = window.pageYOffset;
+      }
+      if (this.headroomInit && !this.vanillaHeadroomRouteFrozen) {
+        this.applyVanillaHeadroom(window.pageYOffset);
       }
     }
   }
@@ -187,13 +236,11 @@ export class AppComponent implements AfterViewInit, OnDestroy {
     // Debounced resize listener: replaces @HostListener('window:resize').
     window.addEventListener('resize', this.boundResizeHandler, { passive: true });
 
-    /** Reveal `.wow` sections below the hero without requiring a scroll (see ensureWowInitialized). */
-    const wowIdle = (): void => this.ensureWowInitialized();
-    if (typeof window.requestIdleCallback === 'function') {
-      window.requestIdleCallback(wowIdle, { timeout: 2200 });
-    } else {
-      setTimeout(wowIdle, 400);
-    }
+    /** Reveal `.wow` sections via native IntersectionObserver (replaces WOW.js CDN). */
+    this.bootstrapWowReveal();
+    this.wowRouteSub = this.router.events
+      .pipe(filter((e): e is NavigationEnd => e instanceof NavigationEnd))
+      .subscribe(() => requestAnimationFrame(() => this.rescanWowRevealTargets()));
 
     const idle: (cb: () => void) => void =
       (window as any).requestIdleCallback ?? ((cb: () => void) => setTimeout(cb, 200));
@@ -226,6 +273,9 @@ export class AppComponent implements AfterViewInit, OnDestroy {
     window.removeEventListener('scroll', this.boundScrollHandler);
     window.removeEventListener('resize', this.boundResizeHandler);
     if (this.resizeDebounce) clearTimeout(this.resizeDebounce);
+    this.wowRouteSub?.unsubscribe();
+    this.wowRevealObserver?.disconnect();
+    this.wowRevealObserver = null;
   }
 
   onInteract() {
@@ -563,26 +613,15 @@ export class AppComponent implements AfterViewInit, OnDestroy {
 
           if (isPlatformBrowser(this.platformId)) {
             if (this.commonService.desktop_device && isCategoryPage) {
-              if (this.headroom) {
-                this.headroom.destroy();
-                this.headroom = null;
-              }
+              this.vanillaHeadroomRouteFrozen = true;
+              this.clearVanillaHeadroomAnimationClasses();
             } else {
-              const headroomElement = this.document.querySelector("#headroom-head");
-
-              if (headroomElement && !this.headroom && typeof Headroom !== 'undefined') {
-                this.headroom = new Headroom(headroomElement, {
-                  offset: 150,
-                  tolerance: 5,
-                  classes: {
-                    initial: "animated",
-                    pinned: "slideDown",
-                    unpinned: "slideUp"
-                  }
-                });
-
-                this.headroom.init();
+              this.vanillaHeadroomRouteFrozen = false;
+              this.vanillaHeadroomLastY = window.pageYOffset;
+              if (!this.headroomInit && window.pageYOffset > 150) {
+                this.headroomInit = true;
               }
+              this.applyVanillaHeadroom(window.pageYOffset);
             }
           }
 
