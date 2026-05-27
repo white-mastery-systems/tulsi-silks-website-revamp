@@ -1,4 +1,6 @@
 import { Injectable } from '@angular/core';
+import { Observable, of } from 'rxjs';
+import { tap } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 import { HttpClient } from '@angular/common/http';
 
@@ -10,10 +12,38 @@ export class StoreApiService {
 
   store_id: string = environment.store_id;
 
+  /**
+   * Bootstrap fires `STORE_DETAILS` twice in quick succession on SSR:
+   * `serverSeoInitializerFactory` (head meta) then `AppComponent.ngAfterContentInit`.
+   * Two sequential HTTPS round-trips ~double TTFB and can feel like the page “loads twice”.
+   * A short memo only covers that window; later calls (other routes, retries) still hit the network.
+   */
+  private storeDetailsV3Memo?: { expiresAt: number; body: unknown };
+  private readonly storeDetailsV3MemoTtlMs = 5000;
+
   constructor(private http: HttpClient) { }
 
   IP_INFO(url) { return this.http.get<any>(url); }
-  STORE_DETAILS() { return this.http.get<any>(environment.ws_url+'/store_details/details_v3?json=1&store_id='+this.store_id); }
+
+  STORE_DETAILS(): Observable<any> {
+    const now = Date.now();
+    const slot = this.storeDetailsV3Memo;
+    if (slot && now < slot.expiresAt) {
+      return of(slot.body) as Observable<any>;
+    }
+    return this.http
+      .get<any>(`${environment.ws_url}/store_details/details_v3?json=1&store_id=${this.store_id}`)
+      .pipe(
+        tap((body) => {
+          if (body && body.status) {
+            this.storeDetailsV3Memo = {
+              expiresAt: Date.now() + this.storeDetailsV3MemoTtlMs,
+              body,
+            };
+          }
+        }),
+      );
+  }
   
   LAYOUT_LIST() { return this.http.get<any>(environment.ws_url+'/store_details/layouts?json=1&store_id='+this.store_id); }
   HOME_PAGE_BLOG_LIST(limit) { return this.http.get<any>(environment.ws_url+'/store_details/blogs?json=1&limit='+limit+'&store_id='+this.store_id); }

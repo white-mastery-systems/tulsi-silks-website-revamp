@@ -86,9 +86,14 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     );
   }
 
-  /** Single-path `srcset` (e.g. product card main image). */
-  uploadSrcsetSingle(imagePath?: string | null): string {
-    return this.uploadSrcset(imagePath ?? undefined, imagePath ?? undefined);
+  /**
+   * Product cards and other single-path thumbnails: do not emit `srcset` with `_s` LQIP entries.
+   * Those pair with `appImgLazyLoad` (blur-up → `lazyloaded`); without it, the browser often
+   * keeps the 480w `_s` candidate and images look permanently soft.
+   * `[src]` from `resolveUploadedImg` is already the full CDN URL.
+   */
+  uploadSrcsetSingle(_imagePath?: string | null): string | null {
+    return null;
   }
 
   /** Plain `src` fallback (prefer mobile asset when provided). */

@@ -8,6 +8,8 @@ Quick reference: done work, deploy steps, and next moves. For narrative and curl
 
 - [x] Nginx SSR cache keyed by **device** (mobile vs desktop) so cached HTML matches `ngx-device-detector` branches (hydration-safe).
 - [x] Express returns **404** for missing static URLs with a file extension (no fall-through to SSR HTML for `/favicon.ico`, dead `main.*.js` hashes, `/manifest.webmanifest`, etc.).
+- [x] **`STORE_DETAILS` bootstrap memo** (`StoreApiService`, ~5s TTL) — skips the duplicate **`details_v3`** round-trip caused by SSR **`APP_INITIALIZER`** + **`AppComponent`** firing back-to-back (was doubling TTFB / felt like loading twice).
+- [x] **TransferState cleanup** — `CommonService` **`remove(SSR_STATE_KEY)`** after reading the snapshot so the payload is not retained longer than needed.
 - [x] Removed **hidden hero `<img>`** preload hack (`fetchpriority="high"` + cache-busting query vs `<link rel="preload">`).
 - [x] **`DynamicAssetLoaderService`** in-flight dedupe so parallel `swiper-js` / `swiper-css` loads do not inject duplicate tags.
 - [x] **`[appHomeSwiper]`** on home: defer Swiper work with **`requestIdleCallback`** (~2.4s cap) + **rAF-batched** `MutationObserver` callbacks.

@@ -205,6 +205,7 @@ export class CommonService {
     let ssrProvided = new Set<string>();
     if (isPlatformBrowser(this.platformId) && this.transferState.hasKey(SSR_STATE_KEY)) {
       const snapshot = this.transferState.get(SSR_STATE_KEY, null as unknown as SsrStateSnapshot);
+      this.transferState.remove(SSR_STATE_KEY);
       if (snapshot) {
         const apply = <K extends keyof SsrStateSnapshot>(k: K) => {
           if (snapshot[k] !== undefined) {

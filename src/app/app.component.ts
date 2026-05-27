@@ -37,6 +37,9 @@ export class AppComponent implements AfterViewInit, OnDestroy {
   randomNum: any; currUrl: string;
   showTooltip = false;
 
+  /** Auto-open newsletter: listeners removed after first interaction or when leaving `/`. */
+  private newsletterOnFirstInteraction: (() => void) | null = null;
+
   // INP-critical: scroll/resize listeners are attached manually in `ngAfterViewInit` (not
   // via @HostListener) so we can pass `{ passive: true }` (unblocks the scroll thread on
   // touch devices) and throttle to one execution per animation frame. The previous
@@ -275,12 +278,29 @@ export class AppComponent implements AfterViewInit, OnDestroy {
 
   ngOnDestroy() {
     if (!isPlatformBrowser(this.platformId)) return;
+    this.detachPendingNewsletterAutoOpen();
     window.removeEventListener('scroll', this.boundScrollHandler);
     window.removeEventListener('resize', this.boundResizeHandler);
     if (this.resizeDebounce) clearTimeout(this.resizeDebounce);
     this.wowRouteSub?.unsubscribe();
     this.wowRevealObserver?.disconnect();
     this.wowRevealObserver = null;
+  }
+
+  /** True only for storefront root `/` (ignore query/hash). Newsletter popup must not arm on deep links. */
+  private isStorefrontHomePath(url?: string): boolean {
+    const raw = (url ?? this.router.url ?? '').split(/[?#]/)[0];
+    return raw === '/' || raw === '';
+  }
+
+  private detachPendingNewsletterAutoOpen(): void {
+    const fn = this.newsletterOnFirstInteraction;
+    if (!fn || !isPlatformBrowser(this.platformId)) return;
+    document.removeEventListener('scroll', fn);
+    document.removeEventListener('mousemove', fn);
+    document.removeEventListener('touchstart', fn);
+    document.removeEventListener('keydown', fn);
+    this.newsletterOnFirstInteraction = null;
   }
 
   onInteract() {
@@ -540,28 +560,39 @@ export class AppComponent implements AfterViewInit, OnDestroy {
               else this.commonService.announcementBar = abConfig.content;
             }
             this.setBodyMarginTop(100);
-            // newsletter
+            // newsletter — only on `/`; one shared handler removes all listeners so navigation
+            // away before interact does not leave mousemove/keydown firing the modal on /blogs etc.
             if (this.commonService.application_setting.newsletter_status) {
               let nlConfig = this.commonService.application_setting.newsletter_config;
               nlConfig.sub_heading = nlConfig.sub_heading.replace(new RegExp('\n', 'g'), "<br />");
-              if (isPlatformBrowser(this.platformId) && nlConfig.open_onload && this.commonService.ys_features.indexOf('newsletter') != -1 && this.router.url == '/') {
-                // Defer until first user interaction so the popup never becomes the LCP element.
-                // Lighthouse stops measuring LCP on first interaction, so this keeps our hero as LCP.
-                const triggerNewsletter = () => {
-                  document.removeEventListener('scroll', triggerNewsletter);
-                  document.removeEventListener('mousemove', triggerNewsletter);
-                  document.removeEventListener('touchstart', triggerNewsletter);
-                  document.removeEventListener('keydown', triggerNewsletter);
+              if (
+                isPlatformBrowser(this.platformId) &&
+                nlConfig.open_onload &&
+                this.commonService.ys_features.indexOf('newsletter') != -1 &&
+                this.isStorefrontHomePath()
+              ) {
+                this.detachPendingNewsletterAutoOpen();
+                const onFirstInteraction = (): void => {
+                  document.removeEventListener('scroll', onFirstInteraction);
+                  document.removeEventListener('mousemove', onFirstInteraction);
+                  document.removeEventListener('touchstart', onFirstInteraction);
+                  document.removeEventListener('keydown', onFirstInteraction);
+                  this.newsletterOnFirstInteraction = null;
+                  if (!this.isStorefrontHomePath()) {
+                    return;
+                  }
                   setTimeout(() => {
-                    if (this.document.getElementById("openSubscribeModal")) {
-                      this.document.getElementById("openSubscribeModal").click();
+                    if (!this.isStorefrontHomePath()) {
+                      return;
                     }
+                    this.document.getElementById('openSubscribeModal')?.click();
                   }, 500);
                 };
-                document.addEventListener('scroll', triggerNewsletter, { passive: true, once: true });
-                document.addEventListener('mousemove', triggerNewsletter, { once: true });
-                document.addEventListener('touchstart', triggerNewsletter, { passive: true, once: true });
-                document.addEventListener('keydown', triggerNewsletter, { once: true });
+                this.newsletterOnFirstInteraction = onFirstInteraction;
+                document.addEventListener('scroll', onFirstInteraction, { passive: true });
+                document.addEventListener('mousemove', onFirstInteraction);
+                document.addEventListener('touchstart', onFirstInteraction, { passive: true });
+                document.addEventListener('keydown', onFirstInteraction);
               }
             }
             // chat
@@ -608,6 +639,10 @@ export class AppComponent implements AfterViewInit, OnDestroy {
           const isCategoryPage = event.url.includes('/category/');
 
           if (isPlatformBrowser(this.platformId)) {
+            const navPath = (event.urlAfterRedirects || event.url || '').split(/[?#]/)[0];
+            if (navPath !== '/' && navPath !== '') {
+              this.detachPendingNewsletterAutoOpen();
+            }
             if (this.commonService.desktop_device && isCategoryPage) {
               this.vanillaHeadroomRouteFrozen = true;
               this.clearVanillaHeadroomAnimationClasses();
