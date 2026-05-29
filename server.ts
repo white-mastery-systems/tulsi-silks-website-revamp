@@ -1,5 +1,17 @@
 import 'zone.js/node';
 
+// Suppress DEP0040: built-in `punycode` is deprecated in Node 22 but still
+// functional. The warning comes from transitive deps (request, tough-cookie,
+// psl, uri-js) that we don't control. Overriding emitWarning (rather than
+// listening to the 'warning' event) is the only way to prevent the default
+// stderr print. Filter only this code so real warnings remain visible.
+const _origEmitWarning = process.emitWarning.bind(process);
+(process as any).emitWarning = (warning: any, ...args: any[]) => {
+  const code = typeof warning === 'string' ? args[1] : (warning as any)?.code;
+  if (code === 'DEP0040') return;
+  return _origEmitWarning(warning, ...args);
+};
+
 // Polyfill browser-only globals used by third-party libs (e.g. ngx-slider) during SSR.
 // Must run before any Angular/component code is imported.
 if (typeof (globalThis as any).requestAnimationFrame === 'undefined') {
@@ -63,9 +75,39 @@ function fetchLayoutList(): Promise<any> {
           resolve(json);
         } catch (e) { reject(e); }
       });
+      res.on('error', reject);
     });
     req.on('error', reject);
     req.setTimeout(4000, () => { req.destroy(); reject(new Error('layoutList timeout')); });
+  });
+}
+
+/** Express-level cache for footer SEO links — same TTL as LAYOUT_LIST. */
+let footerSeoLinksCache: { at: number; json: unknown } | null = null;
+const FOOTER_SEO_LINKS_TTL_MS = 90_000;
+
+function fetchFooterSeoLinks(): Promise<any> {
+  return new Promise((resolve, reject) => {
+    const now = Date.now();
+    if (footerSeoLinksCache && now - footerSeoLinksCache.at < FOOTER_SEO_LINKS_TTL_MS) {
+      resolve(footerSeoLinksCache.json);
+      return;
+    }
+    const url = `${environment.ws_url}/store_details/footer_seo_links?store_id=${environment.store_id}`;
+    const req = https.get(url, (res) => {
+      let body = '';
+      res.on('data', (ch: string) => { body += ch; });
+      res.on('end', () => {
+        try {
+          const json = JSON.parse(body);
+          footerSeoLinksCache = { at: Date.now(), json };
+          resolve(json);
+        } catch (e) { reject(e); }
+      });
+      res.on('error', reject);
+    });
+    req.on('error', reject);
+    req.setTimeout(3000, () => { req.destroy(); reject(new Error('footerSeoLinks timeout')); });
   });
 }
 
@@ -544,6 +586,16 @@ export function app(): express.Express {
             seedSsrApiCache(u, json);
           }
         }),
+        // FOOTER_SEO_LINKS is called sequentially after STORE_DETAILS inside
+        // AppComponent's subscribe callback, making it a serial bottleneck that
+        // blocks storeDetailsReceived → loadHomeContent → LAYOUT_LIST.  Pre-seed
+        // it here (parallel with the others) so Angular gets an instant cache hit.
+        fetchFooterSeoLinks().then((json) => {
+          if (json) {
+            const u = `${environment.ws_url}/store_details/footer_seo_links?store_id=${environment.store_id}`;
+            seedSsrApiCache(u, json);
+          }
+        }),
       ]);
     }
 
@@ -594,17 +646,17 @@ export function app(): express.Express {
         const ae = String(req.headers['accept-encoding'] || '').toLowerCase();
         res.setHeader('Content-Type', 'text/html; charset=utf-8');
         res.setHeader('Vary', 'Accept-Encoding');
-        // Aggressive cache: 1 h fresh + 24 h stale-while-revalidate. This collapses the
-        // cold-cache PSI problem — by the time PSI re-tests, the entry is still warm,
-        // so TTFB stays ~130 ms (Nginx) instead of 1.5–2.2 s (SSR re-render).
-        // CMS tradeoff: admin content edits propagate to public visitors within 1 h
-        // (worst case 24 h if no traffic). For Tulsi Silks the upstream content
-        // (products, banners, blogs) updates at most a few times per day so this is
-        // an acceptable tradeoff. To purge immediately, restart Nginx or curl with
-        // `PURGE` on the proxy_cache path.
-        // Personalized data (cart, wishlist, user) is hydrated client-side, so the
-        // cached HTML is safe to share between visitors.
-        res.setHeader('Cache-Control', 'public, max-age=3600, stale-while-revalidate=86400');
+        // Blog pages update frequently — 5 min fresh + 10 min stale so edits show within minutes.
+        // All other pages: 1 h fresh + 24 h stale-while-revalidate for PSI/Lighthouse warm cache.
+        // Personalized data (cart, wishlist, user) is hydrated client-side, so the cached HTML is
+        // safe to share between visitors.
+        const isBlogPath = pathOnly.startsWith('/blogs');
+        res.setHeader(
+          'Cache-Control',
+          isBlogPath
+            ? 'public, max-age=300, stale-while-revalidate=600'
+            : 'public, max-age=3600, stale-while-revalidate=86400',
+        );
         // Prefer gzip when the client accepts it (including alongside br). Brotli yields smaller
         // bodies but compresses large SSR HTML slower → higher TTFB / document latency (PSI).
         // Order MUST stay aligned with nginx `map $http_accept_encoding $ts_compress_bucket` below.
@@ -636,11 +688,51 @@ export function app(): express.Express {
   return server;
 }
 
+/**
+ * Warm up the SSR API cache and in-process HTML cache by firing internal
+ * requests right after the server starts. This hides the 10-13 s cold-render
+ * cost from the first real visitor — by the time traffic arrives the Angular
+ * SsrApiCacheInterceptor and ssrHtmlCache are already populated.
+ *
+ * Two renders (desktop UA + mobile UA) are triggered in parallel so both
+ * device-type branches of the HTML cache are warm. The requests hit the
+ * loopback interface and are never exposed externally.
+ *
+ * If the warm-up fails (API down at boot time) the server still serves traffic
+ * normally — the first real request will just be the usual cold render.
+ */
+function warmUpSsr(port: number): void {
+  const UAS = [
+    'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/124 Safari/537.36',
+    'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15',
+  ];
+
+  const http = require('http') as typeof import('http');
+
+  const renderOne = (ua: string): Promise<void> =>
+    new Promise<void>((resolve) => {
+      const req = http.get(
+        { host: '127.0.0.1', port, path: '/', headers: { 'user-agent': ua, 'accept-encoding': 'gzip' } },
+        (res) => { res.resume(); res.on('end', resolve); res.on('error', resolve); },
+      );
+      req.on('error', resolve);
+      req.setTimeout(30_000, () => { req.destroy(); resolve(); });
+    });
+
+  const start = Date.now();
+  Promise.all(UAS.map(renderOne)).then(() => {
+    console.log(`[SSR] warm-up complete — ${Date.now() - start} ms (API + HTML cache hot)`);
+  }).catch((e) => {
+    console.warn('[SSR] warm-up error:', (e as Error)?.message ?? e);
+  });
+}
+
 function run(): void {
   const port = Number(process.env['PORT'] ?? environment.port);
   const srv = app();
   srv.listen(port, () => {
     console.log(`Node Express server listening on http://localhost:${port}`);
+    warmUpSsr(port);
   });
 }
 
