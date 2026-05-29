@@ -1,7 +1,8 @@
 import { Component, OnInit, AfterViewInit, OnDestroy, Inject, PLATFORM_ID, DOCUMENT, ElementRef, QueryList, ViewChildren, NgZone } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { Router } from '@angular/router';
-import { Subscription } from 'rxjs';
+import { Subscription, of } from 'rxjs';
+import { timeout, catchError } from 'rxjs/operators';
 import { DomSanitizer } from '@angular/platform-browser';
 import { environment } from '../../../environments/environment';
 import { StoreApiService } from '../../services/store-api.service';
@@ -10,6 +11,13 @@ import { SwiperService } from '../../services/swiper.service';
 import { WishlistService } from '../../services/wishlist.service';
 import { CurrencyConversionService } from '../../services/currency-conversion.service';
 import { DynamicAssetLoaderService } from '../../services/dynamic-asset-loader.service';
+import {
+  filterLayoutListForSsr,
+  limitHeroSlides,
+  SSR_HOME_MAX_LAYOUT_SLIDER_SLIDES,
+  SSR_HOME_MAX_PRODUCTS,
+} from '../../services/ssr-home.config';
+import { SsrDiagnosticsService } from '../../services/ssr-diagnostics.service';
 declare const Plyr: any;
 
 @Component({
@@ -20,6 +28,12 @@ declare const Plyr: any;
 })
 
 export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
+
+  private clientLayoutExpanded = false;
+
+  get isBrowser(): boolean {
+    return isPlatformBrowser(this.platformId);
+  }
 
   /** Confirmed homepage SEO copy (fallback when API hasn’t loaded yet). */
   private static readonly HOME_H1_FALLBACK = 'Premium Sarees in Chennai, Crafted for Every Occasion';
@@ -333,6 +347,28 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     );
   }
 
+  /** Hero slides for template — capped on SSR to reduce HTML and hydration cost. */
+  get primaryHeroSlides(): any[] {
+    return limitHeroSlides(this.commonService.primary_main_slider, this.isBrowser);
+  }
+
+  /** Layout segments for the homepage loop (`layout_list` is compact until client expand). */
+  get homeLayoutSegments(): any[] {
+    return this.commonService.layout_list ?? [];
+  }
+
+  layoutSliderSlides(segment: { image_list?: any[] }): any[] {
+    const slides = segment?.image_list ?? [];
+    if (this.isBrowser) return slides;
+    return slides.slice(0, SSR_HOME_MAX_LAYOUT_SLIDER_SLIDES);
+  }
+
+  segmentProducts(segment: { product_list?: any[] }): any[] {
+    const products = segment?.product_list ?? [];
+    if (this.isBrowser) return products;
+    return products.slice(0, SSR_HOME_MAX_PRODUCTS);
+  }
+
   /**
    * When there is no primary hero block, the first layout slider hosts the sole page H1.
    */
@@ -360,7 +396,8 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     @Inject(PLATFORM_ID) private platformId: Object, private storeApi: StoreApiService, public swiperService: SwiperService,
     private sanitizer: DomSanitizer, public commonService: CommonService, private router: Router, public ws: WishlistService,
     public cc: CurrencyConversionService, @Inject(DOCUMENT) private document, private assetLoader: DynamicAssetLoaderService,
-    private ngZone: NgZone
+    private ngZone: NgZone,
+    private ssrDiag: SsrDiagnosticsService,
   ) {
     this.subscription = this.commonService.currency_type.subscribe(() => {
       this.findCurrency();
@@ -375,6 +412,9 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     this.setSliderHeight();
     // JSON-LD — rebuilt when `applyHomePageJsonLd()` runs (initial + after store/footer APIs).
     this.commonService.applyHomePageJsonLd();
+    if (!this.isBrowser) {
+      return;
+    }
     if(!this.commonService.contact_page_info) {
       // Defer this non-critical API call until the browser is idle so it doesn't
       // compete with hero image loading and first-render work (reduces TBT).
@@ -404,7 +444,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngAfterContentInit() {
-    if(this.commonService.storeLoaded) this.loadHomeContent();
+    if (this.commonService.storeLoaded) this.loadHomeContent();
   }
 
   ngAfterViewInit(): void {
@@ -479,65 +519,141 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
 
   loadHomeContent() {
     this.setSliderHeight();
-    /* LAYOUT DETAILS */
-    if(!this.commonService.layout_list.length) {
-      this.storeApi.LAYOUT_LIST().subscribe(result => {
-        if(result.status) {
-          let layoutList = result.list.sort((a, b) => 0 - (a.rank > b.rank ? -1 : 1));
-          layoutList.push({
-            type: 'instagram',
-            image_list: [
-              { permalink: 'https://www.instagram.com/tulsisilks', media_url: 'assets/images/insta1.png' },
-              { permalink: 'https://www.instagram.com/tulsisilks', media_url: 'assets/images/insta2.png' },
-              { permalink: 'https://www.instagram.com/tulsisilks', media_url: 'assets/images/insta3.png' },
-              { permalink: 'https://www.instagram.com/tulsisilks', media_url: 'assets/images/insta1.png' },
-              { permalink: 'https://www.instagram.com/tulsisilks', media_url: 'assets/images/insta2.png' },
-              { permalink: 'https://www.instagram.com/tulsisilks', media_url: 'assets/images/insta3.png' },
-              { permalink: 'https://www.instagram.com/tulsisilks', media_url: 'assets/images/insta1.png' },
-              { permalink: 'https://www.instagram.com/tulsisilks', media_url: 'assets/images/insta2.png' },
-              { permalink: 'https://www.instagram.com/tulsisilks', media_url: 'assets/images/insta3.png' }
-            ],
-            heading: "Connect With Us",
-            sub_heading: "See how our silks shine in real life",
-            blogs_type: "slider",
-            rank: layoutList.length+1
-          });
-          let occasionList = layoutList.filter(el => el.heading=='occasion');
-          layoutList = layoutList.filter(el => el.heading!='occasion' && el.type!='multiple_featured_product');
-          if(occasionList.length) {
-            layoutList.push({
-              "active_status": true,
-              "_id": occasionList[0]._id,
-              "rank": occasionList[0].rank,
-              "type": "multiple_featured_section",
-              "name": "Our Occasion",
-              "heading": "Shop by Occasion",
-              "sub_heading": "From everyday to celebrations",
-              "store_id": occasionList[0].store_id,
-              "image_list": [],
-              "created_on": occasionList[0].created_on,
-              "updated_on": occasionList[0].updated_on,
-              "multitab_list": occasionList
-            });
-          }
-          this.updateLayoutList(layoutList);
-          this.findCurrency();
-          setTimeout(() => { this.initializeSwiper(layoutList); }, 100);
-        }
-        else console.log("home response", result);
-      });
-    }
-    else {
+    this.ssrDiag.reset();
+    this.ssrDiag.mark('loadHomeContent');
+    if (!this.commonService.layout_list.length) {
+      this.fetchAndApplyLayoutList();
+    } else if (this.isBrowser && this.commonService.layoutSsrCompact) {
+      this.ensureFullHomeLayoutOnClient();
+    } else {
       this.findCurrency();
       setTimeout(() => { this.initializeSwiper(this.commonService.layout_list); }, 100);
     }
     this.commonService.applyHomePageJsonLd();
-    // Homepage JSON-LD — no separate BreadcrumbList (avoids duplicate with single-item crumbs).
+  }
+
+  private fetchAndApplyLayoutList(onApplied?: () => void): void {
+    this.storeApi
+      .LAYOUT_LIST()
+      .pipe(
+        timeout(this.isBrowser ? 8000 : 2500),
+        catchError(() => of({ status: false })),
+      )
+      .subscribe((result) => {
+        this.ssrDiag.mark('LAYOUT_LIST');
+        if (!result?.status) {
+          console.warn('[home] LAYOUT_LIST unavailable');
+          return;
+        }
+        const fromCompactCache = !!(result as { _ssrCompact?: boolean })._ssrCompact;
+        const layoutList = this.prepareLayoutListFromApi(result.list);
+        this.updateLayoutList(layoutList);
+        if (fromCompactCache && this.isBrowser) {
+          this.commonService.layoutSsrCompact = true;
+          this.clientLayoutExpanded = false;
+          queueMicrotask(() => this.ensureFullHomeLayoutOnClient());
+        }
+        this.findCurrency();
+        setTimeout(() => { this.initializeSwiper(layoutList); }, 100);
+        onApplied?.();
+        this.ssrDiag.summary('home-layout', {
+          segments: this.commonService.layout_list?.length,
+          compact: this.commonService.layoutSsrCompact,
+        });
+      });
+  }
+
+  /** Client-only: replace compact SSR layout with full CMS layout after hydration. */
+  ensureFullHomeLayoutOnClient(): void {
+    if (!this.isBrowser || this.clientLayoutExpanded || !this.commonService.layoutSsrCompact) {
+      return;
+    }
+    this.clientLayoutExpanded = true;
+    this.fetchAndApplyLayoutList(() => {
+      this.commonService.layoutSsrCompact = false;
+      this.clientLayoutExpanded = true;
+    });
+  }
+
+  private prepareLayoutListFromApi(list: any[]): any[] {
+    let layoutList = [...list].sort((a, b) => 0 - (a.rank > b.rank ? -1 : 1));
+    if (this.isBrowser) {
+      layoutList.push({
+        type: 'instagram',
+        image_list: [
+          { permalink: 'https://www.instagram.com/tulsisilks', media_url: 'assets/images/insta1.png' },
+          { permalink: 'https://www.instagram.com/tulsisilks', media_url: 'assets/images/insta2.png' },
+          { permalink: 'https://www.instagram.com/tulsisilks', media_url: 'assets/images/insta3.png' },
+          { permalink: 'https://www.instagram.com/tulsisilks', media_url: 'assets/images/insta1.png' },
+          { permalink: 'https://www.instagram.com/tulsisilks', media_url: 'assets/images/insta2.png' },
+          { permalink: 'https://www.instagram.com/tulsisilks', media_url: 'assets/images/insta3.png' },
+          { permalink: 'https://www.instagram.com/tulsisilks', media_url: 'assets/images/insta1.png' },
+          { permalink: 'https://www.instagram.com/tulsisilks', media_url: 'assets/images/insta2.png' },
+          { permalink: 'https://www.instagram.com/tulsisilks', media_url: 'assets/images/insta3.png' },
+        ],
+        heading: 'Connect With Us',
+        sub_heading: 'See how our silks shine in real life',
+        blogs_type: 'slider',
+        rank: layoutList.length + 1,
+      });
+    }
+    const occasionList = layoutList.filter((el) => el.heading == 'occasion');
+    layoutList = layoutList.filter((el) => el.heading != 'occasion' && el.type != 'multiple_featured_product');
+    if (occasionList.length) {
+      layoutList.push({
+        active_status: true,
+        _id: occasionList[0]._id,
+        rank: occasionList[0].rank,
+        type: 'multiple_featured_section',
+        name: 'Our Occasion',
+        heading: 'Shop by Occasion',
+        sub_heading: 'From everyday to celebrations',
+        store_id: occasionList[0].store_id,
+        image_list: [],
+        created_on: occasionList[0].created_on,
+        updated_on: occasionList[0].updated_on,
+        multitab_list: occasionList,
+      });
+    }
+    return layoutList;
   }
 
   updateLayoutList(layoutList) {
-    // Blogs
+    const onServer = !isPlatformBrowser(this.platformId);
+
+    // Hero + highlights must be extracted before compact filter drops slider segments.
+    if (this.template_setting.primary_slider) {
+      const sliderIndex = layoutList.findIndex((obj) => obj.type == 'primary_slider');
+      if (sliderIndex !== -1) {
+        const primaryImgList = layoutList[sliderIndex].image_list;
+        if (primaryImgList?.length) {
+          this.commonService.primary_main_slider = primaryImgList;
+          this.patchStaticMobileHeroOnPrimaryList();
+          if (onServer) {
+            this.commonService.primary_main_slider = limitHeroSlides(
+              this.commonService.primary_main_slider,
+              false,
+            );
+          }
+          layoutList.splice(sliderIndex, 1);
+        }
+      }
+    }
+    const phIndexEarly = layoutList.findIndex((obj) => obj.type == 'highlights');
+    if (phIndexEarly !== -1) {
+      this.commonService.primary_highlights = layoutList[phIndexEarly].image_list ?? [];
+      layoutList.splice(phIndexEarly, 1);
+    }
+
+    if (onServer) {
+      layoutList = filterLayoutListForSsr(layoutList);
+    }
+
+    // Blogs — client only (below-fold; excluded from SSR HTML)
     let blogIndex = layoutList.findIndex(obj => obj.type=='blogs');
+    if (onServer) {
+      blogIndex = -1;
+    }
     if(blogIndex!=-1 && this.commonService.ys_features.indexOf('blogs')!=-1) {
       let blogData = layoutList[blogIndex];
       if(!this.commonService?.desktop_device && blogData.blogs_type=='grid') {
@@ -565,8 +681,11 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
         else console.log("blog response", result);
       });
     }
-    // Instagram
+    // Instagram — client only
     let instaIndex = layoutList.findIndex(obj => obj.type=='instagram');
+    if (onServer) {
+      instaIndex = -1;
+    }
     if(instaIndex!=-1 && layoutList[instaIndex].insta_config?.token) {
       let instaData = layoutList[instaIndex];
       this.storeApi.INSTAGRAM(layoutList[instaIndex].insta_config.token).subscribe((result) => {
@@ -595,8 +714,12 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
         else console.log("insta response", result);
       });
     }
-    // shopping assistant
-    if(layoutList.findIndex(obj => obj.type=='shopping_assistant')!=-1 && this.commonService.ys_features.indexOf('shopping_assistant')!=-1) {
+    // shopping assistant — client only
+    if (
+      !onServer &&
+      layoutList.findIndex(obj => obj.type=='shopping_assistant')!=-1 &&
+      this.commonService.ys_features.indexOf('shopping_assistant')!=-1
+    ) {
       this.storeApi.AI_STYLES().subscribe(result => {
         if(result.status) this.commonService.ai_styles = JSON.parse(result.list);
       });
@@ -651,7 +774,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
             obj.stock = balanceStock;
           }
         });
-        if(segment.product_list.length && cardCount > segment.product_list.length) {
+        if (!onServer && segment.product_list.length && cardCount > segment.product_list.length) {
           let remaining = cardCount - segment.product_list.length;
           for(let i=0; i<remaining; i++)
           {
@@ -665,7 +788,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
       }
       else if(segment.type=="featured_section") {
         let cardCount = this.swiperService.featured_section.card_count;
-        if(segment.image_list.length && cardCount > segment.image_list.length) {
+        if (!onServer && segment.image_list.length && cardCount > segment.image_list.length) {
           let remaining = cardCount - segment.image_list.length;
           for(let i=0; i<remaining; i++)
           {
@@ -731,33 +854,22 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
       }
     }
     this.commonService.layout_list = layoutList;
-    // primary slider
-    if(this.template_setting.primary_slider) {
-      let sliderIndex = this.commonService.layout_list.findIndex(obj => obj.type=='primary_slider');
-      if(sliderIndex!=-1) {
-        let primaryImgList = this.commonService.layout_list[sliderIndex].image_list;
-        if(primaryImgList.length) {
-          this.commonService.primary_main_slider = primaryImgList;
-          this.patchStaticMobileHeroOnPrimaryList();
-          this.commonService.layout_list.splice(sliderIndex, 1);
-        }
-      }
-    }
-    // primary highlights
-    let phIndex = this.commonService.layout_list.findIndex(obj => obj.type=='highlights');
-    if(phIndex!=-1) {
-      let cardCount = this.swiperService.highlights.card_count;
-      this.commonService.primary_highlights = this.commonService.layout_list[phIndex].image_list;
-      this.commonService.layout_list.splice(phIndex, 1);
-      if(this.commonService.primary_highlights.length && cardCount > this.commonService.primary_highlights.length) {
-        let remaining = cardCount - this.commonService.primary_highlights.length;
-        for(let i=0; i<remaining; i++)
-        {
-          this.commonService.primary_highlights = this.commonService.primary_highlights.concat(this.commonService.primary_highlights);
-          if(this.commonService.primary_highlights.length >= cardCount) {
-            this.commonService.primary_highlights.length = cardCount;
-            break;
-          }
+    this.commonService.layoutSsrCompact = onServer;
+
+    const cardCount = this.swiperService.highlights.card_count;
+    if (
+      !onServer &&
+      this.commonService.primary_highlights?.length &&
+      cardCount > this.commonService.primary_highlights.length
+    ) {
+      let remaining = cardCount - this.commonService.primary_highlights.length;
+      for (let i = 0; i < remaining; i++) {
+        this.commonService.primary_highlights = this.commonService.primary_highlights.concat(
+          this.commonService.primary_highlights,
+        );
+        if (this.commonService.primary_highlights.length >= cardCount) {
+          this.commonService.primary_highlights.length = cardCount;
+          break;
         }
       }
     }

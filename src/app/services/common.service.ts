@@ -94,6 +94,8 @@ export class CommonService {
   wish_list: any = [];
   wishListIds: any = [];
   layout_list: any = [];
+  /** True when SSR used a compact homepage layout; browser refetches full LAYOUT_LIST. */
+  layoutSsrCompact = false;
   ai_styles: any = [];
   blog_list: any = [];
   search_category_list: any = [];
@@ -216,8 +218,11 @@ export class CommonService {
         apply('menu_list'); apply('catalog_list'); apply('ys_features'); apply('currency_types');
         apply('application_setting'); apply('ipBasedCurrency'); apply('temp_currency'); apply('selected_currency');
         apply('primary_main_slider'); apply('store_details'); apply('store_properties'); apply('seo_details');
-        apply('payment_methods'); apply('checkout_setting'); apply('footer_config'); apply('giftcard_config');
-        apply('announcementBar'); apply('footer_seo_links'); apply('storeLoaded'); apply('storeDataLoaded');
+        apply('payment_methods');
+        // checkout_setting and giftcard_config no longer in snapshot (see ssr-state.keys.ts).
+        // They fall back to localStorage or the STORE_DETAILS HTTP transfer cache below.
+        apply('footer_config'); apply('announcementBar'); apply('footer_seo_links');
+        apply('storeLoaded'); apply('storeDataLoaded');
         // Derived state from application_setting that the original localStorage
         // path used to set — replicate it here so we don't lose them when we
         // skip the localStorage branch below.

@@ -15,6 +15,7 @@ import { StoreApiService } from './services/store-api.service';
 import { CurrencyConversionService } from './services/currency-conversion.service';
 import { DynamicAssetLoaderService } from './services/dynamic-asset-loader.service';
 import { SSR_STATE_KEY } from './services/ssr-state.keys';
+import { slimMenuListForTransfer } from './services/ssr-home.config';
 
 @Component({
     selector: 'app-root',
@@ -521,9 +522,32 @@ export class AppComponent implements AfterViewInit, OnDestroy {
               // claims 0 items at hydration, and the 6 SSR-rendered menu items
               // become orphaned DOM → "hasAttribute is not a function" throw.
               if (!isPlatformBrowser(this.platformId)) {
+                // Slim snapshot: only include fields that must be present at hydration
+                // time so the SSR-rendered DOM matches the client's initial state.
+                //
+                // Omitted intentionally (save ~20–50 KB of inline JSON):
+                //   checkout_setting — only needed on /checkout, not on homepage
+                //   giftcard_config  — only needed on /gift-cards
+                //
+                // payment_methods IS kept: the footer renders payment-badge icons in SSR,
+                // so the client needs the same list at hydration time to avoid a structural
+                // mismatch. It falls back to localStorage on return visits.
+                //
+                // catalog_list is trimmed to navigation-only fields (_id, name,
+                // seo_status, seo_details.page_url, section_id, parent_id). Dropping
+                // banner images, descriptions, and display fields saves ~50–150 KB
+                // while keeping all routing and menu-building logic intact.
+                const catalogSlim = (this.commonService.catalog_list ?? []).map((c: any) => ({
+                  _id: c._id,
+                  name: c.name,
+                  seo_status: c.seo_status,
+                  seo_details: c.seo_details ? { page_url: c.seo_details.page_url } : undefined,
+                  section_id: c.section_id,
+                  parent_id: c.parent_id,
+                }));
                 this.transferState.set(SSR_STATE_KEY, {
-                  menu_list: this.commonService.menu_list,
-                  catalog_list: this.commonService.catalog_list,
+                  menu_list: slimMenuListForTransfer(this.commonService.menu_list),
+                  catalog_list: catalogSlim,
                   ys_features: this.commonService.ys_features,
                   currency_types: this.commonService.currency_types,
                   application_setting: this.commonService.application_setting,
@@ -535,9 +559,7 @@ export class AppComponent implements AfterViewInit, OnDestroy {
                   store_properties: this.commonService.store_properties,
                   seo_details: this.commonService.seo_details,
                   payment_methods: this.commonService.payment_methods,
-                  checkout_setting: this.commonService.checkout_setting,
                   footer_config: this.commonService.footer_config,
-                  giftcard_config: this.commonService.giftcard_config,
                   announcementBar: this.commonService.announcementBar,
                   footer_seo_links: this.commonService.footer_seo_links,
                   storeLoaded: this.commonService.storeLoaded,

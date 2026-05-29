@@ -29,6 +29,10 @@ import 'localstorage-polyfill';
 let storeDetailsCache: { at: number; json: unknown } | null = null;
 const STORE_DETAILS_TTL_MS = 600_000;
 
+/** In-process SSR HTML cache for `/` — collapses repeat TTFB under load / PSI. */
+const ssrHtmlCache = new Map<string, { at: number; html: string }>();
+const SSR_HTML_CACHE_TTL_MS = Number(process.env['SSR_HTML_CACHE_TTL_MS'] ?? 120_000);
+
 function fetchStoreDetailsV3(): Promise<any> {
   return new Promise((resolve, reject) => {
     const now = Date.now();
@@ -423,6 +427,44 @@ export function app(): express.Express {
     const { protocol, originalUrl, baseUrl, headers } = req;
     const pathOnly = (originalUrl || '/').split('?')[0];
     const isHomePath = pathOnly === '/' || pathOnly === '';
+    const cacheKey = isHomePath ? `${headers.host}|${pathOnly}` : '';
+    if (isHomePath && SSR_HTML_CACHE_TTL_MS > 0) {
+      const hit = ssrHtmlCache.get(cacheKey);
+      if (hit && Date.now() - hit.at < SSR_HTML_CACHE_TTL_MS) {
+        const cachedMs = 0;
+        const cachedBytes = Buffer.byteLength(hit.html, 'utf8');
+        console.log(
+          `[SSR] cache HIT ${originalUrl} — ${cachedMs} ms, ${Math.round(cachedBytes / 1024)} KB raw`,
+        );
+        let out = hit.html;
+        const ae = String(req.headers['accept-encoding'] || '').toLowerCase();
+        res.setHeader('Content-Type', 'text/html; charset=utf-8');
+        res.setHeader('Vary', 'Accept-Encoding');
+        res.setHeader('X-SSR-Cache', 'HIT');
+        res.setHeader('Cache-Control', 'public, max-age=3600, stale-while-revalidate=86400');
+        if (ae.includes('gzip')) {
+          res.setHeader('Content-Encoding', 'gzip');
+          const gz = createGzip({ level: 6 });
+          gz.pipe(res);
+          gz.end(out);
+        } else if (ae.includes('br')) {
+          res.setHeader('Content-Encoding', 'br');
+          const br = createBrotliCompress({
+            params: {
+              [zlibConstants.BROTLI_PARAM_QUALITY]: 4,
+              [zlibConstants.BROTLI_PARAM_SIZE_HINT]: Buffer.byteLength(out, 'utf8'),
+            },
+          });
+          br.pipe(res);
+          br.end(out);
+        } else {
+          res.send(out);
+        }
+        return;
+      }
+    }
+
+    const ssrStartMs = Date.now();
     commonEngine
       .render({
         bootstrap,
@@ -432,7 +474,24 @@ export function app(): express.Express {
         providers: [{ provide: APP_BASE_HREF, useValue: baseUrl }],
       })
       .then(async (html) => {
+        const ssrMs = Date.now() - ssrStartMs;
+        const ssrRawBytes = Buffer.byteLength(html, 'utf8');
+        // Log every render so we can spot slow components and payload regressions.
+        // Target: raw HTML < 250 KB, render time < 800 ms. Above those thresholds
+        // a WARN is emitted so it shows up in log searches.
+        const level = ssrRawBytes > 250_000 || ssrMs > 800 ? 'WARN' : 'info';
+        console[level === 'WARN' ? 'warn' : 'log'](
+          `[SSR] ${level} ${originalUrl} — ${ssrMs} ms, ${Math.round(ssrRawBytes / 1024)} KB raw`
+        );
+        if (level === 'WARN') {
+          console.warn(`[SSR] bottleneck hint: slow render or payload — enable SSR_DIAG=1 on Node for API marks`);
+        }
+
         let out = html;
+        if (isHomePath && SSR_HTML_CACHE_TTL_MS > 0) {
+          ssrHtmlCache.set(cacheKey, { at: Date.now(), html: out });
+          res.setHeader('X-SSR-Cache', 'MISS');
+        }
         /* Home: default store SEO. Other routes rely on route components — do not overwrite with store meta. */
         if (isHomePath && (htmlHasEmptyTitle(out) || metaDescriptionIsEmpty(out))) {
           try {

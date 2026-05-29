@@ -13,7 +13,7 @@ import { makeStateKey } from '@angular/core';
 // hydrate-time menu/layout alignment — see common.service constructor and ssr-state.keys.
 export interface SsrStateSnapshot {
   menu_list?: any[];
-  catalog_list?: any[];
+  catalog_list?: any[];       // trimmed to nav fields only — see app.component.ts
   ys_features?: any[];
   currency_types?: any[];
   application_setting?: any;
@@ -24,10 +24,10 @@ export interface SsrStateSnapshot {
   store_details?: any;
   store_properties?: any;
   seo_details?: any;
-  payment_methods?: any[];
-  checkout_setting?: any;
+  payment_methods?: any[];    // kept: footer renders payment badges in SSR → must match at hydration
+  // checkout_setting and giftcard_config intentionally omitted: only needed on
+  // /checkout and /gift-cards pages; they fall back to localStorage + HTTP transfer cache.
   footer_config?: any;
-  giftcard_config?: any;
   announcementBar?: string;
   footer_seo_links?: any[];
   storeLoaded?: boolean;

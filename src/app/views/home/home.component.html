@@ -116,7 +116,7 @@
       <div class="swiper-wrapper">
         <div
           class="swiper-slide"
-          *ngFor="let x of commonService.primary_main_slider; let j = index"
+          *ngFor="let x of primaryHeroSlides; let j = index"
           (click)="x?.btn_status ? '' : commonService.onPageRedirect(x)"
         >
           <div class="banner_overlay"></div>
@@ -170,7 +170,7 @@
   <!-- LAYOUTS -->
   <ng-container
     *ngFor="
-      let segment of commonService.layout_list | orderAsc: 'rank';
+      let segment of homeLayoutSegments | orderAsc: 'rank';
       let i = index
     "
   >
@@ -988,7 +988,7 @@
             >
               <div class="swiper-wrapper">
                 <div
-                  *ngFor="let x of segment.product_list; let j = index"
+                  *ngFor="let x of segmentProducts(segment); let j = index"
                   class="swiper-slide p-0"
                 >
                   <div
@@ -1112,6 +1112,7 @@
                           width="100%"
                           height="100%"
                           *ngIf="
+                            isBrowser &&
                             commonService?.desktop_device &&
                             x.image_list.length > 1
                           "
@@ -1470,14 +1471,16 @@
               </ul>
 
               <div class="tab-content">
+                <!-- Render only the active tab in SSR and on initial client render.
+                     [hidden] kept all N tabs in DOM (N × ~8 products × ~5 KB = up to 200 KB of hidden HTML).
+                     *ngIf ensures only the active pane is in DOM; Swiper re-inits on tab switch via appHomeSwiper OnInit. -->
+                <ng-container *ngFor="let tab of getMtfpTabs(segment); let j = index">
                 <div
-                  *ngFor="let tab of getMtfpTabs(segment); let j = index"
-                  class="tab-pane"
+                  *ngIf="activeIndex === j"
+                  class="tab-pane active"
                   role="tabpanel"
                   [id]="getMtfpPanelId(i, tab?.name)"
                   [attr.aria-labelledby]="getMtfpTabId(i, tab?.name)"
-                  [hidden]="activeIndex !== j"
-                  [class.active]="activeIndex === j"
                 >
                   <!-- slider -->
                   <div
@@ -1862,6 +1865,7 @@
                       </div>
                     </div>
                 </div>
+                </ng-container>
               </div>
             </div>
           </div>
@@ -1923,14 +1927,13 @@
                 </ul>
 
                 <div class="tab-content">
+                  <ng-container *ngFor="let tab of segment.multitab_list; let j = index">
                   <div
-                    *ngFor="let tab of segment.multitab_list; let j = index"
-                    class="tab-pane"
+                    *ngIf="occasionActiveIndex === j"
+                    class="tab-pane active"
                     role="tabpanel"
                     [id]="getOccasionPanelId(tab?.name)"
                     [attr.aria-labelledby]="getOccasionTabId(tab?.name)"
-                    [hidden]="occasionActiveIndex !== j"
-                    [class.active]="occasionActiveIndex === j"
                   >
                     <div
                       style="position: unset"
@@ -2043,6 +2046,7 @@
                       </ng-container>
                     </div>
                   </div>
+                  </ng-container>
                 </div>
               </ng-container>
 
@@ -2484,11 +2488,12 @@
     <!-- #Secondary Banner -->
 
     <!-- Testimonial -->
+    <!-- @defer: testimonials are below-fold UI only — zero SEO value on the homepage.
+         SSR emits only the placeholder div; the section is rendered client-side when
+         it scrolls into view. Saves ~30–60 KB of testimonial-card DOM from the SSR HTML. -->
+    <ng-container *ngIf="segment.type == 'testimonial' && segment.image_list?.length >= swiperService.testimonial?.card_count">
+    @defer (on viewport; prefetch on idle) {
     <section
-      *ngIf="
-        segment.type == 'testimonial' &&
-        segment.image_list?.length >= swiperService.testimonial?.card_count
-      "
       class="primary-section testimonial-sec feature-slide-sec"
       [attr.aria-labelledby]="segment.heading ? 'home-' + segment.type + '-title-' + i : null"
       [attr.aria-label]="segment.heading ? null : 'Testimonials'"
@@ -2599,6 +2604,10 @@
         </div>
       </div>
     </section>
+    } @placeholder {
+      <div class="defer-section-placeholder" aria-hidden="true" style="min-height:220px"></div>
+    }
+    </ng-container>
     <!-- #Testimonial -->
 
     <!-- Flexible Segment -->
@@ -2653,8 +2662,14 @@
     <!-- #Flexible Segment -->
 
     <!-- blogs -->
+    <!-- @defer: blog carousel is below-fold; deferred rendering removes ~40 KB of
+         blog-card DOM from SSR HTML. Blog content is already stripped in the server
+         interceptor; the heading is included in the deferred block so it only appears
+         after the section scrolls into view — acceptable since it is always off-screen
+         on first paint. -->
+    <ng-container *ngIf="segment.type == 'blogs'">
+    @defer (on viewport; prefetch on idle) {
     <section
-      *ngIf="segment.type == 'blogs'"
       class="primary-section news"
       [attr.aria-labelledby]="segment.heading ? 'home-' + segment.type + '-title-' + i : null"
       [attr.aria-label]="segment.heading ? null : 'Blog posts'"
@@ -2743,6 +2758,10 @@
         </div>
       </div>
     </section>
+    } @placeholder {
+      <div class="defer-section-placeholder" aria-hidden="true" style="min-height:180px"></div>
+    }
+    </ng-container>
     <!-- #blogs -->
 
     <!-- shopping assistant -->

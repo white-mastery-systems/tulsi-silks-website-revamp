@@ -27,11 +27,18 @@
               <ng-container *ngIf="commonService.ys_features.indexOf('currency_variation')!=-1 && !commonService.application_setting?.hide_currency && commonService?.screen_width<=991">
                 <!-- currency drop-down -->
                 <li *ngIf="!commonService.ipBasedCurrency && commonService.currency_types.length>1">
-                  <a>
-                    <select class="currency-select" (change)="onCurrencyChange();" name="temp_currency" [(ngModel)]="commonService.temp_currency" [disabled]="router.url.indexOf('/gift-cards/')!=-1">
-                      <option *ngFor="let x of commonService.currency_types; let i=index;" [ngValue]="x">{{x.country_code}}</option>
-                    </select>
-                  </a>
+                  <label class="sr-only" for="header-currency-select-mobile">Currency</label>
+                  <select
+                    id="header-currency-select-mobile"
+                    class="currency-select"
+                    name="temp_currency"
+                    aria-label="Select currency"
+                    (change)="onCurrencyChange()"
+                    [(ngModel)]="commonService.temp_currency"
+                    [disabled]="router.url.indexOf('/gift-cards/')!=-1"
+                  >
+                    <option *ngFor="let x of commonService.currency_types; let i=index;" [ngValue]="x">{{x.country_code}}</option>
+                  </select>
                 </li>
                 <!-- ip based -->
                 <li *ngIf="commonService.ipBasedCurrency || commonService.currency_types.length===1">
@@ -214,11 +221,18 @@
                 <ng-container *ngIf="commonService.ys_features.indexOf('currency_variation')!=-1 && !commonService.application_setting?.hide_currency && commonService?.screen_width<=991">
                   <!-- currency drop-down -->
                   <li *ngIf="!commonService.ipBasedCurrency && commonService.currency_types.length>1">
-                    <a>
-                      <select class="currency-select" (change)="onCurrencyChange();" name="temp_currency" [(ngModel)]="commonService.temp_currency" [disabled]="router.url.indexOf('/gift-cards/')!=-1">
-                        <option *ngFor="let x of commonService.currency_types; let i=index;" [ngValue]="x">{{x.country_code}}</option>
-                      </select>
-                    </a>
+                    <label class="sr-only" for="header-currency-select-nav">Currency</label>
+                    <select
+                      id="header-currency-select-nav"
+                      class="currency-select"
+                      name="temp_currency"
+                      aria-label="Select currency"
+                      (change)="onCurrencyChange()"
+                      [(ngModel)]="commonService.temp_currency"
+                      [disabled]="router.url.indexOf('/gift-cards/')!=-1"
+                    >
+                      <option *ngFor="let x of commonService.currency_types; let i=index;" [ngValue]="x">{{x.country_code}}</option>
+                    </select>
                   </li>
                   <!-- ip based -->
                   <li *ngIf="commonService.ipBasedCurrency || commonService.currency_types.length===1">
@@ -370,11 +384,18 @@
     <div class="header-icon-container" *ngIf="commonService.ys_features.indexOf('currency_variation')!=-1 && !commonService.application_setting?.hide_currency">
       <!-- currency drop-down -->
       <div *ngIf="!commonService.ipBasedCurrency && commonService.currency_types.length>1">
-        <a>
-          <select class="currency-select" (change)="onCurrencyChange();" name="temp_currency" [(ngModel)]="commonService.temp_currency" [disabled]="router.url.indexOf('/gift-cards/')!=-1">
-            <option *ngFor="let x of commonService.currency_types; let i=index;" [ngValue]="x">{{x.country_code}}</option>
-          </select>
-        </a>
+        <label class="sr-only" for="header-currency-select-toolbar">Currency</label>
+        <select
+          id="header-currency-select-toolbar"
+          class="currency-select"
+          name="temp_currency"
+          aria-label="Select currency"
+          (change)="onCurrencyChange()"
+          [(ngModel)]="commonService.temp_currency"
+          [disabled]="router.url.indexOf('/gift-cards/')!=-1"
+        >
+          <option *ngFor="let x of commonService.currency_types; let i=index;" [ngValue]="x">{{x.country_code}}</option>
+        </select>
       </div>
       <!-- ip based -->
       <div *ngIf="commonService.ipBasedCurrency || commonService.currency_types.length===1">
@@ -383,20 +404,31 @@
     </div>
   </ng-container>
   <!-- search -->
-  <div *ngIf="commonService.ys_features.indexOf('product_search')!=-1" routerLink="/search" class="btn-search header-icon-container header-s-icon">
+  <a
+    *ngIf="commonService.ys_features.indexOf('product_search')!=-1"
+    routerLink="/search"
+    class="btn-search header-icon-container header-s-icon"
+    aria-label="Search"
+  >
     <div class="tooltip-wrapper">
-      <lucide-icon name="search" [size]="20" stroke="1" color="black"></lucide-icon>
-      <div class="custom-tooltip">Search</div>
+      <lucide-icon name="search" [size]="20" stroke="1" color="black" aria-hidden="true"></lucide-icon>
+      <div class="custom-tooltip" aria-hidden="true">Search</div>
     </div>
     <!-- <img src="assets/images/search.png" alt="search-icon" class="header-s-icon"> -->
     <!-- <i [hidden]="!commonService?.window_loaded" class="{{template_setting?.mat_icon_type}} transform-90">{{template_setting?.mat_icons?.search}}</i> -->
-  </div>
+  </a>
   <!-- wishlist -->
   <div *ngIf="commonService?.screen_width>=991" class="header-icon-container">
-    <a class="header-s-icon" [hidden]="!commonService?.window_loaded" (click)="(commonService?.customer_token)? '': commonService.after_login_event={ redirect: '/wishlist' }" [routerLink]="(commonService?.customer_token)? '/wishlist' : '/account'">
+    <a
+      class="header-s-icon"
+      [hidden]="!commonService?.window_loaded"
+      [attr.aria-label]="commonService?.customer_token ? 'Wishlist' : 'Sign in to view wishlist'"
+      (click)="(commonService?.customer_token)? '': commonService.after_login_event={ redirect: '/wishlist' }"
+      [routerLink]="(commonService?.customer_token)? '/wishlist' : '/account'"
+    >
       <div class="tooltip-wrapper">
-        <lucide-icon name="heart" [size]="20" stroke="1" color="black"></lucide-icon>
-        <div class="custom-tooltip">Wishlist</div>
+        <lucide-icon name="heart" [size]="20" stroke="1" color="black" aria-hidden="true"></lucide-icon>
+        <div class="custom-tooltip" aria-hidden="true">Wishlist</div>
       </div>
 
       <!-- <img src="assets/images/heart.png" alt="wishlist-icon" class="header-s-icon"> -->
@@ -408,10 +440,10 @@
   </div>
   <!-- my account -->
   <div *ngIf="commonService?.screen_width>=991" class="header-icon-container">
-    <a class="header-s-icon" routerLink="/account">
+    <a class="header-s-icon" routerLink="/account" aria-label="My account">
       <div class="tooltip-wrapper">
-        <lucide-icon name="user" [size]="20" stroke="1" color="black"></lucide-icon>
-        <div class="custom-tooltip">Account</div>
+        <lucide-icon name="user" [size]="20" stroke="1" color="black" aria-hidden="true"></lucide-icon>
+        <div class="custom-tooltip" aria-hidden="true">Account</div>
       </div>
 
       <!-- <img src="assets/images/user.png" alt="user-icon" class="header-s-icon"> -->
@@ -421,10 +453,10 @@
   <!-- cart -->
   <div class="mini-cart header-icon-container">
     <div id="minicart-trigger">
-      <a class="header-s-icon" [hidden]="!commonService?.window_loaded">
+      <a class="header-s-icon" [hidden]="!commonService?.window_loaded" aria-label="Shopping cart">
         <div class="tooltip-wrapper">
-          <lucide-icon name="shopping-cart" [size]="20" stroke="1" color="black"></lucide-icon>
-          <div class="custom-tooltip">Cart</div>
+          <lucide-icon name="shopping-cart" [size]="20" stroke="1" color="black" aria-hidden="true"></lucide-icon>
+          <div class="custom-tooltip" aria-hidden="true">Cart</div>
         </div>
         <!-- <img src="assets/images/shopping-cart.png" alt="cart-icon" class="header-s-icon"> -->
         <!-- <i class="{{template_setting?.mat_icon_type}}">{{template_setting?.mat_icons?.cart}}</i> -->

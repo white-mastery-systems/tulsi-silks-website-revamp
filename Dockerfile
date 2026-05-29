@@ -29,4 +29,9 @@ COPY --from=build /app/dist/ecommerce ./dist/ecommerce
 
 EXPOSE 4006
 
-CMD ["node", "dist/ecommerce/server/main.js"]
+# --max-old-space-size: without this, Node.js auto-tunes heap to ~700 MB on a
+# typical 2 GB VPS. Each concurrent SSR render of the homepage uses 200–400 MB.
+# Two simultaneous PSI requests → OOM → crash → Docker restart → PSI sees
+# "Unable to resolve". 1536 MB gives headroom for 3–4 concurrent renders while
+# leaving room for the OS and Nginx on a 2–4 GB host.
+CMD ["node", "--max-old-space-size=1536", "dist/ecommerce/server/main.js"]
