@@ -52,7 +52,7 @@
                       <ng-container *ngIf="commonService.ys_features.indexOf('currency_variation')!=-1 && !commonService.application_setting?.hide_currency">
                         <!-- currency drop-down -->
                         <li *ngIf="!commonService.ipBasedCurrency && commonService.currency_types.length>1">
-                          <select class="currency-select" (change)="onCurrencyChange();" name="temp_currency" [(ngModel)]="commonService.temp_currency" [disabled]="router.url.indexOf('/gift-cards/')!=-1">
+                          <select class="currency-select" aria-label="Select currency" (change)="onCurrencyChange();" name="temp_currency" [(ngModel)]="commonService.temp_currency" [disabled]="router.url.indexOf('/gift-cards/')!=-1">
                             <option *ngFor="let x of commonService.currency_types; let i=index;" [ngValue]="x">{{x.country_code}}
                             </option>
                           </select>
@@ -148,7 +148,7 @@
                       <!-- currency drop-down -->
                       <li *ngIf="!commonService.ipBasedCurrency && commonService.currency_types.length>1">
                         <a>
-                          <select class="currency-select" (change)="onCurrencyChange();" name="temp_currency" [(ngModel)]="commonService.temp_currency" [disabled]="router.url.indexOf('/gift-cards/')!=-1">
+                          <select class="currency-select" aria-label="Select currency" (change)="onCurrencyChange();" name="temp_currency" [(ngModel)]="commonService.temp_currency" [disabled]="router.url.indexOf('/gift-cards/')!=-1">
                             <option *ngFor="let x of commonService.currency_types; let i=index;" [ngValue]="x">{{x.country_code}}</option>
                           </select>
                         </a>

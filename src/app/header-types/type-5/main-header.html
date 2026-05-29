@@ -453,7 +453,7 @@
   <!-- cart -->
   <div class="mini-cart header-icon-container">
     <div id="minicart-trigger">
-      <a class="header-s-icon" [hidden]="!commonService?.window_loaded" aria-label="Shopping cart">
+      <a class="header-s-icon" role="button" tabindex="0" [hidden]="!commonService?.window_loaded" aria-label="Shopping cart">
         <div class="tooltip-wrapper">
           <lucide-icon name="shopping-cart" [size]="20" stroke="1" color="black" aria-hidden="true"></lucide-icon>
           <div class="custom-tooltip" aria-hidden="true">Cart</div>

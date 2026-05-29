@@ -17,21 +17,74 @@ import { createGzip, createBrotliCompress, constants as zlibConstants } from 'zl
 
 import { environment } from './src/environments/environment';
 import bootstrap from './src/main.server';
+// Pre-seeds the Angular SSR API response cache so the first render doesn't
+// need to make its own HTTPS call for LAYOUT_LIST / STORE_DETAILS.
+import { seedSsrApiCache } from './src/app/interceptors/ssr-api-cache.interceptor';
 
 import 'localstorage-polyfill';
 
 (globalThis as { localStorage?: Storage }).localStorage = localStorage;
 
 /** Cached STORE_DETAILS JSON — same endpoint as StoreApiService.STORE_DETAILS().
- *  Bumped from 2 min → 10 min so we don't hit the upstream API on every SSR
- *  miss. The store details payload (catalog list, store config) changes at most
- *  a few times per day, so 10 min lag is invisible to users. */
+ *  10-min TTL: store config / catalog changes a few times a day at most. */
 let storeDetailsCache: { at: number; json: unknown } | null = null;
 const STORE_DETAILS_TTL_MS = 600_000;
 
-/** In-process SSR HTML cache for `/` — collapses repeat TTFB under load / PSI. */
+/**
+ * Express-level LAYOUT_LIST cache (same endpoint as StoreApiService.LAYOUT_LIST()).
+ *
+ * Why this exists separately from the Angular SsrApiCacheInterceptor:
+ *   The Angular cache only activates on the SECOND SSR render (the first must
+ *   still make real HTTPS calls to populate it). If the server is freshly
+ *   restarted and two concurrent PSI requests arrive, BOTH hit the Angular
+ *   cache cold and make simultaneous LAYOUT_LIST calls. This Express-level cache
+ *   serialises that: `fetchLayoutList()` resolves immediately for the second
+ *   caller once the first one finishes. TTL = 90 s (slightly longer than the
+ *   Angular cache's 60 s so there is always a warm entry for the Angular layer).
+ */
+let layoutListCache: { at: number; json: unknown } | null = null;
+const LAYOUT_LIST_TTL_MS = 90_000;
+
+function fetchLayoutList(): Promise<any> {
+  return new Promise((resolve, reject) => {
+    const now = Date.now();
+    if (layoutListCache && now - layoutListCache.at < LAYOUT_LIST_TTL_MS) {
+      resolve(layoutListCache.json);
+      return;
+    }
+    const url = `${environment.ws_url}/store_details/layouts?json=1&store_id=${environment.store_id}`;
+    const req = https.get(url, (res) => {
+      let body = '';
+      res.on('data', (ch: string) => { body += ch; });
+      res.on('end', () => {
+        try {
+          const json = JSON.parse(body);
+          layoutListCache = { at: Date.now(), json };
+          resolve(json);
+        } catch (e) { reject(e); }
+      });
+    });
+    req.on('error', reject);
+    req.setTimeout(4000, () => { req.destroy(); reject(new Error('layoutList timeout')); });
+  });
+}
+
+/**
+ * In-process SSR HTML cache for `/` — collapses repeat renders under load / PSI.
+ *
+ * Cache key includes the device bucket (`mobile` / `desktop`) so that a cached
+ * mobile SSR response is never served to a desktop UA (which would cause Angular
+ * hydration mismatches in the mega-menu device branch).
+ */
 const ssrHtmlCache = new Map<string, { at: number; html: string }>();
 const SSR_HTML_CACHE_TTL_MS = Number(process.env['SSR_HTML_CACHE_TTL_MS'] ?? 120_000);
+
+/** Matches the same UA patterns as the Nginx $ts_device_type map. */
+function uaDeviceBucket(ua: string): 'mobile' | 'desktop' {
+  return /Mobile|Android|iPhone|iPad|iPod|BlackBerry|Windows Phone|Opera Mini|IEMobile/i.test(ua)
+    ? 'mobile'
+    : 'desktop';
+}
 
 function fetchStoreDetailsV3(): Promise<any> {
   return new Promise((resolve, reject) => {
@@ -41,23 +94,22 @@ function fetchStoreDetailsV3(): Promise<any> {
       return;
     }
     const url = `${environment.ws_url}/store_details/details_v3?json=1&store_id=${environment.store_id}`;
-    https
-      .get(url, (res) => {
-        let body = '';
-        res.on('data', (ch) => {
-          body += ch;
-        });
-        res.on('end', () => {
-          try {
-            const json = JSON.parse(body);
-            storeDetailsCache = { at: Date.now(), json };
-            resolve(json);
-          } catch (e) {
-            reject(e);
-          }
-        });
-      })
-      .on('error', reject);
+    const req = https.get(url, (res) => {
+      let body = '';
+      res.on('data', (ch) => { body += ch; });
+      res.on('end', () => {
+        try {
+          const json = JSON.parse(body);
+          storeDetailsCache = { at: Date.now(), json };
+          resolve(json);
+        } catch (e) { reject(e); }
+      });
+      res.on('error', reject);
+    });
+    req.on('error', reject);
+    // 3-second hard cap. Without this, a slow/unreachable API blocks the
+    // post-render SEO injection step for 10+ seconds (the main cause of 13 s SSR).
+    req.setTimeout(3000, () => { req.destroy(); reject(new Error('storeDetailsV3 timeout')); });
   });
 }
 
@@ -423,11 +475,14 @@ export function app(): express.Express {
     res.status(404).type('text/plain').send('Not Found');
   });
 
-  server.get('*', (req, res, next) => {
+  server.get('*', async (req, res, next) => {
     const { protocol, originalUrl, baseUrl, headers } = req;
     const pathOnly = (originalUrl || '/').split('?')[0];
     const isHomePath = pathOnly === '/' || pathOnly === '';
-    const cacheKey = isHomePath ? `${headers.host}|${pathOnly}` : '';
+    // Include device bucket in cache key so mobile SSR HTML is never served to
+    // desktop (which would cause Angular mega-menu hydration mismatches).
+    const device = uaDeviceBucket(String(headers['user-agent'] ?? ''));
+    const cacheKey = isHomePath ? `${headers.host}|${pathOnly}|${device}` : '';
     if (isHomePath && SSR_HTML_CACHE_TTL_MS > 0) {
       const hit = ssrHtmlCache.get(cacheKey);
       if (hit && Date.now() - hit.at < SSR_HTML_CACHE_TTL_MS) {
@@ -465,6 +520,33 @@ export function app(): express.Express {
     }
 
     const ssrStartMs = Date.now();
+
+    // ── Pre-seed Angular SSR API cache before CommonEngine boots ─────────────
+    // Both calls resolve from the Express-level caches (90 s / 10 min TTL) after
+    // the first successful fetch.  seedSsrApiCache() writes the body directly into
+    // SsrApiCacheInterceptor's module-level Map so Angular's HttpClient gets an
+    // instant cache hit and never makes its own HTTPS round-trip.
+    //
+    // STORE_DETAILS:  eliminates the 2.5-s timeout on the *first* render when the
+    //   Angular cache is cold — the APP_INITIALIZER and AppComponent both call it.
+    // LAYOUT_LIST:    the largest serial API call (~2–5 s); same benefit.
+    if (isHomePath) {
+      await Promise.allSettled([
+        fetchStoreDetailsV3().then((json) => {
+          if (json?.store_details) {
+            const u = `${environment.ws_url}/store_details/details_v3?json=1&store_id=${environment.store_id}`;
+            seedSsrApiCache(u, json);
+          }
+        }),
+        fetchLayoutList().then((json) => {
+          if (json) {
+            const u = `${environment.ws_url}/store_details/layouts?json=1&store_id=${environment.store_id}`;
+            seedSsrApiCache(u, json);
+          }
+        }),
+      ]);
+    }
+
     commonEngine
       .render({
         bootstrap,
@@ -492,10 +574,17 @@ export function app(): express.Express {
           ssrHtmlCache.set(cacheKey, { at: Date.now(), html: out });
           res.setHeader('X-SSR-Cache', 'MISS');
         }
-        /* Home: default store SEO. Other routes rely on route components — do not overwrite with store meta. */
-        if (isHomePath && (htmlHasEmptyTitle(out) || metaDescriptionIsEmpty(out))) {
+        /* Home: patch title/meta when Angular failed to write them (e.g. STORE_DETAILS
+           API was down during the render).
+           IMPORTANT: only call fetchStoreDetailsV3() when `storeDetailsCache` is already
+           populated — i.e. it was successfully fetched in a previous render.  If the
+           cache is null the upstream API is unreachable; calling it here would add
+           another 3-second timeout on top of the already-slow render.  In that case we
+           skip the patch; the page title stays empty for this one render cycle and will
+           be correct once the API recovers and the HTML cache refreshes. */
+        if (isHomePath && storeDetailsCache && (htmlHasEmptyTitle(out) || metaDescriptionIsEmpty(out))) {
           try {
-            const api = await fetchStoreDetailsV3();
+            const api = await fetchStoreDetailsV3(); // resolves from cache instantly
             out = injectStoreSeoIntoHtml(out, api);
           } catch (e) {
             const err = e as Error;

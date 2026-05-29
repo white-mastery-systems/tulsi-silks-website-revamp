@@ -296,7 +296,7 @@
         </div>
         <div class="col-lg-3 col-12 premium-blog-detail__sidebar-col">
           <div class="premium-blog-detail__aside premium-blog-detail__aside-card" *ngIf="relatedBlogs.length || relatedBlogsLoading">
-            <h6 class="premium-blog-detail__aside-title">Related Posts</h6>
+            <div class="premium-blog-detail__aside-title">Related Posts</div>
             <ul class="premium-blog-detail__aside-list" *ngIf="!relatedBlogsLoading">
               <li *ngFor="let rb of relatedBlogs" class="premium-blog-detail__related-item">
                 <a class="premium-blog-detail__related-link" [routerLink]="relatedBlogLinkArray(rb)">
