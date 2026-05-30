@@ -49,12 +49,11 @@
               <!-- mobile menu list -->
               <li *ngFor="let menu of commonService.menu_list | orderAsc: 'rank'; let i=index; trackBy: trackByMenuId" [ngClass]="{ 'has-children mega-menu slim-scroll': menu?.sec_count, 'pos-relative': menu?.sec_count<=2 }">
                 <a class="sub-arrow-sec"
-                   [routerLink]="commonService.getRedirectPath(menu)"
-                   [attr.href]="!commonService.getRedirectPath(menu) ? '#' : null"
+                   [attr.href]="topMenuHref(menu)"
                    [attr.role]="(menu?.sec_count && !commonService.getRedirectPath(menu)) ? 'button' : null"
                    [attr.tabindex]="(menu?.sec_count && !commonService.getRedirectPath(menu)) ? '0' : null"
                    (mouseenter)="(!menu?.sec_count && commonService.desktop_device)? commonService.resetMegaMenu(): ''"
-                   (click)="!commonService.getRedirectPath(menu) ? $event.preventDefault() : (!menu?.sec_count) ? commonService.onPageRedirect(menu) : null">
+                   (click)="onTopMenuClick($event, menu)">
                   {{menu.name}}
                   <i *ngIf="menu?.sec_count"><lucide-icon name="chevron-right" [size]="16" class="ms-1 align-middle"></lucide-icon> </i>
                   <ng-container *ngIf="menu?.sec_count && commonService?.screen_width>=992">
@@ -248,15 +247,9 @@
 
                 <!-- desktop menu list-->
                 <li *ngFor="let menu of commonService.menu_list | orderAsc: 'rank'; let i=index; trackBy: trackByMenuId" [ngClass]="{ 'has-children mega-menu slim-scroll': menu?.sec_count, 'pos-relative': menu?.sec_count<=2 }">
-                  <!-- When the CMS item has no link (link_status=false), routerLink returns
-                       null and Angular emits <a> without href — Lighthouse flags these as
-                       uncrawlable.  [attr.href]="'#'" provides a fallback href so the element
-                       is valid; $event.preventDefault() stops the scroll-to-top on click. -->
                   <a (mouseenter)="(!menu?.sec_count && commonService.desktop_device)? commonService.resetMegaMenu(): ''"
-                  [routerLink]="commonService.getRedirectPath(menu)"
-                  [attr.href]="!commonService.getRedirectPath(menu) ? '#' : null"
-                  (click)="!commonService.getRedirectPath(menu) ? $event.preventDefault() :
-                           (!menu?.sec_count && menu.link_type!='internal') ? commonService.onPageRedirect(menu) : null">
+                     [attr.href]="topMenuHref(menu)"
+                     (click)="onTopMenuClick($event, menu)">
                     {{menu.name}}
                     <ng-container *ngIf="menu?.sec_count && commonService?.screen_width>=992">
                       <lucide-icon name="chevron-down" [size]="18" class="ms-1 align-middle"></lucide-icon>

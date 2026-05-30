@@ -128,8 +128,8 @@
             <!-- single image slider -->
             <ng-container *ngIf="!category_details?.navigationList[activeSlideIndex]?.isMultiImages">
               <!-- Design & Occasion -->
-              <div *ngIf="activeSlideIndex==0 || activeSlideIndex==1 || activeSlideIndex==2 || category_details?.navigationList?.length===1" class="swiper-container multi-slider product-slider featured-sections px-max"
-                id="navigationHighlights" [ngClass]="commonService.desktop_device? 'desktop_phls': 'phls'" style="visibility: hidden;" appCategoryHighlights>
+              <div *ngIf="(activeSlideIndex==0 || activeSlideIndex==1 || activeSlideIndex==2 || category_details?.navigationList?.length===1) && navigationImageList.length" class="swiper-container multi-slider product-slider featured-sections px-max"
+                id="navigationHighlights" [ngClass]="commonService.desktop_device? 'desktop_phls': 'phls'" appCategoryHighlights>
                 <div class="swiper-wrapper">
                   <div *ngFor="let x of navigationImageList | orderAsc: 'rank'; let i=index;" class="swiper-slide">
                     <div (click)="commonService.onPageRedirect(x);" class="category-card cursor">
@@ -148,8 +148,8 @@
                 </ng-container>
               </div>
               <!-- Material -->
-              <div *ngIf="activeSlideIndex==3" class="swiper-container multi-slider product-slider featured-sections px-max"
-                id="navigationHighlights" [ngClass]="commonService.desktop_device? 'desktop_mhls': 'mhls'" style="visibility: hidden;" appCategoryHighlights>
+              <div *ngIf="activeSlideIndex==3 && navigationImageList.length" class="swiper-container multi-slider product-slider featured-sections px-max"
+                id="navigationHighlights" [ngClass]="commonService.desktop_device? 'desktop_mhls': 'mhls'" appCategoryHighlights>
                 <div class="swiper-wrapper">
                   <div *ngFor="let x of navigationImageList | orderAsc: 'rank'; let i=index;" class="swiper-slide">
                     <div (click)="commonService.onPageRedirect(x);" class="category-second-card cursor">
@@ -172,8 +172,8 @@
                 </ng-container>
               </div>
               <!-- Weave -->
-              <div *ngIf="activeSlideIndex==4" class="swiper-container multi-slider product-slider featured-sections px-max"
-                id="navigationHighlights" [ngClass]="commonService.desktop_device? 'desktop_whls': 'whls'" style="visibility: hidden;" appCategoryHighlights>
+              <div *ngIf="activeSlideIndex==4 && navigationImageList.length" class="swiper-container multi-slider product-slider featured-sections px-max"
+                id="navigationHighlights" [ngClass]="commonService.desktop_device? 'desktop_whls': 'whls'" appCategoryHighlights>
                 <div class="swiper-wrapper">
                   <div *ngFor="let x of navigationImageList | orderAsc: 'rank'; let i=index;" class="swiper-slide">
                     <div (click)="commonService.onPageRedirect(x);" class="category-third-card row m-0 cursor">
@@ -202,11 +202,10 @@
             </ng-container>
 
             <!-- group-image slider -->
-            <div *ngIf="category_details?.navigationList[activeSlideIndex]?.isMultiImages" 
+            <div *ngIf="category_details?.navigationList[activeSlideIndex]?.isMultiImages && navigationImageList.length"
                class="swiper-container multi-slider product-slider featured-sections px-max"
                id="navigationHighlights" 
-               [ngClass]="commonService.desktop_device? 'desktop_ghls': 'ghls'" 
-               style="visibility: hidden;" 
+               [ngClass]="commonService.desktop_device? 'desktop_ghls': 'ghls'"
                appCategoryHighlights>
               <div class="swiper-wrapper">
                 <div *ngFor="let x of navigationImageList | orderAsc: 'rank'; let i=index;" class="swiper-slide">

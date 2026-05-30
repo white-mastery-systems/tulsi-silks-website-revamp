@@ -499,27 +499,21 @@ export class CategoryComponent implements OnInit {
 
   onSelectNav(index: number) {
     this.activeSlideIndex = index;
-    let el = this.document.getElementById('navigationHighlights');
-    if (el) el.style.visibility = "hidden";
+    // Clear first so *ngIf destroys the swiper element, giving the directive a
+    // fresh instance when items are set — prevents stale Swiper state after tabs switch.
     this.navigationImageList = [];
 
-    // Check overflow immediately
     setTimeout(() => {
       this.checkNavigationOverflow();
     }, 0);
 
     setTimeout(() => {
       this.navigationImageList = this.category_details.navigationList[index].image_list.filter(el => el.isActive);
-      // Show the image section after content is loaded
-      if (el) el.style.visibility = "visible";
-      // Scroll selected navigation item into view
       this.scrollToSelectedNav(index);
-      // Check navigation overflow and update button visibility
       this.checkNavigationOverflow();
       this.updateNavigationButtonVisibility();
     }, 50);
 
-    // Additional check after a longer delay
     setTimeout(() => {
       this.checkNavigationOverflow();
       this.updateNavigationButtonVisibility();

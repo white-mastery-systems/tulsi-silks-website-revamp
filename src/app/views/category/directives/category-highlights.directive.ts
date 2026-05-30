@@ -78,11 +78,26 @@ export class CategoryHighlightsDirective {
 
   ngAfterViewInit() {
     if(isPlatformBrowser(this.platformId)) {
-      this.assetLoader.load('jquery', 'swiper-js').then(() => {
+      // jQuery is only needed for autoplay hover — all category swipers have
+      // auto_play:false, so skip the CDN load entirely to avoid blocking on
+      // page reload when cdnjs is slow or unreachable.
+      this.assetLoader.load('swiper-js', 'swiper-css').then(() => {
         this.registerListenerForDomChanges();
-        this.fetchSwipeElements();
-      }).catch(error => console.log("err", error));
+        try { this.fetchSwipeElements(); } catch(e) { console.warn('[swiper]', e); }
+      }).catch(error => console.warn('[swiper asset load]', error));
     }
+  }
+
+  /** Caps each breakpoint's slidesPerView to the actual slide count so a single
+   *  item fills the full container width instead of leaving 3+ empty slots. */
+  private adaptBreakpoints(base: any): any {
+    const count = this._element.nativeElement.querySelectorAll('.swiper-slide').length;
+    if (!count) return base;
+    const out: any = {};
+    for (const bp of Object.keys(base)) {
+      out[bp] = { ...base[bp], slidesPerView: Math.min(base[bp].slidesPerView, count) };
+    }
+    return out;
   }
 
   fetchSwipeElements() {
@@ -97,7 +112,7 @@ export class CategoryHighlightsDirective {
             let swipeConfig: any = {
               speed: 700,
               loop: false,
-              breakpoints: this.highlights.break_points,
+              breakpoints: this.adaptBreakpoints(this.highlights.break_points),
               navigation: {
                 nextEl: '#highlight_next',
                 prevEl: '#highlight_prev'
@@ -112,15 +127,11 @@ export class CategoryHighlightsDirective {
             }
             // initialize swiper
             new Swiper('.'+swipeElement, swipeConfig);
-            let ele: any = document.getElementsByClassName(swipeElement)[0];
-            ele.style.visibility = "unset";
-            // hover event
             if(autoPlay && swipeElement.includes("desktop")) {
-              $('.'+swipeElement).hover(function () {
-                (this).swiper.autoplay.stop();
-              }, function () {
-                (this).swiper.autoplay.start();
-              });
+              $('.'+swipeElement).hover(
+                function(this: any) { this.swiper.autoplay.stop(); },
+                function(this: any) { this.swiper.autoplay.start(); }
+              );
             }
           }
         }
@@ -131,7 +142,7 @@ export class CategoryHighlightsDirective {
             let swipeConfig: any = {
               speed: 700,
               loop: false,
-              breakpoints: this.weaveHighlights.break_points,
+              breakpoints: this.adaptBreakpoints(this.weaveHighlights.break_points),
               navigation: {
                 nextEl: '#highlight_next',
                 prevEl: '#highlight_prev'
@@ -146,15 +157,11 @@ export class CategoryHighlightsDirective {
             }
             // initialize swiper
             new Swiper('.'+swipeElement, swipeConfig);
-            let ele: any = document.getElementsByClassName(swipeElement)[0];
-            ele.style.visibility = "unset";
-            // hover event
             if(autoPlay && swipeElement.includes("desktop")) {
-              $('.'+swipeElement).hover(function () {
-                (this).swiper.autoplay.stop();
-              }, function () {
-                (this).swiper.autoplay.start();
-              });
+              $('.'+swipeElement).hover(
+                function(this: any) { this.swiper.autoplay.stop(); },
+                function(this: any) { this.swiper.autoplay.start(); }
+              );
             }
           }
         }
@@ -165,7 +172,7 @@ export class CategoryHighlightsDirective {
             let swipeConfig: any = {
               speed: 700,
               loop: false,
-              breakpoints: this.materialHighlights.break_points,
+              breakpoints: this.adaptBreakpoints(this.materialHighlights.break_points),
               navigation: {
                 nextEl: '#highlight_next',
                 prevEl: '#highlight_prev'
@@ -180,15 +187,11 @@ export class CategoryHighlightsDirective {
             }
             // initialize swiper
             new Swiper('.'+swipeElement, swipeConfig);
-            let ele: any = document.getElementsByClassName(swipeElement)[0];
-            ele.style.visibility = "unset";
-            // hover event
             if(autoPlay && swipeElement.includes("desktop")) {
-              $('.'+swipeElement).hover(function () {
-                (this).swiper.autoplay.stop();
-              }, function () {
-                (this).swiper.autoplay.start();
-              });
+              $('.'+swipeElement).hover(
+                function(this: any) { this.swiper.autoplay.stop(); },
+                function(this: any) { this.swiper.autoplay.start(); }
+              );
             }
           }
         }
@@ -199,7 +202,7 @@ export class CategoryHighlightsDirective {
             let swipeConfig: any = {
               speed: 700,
               loop: false,
-              breakpoints: this.groupHighlights.break_points,
+              breakpoints: this.adaptBreakpoints(this.groupHighlights.break_points),
               navigation: {
                 nextEl: '#group_highlight_next',
                 prevEl: '#group_highlight_prev'
@@ -214,15 +217,11 @@ export class CategoryHighlightsDirective {
             }
             // initialize swiper
             new Swiper('.'+swipeElement, swipeConfig);
-            let ele: any = document.getElementsByClassName(swipeElement)[0];
-            ele.style.visibility = "unset";
-            // hover event
             if(autoPlay && swipeElement.includes("desktop")) {
-              $('.'+swipeElement).hover(function () {
-                (this).swiper.autoplay.stop();
-              }, function () {
-                (this).swiper.autoplay.start();
-              });
+              $('.'+swipeElement).hover(
+                function(this: any) { this.swiper.autoplay.stop(); },
+                function(this: any) { this.swiper.autoplay.start(); }
+              );
             }
           }
         }
@@ -256,7 +255,7 @@ export class CategoryHighlightsDirective {
     }
   }
 
-  autoPlayEvt(swipeInit) {
+  autoPlayEvt(swipeInit: any) {
     swipeInit.el.addEventListener("mouseover", () => {  
       swipeInit.autoplay.stop();
     });

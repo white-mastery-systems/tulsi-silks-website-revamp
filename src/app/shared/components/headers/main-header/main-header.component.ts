@@ -68,6 +68,32 @@ export class MainHeaderComponent {
     this.cartService.findCurrency();
     localStorage.setItem("selected_currency", this.commonService.encryptData(this.commonService.temp_currency));
   }
+
+  /** Returns a crawlable href for top-level nav anchors — never null/empty. */
+  topMenuHref(menu: any): string {
+    return this.commonService.getRedirectPath(menu) || '#';
+  }
+
+  /**
+   * Replaces [routerLink] on top-level nav <a> tags. When routerLink receives
+   * null it calls renderer.removeAttribute('href') during ngOnChanges, which
+   * runs after [attr.href] sets '#' — wiping it out and producing uncrawlable
+   * links. By using [attr.href] alone and routing manually here we ensure
+   * Googlebot always sees a valid href on every nav anchor.
+   */
+  onTopMenuClick(event: MouseEvent, menu: any): void {
+    const path = this.commonService.getRedirectPath(menu);
+    if (!path) {
+      event.preventDefault();
+      return;
+    }
+    event.preventDefault();
+    if (menu.link_type !== 'internal') {
+      this.commonService.onPageRedirect(menu);
+    } else {
+      this.router.navigate([path]);
+    }
+  }
   // updateCartList(autoCheckout) {
   //   this.list = []; this.unique_product_list = [];
   //   // run in browser side(for overcome ssr 504 Gateway Error)
