@@ -132,10 +132,12 @@
                 id="navigationHighlights" [ngClass]="commonService.desktop_device? 'desktop_phls': 'phls'" appCategoryHighlights>
                 <div class="swiper-wrapper">
                   <div *ngFor="let x of navigationImageList | orderAsc: 'rank'; let i=index;" class="swiper-slide">
-                    <div (click)="commonService.onPageRedirect(x);" class="category-card cursor">
+                    <a [routerLink]="commonService.getRedirectPath(x)"
+                       (click)="$event.preventDefault(); commonService.onPageRedirect(x)"
+                       class="category-card cursor">
                       <img width="100%" height="100%" appImgLazyLoad [ImagelazyLoad]="imgBaseUrl+x.image" alt="Image">
                       <p class="card-text">{{ x.heading }}</p>
-                    </div>
+                    </a>
                   </div>
                 </div>
                 <ng-container *ngIf="commonService?.desktop_device">
@@ -152,14 +154,16 @@
                 id="navigationHighlights" [ngClass]="commonService.desktop_device? 'desktop_mhls': 'mhls'" appCategoryHighlights>
                 <div class="swiper-wrapper">
                   <div *ngFor="let x of navigationImageList | orderAsc: 'rank'; let i=index;" class="swiper-slide">
-                    <div (click)="commonService.onPageRedirect(x);" class="category-second-card cursor">
+                    <a [routerLink]="commonService.getRedirectPath(x)"
+                       (click)="$event.preventDefault(); commonService.onPageRedirect(x)"
+                       class="category-second-card cursor">
                       <img width="100%" height="100%" appImgLazyLoad [ImagelazyLoad]="imgBaseUrl+x.image" alt="Image">
                       <div class="card-body">
                         <h3>{{ x.heading }}</h3>
                         <p *ngIf="x.sub_heading">{{x.sub_heading}}</p>
-                        <button class="view-all" [attr.aria-label]="'View all ' + x.heading">View All</button>
+                        <span class="view-all">View All</span>
                       </div>
-                    </div>
+                    </a>
                   </div>
                 </div>
                 <ng-container *ngIf="commonService?.desktop_device">
@@ -176,7 +180,9 @@
                 id="navigationHighlights" [ngClass]="commonService.desktop_device? 'desktop_whls': 'whls'" appCategoryHighlights>
                 <div class="swiper-wrapper">
                   <div *ngFor="let x of navigationImageList | orderAsc: 'rank'; let i=index;" class="swiper-slide">
-                    <div (click)="commonService.onPageRedirect(x);" class="category-third-card row m-0 cursor">
+                    <a [routerLink]="commonService.getRedirectPath(x)"
+                       (click)="$event.preventDefault(); commonService.onPageRedirect(x)"
+                       class="category-third-card row m-0 cursor">
                       <div class="col-6 px-0 h-100">
                         <img width="100%" height="100%" appImgLazyLoad [ImagelazyLoad]="imgBaseUrl+x.image" alt="Image">
                       </div>
@@ -184,10 +190,10 @@
                         <div class="card-body">
                           <h3>{{ x.heading }}</h3>
                           <p *ngIf="x.sub_heading">{{x.sub_heading}}</p>
-                          <button class="view-all" [attr.aria-label]="'View all ' + x.heading">View All</button>
+                          <span class="view-all">View All</span>
                         </div>
-                      </div>  
-                    </div>
+                      </div>
+                    </a>
                   </div>
                 </div>
                 <ng-container *ngIf="commonService?.desktop_device">
@@ -209,7 +215,9 @@
                appCategoryHighlights>
               <div class="swiper-wrapper">
                 <div *ngFor="let x of navigationImageList | orderAsc: 'rank'; let i=index;" class="swiper-slide">
-                  <div (click)="commonService.onPageRedirect(x);" class="category-card-two">
+                  <a [routerLink]="commonService.getRedirectPath(x)"
+                     (click)="$event.preventDefault(); commonService.onPageRedirect(x)"
+                     class="category-card-two">
                     <div>
                       <h3>{{ x.heading }}</h3>
                       <div *ngIf="x.images?.length" class="avatars">
@@ -221,9 +229,9 @@
                       <p *ngIf="x.sub_heading">{{x.sub_heading}}</p>
                     </div>
                     <div class="pt-2">
-                      <button class="view-all" style="margin-top:auto" [attr.aria-label]="'View all ' + x.heading">View All</button>
+                      <span class="view-all" style="margin-top:auto">View All</span>
                     </div>
-                  </div>
+                  </a>
                 </div>
               </div>
               <ng-container *ngIf="commonService?.desktop_device">

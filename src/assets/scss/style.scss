@@ -28,7 +28,7 @@ img{ max-width: 100%; height: auto;}
 .tabs .nav-tabs {float: none; display: flex; margin-bottom: 30px;width: 100%;border-bottom: 1px solid #b5b5b5;gap: 30px;}
 .tabs .nav-tabs:after{display: none;}
 .tabs .nav-tabs li{border: none;}
-.tabs .nav-tabs li a{border: none; font-size: 1rem; font-weight: 400;}
+.tabs .nav-tabs li a, .tabs .nav-tabs li button{border: none; font-size: 1rem; font-weight: 400;}
 .tabs .nav-tabs li .active{border: none;opacity: 1;}
 .tabs .nav-tabs li .active:hover{border:none;}
 .tabs .nav-tabs li .active:focus{border:none;}

@@ -1455,20 +1455,20 @@
                   role="presentation"
                   [class.active]="activeIndex === j"
                 >
-                  <a
+                  <button
                     #mtfpTab
-                    href="#"
+                    type="button"
                     role="tab"
                     [id]="getMtfpTabId(i, tab?.name)"
                     [attr.aria-controls]="getMtfpPanelId(i, tab?.name)"
                     [attr.aria-selected]="activeIndex === j"
                     [attr.tabindex]="activeIndex === j ? 0 : -1"
                     [class.active]="activeIndex === j"
-                    (click)="$event.preventDefault(); setMtfpActiveIndex(j, getMtfpTabs(segment).length)"
+                    (click)="setMtfpActiveIndex(j, getMtfpTabs(segment).length)"
                     (keydown)="onMtfpTabKeydown($event, j, getMtfpTabs(segment).length)"
                   >
                     <span>{{ tab?.name }}</span>
-                  </a>
+                  </button>
                 </li>
               </ul>
 
@@ -1910,20 +1910,20 @@
                     role="presentation"
                     [class.active]="occasionActiveIndex === j"
                   >
-                    <a
+                    <button
                       #occasionTab
-                      href="#"
+                      type="button"
                       role="tab"
                       [id]="getOccasionTabId(tab?.name)"
                       [attr.aria-controls]="getOccasionPanelId(tab?.name)"
                       [attr.aria-selected]="occasionActiveIndex === j"
                       [attr.tabindex]="occasionActiveIndex === j ? 0 : -1"
                       [class.active]="occasionActiveIndex === j"
-                      (click)="$event.preventDefault(); setOccasionActiveIndex(j)"
+                      (click)="setOccasionActiveIndex(j)"
                       (keydown)="onOccasionTabKeydown($event, j, segment.multitab_list.length)"
                     >
                       <span>{{ tab?.name }}</span>
-                    </a>
+                    </button>
                   </li>
                 </ul>
 

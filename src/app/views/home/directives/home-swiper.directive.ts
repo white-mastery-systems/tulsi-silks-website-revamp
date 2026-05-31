@@ -125,7 +125,18 @@ export class HomeSwiperDirective {
     const el = this._element.nativeElement as HTMLElement;
     this.deferSwiperUrgent =
       HomeSwiperDirective.isHomeHeroSwiperHost(el) ||
-      HomeSwiperDirective.isFeaturedSectionSwiperHost(el);
+      HomeSwiperDirective.isFeaturedSectionSwiperHost(el) ||
+      HomeSwiperDirective.isTabSwiperHost(el);
+  }
+
+  /** Tab slider (multi-tab featured products): re-rendered on every tab switch via *ngIf,
+   *  so must use RAF (not idle) to avoid stacked-slide flash during Swiper init delay. */
+  private static isTabSwiperHost(el: HTMLElement): boolean {
+    if (!el?.classList) return false;
+    for (let i = 0; i < el.classList.length; i++) {
+      if (el.classList[i].includes('tabslider')) return true;
+    }
+    return false;
   }
 
   private static isHomeHeroSwiperHost(el: HTMLElement): boolean {

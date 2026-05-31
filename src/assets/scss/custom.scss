@@ -2519,29 +2519,55 @@ option {
   //     height: 2px;
   //     background-color: #D99550;
   //   }
-   
+
   //   &:focus {
   //     border-bottom: 2px solid #D99550;
   //   }
   // }
-  a.active {
-  position: relative;
-  color: #D99550;
+  a.active, button.active {
+    position: relative;
+    color: #D99550;
+  }
+
+  a.active::after, button.active::after {
+    content: "";
+    position: absolute;
+    height: 2px;
+    width: 100%;
+    background-color: #D99550;
+    left: 0;
+    bottom: -1px;
+  }
 }
 
-
-a.active::after {
-  content: "";
-  position: absolute;
-  height: 2px;
-  width: 100%;
-  background-color: #D99550; /* your desired border color */
-  left: 0;
+.tabs .nav-tabs li button {
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 400;
+  color: inherit;
+  float: left;
+  span {
+    float: left;
+    padding: 10px 15px 20px;
+    font-size: 22px;
+  }
+  &:hover {
+    text-decoration: none;
+  }
 }
 
-a.active::after {
-  bottom: -1px; /* bottom border */
+@media (max-width: 767px) {
+  .tabs .nav-tabs li button span {
+    padding: 0px 0px 15px;
+  }
 }
+
+.multi-tab-featured .tab-pane .swiper-container:not(.swiper-container-initialized) {
+  visibility: hidden;
 }
 .tabs .nav-tabs li.active {
   border-bottom: 0;
