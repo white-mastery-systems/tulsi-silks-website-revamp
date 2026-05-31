@@ -228,7 +228,7 @@ h2 {
 }
 
 .home-section {
-  a {
+  a:not(.primary-btn):not(.secondary-btn) {
     color: $primary-text;
   }
 }

@@ -63,7 +63,9 @@ button {
 
 // primary btn
 .primary-btn {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   vertical-align: middle;
   -webkit-transform: perspective(1px) translateZ(0);
   transform: perspective(1px) translateZ(0);
@@ -83,6 +85,7 @@ button {
   border-radius: $btn-radius;
   height: 48px;
   font-size: 1rem;
+  text-decoration: none;
   em {
     display: none;
   }
@@ -114,6 +117,7 @@ button {
   &:focus,
   &:active {
     color: $primary-btn-hvr-txt;
+    text-decoration: none;
     &:before {
       -webkit-transform: scaleY(1);
       transform: scaleY(1);
@@ -126,7 +130,9 @@ button {
 
 // secondary btn
 .secondary-btn {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   vertical-align: middle;
   -webkit-transform: perspective(1px) translateZ(0);
   transform: perspective(1px) translateZ(0);
@@ -146,6 +152,7 @@ button {
   border-radius: $btn-radius;
   height: 48px;
   font-size: 1rem;
+  text-decoration: none;
  em{
    display: none;
  }

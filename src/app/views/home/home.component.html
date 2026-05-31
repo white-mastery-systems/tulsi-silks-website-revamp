@@ -88,14 +88,15 @@
             "
             [innerHTML]="firstSlide.content_details.sub_heading"
           ></p>
-          <button
+          <a
             *ngIf="firstSlide?.btn_status && firstSlide?.btn_text"
-            (click)="commonService.onPageRedirect(firstSlide)"
+            [routerLink]="commonService.getRedirectPath(firstSlide)"
+            (click)="$event.preventDefault(); commonService.onPageRedirect(firstSlide)"
             class="primary-btn"
             [attr.aria-label]="firstSlide?.btn_text ? (firstSlide.btn_text + (firstSlide?.content_details?.heading ? ' — ' + firstSlide.content_details.heading : '')) : null"
           >
             {{ firstSlide.btn_text }}
-          </button>
+          </a>
         </div>
       </div>
     </ng-container>
@@ -275,14 +276,15 @@
                       "
                       [innerHTML]="x.content_details.sub_heading"
                     ></p>
-                    <button
+                    <a
                       *ngIf="x?.btn_status && x?.btn_text"
-                      (click)="commonService.onPageRedirect(x)"
+                      [routerLink]="commonService.getRedirectPath(x)"
+                      (click)="$event.preventDefault(); commonService.onPageRedirect(x)"
                       class="primary-btn"
                       [attr.aria-label]="x?.btn_text ? (x.btn_text + (x?.content_details?.heading ? ' — ' + x.content_details.heading : '')) : null"
                     >
                       {{ x.btn_text }}
-                    </button>
+                    </a>
                   </div>
                 </div>
               </ng-container>
@@ -345,14 +347,15 @@
                       "
                       [innerHTML]="x.content_details.sub_heading"
                     ></p>
-                    <button
+                    <a
                       *ngIf="x?.btn_status && x?.btn_text"
-                      (click)="commonService.onPageRedirect(x)"
+                      [routerLink]="commonService.getRedirectPath(x)"
+                      (click)="$event.preventDefault(); commonService.onPageRedirect(x)"
                       class="primary-btn"
                       [attr.aria-label]="x?.btn_text ? (x.btn_text + (x?.content_details?.heading ? ' — ' + x.content_details.heading : '')) : null"
                     >
                       {{ x.btn_text }}
-                    </button>
+                    </a>
                   </div>
                 </div>
               </ng-container>
@@ -408,9 +411,9 @@
                 weaves, evolving styles, and a way of service that feels
                 personal.
               </p>
-              <button routerLink="/about-us" class="primary-btn mt-3" aria-label="Read our story">
+              <a routerLink="/about-us" class="primary-btn mt-3" aria-label="Read our story">
                 Our Story
-              </button>
+              </a>
             </div>
           </div>
         </div>
@@ -508,18 +511,18 @@
                           <p *ngIf="x?.content_details?.description">
                             {{ x.content_details.description }}
                           </p>
-                          <button
+                          <a
                             *ngIf="x?.btn_status && x?.btn_text"
-                            type="button"
+                            [routerLink]="commonService.getRedirectPath(x)"
+                            (click)="$event.preventDefault(); commonService.onPageRedirect(x)"
                             class="primary-btn"
-                            (click)="commonService.onPageRedirect(x)"
                             [attr.aria-label]="
                               x?.btn_text +
                               (x?.content_details?.heading ? ' — ' + x.content_details.heading : '')
                             "
                           >
                             {{ x.btn_text }}
-                          </button>
+                          </a>
                         </div>
                       </div>
                     </figure>
@@ -863,17 +866,16 @@
                     commonService?.screen_width <= 767
                   "
                 >
-                  <button
+                  <a
                     class="primary-btn outline-btn"
-                    (click)="exploreAll(segment)"
-                    type="button"
+                    [routerLink]="exploreAllPath(segment)"
                     [attr.aria-label]="
                       (segment?.btn_text ? segment.btn_text : 'View all') +
                       (segment?.heading ? ' — ' + segment.heading : '')
                     "
                   >
                     {{ segment?.btn_text ? segment.btn_text : 'View All' }}
-                  </button>
+                  </a>
                 </div>
               </div>
               <p
@@ -888,17 +890,16 @@
                 commonService?.screen_width >= 767
               "
             >
-              <button
+              <a
                 class="primary-btn"
-                (click)="exploreAll(segment)"
-                type="button"
+                [routerLink]="exploreAllPath(segment)"
                 [attr.aria-label]="
                   (segment?.btn_text ? segment.btn_text : 'View all') +
                   (segment?.heading ? ' — ' + segment.heading : '')
                 "
               >
                 {{ segment?.btn_text ? segment.btn_text : 'View All' }}
-              </button>
+              </a>
             </div>
           </div>
           <div
@@ -952,17 +953,16 @@
                     *ngIf="commonService?.screen_width <= 767"
                     class="product-silder-btn"
                   >
-                    <button
+                    <a
                       class="primary-btn outline-btn"
-                      (click)="exploreAll(segment)"
-                      type="button"
+                      [routerLink]="exploreAllPath(segment)"
                       [attr.aria-label]="
                         (segment?.btn_text ? segment.btn_text : 'View all') +
                         (segment?.heading ? ' — ' + segment.heading : '')
                       "
                     >
                       {{ segment?.btn_text ? segment.btn_text : 'View All' }}
-                    </button>
+                    </a>
                   </div>
                 </div>
                 <p
@@ -1217,13 +1217,16 @@
               <!-- <span></span> -->
             </div>
             <div>
-              <button
+              <a
                 class="primary-btn outline-btn"
-                (click)="exploreAll(segment)"
-                type="button"
+                [routerLink]="exploreAllPath(segment)"
+                [attr.aria-label]="
+                  (segment?.btn_text ? segment.btn_text : 'View all') +
+                  (segment?.heading ? ' — ' + segment.heading : '')
+                "
               >
                 View All
-              </button>
+              </a>
             </div>
           </div>
           <div
@@ -1432,15 +1435,14 @@
               <ng-container
                 *ngFor="let tab of getMtfpTabs(segment); let j = index"
               >
-                <button
+                <a
                   *ngIf="activeIndex === j"
                   class="primary-btn outline-btn"
-                  (click)="exploreAll(tab)"
-                  type="button"
+                  [routerLink]="exploreAllPath(tab)"
                   [attr.aria-label]="tab?.name ? ('View all — ' + tab.name) : 'View all'"
                 >
                   View All
-                </button>
+                </a>
               </ng-container>
             </div>
           </div>
@@ -1666,14 +1668,13 @@
                               template_setting?.p_card ? 'primary-card p-3' : ''
                             "
                           >
-                            <button
+                            <a
                               class="primary-btn"
-                              (click)="exploreAll(tab)"
-                              type="button"
+                              [routerLink]="exploreAllPath(tab)"
                               [attr.aria-label]="tab?.name ? ('View all — ' + tab.name) : 'View all'"
                             >
                               View All
-                            </button>
+                            </a>
                           </div>
                         </div>
                       </div>
@@ -2266,18 +2267,19 @@
                   [innerHTML]="segment.description"
                 ></div>
               </div>
-              <button
+              <a
                 *ngIf="
                   segment.image_list[0].link_status &&
                   segment.image_list[0].btn_status &&
                   segment.image_list[0].btn_text
                 "
-                (click)="commonService.onPageRedirect(segment.image_list[0])"
+                [routerLink]="commonService.getRedirectPath(segment.image_list[0])"
+                (click)="$event.preventDefault(); commonService.onPageRedirect(segment.image_list[0])"
                 class="primary-btn"
                 [attr.aria-label]="segment.image_list?.[0]?.btn_text ? (segment.image_list[0].btn_text + (segment?.heading ? ' — ' + segment.heading : '')) : null"
               >
                 {{ segment.image_list[0].btn_text }}
-              </button>
+              </a>
             </div>
           </div>
         </div>
@@ -2367,14 +2369,15 @@
                             [innerHTML]="x.content_details.description"
                           ></p>
                         </div>
-                        <button
+                        <a
                           *ngIf="x.link_status && x.btn_status && x.btn_text"
-                          (click)="commonService.onPageRedirect(x)"
+                          [routerLink]="commonService.getRedirectPath(x)"
+                          (click)="$event.preventDefault(); commonService.onPageRedirect(x)"
                           class="primary-btn"
                           [attr.aria-label]="x?.btn_text ? (x.btn_text + (x?.content_details?.heading ? ' — ' + x.content_details.heading : '')) : null"
                         >
                           {{ x.btn_text }}
-                        </button>
+                        </a>
                       </div>
                     </div>
                   </div>
@@ -2440,14 +2443,15 @@
                       segment.image_list[0].content_details.sub_heading
                     "
                   ></p>
-                  <button
+                  <a
                     *ngIf="segment.image_list[0].btn_status !== false"
+                    [routerLink]="commonService.getRedirectPath(segment.image_list[0])"
+                    (click)="$event.preventDefault(); commonService.onPageRedirect(segment.image_list[0])"
                     class="primary-btn"
-                    (click)="commonService.onPageRedirect(segment.image_list[0])"
                     [attr.aria-label]="(segment.image_list[0].btn_text || 'Shop Now') + (segment.image_list?.[0]?.content_details?.heading ? ' — ' + segment.image_list[0].content_details.heading : '')"
                   >
                     {{ segment.image_list[0].btn_text || 'Shop Now' }}
-                  </button>
+                  </a>
                 </div>
               </div>
             </div>
@@ -2586,15 +2590,15 @@
                     </div>
                   </div>
 
-                  <button
+                  <a
                     *ngIf="x.btn_status && x.btn_text"
-                    type="button"
+                    [routerLink]="commonService.getRedirectPath(x)"
+                    (click)="$event.preventDefault(); commonService.onPageRedirect(x)"
                     class="primary-btn testimonial-card__cta"
                     [attr.aria-label]="x.btn_text + (x.content_details?.heading ? ' - ' + x.content_details.heading : '')"
-                    (click)="commonService.onPageRedirect(x)"
                   >
                     {{ x.btn_text }}
-                  </button>
+                  </a>
                 </div>
               </article>
             </div>
@@ -2683,14 +2687,13 @@
               ></p>
             </div>
             <div class="blog-slider-btn">
-              <button
+              <a
                 class="primary-btn outline-btn"
                 routerLink="/blogs"
-                type="button"
                 aria-label="View all blog posts"
               >
                 View All
-              </button>
+              </a>
             </div>
           </div>
           <ng-container *ngIf="segment.blogs_type == 'grid'">

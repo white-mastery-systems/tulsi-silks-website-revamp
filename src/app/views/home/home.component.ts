@@ -143,8 +143,8 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     const first = list[0];
     if (first) first.mobile_img = u;
   }
-  plyrLoaded: boolean; subscription: Subscription;
-  storeSubscription: Subscription; pageLoader: boolean;
+  plyrLoaded = false; subscription: Subscription;
+  storeSubscription: Subscription; pageLoader = false;
   private headerResizeObserver: ResizeObserver | undefined;
   private sliderHeightResizeTimer: ReturnType<typeof setTimeout> | undefined;
   private readonly boundOnWindowResize = (): void => {
@@ -156,7 +156,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
       this.setSliderHeight();
     }, 150);
   };
-  currType: string; activeIndex = 0;
+  currType = ''; activeIndex = 0;
 
   /** ARIA tabs state for the "Shop by Occasion" homepage block. */
   occasionActiveIndex = 0;
@@ -395,7 +395,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   constructor(
     @Inject(PLATFORM_ID) private platformId: Object, private storeApi: StoreApiService, public swiperService: SwiperService,
     private sanitizer: DomSanitizer, public commonService: CommonService, private router: Router, public ws: WishlistService,
-    public cc: CurrencyConversionService, @Inject(DOCUMENT) private document, private assetLoader: DynamicAssetLoaderService,
+    public cc: CurrencyConversionService, @Inject(DOCUMENT) private document: any, private assetLoader: DynamicAssetLoaderService,
     private ngZone: NgZone,
     private ssrDiag: SsrDiagnosticsService,
   ) {
@@ -618,12 +618,12 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     return layoutList;
   }
 
-  updateLayoutList(layoutList) {
+  updateLayoutList(layoutList: any) {
     const onServer = !isPlatformBrowser(this.platformId);
 
     // Hero + highlights must be extracted before compact filter drops slider segments.
     if (this.template_setting.primary_slider) {
-      const sliderIndex = layoutList.findIndex((obj) => obj.type == 'primary_slider');
+      const sliderIndex = layoutList.findIndex((obj: any) => obj.type == 'primary_slider');
       if (sliderIndex !== -1) {
         const primaryImgList = layoutList[sliderIndex].image_list;
         if (primaryImgList?.length) {
@@ -639,7 +639,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
         }
       }
     }
-    const phIndexEarly = layoutList.findIndex((obj) => obj.type == 'highlights');
+    const phIndexEarly = layoutList.findIndex((obj: any) => obj.type == 'highlights');
     if (phIndexEarly !== -1) {
       this.commonService.primary_highlights = layoutList[phIndexEarly].image_list ?? [];
       layoutList.splice(phIndexEarly, 1);
@@ -650,7 +650,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     // Blogs — client only (below-fold; excluded from SSR HTML)
-    let blogIndex = layoutList.findIndex(obj => obj.type=='blogs');
+    let blogIndex = layoutList.findIndex((obj: any) => obj.type=='blogs');
     if (onServer) {
       blogIndex = -1;
     }
@@ -682,7 +682,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
       });
     }
     // Instagram — client only
-    let instaIndex = layoutList.findIndex(obj => obj.type=='instagram');
+    let instaIndex = layoutList.findIndex((obj: any) => obj.type=='instagram');
     if (onServer) {
       instaIndex = -1;
     }
@@ -690,7 +690,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
       let instaData = layoutList[instaIndex];
       this.storeApi.INSTAGRAM(layoutList[instaIndex].insta_config.token).subscribe((result) => {
         if(result.data) {
-          let InstaPosts = result.data.filter(el => el.media_type!="VIDEO");
+          let InstaPosts = result.data.filter((el: any) => el.media_type!="VIDEO");
           if(InstaPosts.length) {
             let iCount = this.swiperService.instagram.card_count;
             if(instaData.blogs_type=='grid') {
@@ -717,7 +717,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     // shopping assistant — client only
     if (
       !onServer &&
-      layoutList.findIndex(obj => obj.type=='shopping_assistant')!=-1 &&
+      layoutList.findIndex((obj: any) => obj.type=='shopping_assistant')!=-1 &&
       this.commonService.ys_features.indexOf('shopping_assistant')!=-1
     ) {
       this.storeApi.AI_STYLES().subscribe(result => {
@@ -735,9 +735,9 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
         }
       }
       else if(segment.type=="section") {
-        segment.image_list.forEach(el => {
+        segment.image_list.forEach((el: any) => {
           if(el.link_status && el.link_type=='category') {
-            let cInd = this.commonService.catalog_list.findIndex(c => c._id==el.category_id);
+            let cInd = this.commonService.catalog_list.findIndex((c: any) => c._id==el.category_id);
             if(cInd!=-1) {
               el.link_type = 'internal';
               el.link = '/category/'+this.commonService.catalog_list[cInd]._id;
@@ -748,7 +748,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
         if(segment.section_grid_type=="grid_8" && this.commonService.screen_width>767) {
           let imgList = segment.image_list;
           segment.image_list = [];
-          imgList.forEach((element, index) => {
+          imgList.forEach((element: any, index: any) => {
             if(index===4) segment.image_list.push(imgList[5]);
             else if(index===5) segment.image_list.push(imgList[4]);
             else segment.image_list.push(element);
@@ -765,7 +765,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
           this.currType = segment.slider_type;
         }
         let cardCount = this.swiperService.featured_products.card_count;
-        segment.product_list.forEach(obj => {
+        segment.product_list.forEach((obj: any) => {
           obj.created_on = new Date(new Date(new Date(obj.created_on).setHours(23,59,59,59)).setDate(new Date(obj.created_on).getDate() + 30));
           if(obj.badge_list?.length) obj.badge_list = this.commonService.buildTags(obj.badge_list);
           if(obj.hold_till) {
@@ -887,7 +887,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     );
   }
 
-  tabNavigate(x) {
+  tabNavigate(x: any) {
     let catDetails = null;
     if(x.type=='featured') {
       catDetails = { name: 'Featured Products', route: '/featured-products' };
@@ -899,7 +899,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
       catDetails = { name: 'On Sale', route: '/on-sale' };
     }
     else if(x.type=='category') {
-      let cInd = this.commonService.catalog_list.findIndex(el => el._id==x.category_id);
+      let cInd = this.commonService.catalog_list.findIndex((el: any) => el._id==x.category_id);
       if(cInd!=-1) {
         let catInfo = this.commonService.catalog_list[cInd];
         catDetails = { name: catInfo.name, seo_status: catInfo.seo_status, seo_details: catInfo.seo_details };
@@ -910,7 +910,32 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  exploreAll(segment) {
+  /** Returns the href path for a segment's "View All" CTA anchor. */
+  exploreAllPath(segment: any): string {
+    if (segment.type === 'featured_product') {
+      const id = segment.featured_category_id;
+      if (id === 'all_products') return '/all-products';
+      if (id === 'new_arrivals') return '/new-arrivals';
+      if (id === 'on_sale') return '/on-sale';
+      if (id === 'featured_products') return '/featured-products';
+      if (id === 'best_sellers') return '/best-sellers';
+      return this.catalogPath(id) || '/';
+    }
+    if (segment.type === 'featured') return '/featured-products';
+    if (segment.type === 'new_arrivals') return '/new-arrivals';
+    if (segment.type === 'discounted') return '/on-sale';
+    if (segment.type === 'category') return this.catalogPath(segment.category_id) || '/';
+    return '/';
+  }
+
+  private catalogPath(catId: string): string | null {
+    const idx = this.commonService.catalog_list.findIndex((o: any) => o._id === catId);
+    if (idx === -1) return null;
+    const cat = this.commonService.catalog_list[idx];
+    return cat.seo_status ? '/category/' + cat.seo_details.page_url : '/category/' + cat._id;
+  }
+
+  exploreAll(segment: any) {
     if(segment.type=="featured_product") {
       if(segment.featured_category_id=="all_products") this.router.navigate(['/all-products']);
       else if(segment.featured_category_id=="new_arrivals") this.router.navigate(['/new-arrivals']);
@@ -924,8 +949,8 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     else if(segment.type=="discounted") this.router.navigate(['/on-sale']);
     else if(segment.type=="category") this.getCatalogInfo(segment.category_id);
   }
-  getCatalogInfo(catId) {
-    let secIndex = this.commonService.catalog_list.findIndex(obj => obj._id==catId);
+  getCatalogInfo(catId: any) {
+    let secIndex = this.commonService.catalog_list.findIndex((obj: any) => obj._id==catId);
     if(secIndex != -1) {
       let categoryDetails = this.commonService.catalog_list[secIndex];
       if(categoryDetails.seo_status) this.router.navigate(['/category/'+categoryDetails.seo_details.page_url]);
@@ -958,21 +983,21 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     product.temp_discounted_price = this.cc.CALC(Number.isFinite(disc) ? disc : 0);
   }
 
-  initializeSwiper(layoutList) {
+  initializeSwiper(layoutList: any) {
     this.setSliderHeight();
     // plyr
-    let vidSections = layoutList.filter(obj => obj.type=='video_section' && obj.video_details?.thumbnail && obj.video_details?.src);
+    let vidSections = layoutList.filter((obj: any) => obj.type=='video_section' && obj.video_details?.thumbnail && obj.video_details?.src);
     if(vidSections.length && !this.plyrLoaded) {
       setTimeout(() => {
         let plyrConfig = {
-          captions: { active: true }, 
+          captions: { active: true },
           controls:['play-large', 'mute', 'fullscreen'],
-          autoplay: false 
+          autoplay: false
         };
         this.assetLoader.load('plyr-js', 'plyr-css').then(() => {
           this.plyrLoaded = true;
           setTimeout(() => {
-            vidSections.forEach(vel => {
+            vidSections.forEach((vel: any) => {
               new Plyr('#vs-'+vel._id, plyrConfig);
             });
           }, 100);
@@ -1004,7 +1029,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   /* AI Styling */
-  openAiStyleModal(modalName) {
+  openAiStyleModal(modalName: any) {
     this.styleIndex = 0;
     modalName.show();
     this.commonService.scrollModalTop(500);
@@ -1014,22 +1039,22 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
       this.getRadioNextList(this.commonService.ai_styles[this.styleIndex].selected_option)
     }
     else {
-      this.commonService.ai_styles[this.styleIndex].filtered_option_list.forEach(obj => {
+      this.commonService.ai_styles[this.styleIndex].filtered_option_list.forEach((obj: any) => {
         delete obj.aistyle_option_checked;
       });
     }
   }
 
-  getRadioNextList(optionId) {
+  getRadioNextList(optionId: any) {
     let currentStyleDetails = this.commonService.ai_styles[this.styleIndex];
     // if next option list exist
     if(this.commonService.ai_styles[this.styleIndex+1])
     {
-      let optionIndex = currentStyleDetails.option_list.findIndex(obj => obj._id==optionId);
+      let optionIndex = currentStyleDetails.option_list.findIndex((obj: any) => obj._id==optionId);
       if(optionIndex!=-1) {
         let currentSelectedOption = currentStyleDetails.option_list[optionIndex];
         let filterList = this.commonService.ai_styles[this.styleIndex+1].option_list;
-        this.commonService.ai_styles[this.styleIndex+1].filtered_option_list = filterList.filter(obj => obj.link_to=='all' || obj.link_to==currentSelectedOption.heading);
+        this.commonService.ai_styles[this.styleIndex+1].filtered_option_list = filterList.filter((obj: any) => obj.link_to=='all' || obj.link_to==currentSelectedOption.heading);
       }
     }
   }
@@ -1069,14 +1094,14 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
       }
     });
   }
-  processAiStyles(list) {
-    return new Promise((resolve, reject) => {
-      let sendData = {};
+  processAiStyles(list: any) {
+    return new Promise((resolve) => {
+      const sendData: Record<string, any[]> = {};
       for(let section of list) {
-        let styleList = [];
+        const styleList: any[] = [];
         if(section.type=='either_or') styleList.push(section.selected_option);
         else if(section.filtered_option_list) {
-          section.filtered_option_list.forEach(option => {
+          section.filtered_option_list.forEach((option: any) => {
             if(option.aistyle_option_checked) styleList.push(option._id);
           });
         }
