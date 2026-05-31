@@ -1,3 +1,4 @@
+@use "../../../../../../assets/scss/variables" as *;
 @use "../../styles/premium-blog.tokens.scss" as *;
 @use "../../blogs.tokens.scss" as *;
 
@@ -21,19 +22,19 @@
   h5 a,
   blockquote a {
     color: $tulsi-blog-accent;
-    font-weight: 600;
+    font-weight: 500;
     text-decoration: underline solid;
-    text-decoration-color: rgba(107, 83, 68, 0.55);
+    text-decoration-color: $tulsi-blog-accent;
     text-underline-offset: 3px;
     cursor: pointer;
 
     &:hover {
-      color: #5a4538;
-      text-decoration-color: rgba(90, 69, 56, 0.85);
+      color: $tulsi-blog-accent;
+      opacity: 0.82;
     }
 
     &:focus-visible {
-      outline: 2px solid rgba(107, 83, 68, 0.4);
+      outline: 2px solid $tulsi-blog-accent;
       outline-offset: 2px;
     }
   }
@@ -336,7 +337,7 @@
   }
 }
 
-/* Anchor + theme button: keep flex centering and no underline; width on small screens */
+/* Anchor + theme button: match global .primary-btn (flat, Montaga, 48px, scaleY hover) */
 :host ::ng-deep .ej-cta-block__link {
   text-decoration: none !important;
   display: inline-flex !important;
@@ -345,17 +346,19 @@
   box-sizing: border-box;
   white-space: nowrap;
   min-height: 48px;
-  padding: 0 clamp(1.5rem, 4vw, 2.25rem) !important;
-  border-radius: 999px !important;
-  font-family: $ej-font-ui !important;
-  font-size: 0.6875rem !important;
-  font-weight: 600 !important;
-  letter-spacing: 0.16em !important;
-  text-transform: uppercase !important;
-  line-height: 1.2 !important;
+  padding: 0 30px !important;
+  border-radius: $btn-radius !important;
+  font-family: $primary-font !important;
+  font-size: 1rem !important;
+  font-weight: 400 !important;
+  letter-spacing: normal !important;
+  text-transform: none !important;
+  line-height: 1 !important;
+  position: relative;
+  vertical-align: middle;
 
   &::before {
-    border-radius: 999px !important;
+    border-radius: $btn-radius !important;
   }
 
   @media (max-width: 640px) {
@@ -364,43 +367,49 @@
 }
 
 :host ::ng-deep .ej-cta-block .primary-btn {
-  background: #1a181e !important;
-  border: none !important;
-  color: #ffffff !important;
+  background: $primary-btn-bg !important;
+  border: $btn-border !important;
+  color: $primary-btn-txt !important;
+  font-family: $primary-font !important;
+  border-radius: $btn-radius !important;
 
   &:hover,
   &:focus,
   &:active {
-    color: #ffffff !important;
+    color: $primary-btn-hvr-txt !important;
   }
 
   &::before {
-    background: rgba(255, 255, 255, 0.15) !important;
+    background: $primary-btn-hvr-bg !important;
+    border-radius: $btn-radius !important;
   }
 }
 
 :host ::ng-deep .ej-cta-block .secondary-btn {
-  background: #ffffff !important;
-  border: 1px solid rgba(26, 23, 28, 0.22) !important;
-  color: #1a181e !important;
+  background: $secondary-btn-bg !important;
+  border: $btn-border !important;
+  color: $secondary-btn-txt !important;
+  font-family: $primary-font !important;
+  border-radius: $btn-radius !important;
 
   &:hover,
   &:focus,
   &:active {
-    color: #1a181e !important;
+    color: $secondary-btn-hvr-txt !important;
   }
 
   &::before {
-    background: rgba(26, 23, 28, 0.06) !important;
+    background: $secondary-btn-hvr-bg !important;
+    border-radius: $btn-radius !important;
   }
 
   i {
-    color: #1a181e !important;
+    color: $secondary-btn-txt !important;
   }
 
   &:hover i,
   &:focus i {
-    color: #1a181e !important;
+    color: $secondary-btn-hvr-txt !important;
   }
 }
 
@@ -430,46 +439,72 @@
 }
 
 :host ::ng-deep .ej-btn-dark {
+  position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  vertical-align: middle;
+  transform: perspective(1px) translateZ(0);
   min-height: 48px;
-  padding: 0 2.25rem;
-  border-radius: 999px;
-  background: #1f1b24;
-  color: #ffffff !important;
-  font-family: $ej-font-ui;
-  font-size: 0.8125rem;
-  font-weight: 600;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
+  padding: 0 30px;
+  border-radius: $btn-radius;
+  background: $primary-btn-bg;
+  color: $primary-btn-txt !important;
+  font-family: $primary-font;
+  font-size: 1rem;
+  font-weight: 400;
+  letter-spacing: normal;
+  text-transform: none;
   text-decoration: none !important;
-  border: none;
+  border: $btn-border;
   cursor: pointer;
-  transition: background 0.2s ease, opacity 0.2s ease;
+  transition-property: color;
+  transition-duration: 0.3s;
 
-  &:hover {
-    background: #000000;
-    color: #ffffff !important;
+  &::before {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    inset: 0;
+    border-radius: $btn-radius;
+    background: $primary-btn-hvr-bg;
+    transform: scaleY(0);
+    transform-origin: 50% 0;
+    transition: transform 0.3s ease-out;
+  }
+
+  &:hover,
+  &:focus {
+    color: $primary-btn-hvr-txt !important;
+    &::before { transform: scaleY(1); }
   }
 }
 
 :host ::ng-deep .ej-btn-light {
+  position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  vertical-align: middle;
   min-height: 48px;
-  padding: 0 2.25rem;
-  border-radius: 999px;
-  border: 1px solid #1f1b24;
+  padding: 0 30px;
+  border-radius: $btn-radius;
+  border: 1px solid $primary-btn-bg;
   background: #ffffff;
-  color: #1f1b24 !important;
-  font-family: $ej-font-ui;
-  font-size: 0.8125rem;
-  font-weight: 600;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
+  color: $primary-btn-bg !important;
+  font-family: $primary-font;
+  font-size: 1rem;
+  font-weight: 400;
+  letter-spacing: normal;
+  text-transform: none;
   text-decoration: none !important;
+  cursor: pointer;
+  transition: background 0.25s ease, color 0.25s ease;
+
+  &:hover {
+    background: rgba(31, 27, 36, 0.04);
+    color: $primary-btn-bg !important;
+  }
 }
 
 :host ::ng-deep figure.ej-figure {
@@ -633,26 +668,44 @@
 :host ::ng-deep a.ej-product-cta-btn {
   align-self: flex-start;
   margin-top: 0.65rem;
+  position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: 46px;
-  padding: 0 1.85rem;
-  border-radius: 999px;
-  background: #141418;
-  color: #ffffff !important;
-  font-family: $ej-font-ui;
-  font-size: 0.6875rem;
-  font-weight: 600;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
+  vertical-align: middle;
+  transform: perspective(1px) translateZ(0);
+  min-height: 48px;
+  padding: 0 30px;
+  border-radius: $btn-radius;
+  background: $primary-btn-bg;
+  color: $primary-btn-txt !important;
+  font-family: $primary-font;
+  font-size: 1rem;
+  font-weight: 400;
+  letter-spacing: normal;
+  text-transform: none;
   text-decoration: none !important;
-  border: none;
-  transition: background 0.2s ease, opacity 0.2s ease;
+  border: $btn-border;
+  cursor: pointer;
+  transition-property: color;
+  transition-duration: 0.3s;
 
-  &:hover {
-    background: #000000;
-    color: #ffffff !important;
+  &::before {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    inset: 0;
+    border-radius: $btn-radius;
+    background: $primary-btn-hvr-bg;
+    transform: scaleY(0);
+    transform-origin: 50% 0;
+    transition: transform 0.3s ease-out;
+  }
+
+  &:hover,
+  &:focus {
+    color: $primary-btn-hvr-txt !important;
+    &::before { transform: scaleY(1); }
   }
 
   &.ej-product-cta-btn--loading {
@@ -663,16 +716,28 @@
 }
 
 :host ::ng-deep .ej-btn-outline {
+  position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  vertical-align: middle;
   min-height: 48px;
-  padding: 0 2.25rem;
-  border-radius: 999px;
-  border: 1px solid rgba(31, 27, 36, 0.28);
+  padding: 0 30px;
+  border-radius: $btn-radius;
+  border: 1px solid rgba(31, 27, 36, 0.35);
   background: transparent;
-  color: #1f1b24 !important;
-  font-family: $ej-font-ui;
-  font-size: 0.8125rem;
+  color: $primary-btn-bg !important;
+  font-family: $primary-font;
+  font-size: 1rem;
+  font-weight: 400;
+  letter-spacing: normal;
   text-decoration: none !important;
+  cursor: pointer;
+  transition: border-color 0.2s ease, background 0.2s ease;
+
+  &:hover {
+    border-color: $primary-btn-bg;
+    background: rgba(31, 27, 36, 0.03);
+    color: $primary-btn-bg !important;
+  }
 }

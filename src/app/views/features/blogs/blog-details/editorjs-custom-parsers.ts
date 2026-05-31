@@ -162,7 +162,7 @@ export function createEditorJsCustomParsers(imgBaseUrl: string): Record<string, 
       const label = data.label ? String(data.label) : 'Table of contents';
       const items = Array.isArray(data.items) ? data.items : [];
       let html =
-        `<details id="ej-toc" class="ej-toc ej-toc--accordion" open aria-label="${escapeHtml(label)}">` +
+        `<details id="ej-toc" class="ej-toc ej-toc--accordion" aria-label="${escapeHtml(label)}">` +
         `<summary class="ej-toc__summary">` +
         `<span class="ej-toc__summary-title">${escapeHtml(label)}</span>` +
         `<span class="ej-toc__chevron" aria-hidden="true"></span>` +

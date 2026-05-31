@@ -4,22 +4,25 @@
 
 <section class="over-all smooth-fadein tulsi-blog-detail-root premium-blog-detail" *ngIf="!pageLoader">
 
-  <h1 *ngIf="blog_details?.seo_status" [hidden]="true">{{blog_details?.seo_details?.h1_tag}}</h1>
-
   <section class="premium-blog-detail__top">
     <div class="{{template_setting?.body_type}}">
       <div class="premium-blog-detail__shell premium-blog-detail__shell--edge">
-        <div class="premium-blog-detail__top-row d-flex flex-wrap justify-content-between align-items-start gap-3">
-          <div *ngIf="template_setting?.breadcrumb" class="breadcrumb-navigation premium-blog-detail__breadcrumb-nav">
+        <div class="premium-blog-detail__top-row">
+          <nav *ngIf="template_setting?.breadcrumb" class="breadcrumb-navigation premium-blog-detail__breadcrumb-nav" aria-label="Breadcrumb">
             <ul class="collapsed">
               <li><a routerLink="/">Home</a></li>
               <li><a routerLink="/blogs">Blogs</a></li>
               <li><span class="active-page">{{blog_details?.name}}</span></li>
             </ul>
-          </div>
-          <div *ngIf="template_setting?.display_goback && commonService?.desktop_device">
-            <span class="premium-blog-detail__goback" (click)="commonService.goBack();">GO BACK</span>
-          </div>
+          </nav>
+          <a
+            *ngIf="template_setting?.display_goback"
+            class="premium-blog-detail__goback"
+            (click)="commonService.goBack()"
+          >
+            <lucide-icon name="arrow-left" [size]="14" stroke="2"></lucide-icon>
+            Back to Blogs
+          </a>
         </div>
       </div>
     </div>
@@ -40,7 +43,7 @@
               <span>{{ readingLineTail }}</span>
             </ng-container>
           </div>
-          <h2 class="premium-blog-detail__title blog-title tulsi-blog-detail__title">{{blog_details.name}}</h2>
+          <h1 class="premium-blog-detail__title blog-title tulsi-blog-detail__title">{{blog_details.name}}</h1>
 
           <div class="premium-blog-detail__hero-cta" *ngIf="heroCtaLabel && (heroCtaExternalHref || heroCtaRouterLink)">
             <a *ngIf="heroCtaExternalHref" class="premium-blog-detail__pill-cta" [href]="heroCtaExternalHref">{{ heroCtaLabel }}</a>

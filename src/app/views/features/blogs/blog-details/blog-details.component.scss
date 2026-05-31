@@ -16,7 +16,7 @@
   color: $primary-btn-txt !important;
   font-family: $primary-font;
   font-weight: 400;
-  background: #000000;
+  background: $primary-btn-bg;
   cursor: pointer;
   border-radius: $btn-radius;
   min-height: 48px;
@@ -128,10 +128,10 @@
   .tulsi-blog-detail__title.blog-title,
   .tulsi-blog-detail__title {
     font-family: $tulsi-blog-font-display !important;
-    font-size: clamp(1.5rem, 3vw, 2rem) !important;
-    font-weight: 500 !important;
+    font-size: clamp(1.75rem, 3.5vw, 2.5rem) !important;
+    font-weight: 400 !important;
     letter-spacing: -0.02em;
-    line-height: 1.25 !important;
+    line-height: 1.18 !important;
     margin-bottom: 1rem !important;
     color: $tulsi-blog-ink !important;
   }
@@ -139,19 +139,28 @@
   .tulsi-blog-detail__tags {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.35rem 0.5rem;
+    gap: 0.4rem 0.5rem;
     list-style: none;
     padding: 0;
-    margin: 0 0 1.25rem;
+    margin: 0 0 1.75rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid rgba(31, 27, 36, 0.08);
 
     li {
       font-size: 0.6875rem;
-      letter-spacing: 0.08em;
+      letter-spacing: 0.1em;
       text-transform: uppercase;
-      padding: 0.25rem 0.6rem;
+      padding: 0.3rem 0.75rem;
       border: 1px solid rgba(31, 27, 36, 0.14);
-      border-radius: 2px;
-      color: rgba(31, 27, 36, 0.72);
+      border-radius: 999px;
+      color: rgba(31, 27, 36, 0.65);
+      background: rgba(31, 27, 36, 0.02);
+      transition: border-color 0.2s ease, color 0.2s ease;
+
+      &:hover {
+        border-color: rgba(31, 27, 36, 0.3);
+        color: rgba(31, 27, 36, 0.88);
+      }
     }
   }
 
@@ -221,11 +230,11 @@
     }
   }
 
-  .ql-container {
+  ::ng-deep .ql-container {
     border: none !important;
   }
 
-  .ql-editor {
+  ::ng-deep .ql-editor {
     padding-left: 0 !important;
     padding-right: 0 !important;
 
@@ -236,27 +245,28 @@
     h3 a,
     blockquote a {
       color: $tulsi-blog-accent;
-      font-weight: 600;
+      font-weight: 500;
       text-decoration: underline solid;
-      text-decoration-color: rgba(107, 83, 68, 0.55);
+      text-decoration-color: $tulsi-blog-accent;
       text-underline-offset: 3px;
 
       &:hover {
-        color: #5a4538;
-        text-decoration-color: rgba(90, 69, 56, 0.85);
+        color: $tulsi-blog-accent;
+        opacity: 0.82;
       }
 
       &:focus-visible {
-        outline: 2px solid rgba(107, 83, 68, 0.4);
+        outline: 2px solid $tulsi-blog-accent;
         outline-offset: 2px;
       }
     }
   }
 
   ::ng-deep .editorjs-blog-body {
-    font-size: 1rem;
+    font-size: 1.0625rem;
     line-height: 1.78;
     color: rgba(31, 27, 36, 0.88);
+    font-family: $tulsi-blog-font-display;
 
     .ej-section {
       scroll-margin-top: 5rem;
@@ -266,28 +276,96 @@
       scroll-margin-top: 4rem;
     }
 
+    h1 {
+      font-family: $tulsi-blog-font-display !important;
+      font-size: clamp(1.75rem, 3.5vw, 2.25rem) !important;
+      font-weight: 400 !important;
+      line-height: 1.2 !important;
+      letter-spacing: -0.02em;
+      margin: 2.5rem 0 1rem !important;
+      color: $tulsi-blog-ink !important;
+    }
+
     h2 {
       font-family: $tulsi-blog-font-display !important;
-      font-size: 1.35rem !important;
-      font-weight: 500 !important;
-      margin: 1.85rem 0 0.85rem !important;
+      font-size: clamp(1.35rem, 2.5vw, 1.65rem) !important;
+      font-weight: 400 !important;
+      line-height: 1.25 !important;
       letter-spacing: -0.015em;
+      margin: 2.25rem 0 0.9rem !important;
+      color: $tulsi-blog-ink !important;
+      padding-top: 0.5rem;
+      border-top: 1px solid rgba(31, 27, 36, 0.08);
     }
 
     h3 {
-      font-size: 1.05rem !important;
+      font-family: $tulsi-blog-font-display !important;
+      font-size: 1.25rem !important;
+      font-weight: 400 !important;
+      line-height: 1.3 !important;
+      letter-spacing: -0.01em;
+      margin: 1.85rem 0 0.65rem !important;
+      color: $tulsi-blog-ink !important;
+    }
+
+    h4 {
+      font-family: $tulsi-blog-font-display !important;
+      font-size: 1.075rem !important;
+      font-weight: 500 !important;
+      line-height: 1.35 !important;
+      margin: 1.5rem 0 0.5rem !important;
+      color: $tulsi-blog-ink !important;
+    }
+
+    h5 {
+      font-family: $tulsi-blog-font-display !important;
+      font-size: 1rem !important;
+      font-weight: 500 !important;
+      margin: 1.25rem 0 0.4rem !important;
+      color: $tulsi-blog-ink !important;
+    }
+
+    h6 {
+      font-size: 0.75rem !important;
       font-weight: 600 !important;
-      margin: 1.4rem 0 0.55rem !important;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin: 1.1rem 0 0.4rem !important;
+      color: rgba(31, 27, 36, 0.55) !important;
     }
 
     p {
-      margin-bottom: 1rem;
+      margin-bottom: 1.1rem;
+      line-height: 1.78;
     }
 
     ul,
     ol {
-      margin-bottom: 1rem;
-      padding-left: 1.25rem;
+      margin-bottom: 1.1rem;
+      padding-left: 1.5rem;
+      line-height: 1.75;
+
+      li {
+        margin-bottom: 0.35rem;
+      }
+    }
+
+    blockquote {
+      margin: 2rem 0;
+      padding: 1rem 1.5rem;
+      border-left: 3px solid rgba(31, 27, 36, 0.18);
+      background: rgba(31, 27, 36, 0.02);
+      border-radius: 0 6px 6px 0;
+      font-style: italic;
+      font-size: 1.05rem;
+      color: rgba(31, 27, 36, 0.78);
+      line-height: 1.7;
+    }
+
+    hr {
+      border: none;
+      border-top: 1px solid rgba(31, 27, 36, 0.1);
+      margin: 2.5rem 0;
     }
 
     /* Inline links in article body (mirrors blog-renderer host styles) */
@@ -411,12 +489,13 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
+      vertical-align: middle;
       padding: 0 30px;
       min-height: 48px;
       border-radius: $btn-radius;
-      border: 1px solid #000000;
+      border: 1px solid $primary-btn-bg;
       background: #ffffff;
-      color: #000000 !important;
+      color: $primary-btn-bg !important;
       font-family: $primary-font;
       font-size: 1rem;
       font-weight: 400;
@@ -426,8 +505,8 @@
       transition: background 0.25s ease, color 0.25s ease;
 
       &:hover {
-        background: rgba(0, 0, 0, 0.04);
-        color: #000000 !important;
+        background: rgba(31, 27, 36, 0.04);
+        color: $primary-btn-bg !important;
       }
     }
 
@@ -436,12 +515,13 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
+      vertical-align: middle;
       padding: 0 30px;
       min-height: 48px;
       border-radius: $btn-radius;
-      border: 1px solid rgba(31, 27, 36, 0.28);
+      border: 1px solid rgba(31, 27, 36, 0.35);
       background: transparent;
-      color: $primary-theme-color !important;
+      color: $primary-btn-bg !important;
       font-family: $primary-font;
       font-size: 1rem;
       font-weight: 400;
@@ -451,9 +531,9 @@
       transition: border-color 0.2s ease, background 0.2s ease;
 
       &:hover {
-        border-color: rgba(31, 27, 36, 0.45);
+        border-color: $primary-btn-bg;
         background: rgba(31, 27, 36, 0.03);
-        color: $primary-theme-color !important;
+        color: $primary-btn-bg !important;
       }
     }
   }
@@ -634,8 +714,16 @@
   padding-top: 0.35rem;
 }
 
+.premium-blog-detail__top-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  min-height: 2.25rem;
+}
+
 .premium-blog-detail__shell {
-  max-width: $premium-detail-shell-max;
+  // max-width: $premium-detail-shell-max;
   margin-left: auto;
   margin-right: auto;
   padding-left: 1rem;
@@ -659,6 +747,45 @@
 
 .premium-blog-detail__breadcrumb-nav {
   margin-bottom: 0;
+  min-width: 0;
+
+  ul.collapsed {
+    display: flex;
+    align-items: center;
+    flex-wrap: nowrap;
+    gap: 0;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    overflow: hidden;
+
+    li {
+      display: flex;
+      align-items: center;
+      flex-shrink: 0;
+      white-space: nowrap;
+
+      &:last-child {
+        flex-shrink: 1;
+        min-width: 0;
+        .active-page {
+          display: block;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          max-width: 220px;
+        }
+      }
+
+      &:not(:first-child)::before {
+        content: "/";
+        padding: 0 0.4rem;
+        color: rgba(26, 23, 28, 0.3);
+        font-size: 0.75rem;
+        flex-shrink: 0;
+      }
+    }
+  }
 
   a,
   .active-page {
@@ -683,15 +810,33 @@
 }
 
 .premium-blog-detail__goback {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
   cursor: pointer;
   font-family: $ej-font-ui;
-  font-size: 0.75rem;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  text-transform: none;
   color: $premium-ink-soft;
+  text-decoration: none;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: color 0.2s ease;
 
   &:hover {
     color: $premium-ink;
+    text-decoration: none;
+  }
+
+  lucide-icon {
+    flex-shrink: 0;
+    transition: transform 0.2s ease;
+  }
+
+  &:hover lucide-icon {
+    transform: translateX(-3px);
   }
 }
 
@@ -836,11 +981,12 @@
 
 .premium-blog-detail__title {
   font-family: $premium-font-display;
-  font-size: clamp(1.85rem, 4vw, 2.65rem);
-  line-height: 1.18;
-  font-weight: 500;
-  margin: 0 0 0.75rem !important;
+  font-size: clamp(1.85rem, 4vw, 2.75rem);
+  line-height: 1.15;
+  font-weight: 400;
+  margin: 0 0 1rem !important;
   color: $premium-ink !important;
+  letter-spacing: -0.02em;
 }
 
 .premium-blog-detail__meta {
@@ -863,7 +1009,7 @@
   }
 }
 
-.premium-blog-detail__quill {
+::ng-deep .premium-blog-detail__quill {
   max-width: $premium-max-read;
   margin: 0 auto;
   border: none !important;
@@ -871,9 +1017,93 @@
   .ql-editor {
     font-family: $premium-font-display;
     font-size: 1.0625rem;
-    line-height: 1.72;
+    line-height: 1.78;
     padding-left: 0 !important;
     padding-right: 0 !important;
+    color: rgba(31, 27, 36, 0.88);
+
+    h1 {
+      font-family: $premium-font-display;
+      font-size: clamp(1.75rem, 3.5vw, 2.25rem);
+      font-weight: 400;
+      line-height: 1.2;
+      letter-spacing: -0.02em;
+      margin: 2.5rem 0 1rem;
+      color: $premium-ink;
+    }
+
+    h2 {
+      font-family: $premium-font-display;
+      font-size: clamp(1.35rem, 2.5vw, 1.65rem);
+      font-weight: 400;
+      line-height: 1.25;
+      letter-spacing: -0.015em;
+      margin: 2.25rem 0 0.9rem;
+      color: $premium-ink;
+      padding-top: 0.5rem;
+      border-top: 1px solid rgba(31, 27, 36, 0.08);
+    }
+
+    h3 {
+      font-family: $premium-font-display;
+      font-size: 1.25rem;
+      font-weight: 400;
+      line-height: 1.3;
+      letter-spacing: -0.01em;
+      margin: 1.85rem 0 0.65rem;
+      color: $premium-ink;
+    }
+
+    h4 {
+      font-family: $premium-font-display;
+      font-size: 1.075rem;
+      font-weight: 500;
+      line-height: 1.35;
+      margin: 1.5rem 0 0.5rem;
+      color: $premium-ink;
+    }
+
+    h5 {
+      font-family: $premium-font-display;
+      font-size: 1rem;
+      font-weight: 500;
+      margin: 1.25rem 0 0.4rem;
+    }
+
+    h6 {
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin: 1.1rem 0 0.4rem;
+      color: rgba(31, 27, 36, 0.55);
+    }
+
+    p {
+      margin-bottom: 1.1rem;
+    }
+
+    ul, ol {
+      margin-bottom: 1.1rem;
+      padding-left: 1.5rem;
+      line-height: 1.75;
+
+      li {
+        margin-bottom: 0.35rem;
+      }
+    }
+
+    blockquote {
+      margin: 2rem 0;
+      padding: 1rem 1.5rem;
+      border-left: 3px solid rgba(31, 27, 36, 0.18);
+      background: rgba(31, 27, 36, 0.02);
+      border-radius: 0 6px 6px 0;
+      font-style: italic;
+      font-size: 1.05rem;
+      color: rgba(31, 27, 36, 0.78);
+      line-height: 1.7;
+    }
 
     /* Legacy Quill HTML — inline links */
     p a,
@@ -882,18 +1112,18 @@
     h3 a,
     blockquote a {
       color: $tulsi-blog-accent;
-      font-weight: 600;
+      font-weight: 500;
       text-decoration: underline solid;
-      text-decoration-color: rgba(107, 83, 68, 0.55);
+      text-decoration-color: $tulsi-blog-accent;
       text-underline-offset: 3px;
 
       &:hover {
-        color: #5a4538;
-        text-decoration-color: rgba(90, 69, 56, 0.85);
+        color: $tulsi-blog-accent;
+        opacity: 0.82;
       }
 
       &:focus-visible {
-        outline: 2px solid rgba(107, 83, 68, 0.4);
+        outline: 2px solid $tulsi-blog-accent;
         outline-offset: 2px;
       }
     }
