@@ -67,9 +67,11 @@ export class FooterComponent {
 
   onSubscribeModalHidden(): void {
     this.subscribeModalOpen = false;
+    if (isPlatformBrowser(this.platformId)) {
+      sessionStorage.setItem('newsletter_dismissed', '1');
+    }
     const el = this.lastFocusedEl;
     this.lastFocusedEl = null;
-    // Restore focus to the element that opened the modal.
     setTimeout(() => el?.focus?.());
   }
 
@@ -126,7 +128,7 @@ export class FooterComponent {
     }
   }
 
-  onSubscribe(modalName) {
+  onSubscribe(modalName: any) {
     this.subscribeForm.submit = true;
     this.subscribeForm.store_id = this.commonService.store_id;
     this.storeApi.SUBSCRIBE_NEWSLETTER(this.subscribeForm).subscribe(result => {
@@ -140,7 +142,7 @@ export class FooterComponent {
     });
   }
 
-  linkNavigate(x) {
+  linkNavigate(x: any) {
     if(x.link_type == 'internal') {
       this.router.navigate([x.link]);
     }

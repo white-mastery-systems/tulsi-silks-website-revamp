@@ -591,7 +591,8 @@ export class AppComponent implements AfterViewInit, OnDestroy {
                 isPlatformBrowser(this.platformId) &&
                 nlConfig.open_onload &&
                 this.commonService.ys_features.indexOf('newsletter') != -1 &&
-                this.isStorefrontHomePath()
+                this.isStorefrontHomePath() &&
+                !sessionStorage.getItem('newsletter_dismissed')
               ) {
                 this.detachPendingNewsletterAutoOpen();
                 const onFirstInteraction = (): void => {
