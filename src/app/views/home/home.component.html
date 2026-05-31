@@ -32,7 +32,7 @@
                     <figure class="mb-0">
                       <img appImgLazyLoad [ImagelazyLoad]="imgBaseUrl+x.desktop_img" alt="{{(x.img_alt)? x.img_alt: 'Image'}}">
                       <div *ngIf="x?.content_status && x?.content_details?.heading" class="category-grid-text d-flex">
-                        <p class="mb-0 py-2">{{ x.content_details.heading }}</p>
+                        <h3 class="mb-0 py-2">{{ x.content_details.heading }}</h3>
                       </div>
                     </figure>
                   </a>
@@ -555,7 +555,7 @@
                           *ngIf="x?.content_status && x?.content_details?.heading"
                           class="category-grid-text d-flex"
                         >
-                          <p
+                          <h3
                             class="m-3"
                             [ngClass]="
                               x?.content_details?.text_color == 'dark'
@@ -564,7 +564,7 @@
                             "
                           >
                             {{ x.content_details.heading }}
-                          </p>
+                          </h3>
                         </div>
                       </figure>
                     </div>
@@ -646,7 +646,7 @@
                             x?.position != 'b_c',
                         }"
                       >
-                        <p
+                        <h3
                           class="m-3"
                           [ngClass]="
                             x?.content_details?.text_color == 'dark'
@@ -655,7 +655,7 @@
                           "
                         >
                           {{ x.content_details.heading }}
-                        </p>
+                        </h3>
                       </div>
                     </figure>
                   </div>
@@ -795,7 +795,7 @@
                               x?.position != 'b_c',
                           }"
                         >
-                          <p
+                          <h3
                             class="mb-0"
                             [ngClass]="
                               x?.content_details?.text_color == 'dark'
@@ -804,7 +804,7 @@
                             "
                           >
                             {{ x.content_details.heading }}
-                          </p>
+                          </h3>
                         </div>
                       </figure>
                     </a>
@@ -1137,7 +1137,7 @@
                       </figure>
                       <div class="product-content">
                         <p *ngIf="x.brand" class="product-brand">{{ x.brand }}</p>
-                        <h3 class="product-title">{{ x.name }}</h3>
+                        <p class="product-title">{{ x.name }}</p>
                         <div>
                           <ng-container
                             *ngTemplateOutlet="
@@ -1370,7 +1370,7 @@
                   </figure>
                   <div class="product-content">
                     <p *ngIf="x.brand" class="product-brand">{{ x.brand }}</p>
-                    <h3 class="product-title">{{ x.name }}</h3>
+                    <p class="product-title">{{ x.name }}</p>
                     <div>
                       <ng-container
                         *ngTemplateOutlet="
@@ -1640,7 +1640,7 @@
                               </figure>
                               <div class="product-content">
                                 <p *ngIf="x.brand" class="product-brand">{{ x.brand }}</p>
-                                <h3 class="product-title">{{ x.name }}</h3>
+                                <p class="product-title">{{ x.name }}</p>
                                 <div>
                                   <ng-container
                                     *ngTemplateOutlet="
@@ -1847,7 +1847,7 @@
                             </figure>
                             <div class="product-content">
                               <p *ngIf="x.brand" class="product-brand">{{ x.brand }}</p>
-                              <h3 class="product-title">{{ x.name }}</h3>
+                              <p class="product-title">{{ x.name }}</p>
                               <div>
                                 <ng-container
                                   *ngTemplateOutlet="
@@ -2004,7 +2004,7 @@
                                       x?.position != 'b_c',
                                   }"
                                 >
-                                  <p
+                                  <h3
                                     class="mb-0"
                                     [ngClass]="
                                       x?.content_details?.text_color == 'dark'
@@ -2013,7 +2013,7 @@
                                     "
                                   >
                                     {{ x.content_details.heading }}
-                                  </p>
+                                  </h3>
                                 </div>
                               </figure>
                             </a>
@@ -2662,13 +2662,7 @@
     <!-- #Flexible Segment -->
 
     <!-- blogs -->
-    <!-- @defer: blog carousel is below-fold; deferred rendering removes ~40 KB of
-         blog-card DOM from SSR HTML. Blog content is already stripped in the server
-         interceptor; the heading is included in the deferred block so it only appears
-         after the section scrolls into view — acceptable since it is always off-screen
-         on first paint. -->
     <ng-container *ngIf="segment.type == 'blogs'">
-    @defer (on viewport; prefetch on idle) {
     <section
       class="primary-section news"
       [attr.aria-labelledby]="segment.heading ? 'home-' + segment.type + '-title-' + i : null"
@@ -2758,9 +2752,6 @@
         </div>
       </div>
     </section>
-    } @placeholder {
-      <div class="defer-section-placeholder" aria-hidden="true" style="min-height:180px"></div>
-    }
     </ng-container>
     <!-- #blogs -->
 

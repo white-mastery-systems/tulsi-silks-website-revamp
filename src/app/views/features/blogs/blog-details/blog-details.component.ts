@@ -35,7 +35,7 @@ declare const $: any;
 export class BlogDetailsComponent implements OnInit, AfterViewInit, OnDestroy {
 
   blog_details: any = {};
-  pageLoader: boolean;
+  pageLoader = false;
   imgBaseUrl: string = environment.img_baseurl;
   template_setting: any = environment.template_setting;
   storeSubscription: Subscription;
@@ -177,7 +177,7 @@ export class BlogDetailsComponent implements OnInit, AfterViewInit, OnDestroy {
           for(let segment of this.blog_details.segments) {
             if(segment.type=="featured_product") {
               let cardCount = this.swiperService.featured_products.card_count;
-              segment.product_list.forEach(obj => {
+              segment.product_list.forEach((obj: any) => {
                 obj.created_on = new Date(new Date(new Date(obj.created_on).setHours(23,59,59,59)).setDate(new Date(obj.created_on).getDate() + 30));
                 if(obj.badge_list?.length) obj.badge_list = this.commonService.buildTags(obj.badge_list);
                 if(obj.hold_till) {
@@ -228,7 +228,7 @@ export class BlogDetailsComponent implements OnInit, AfterViewInit, OnDestroy {
         const currentId = current?._id != null ? String(current._id) : '';
         const currentSlug = current?.seo_details?.page_url != null ? String(current.seo_details.page_url) : '';
         const currentTags = new Set<string>(
-          Array.isArray(current?.tags) ? current.tags.map((t) => String(t).toLowerCase()) : []
+          Array.isArray(current?.tags) ? current.tags.map((t: any) => String(t).toLowerCase()) : []
         );
         const currentCat = current?.category != null ? String(current.category).toLowerCase() : '';
 
@@ -280,7 +280,7 @@ export class BlogDetailsComponent implements OnInit, AfterViewInit, OnDestroy {
     return ['/blogs/' + x._id];
   }
 
-  exploreAll(segment) {
+  exploreAll(segment: any) {
     if(segment.type=="featured_product") {
       if(segment.featured_category_id=="all_products") this.router.navigate(['/all-products']);
       else if(segment.featured_category_id=="new_arrivals") this.router.navigate(['/new-arrivals']);
@@ -293,8 +293,8 @@ export class BlogDetailsComponent implements OnInit, AfterViewInit, OnDestroy {
     else if(segment.type=="discounted") this.router.navigate(['/on-sale']);
     else if(segment.type=="category") this.getCatalogInfo(segment.category_id);
   }
-  getCatalogInfo(catId) {
-    let secIndex = this.commonService.catalog_list.findIndex(obj => obj._id==catId);
+  getCatalogInfo(catId: any) {
+    let secIndex = this.commonService.catalog_list.findIndex((obj: any) => obj._id==catId);
     if(secIndex != -1) {
       let categoryDetails = this.commonService.catalog_list[secIndex];
       if(categoryDetails.seo_status) this.router.navigate(['/category/'+categoryDetails.seo_details.page_url]);
@@ -303,7 +303,14 @@ export class BlogDetailsComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   updateMetaData() {
-    this.blog_details.description = this.sanitizer.bypassSecurityTrustHtml(this.blog_details.description);
+    // Guard: only sanitize when still a plain string. getData() can be called
+    // twice (storeDataLoaded check + storeDataListener), and the SsrApiCache
+    // returns the same object reference both times. Calling bypassSecurityTrustHtml
+    // on an already-SafeHtml value makes Angular call .toString() on it, producing
+    // the literal "SafeValue must use [property]=binding…" string as content.
+    if (typeof this.blog_details.description === 'string') {
+      this.blog_details.description = this.sanitizer.bypassSecurityTrustHtml(this.blog_details.description);
+    }
     if(this.blog_details.seo_status) {
       let seoImage = this.imgBaseUrl + (this.blog_details.image || this.blog_details.coverImage || '');
       this.commonService.setSiteMetaData(this.blog_details.seo_details, seoImage);
@@ -847,7 +854,7 @@ export class BlogDetailsComponent implements OnInit, AfterViewInit, OnDestroy {
     return s.split('?')[0] || '/';
   }
 
-  stripHtml(html) {
+  stripHtml(html: any) {
     if (html) {
       let tmp = this.renderer.createElement('DIV');
       tmp.innerHTML = html;

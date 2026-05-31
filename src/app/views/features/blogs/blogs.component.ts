@@ -13,11 +13,21 @@ import { CommonService } from '../../../services/common.service';
 export class BlogsComponent implements OnInit, OnDestroy {
 
   page: number = 1; pageSize: number = 12;
-  pageLoader: boolean; list: any = [];
+  pageLoader = false; list: any = [];
   imgBaseUrl: string = environment.img_baseurl;
   template_setting: any = environment.template_setting;
   seo_details: any = {}; totalPages: number = 0;
   tempList: any = [];
+  searchQuery = '';
+
+  get filteredList(): any[] {
+    const q = this.searchQuery.trim().toLowerCase();
+    if (!q) return this.list;
+    return this.list.filter((x: any) =>
+      (x.name || '').toLowerCase().includes(q) ||
+      (x.category_name || '').toLowerCase().includes(q)
+    );
+  }
   bcList: any = [
     { name: "Home", position: 1, link: "/" },
     { name: "Blogs", position: 2, link: "/blogs" }
@@ -45,9 +55,13 @@ export class BlogsComponent implements OnInit, OnDestroy {
     }
   }
 
+  clearSearch() {
+    this.searchQuery = '';
+  }
+
   getList() {
     this.pageLoader = true; this.tempList = [];
-    let skip = (this.page-1)*this.pageSize;
+    const skip = (this.page - 1) * this.pageSize;
     this.storeApi.BLOG_LIST(skip, this.pageSize).subscribe(result => {
       if(result.status) {
         this.list = result.list;

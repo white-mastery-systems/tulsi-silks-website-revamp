@@ -2547,10 +2547,12 @@ a.active::after {
   border-bottom: 0;
 }
 
-.product-box .product-content h3.product-title{
+.product-box .product-content h3.product-title,
+.product-box .product-content p.product-title{
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  margin-bottom: 0.5rem;
   a.p-name {
     font-size: 1rem;
     margin-bottom: 0.5rem;

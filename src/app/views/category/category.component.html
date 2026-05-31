@@ -649,7 +649,7 @@
                   </figure>
                   <div class="product-content">
                     <p *ngIf="x.brand" class="product-brand">{{x.brand}}</p>
-                    <h3 class="product-title">{{x.name}}</h3>
+                    <p class="product-title">{{x.name}}</p>
                     <div>
                       <span *ngIf="x.disc_status" class="strike">{{ x.temp_selling_price | currency:cc.pipeCurrencyCode:'symbol-narrow':cc.format:cc.pipeLocale }}</span>
                       <span>{{ x.temp_discounted_price | currency:cc.pipeCurrencyCode:'symbol-narrow':cc.format:cc.pipeLocale }}</span>

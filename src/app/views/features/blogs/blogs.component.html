@@ -13,7 +13,7 @@
     <div class="{{template_setting?.body_type}}">
       <div class="row">
         <div class="col-md-12">
-          <div class="head-breadcrumb-inner border-btm d-flex justify-content-between">
+          <div class="head-breadcrumb-inner border-btm d-flex justify-content-between align-items-center">
             <div>
               <h2>Blogs</h2>
               <p>Stories that inspire</p>
@@ -22,14 +22,31 @@
               <span (click)="commonService.goBack();">GO BACK</span>
             </div>
           </div>
-        </div>
 
-        <div *ngIf="template_setting?.breadcrumb" class="col-md-12">
-          <div class="breadcrumb-navigation mt-3">
-            <ul class="collapsed">
-              <li><a routerLink="/">Home</a></li>
-              <li><span class="active-page">Blogs</span></li>
-            </ul>
+          <!-- Desktop: breadcrumb left + search right in one row.
+               Mobile: stacked — breadcrumb first, search below. -->
+          <div class="blogs-toolbar">
+            <div *ngIf="template_setting?.breadcrumb" class="blogs-toolbar__breadcrumb">
+              <div class="breadcrumb-navigation">
+                <ul class="collapsed">
+                  <li><a routerLink="/">Home</a></li>
+                  <li><span class="active-page">Blogs</span></li>
+                </ul>
+              </div>
+            </div>
+            <div class="blogs-toolbar__search">
+              <div class="blogs-search-box">
+                <lucide-icon name="search" [size]="16" stroke="1.5" class="blogs-search-icon" aria-hidden="true"></lucide-icon>
+                <input
+                  type="text"
+                  class="blogs-search-input"
+                  placeholder="Search blogs…"
+                  [(ngModel)]="searchQuery"
+                  aria-label="Search blogs"
+                />
+                <button *ngIf="searchQuery" class="blogs-search-clear" (click)="clearSearch()" aria-label="Clear search" type="button">&#x2715;</button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -39,8 +56,8 @@
 
   <section class="common-site-section">
     <div class="{{template_setting?.body_type}}">
-      <div *ngIf="list?.length" class="row">
-        <div class="col-12 col-md-6 col-xl-4 d-flex" *ngFor="let x of list;">
+      <div *ngIf="filteredList?.length" class="row">
+        <div class="col-12 col-md-6 col-xl-4 d-flex" *ngFor="let x of filteredList;">
           <article class="tulsi-blogs-card mb-4 w-100">
             <figure class="tulsi-blogs-card__media">
               <a (click)="onSelectBlog(x);" routerLink="{{ x.seo_status ? '/blogs/'+x.seo_details.page_url : '/blogs/'+x._id }}">
@@ -64,16 +81,16 @@
           </article>
         </div>
 
-        <div class="col-md-12 navigation-ngx">
+        <div *ngIf="!searchQuery" class="col-md-12 navigation-ngx">
           <ng-container *ngFor="let td of tempList | paginate: { itemsPerPage: pageSize, currentPage: page };"></ng-container>
           <pagination-controls (pageChange)="page=$event; commonService.pageScrollTop(); getList();" autoHide="true" responsive="true" maxSize="5" previousLabel="" nextLabel=""></pagination-controls>
         </div>
       </div>
 
-      <div *ngIf="!list?.length" class="row">
+      <div *ngIf="!filteredList?.length" class="row">
         <div class="col-12">
           <div class="live_order_id">
-            <h5 align="center">No blogs found</h5>
+            <h5 align="center">{{ searchQuery ? 'No blogs match "' + searchQuery + '"' : 'No blogs found' }}</h5>
           </div>
         </div>
       </div>

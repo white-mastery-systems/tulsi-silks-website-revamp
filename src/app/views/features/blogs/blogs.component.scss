@@ -150,3 +150,106 @@
 .navigation-ngx {
   margin-top: 1rem;
 }
+
+// ── Blog toolbar (breadcrumb + search) ───────────────────────────────────────
+// Desktop: single row — breadcrumb left, search pinned right.
+// Mobile:  stacked — breadcrumb on top, search full-width below.
+
+.blogs-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.75rem 0 0.25rem;
+
+  @media (max-width: 767px) {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.6rem;
+  }
+}
+
+.blogs-toolbar__breadcrumb {
+  flex: 1 1 auto;
+  min-width: 0;
+
+  .breadcrumb-navigation {
+    margin-top: 0;
+  }
+}
+
+.blogs-toolbar__search {
+  flex: 0 0 auto;
+  width: 22rem;
+
+  @media (max-width: 767px) {
+    width: 100%;
+  }
+}
+
+.blogs-search-box {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  border: 1px solid rgba(31, 27, 36, 0.2);
+  border-radius: 4px;
+  background: #fff;
+  padding: 0 0.875rem;
+  height: 2.75rem;
+
+  @media (max-width: 767px) {
+    height: 3.25rem;
+  }
+  transition: border-color 0.18s ease, box-shadow 0.18s ease;
+
+  // Transfer the focus ring from the input to this container so there's
+  // only one visible indicator (suppressed on the input below).
+  &:focus-within {
+    border-color: rgba(31, 27, 36, 0.6);
+    box-shadow: 0 0 0 3px rgba(31, 27, 36, 0.07);
+  }
+
+  .blogs-search-icon {
+    color: rgba(31, 27, 36, 0.4);
+    flex-shrink: 0;
+  }
+}
+
+.blogs-search-input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  // Suppress the global :focus-visible ring on the raw input — the container
+  // (.blogs-search-box :focus-within) already shows the focus state.
+  outline: none !important;
+  box-shadow: none !important;
+  background: transparent;
+  font-size: 0.9rem;
+  color: $tulsi-blog-ink;
+  padding: 0;
+  height: 100%;
+
+  @media (max-width: 767px) {
+    font-size: 1rem;
+  }
+
+  &::placeholder {
+    color: rgba(31, 27, 36, 0.38);
+  }
+}
+
+.blogs-search-clear {
+  background: none;
+  border: none;
+  padding: 0 0.1rem;
+  cursor: pointer;
+  color: rgba(31, 27, 36, 0.4);
+  font-size: 0.8rem;
+  line-height: 1;
+  flex-shrink: 0;
+
+  &:hover { color: $tulsi-blog-ink; }
+  // No focus ring needed here — it's decorative only
+  &:focus-visible { outline: none; }
+}
