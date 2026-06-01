@@ -12,7 +12,7 @@ import {
   NgZone,
 } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
-import { DomSanitizer } from '@angular/platform-browser';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { DatePipe } from '@angular/common';
 import { Router, ActivatedRoute, Params } from '@angular/router';
 import { environment } from '../../../../../environments/environment';
@@ -35,6 +35,7 @@ declare const $: any;
 export class BlogDetailsComponent implements OnInit, AfterViewInit, OnDestroy {
 
   blog_details: any = {};
+  descriptionHtml: SafeHtml = '';
   pageLoader = false;
   imgBaseUrl: string = environment.img_baseurl;
   template_setting: any = environment.template_setting;
@@ -201,7 +202,7 @@ export class BlogDetailsComponent implements OnInit, AfterViewInit, OnDestroy {
           }
           this.findCurrency();
           this.updateMetaData();
-          this.loadRelatedBlogs();
+          if (isPlatformBrowser(this.platformId)) this.loadRelatedBlogs();
         }
         else {
           console.log("response", result);
@@ -302,14 +303,13 @@ export class BlogDetailsComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   updateMetaData() {
-    // Guard: only sanitize when still a plain string. getData() can be called
-    // twice (storeDataLoaded check + storeDataListener), and the SsrApiCache
-    // returns the same object reference both times. Calling bypassSecurityTrustHtml
-    // on an already-SafeHtml value makes Angular call .toString() on it, producing
-    // the literal "SafeValue must use [property]=binding…" string as content.
-    if (typeof this.blog_details.description === 'string') {
-      this.blog_details.description = this.sanitizer.bypassSecurityTrustHtml(this.blog_details.description);
-    }
+    // Keep blog_details.description as a plain string — never mutate it to SafeHtml.
+    // SSR TransferState returns the same object reference on the client; mutating it
+    // caused our normalization to overwrite the SafeHtml with '' on the second call.
+    const raw = this.blog_details.description;
+    this.descriptionHtml = this.sanitizer.bypassSecurityTrustHtml(
+      typeof raw === 'string' ? raw : ''
+    );
     if(this.blog_details.seo_status) {
       let seoImage = this.imgBaseUrl + (this.blog_details.image || this.blog_details.coverImage || '');
       this.commonService.setSiteMetaData(this.blog_details.seo_details, seoImage);

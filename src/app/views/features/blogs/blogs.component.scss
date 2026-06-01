@@ -197,11 +197,11 @@
   background: #fff;
   padding: 0 0.875rem;
   height: 2.75rem;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease;
 
   @media (max-width: 767px) {
     height: 3.25rem;
   }
-  transition: border-color 0.18s ease, box-shadow 0.18s ease;
 
   // Transfer the focus ring from the input to this container so there's
   // only one visible indicator (suppressed on the input below).

@@ -8,7 +8,7 @@ import { BlogProductCarouselComponent } from './blog-product-carousel/blog-produ
 import { SharedBlogUiModule } from '../shared/shared-blog-ui.module';
 import { AccordionModule } from 'ngx-bootstrap/accordion';
 import { BlogSwiperDirective } from './directives/blog-swiper.directive';
-import { LucideAngularModule, ChevronLeft, ChevronRight, ArrowUp } from 'lucide-angular';
+import { LucideAngularModule, ChevronLeft, ChevronRight, ArrowUp, ArrowLeft } from 'lucide-angular';
 
 @NgModule({
   declarations: [BlogDetailsComponent, BlogRendererComponent, BlogProductCarouselComponent, BlogSwiperDirective],
@@ -17,7 +17,7 @@ import { LucideAngularModule, ChevronLeft, ChevronRight, ArrowUp } from 'lucide-
     SharedModule,
     BlogDetailsRoutingModule,
     AccordionModule.forRoot(),
-    LucideAngularModule.pick({ ChevronLeft, ChevronRight, ArrowUp })
+    LucideAngularModule.pick({ ChevronLeft, ChevronRight, ArrowUp, ArrowLeft })
   ]
 })
 

@@ -62,14 +62,14 @@
                 <li *ngFor="let t of blog_details.tags">{{ t }}</li>
               </ul>
 
-              <div class="premium-blog-detail__article-wrap" *ngIf="blog_details?.type=='basic' || useEditorJsRenderer">
+              <div class="premium-blog-detail__article-wrap" *ngIf="blog_details?.type=='basic' || blog_details?.editor_type=='basic' || useEditorJsRenderer">
                 <app-blog-renderer
                   *ngIf="useEditorJsRenderer"
                   [blocks]="blog_details.content.blocks"
                   [imgBaseUrl]="imgBaseUrl"
                 ></app-blog-renderer>
                 <div *ngIf="!useEditorJsRenderer" class="ql-container premium-blog-detail__quill">
-                  <div class="ql-editor" [innerHTML]="blog_details.description"></div>
+                  <div class="ql-editor" [innerHTML]="descriptionHtml"></div>
                 </div>
               </div>
             </div>
