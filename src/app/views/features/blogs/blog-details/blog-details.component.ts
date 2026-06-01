@@ -207,13 +207,12 @@ export class BlogDetailsComponent implements OnInit, AfterViewInit, OnDestroy {
           console.log("response", result);
           this.router.navigate(["/"]);
         }
-        // Article + TOC anchors exist only when `!pageLoader`; scrolling earlier finds no `#section-*` nodes.
-        setTimeout(() => {
-          this.pageLoader = false;
-          requestAnimationFrame(() => {
-            requestAnimationFrame(() => this.scheduleScrollToUrlFragment());
-          });
-        }, 500);
+        // Article + TOC anchors exist only when `!pageLoader`; double rAF gives Angular
+        // one render cycle after the spinner clears before trying to resolve #section-* ids.
+        this.pageLoader = false;
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => this.scheduleScrollToUrlFragment());
+        });
       });
     });
   }
@@ -411,6 +410,13 @@ export class BlogDetailsComponent implements OnInit, AfterViewInit, OnDestroy {
 
     if (!b['img_alt'] && b['imageAlt'] != null && String(b['imageAlt']).trim() !== '') {
       b['img_alt'] = String(b['imageAlt']);
+    }
+
+    // Ensure description is a plain string so [innerHTML] never receives a raw object
+    // and renders "[object Object]". The updateMetaData sanitizer handles string → SafeHtml.
+    if (b['description'] != null && typeof b['description'] !== 'string') {
+      const d = b['description'] as any;
+      b['description'] = typeof d?.html === 'string' ? d.html : '';
     }
   }
 

@@ -55,20 +55,6 @@
           <img loading="eager" decoding="async" [src]="heroImageSrc" alt="{{ heroImageAlt }}" />
         </figure>
 
-        <aside class="tulsi-blog-detail__author premium-blog-detail__author-card" *ngIf="showAuthorProfile">
-          <p class="tulsi-blog-detail__written-by">Written by</p>
-          <div class="tulsi-blog-detail__author-row">
-            <img *ngIf="authorAvatarUrl" class="tulsi-blog-detail__author-avatar" [src]="authorAvatarUrl" alt="" width="56" height="56">
-            <div class="tulsi-blog-detail__author-text">
-              <p class="tulsi-blog-detail__author-name">{{ authorDisplayName }}</p>
-              <p class="tulsi-blog-detail__author-role" *ngIf="authorRoleLine">{{ authorRoleLine }}</p>
-              <p class="tulsi-blog-detail__author-bio" *ngIf="authorBioLine">{{ authorBioLine }}</p>
-              <a *ngIf="authorBrowseExternalHref" class="tulsi-blog-detail__author-more premium-blog-detail__author-more-link" [href]="authorBrowseExternalHref" target="_blank" rel="noopener noreferrer">View more articles</a>
-              <a *ngIf="!authorBrowseExternalHref && authorBrowseRouterLink" class="tulsi-blog-detail__author-more premium-blog-detail__author-more-link" [routerLink]="authorBrowseRouterLink" [queryParams]="authorBrowseQueryParams || {}">View more articles</a>
-            </div>
-          </div>
-        </aside>
-
         <div class="blog-post blog-details premium-blog-detail__article-stack">
           <div class="tulsi-blog-detail__inner">
             <div class="blog-content d-flex flex-column tulsi-blog-detail__main">
@@ -292,6 +278,20 @@
                   </div>
                 </div>
               </ng-container>
+
+              <aside class="tulsi-blog-detail__author premium-blog-detail__author-card" *ngIf="showAuthorProfile">
+                <p class="tulsi-blog-detail__written-by">Written by</p>
+                <div class="tulsi-blog-detail__author-row">
+                  <img *ngIf="authorAvatarUrl" class="tulsi-blog-detail__author-avatar" [src]="authorAvatarUrl" alt="" width="56" height="56">
+                  <div class="tulsi-blog-detail__author-text">
+                    <p class="tulsi-blog-detail__author-name">{{ authorDisplayName }}</p>
+                    <p class="tulsi-blog-detail__author-role" *ngIf="authorRoleLine">{{ authorRoleLine }}</p>
+                    <p class="tulsi-blog-detail__author-bio" *ngIf="authorBioLine">{{ authorBioLine }}</p>
+                    <a *ngIf="authorBrowseExternalHref" class="tulsi-blog-detail__author-more premium-blog-detail__author-more-link" [href]="authorBrowseExternalHref" target="_blank" rel="noopener noreferrer">View more articles</a>
+                    <a *ngIf="!authorBrowseExternalHref && authorBrowseRouterLink" class="tulsi-blog-detail__author-more premium-blog-detail__author-more-link" [routerLink]="authorBrowseRouterLink" [queryParams]="authorBrowseQueryParams || {}">View more articles</a>
+                  </div>
+                </div>
+              </aside>
 
             </div>
           </div>

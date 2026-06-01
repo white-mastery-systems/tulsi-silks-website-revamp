@@ -57,7 +57,7 @@
   <section class="common-site-section">
     <div class="{{template_setting?.body_type}}">
       <div *ngIf="filteredList?.length" class="row">
-        <div class="col-12 col-md-6 col-xl-4 d-flex" *ngFor="let x of filteredList;">
+        <div class="col-12 col-md-6 col-xl-4 d-flex" *ngFor="let x of filteredList; trackBy: trackById">
           <article class="tulsi-blogs-card mb-4 w-100">
             <figure class="tulsi-blogs-card__media">
               <a (click)="onSelectBlog(x);" routerLink="{{ x.seo_status ? '/blogs/'+x.seo_details.page_url : '/blogs/'+x._id }}">
@@ -73,7 +73,7 @@
                   {{x.name}}
                 </a>
               </h5>
-              <p class="overflow-dots blog-description" [innerHtml]="x.description"></p>
+              <p class="overflow-dots blog-description">{{ x._excerpt }}</p>
               <a class="tulsi-blogs-card__more" (click)="onSelectBlog(x);" routerLink="{{ x.seo_status ? '/blogs/'+x.seo_details.page_url : '/blogs/'+x._id }}">
                 READ MORE
               </a>

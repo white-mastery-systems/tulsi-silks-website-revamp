@@ -64,7 +64,7 @@ export class BlogsComponent implements OnInit, OnDestroy {
     const skip = (this.page - 1) * this.pageSize;
     this.storeApi.BLOG_LIST(skip, this.pageSize).subscribe(result => {
       if(result.status) {
-        this.list = result.list;
+        this.list = result.list.map((b: any) => ({ ...b, _excerpt: this.buildExcerpt(b.description) }));
         this.totalPages = Math.ceil(result.count/this.pageSize);
         for(let i=0; i<result.count; i++) {
           this.tempList.push("");
@@ -92,10 +92,20 @@ export class BlogsComponent implements OnInit, OnDestroy {
         this.commonService.createJsonLD('blogs-itemlist-jsonld', itemListSchema);
       }
       else console.log("response", result);
-      setTimeout(() => { this.pageLoader = false; }, 500);
+      this.pageLoader = false;
     });
     // schema
     this.commonService.breadCrumbList(this.bcList);
+  }
+
+  trackById(_: number, x: any): string {
+    return x?._id ?? '';
+  }
+
+  private buildExcerpt(html: unknown, max = 160): string {
+    if (html == null) return '';
+    const text = String(html).replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+    return text.length > max ? text.slice(0, max).trimEnd() + '…' : text;
   }
 
   ngOnDestroy() {
