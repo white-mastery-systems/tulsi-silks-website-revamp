@@ -100,6 +100,8 @@ export class CommonService {
   blog_list: any = [];
   search_category_list: any = [];
   collection_list: any = [];
+  catalog_with_sub_list: any = [];
+  catalog_sub_details_cache: Record<string, any> = {};
   footer_seo_links: any = [];
   shippingList: any = [];
 

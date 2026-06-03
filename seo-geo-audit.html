@@ -1,0 +1,919 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tulsi Silks — SEO, GEO & AI Visibility Audit 2026</title>
+  <style>
+    :root {
+      --brand: #8B0000;
+      --brand-light: #b91c1c;
+      --gold: #d97706;
+      --bg: #fafaf9;
+      --card: #fff;
+      --border: #e5e7eb;
+      --text: #1c1917;
+      --text-muted: #57534e;
+      --code-bg: #1e293b;
+      --code-text: #e2e8f0;
+      --success: #15803d;
+      --warning: #d97706;
+      --danger: #dc2626;
+      --info: #1d4ed8;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); line-height: 1.7; }
+
+    /* Header */
+    .audit-header { background: linear-gradient(135deg, var(--brand) 0%, #450a0a 100%); color: #fff; padding: 48px 40px 36px; }
+    .audit-header h1 { font-size: 2rem; font-weight: 700; letter-spacing: -0.5px; }
+    .audit-header .subtitle { font-size: 1.05rem; opacity: 0.85; margin-top: 8px; }
+    .audit-meta { display: flex; flex-wrap: wrap; gap: 24px; margin-top: 20px; }
+    .audit-meta-item { display: flex; align-items: center; gap: 8px; font-size: 0.875rem; opacity: 0.9; }
+
+    /* Nav */
+    .toc { background: var(--card); border-bottom: 1px solid var(--border); padding: 0 40px; position: sticky; top: 0; z-index: 100; overflow-x: auto; white-space: nowrap; box-shadow: 0 1px 4px rgba(0,0,0,.06); }
+    .toc a { display: inline-block; padding: 14px 16px; text-decoration: none; color: var(--text-muted); font-size: 0.8rem; font-weight: 600; text-transform: uppercase; letter-spacing: .5px; border-bottom: 2px solid transparent; transition: all .2s; }
+    .toc a:hover { color: var(--brand); border-bottom-color: var(--brand); }
+
+    /* Layout */
+    .container { max-width: 1200px; margin: 0 auto; padding: 40px; }
+
+    /* Executive Summary */
+    .exec-summary { background: linear-gradient(135deg, #fff7ed 0%, #fef3c7 100%); border: 1px solid #fed7aa; border-radius: 12px; padding: 28px 32px; margin-bottom: 40px; }
+    .exec-summary h2 { color: var(--brand); margin-bottom: 12px; }
+
+    /* Scorecards */
+    .scorecard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; margin: 24px 0; }
+    .score-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 20px; text-align: center; transition: box-shadow .2s; }
+    .score-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,.08); }
+    .score-card .score-num { font-size: 2.2rem; font-weight: 800; line-height: 1; margin-bottom: 6px; }
+    .score-card .score-label { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: .5px; font-weight: 600; }
+    .score-critical { color: #dc2626; border-top: 4px solid #dc2626; }
+    .score-poor { color: #ea580c; border-top: 4px solid #ea580c; }
+    .score-fair { color: #d97706; border-top: 4px solid #d97706; }
+    .score-good { color: #16a34a; border-top: 4px solid #16a34a; }
+
+    /* Sections */
+    .phase { margin-bottom: 60px; }
+    .phase-header { display: flex; align-items: center; gap: 14px; margin-bottom: 24px; padding-bottom: 12px; border-bottom: 2px solid var(--border); }
+    .phase-num { background: var(--brand); color: #fff; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; font-weight: 700; flex-shrink: 0; }
+    .phase-header h2 { font-size: 1.5rem; color: var(--brand); font-weight: 700; }
+
+    h3 { font-size: 1.1rem; color: var(--text); margin: 28px 0 12px; font-weight: 700; }
+    h4 { font-size: 0.95rem; color: var(--text-muted); margin: 20px 0 8px; font-weight: 600; text-transform: uppercase; letter-spacing: .4px; }
+    p { margin-bottom: 14px; color: var(--text); }
+
+    /* Tables */
+    .table-wrap { overflow-x: auto; margin: 16px 0; border-radius: 8px; border: 1px solid var(--border); }
+    table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
+    thead { background: var(--brand); color: #fff; }
+    thead th { padding: 12px 16px; text-align: left; font-weight: 600; white-space: nowrap; }
+    tbody tr { border-bottom: 1px solid var(--border); transition: background .15s; }
+    tbody tr:hover { background: #fafaf9; }
+    tbody tr:last-child { border-bottom: none; }
+    td { padding: 10px 16px; vertical-align: top; }
+
+    /* Status badges */
+    .badge { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; white-space: nowrap; }
+    .badge-critical { background: #fee2e2; color: #991b1b; }
+    .badge-high { background: #ffedd5; color: #9a3412; }
+    .badge-medium { background: #fef9c3; color: #854d0e; }
+    .badge-low { background: #dcfce7; color: #166534; }
+    .badge-ok { background: #d1fae5; color: #065f46; }
+    .badge-missing { background: #f3f4f6; color: #374151; }
+    .badge-partial { background: #e0e7ff; color: #3730a3; }
+
+    /* Alert boxes */
+    .alert { border-radius: 8px; padding: 16px 20px; margin: 16px 0; display: flex; gap: 12px; align-items: flex-start; }
+    .alert-icon { font-size: 1.2rem; flex-shrink: 0; margin-top: 1px; }
+    .alert-critical { background: #fee2e2; border-left: 4px solid #dc2626; }
+    .alert-warning { background: #fef9c3; border-left: 4px solid #d97706; }
+    .alert-info { background: #dbeafe; border-left: 4px solid #1d4ed8; }
+    .alert-success { background: #d1fae5; border-left: 4px solid #16a34a; }
+    .alert strong { display: block; margin-bottom: 4px; font-size: 0.875rem; }
+    .alert p { font-size: 0.875rem; margin: 0; }
+
+    /* Code blocks */
+    pre { background: var(--code-bg); color: var(--code-text); border-radius: 8px; padding: 20px; overflow-x: auto; font-size: 0.82rem; line-height: 1.6; margin: 12px 0; font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace; }
+    code { font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace; font-size: 0.85em; background: #f1f5f9; padding: 2px 6px; border-radius: 4px; color: #be123c; }
+
+    /* Progress bars */
+    .progress-bar { height: 8px; background: #e5e7eb; border-radius: 4px; overflow: hidden; margin-top: 6px; }
+    .progress-fill { height: 100%; border-radius: 4px; transition: width .4s; }
+
+    /* Finding cards */
+    .finding { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 20px 24px; margin: 12px 0; }
+    .finding-critical { border-left: 4px solid #dc2626; }
+    .finding-high { border-left: 4px solid #ea580c; }
+    .finding-medium { border-left: 4px solid #d97706; }
+    .finding-low { border-left: 4px solid #16a34a; }
+
+    /* Top 10 lists */
+    .top10 { counter-reset: item; list-style: none; padding: 0; }
+    .top10 li { counter-increment: item; display: flex; gap: 14px; padding: 14px 0; border-bottom: 1px solid var(--border); align-items: flex-start; }
+    .top10 li:last-child { border-bottom: none; }
+    .top10 li::before { content: counter(item); background: var(--brand); color: #fff; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: 700; flex-shrink: 0; margin-top: 2px; }
+
+    /* Roadmap */
+    .roadmap-section { background: var(--card); border: 1px solid var(--border); border-radius: 10px; margin: 16px 0; overflow: hidden; }
+    .roadmap-header { padding: 14px 20px; font-weight: 700; font-size: 0.9rem; display: flex; align-items: center; gap: 10px; }
+    .roadmap-quick { background: #d1fae5; color: #065f46; }
+    .roadmap-medium { background: #dbeafe; color: #1e40af; }
+    .roadmap-major { background: #f3e8ff; color: #6b21a8; }
+
+    /* Footer */
+    .audit-footer { background: var(--text); color: #9ca3af; padding: 24px 40px; text-align: center; font-size: 0.8rem; margin-top: 60px; }
+
+    @media (max-width: 768px) {
+      .container { padding: 20px; }
+      .audit-header { padding: 28px 20px; }
+      .audit-header h1 { font-size: 1.4rem; }
+      .scorecard-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="audit-header">
+  <h1>Tulsi Silks — Complete SEO, GEO &amp; AI Visibility Audit</h1>
+  <div class="subtitle">Comprehensive analysis for Search Engines, AI Crawlers, LLM Retrieval, and Knowledge Graph Extraction</div>
+  <div class="audit-meta">
+    <div class="audit-meta-item">🌐 <strong>Website:</strong> https://tulsisilks.co.in/</div>
+    <div class="audit-meta-item">📅 <strong>Audit Date:</strong> June 3, 2026</div>
+    <div class="audit-meta-item">⚙️ <strong>Framework:</strong> Angular 17 + Angular Universal SSR (Yourstore 1.9.57)</div>
+    <div class="audit-meta-item">🏷️ <strong>Sector:</strong> E-Commerce / Luxury Textiles</div>
+  </div>
+</div>
+
+<!-- NAV -->
+<nav class="toc">
+  <a href="#exec">Executive Summary</a>
+  <a href="#phase1">Phase 1: Crawlability</a>
+  <a href="#phase2">Phase 2: GEO Audit</a>
+  <a href="#phase3">Phase 3: Leadership</a>
+  <a href="#phase4">Phase 4: Structured Data</a>
+  <a href="#phase5">Phase 5: AI Visibility</a>
+  <a href="#phase6">Phase 6: Implementation</a>
+  <a href="#phase7">Phase 7: Roadmap</a>
+  <a href="#phase8">Phase 8: Scorecard</a>
+  <a href="#tasks">Dev Tasks</a>
+</nav>
+
+<div class="container">
+
+  <!-- FINAL SCORECARD (top) -->
+  <div style="margin-bottom:40px;">
+    <div class="scorecard-grid">
+      <div class="score-card score-fair">
+        <div class="score-num">4.5</div>
+        <div class="score-label">Technical SEO /10</div>
+        <div class="progress-bar"><div class="progress-fill" style="width:45%;background:#d97706"></div></div>
+      </div>
+      <div class="score-card score-poor">
+        <div class="score-num">3.5</div>
+        <div class="score-label">Structured Data /10</div>
+        <div class="progress-bar"><div class="progress-fill" style="width:35%;background:#ea580c"></div></div>
+      </div>
+      <div class="score-card score-critical">
+        <div class="score-num">2.3</div>
+        <div class="score-label">AI Crawlability /10</div>
+        <div class="progress-bar"><div class="progress-fill" style="width:23%;background:#dc2626"></div></div>
+      </div>
+      <div class="score-card score-poor">
+        <div class="score-num">3.0</div>
+        <div class="score-label">Knowledge Graph /10</div>
+        <div class="progress-bar"><div class="progress-fill" style="width:30%;background:#ea580c"></div></div>
+      </div>
+      <div class="score-card score-critical">
+        <div class="score-num">2.0</div>
+        <div class="score-label">Founder Discoverability /10</div>
+        <div class="progress-bar"><div class="progress-fill" style="width:20%;background:#dc2626"></div></div>
+      </div>
+      <div class="score-card score-critical">
+        <div class="score-num">2.5</div>
+        <div class="score-label">GEO Readiness /10</div>
+        <div class="progress-bar"><div class="progress-fill" style="width:25%;background:#dc2626"></div></div>
+      </div>
+      <div class="score-card score-fair">
+        <div class="score-num">6.0</div>
+        <div class="score-label">Core Web Vitals /10</div>
+        <div class="progress-bar"><div class="progress-fill" style="width:60%;background:#d97706"></div></div>
+      </div>
+      <div class="score-card score-fair">
+        <div class="score-num">6.5</div>
+        <div class="score-label">Local SEO /10</div>
+        <div class="progress-bar"><div class="progress-fill" style="width:65%;background:#d97706"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- EXECUTIVE SUMMARY -->
+  <div class="exec-summary" id="exec">
+    <h2>🔍 Executive Summary</h2>
+    <p>Tulsi Silks has a <strong>partially functioning Angular Universal SSR implementation</strong> but is critically undermined by a structural flaw: all structured data (JSON-LD), meta tags, canonical URLs, and Open Graph tags are populated <strong>exclusively via client-side JavaScript</strong> — they are absent from the initial server-rendered HTML response.</p>
+    <p>This single failure makes the site largely <strong>invisible to AI crawlers</strong> (GPTBot, ClaudeBot, PerplexityBot, Google-Extended), which either do not execute JavaScript or only partially render it. The site has excellent content depth, a 30-year brand story, and capable engineering — but GEO readiness is currently <strong>2.5/10</strong>.</p>
+    <p>The good news: <strong>4 of the top 10 issues are 1-hour fixes</strong> that would immediately raise AI visibility from 2.3 to approximately 5–6/10.</p>
+  </div>
+
+  <!-- PHASE 1: CRAWLABILITY -->
+  <div class="phase" id="phase1">
+    <div class="phase-header">
+      <div class="phase-num">1</div>
+      <h2>Crawlability Analysis</h2>
+    </div>
+
+    <div class="alert alert-critical">
+      <span class="alert-icon">🚨</span>
+      <div>
+        <strong>CRITICAL: Homepage JSON-LD is browser-only (line 656, common.service.ts)</strong>
+        <p>The <code>applyHomePageJsonLd()</code> method starts with <code>if (!isPlatformBrowser(...)) return;</code> — this means ALL homepage structured data is stripped from the SSR HTML response. AI crawlers see zero schema.</p>
+      </div>
+    </div>
+
+    <div class="alert alert-critical">
+      <span class="alert-icon">🚨</span>
+      <div>
+        <strong>CRITICAL: index.html has empty meta tags</strong>
+        <p>Meta description, OG tags, and canonical link all have <code>content=""</code> and <code>href=""</code> in the initial HTML. These are only populated after JavaScript API calls complete.</p>
+      </div>
+    </div>
+
+    <div class="alert alert-critical">
+      <span class="alert-icon">🚨</span>
+      <div>
+        <strong>CRITICAL: Blog publisher logo uses localStorage (SSR crash)</strong>
+        <p><code>localStorage.getItem('random_num')</code> returns <code>null</code> on the server, producing an invalid publisher logo URL in every BlogPosting schema.</p>
+      </div>
+    </div>
+
+    <h3>Page-by-Page Crawlability Table</h3>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Page</th><th>HTML Available</th><th>JS Rendered</th><th>AI Crawl Risk</th><th>Priority</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Homepage /</strong></td>
+            <td>Partial — layout structure only</td>
+            <td>Title, meta, OG, canonical, JSON-LD, product names</td>
+            <td><span class="badge badge-critical">CRITICAL</span></td>
+            <td><span class="badge badge-critical">P0</span></td>
+          </tr>
+          <tr>
+            <td><strong>Category /category/[slug]</strong></td>
+            <td>Shell only</td>
+            <td>All products, breadcrumbs, all schema, prices</td>
+            <td><span class="badge badge-critical">CRITICAL</span></td>
+            <td><span class="badge badge-critical">P0</span></td>
+          </tr>
+          <tr>
+            <td><strong>Product /product/[slug]</strong></td>
+            <td>Shell only</td>
+            <td>Product name, price, description, all schema</td>
+            <td><span class="badge badge-critical">CRITICAL</span></td>
+            <td><span class="badge badge-critical">P0</span></td>
+          </tr>
+          <tr>
+            <td><strong>About Us /about-us</strong></td>
+            <td>Partial — brand story text</td>
+            <td>Full founder bios</td>
+            <td><span class="badge badge-high">HIGH</span></td>
+            <td><span class="badge badge-high">P1</span></td>
+          </tr>
+          <tr>
+            <td><strong>Blog List /blogs</strong></td>
+            <td>SSR — titles visible</td>
+            <td>Author credits, dates</td>
+            <td><span class="badge badge-medium">MEDIUM</span></td>
+            <td><span class="badge badge-medium">P2</span></td>
+          </tr>
+          <tr>
+            <td><strong>Blog Detail /blogs/[slug]</strong></td>
+            <td>Partial — heading visible</td>
+            <td>Article body, schema, canonical</td>
+            <td><span class="badge badge-high">HIGH</span></td>
+            <td><span class="badge badge-high">P1</span></td>
+          </tr>
+          <tr>
+            <td><strong>Contact /contact-us</strong></td>
+            <td>Form shell</td>
+            <td>Business hours, map</td>
+            <td><span class="badge badge-medium">MEDIUM</span></td>
+            <td><span class="badge badge-medium">P2</span></td>
+          </tr>
+          <tr>
+            <td><strong>/kanjivaram-silk-sarees</strong></td>
+            <td>404 error page</td>
+            <td>N/A</td>
+            <td><span class="badge badge-critical">CRITICAL</span></td>
+            <td><span class="badge badge-high">P1</span></td>
+          </tr>
+          <tr>
+            <td><strong>Sitemap /sitemap.xml</strong></td>
+            <td>Full XML available</td>
+            <td>N/A</td>
+            <td><span class="badge badge-medium">MEDIUM</span></td>
+            <td><span class="badge badge-medium">P2</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Source Code Evidence</h3>
+    <pre><code class="language-typescript">// src/app/services/common.service.ts — Line 656
+// ❌ THIS IS THE ROOT CAUSE: JSON-LD never reaches SSR HTML
+applyHomePageJsonLd(): void {
+  if (!isPlatformBrowser(this.platformId)) return; // ← REMOVE THIS LINE
+  this.removeElement('home-jsonld');
+  this.createJsonLD('home-jsonld', buildHomePageJsonLd(...));
+}</code></pre>
+
+    <pre><code class="language-html">&lt;!-- src/index.html — All SEO fields are empty in initial HTML --&gt;
+&lt;meta name="robots" content="index"&gt;  &lt;!-- Missing "follow" --&gt;
+&lt;meta name="description" content=""&gt;   &lt;!-- ❌ EMPTY --&gt;
+&lt;meta property="og:title" content=""&gt;  &lt;!-- ❌ EMPTY --&gt;
+&lt;meta property="og:description" content=""&gt;  &lt;!-- ❌ EMPTY --&gt;
+&lt;meta property="og:image" content=""&gt;  &lt;!-- ❌ EMPTY --&gt;
+&lt;link rel="canonical" href="" id="ccLink"&gt;  &lt;!-- ❌ EMPTY --&gt;</code></pre>
+  </div>
+
+  <!-- PHASE 2: GEO -->
+  <div class="phase" id="phase2">
+    <div class="phase-header">
+      <div class="phase-num">2</div>
+      <h2>GEO (Generative Engine Optimization) Audit</h2>
+    </div>
+
+    <h3>GEO Scorecard by Section</h3>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Section</th><th>LLM Extract</th><th>Entity Ready</th><th>Schema</th><th>Citation Ready</th><th>E-E-A-T</th><th>Overall</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Homepage</strong></td>
+            <td>4/10</td><td>3/10</td><td>3/10</td><td>3/10</td><td>4/10</td>
+            <td><strong style="color:#dc2626">3.4/10</strong></td>
+          </tr>
+          <tr>
+            <td><strong>About Us / Founders</strong></td>
+            <td>5/10</td><td>4/10</td><td>1/10</td><td>4/10</td><td>5/10</td>
+            <td><strong style="color:#ea580c">3.8/10</strong></td>
+          </tr>
+          <tr>
+            <td><strong>Product Pages</strong></td>
+            <td>5/10</td><td>6/10</td><td>7/10</td><td>4/10</td><td>4/10</td>
+            <td><strong style="color:#d97706">5.2/10</strong></td>
+          </tr>
+          <tr>
+            <td><strong>Category Pages</strong></td>
+            <td>4/10</td><td>5/10</td><td>6/10</td><td>3/10</td><td>3/10</td>
+            <td><strong style="color:#d97706">4.2/10</strong></td>
+          </tr>
+          <tr>
+            <td><strong>Blog Content</strong></td>
+            <td>6/10</td><td>5/10</td><td>5/10</td><td>6/10</td><td>5/10</td>
+            <td><strong style="color:#d97706">5.4/10</strong></td>
+          </tr>
+          <tr>
+            <td><strong>Contact / Local</strong></td>
+            <td>7/10</td><td>7/10</td><td>5/10</td><td>6/10</td><td>6/10</td>
+            <td><strong style="color:#16a34a">6.2/10</strong></td>
+          </tr>
+          <tr style="background:#fff7f7;">
+            <td><strong>Overall GEO Score</strong></td>
+            <td colspan="5" style="text-align:center;color:#78716c;">Weighted average</td>
+            <td><strong style="color:#dc2626;font-size:1.1rem;">4.4/10</strong></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Key GEO Gaps</h3>
+    <div class="finding finding-critical">
+      <strong>No Speakable Schema</strong> — Google AI Overviews, Gemini, and voice assistants cannot identify authoritative content zones. Adding <code>SpeakableSpecification</code> CSS selectors would immediately boost AI answer inclusion.
+    </div>
+    <div class="finding finding-critical">
+      <strong>No citable founder expertise content</strong> — When ChatGPT receives "Who are the saree experts at Tulsi Silks Chennai?", there is no extractable answer. Founder Suresh Parekh is mentioned in blog bylines but has no profile page, no credentials, and no Person entity in static HTML.
+    </div>
+    <div class="finding finding-high">
+      <strong>Author bio too brief for E-E-A-T</strong> — "Decades of experience in sarees and textiles" is a single vague sentence. Google's quality guidelines require specific, demonstrable expertise for AI citation eligibility.
+    </div>
+    <div class="finding finding-high">
+      <strong>Blog article images alt text is "blog-image"</strong> — Generic alt text prevents image entity recognition. Should be descriptive: "Organza saree wedding draping example — pale pink with floral embroidery."
+    </div>
+  </div>
+
+  <!-- PHASE 3: LEADERSHIP -->
+  <div class="phase" id="phase3">
+    <div class="phase-header">
+      <div class="phase-num">3</div>
+      <h2>Leadership / Founders Page Analysis</h2>
+    </div>
+
+    <div class="alert alert-warning">
+      <span class="alert-icon">⚠️</span>
+      <div>
+        <strong>No dedicated founder/leadership pages exist.</strong>
+        <p>Founder information is confined to: one sentence on About Us, a byline on blog posts, and browser-only schema code. No person profile page exists.</p>
+      </div>
+    </div>
+
+    <h3>Person Entity Assessment</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Signal</th><th>Status</th><th>Issue</th></tr></thead>
+        <tbody>
+          <tr><td>Full names (Suresh &amp; Santosh Parekh)</td><td><span class="badge badge-ok">✅ Present</span></td><td>In About Us text (SSR)</td></tr>
+          <tr><td>Founder photographs</td><td><span class="badge badge-missing">❌ Missing</span></td><td>No photos on About Us</td></tr>
+          <tr><td>Detailed biographies</td><td><span class="badge badge-critical">❌ Critical</span></td><td>"vision centers on textile expertise" — not citable</td></tr>
+          <tr><td>Professional credentials</td><td><span class="badge badge-missing">❌ Missing</span></td><td>No industry roles, awards, memberships</td></tr>
+          <tr><td>Social profiles</td><td><span class="badge badge-missing">❌ Missing</span></td><td>No LinkedIn or individual social presence</td></tr>
+          <tr><td>Person schema (@type: Person)</td><td><span class="badge badge-partial">⚠️ Partial</span></td><td>Exists in JS code — never reaches HTML</td></tr>
+          <tr><td>knowsAbout property</td><td><span class="badge badge-missing">❌ Missing</span></td><td>No topic expertise linked to persons</td></tr>
+          <tr><td>affiliation property</td><td><span class="badge badge-missing">❌ Missing</span></td><td>No industry body membership</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Recommended Person Schema (for About Us — must be SSR-rendered)</h3>
+    <pre><code class="language-json">{
+  "@context": "https://schema.org",
+  "@type": "Person",
+  "@id": "https://tulsisilks.co.in/about-us#suresh-parekh",
+  "name": "Suresh Parekh",
+  "jobTitle": "Co-Founder &amp; Managing Director",
+  "worksFor": { "@id": "https://tulsisilks.co.in/#organization" },
+  "foundingDate": "1993",
+  "knowsAbout": [
+    "Kanjivaram silk weaving",
+    "Banarasi silk sarees",
+    "Indian handloom textiles",
+    "Traditional Indian weaving techniques",
+    "Saree curation and styling"
+  ],
+  "description": "Co-founder of Tulsi Silks with 30+ years expertise in traditional Indian silk sarees. Established direct weaver relationships in Kanchipuram and Varanasi since 1993.",
+  "image": "https://tulsisilks.co.in/assets/images/suresh-parekh.jpg",
+  "url": "https://tulsisilks.co.in/about-us#suresh-parekh"
+}</code></pre>
+  </div>
+
+  <!-- PHASE 4: STRUCTURED DATA -->
+  <div class="phase" id="phase4">
+    <div class="phase-header">
+      <div class="phase-num">4</div>
+      <h2>Structured Data Audit</h2>
+    </div>
+
+    <h3>Schema Inventory</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Schema Type</th><th>Status</th><th>Where</th><th>SSR Delivered?</th><th>Valid?</th></tr></thead>
+        <tbody>
+          <tr><td>Organization</td><td><span class="badge badge-partial">Present</span></td><td>home-page-json-ld.ts</td><td><span class="badge badge-critical">❌ Browser-only</span></td><td>✅</td></tr>
+          <tr><td>Store / LocalBusiness</td><td><span class="badge badge-partial">Present</span></td><td>home-page-json-ld.ts + category.component.ts</td><td><span class="badge badge-critical">❌ Browser-only</span></td><td>✅</td></tr>
+          <tr><td>WebSite + SearchAction</td><td><span class="badge badge-partial">Present</span></td><td>home-page-json-ld.ts</td><td><span class="badge badge-critical">❌ Browser-only</span></td><td>✅</td></tr>
+          <tr><td>Product</td><td><span class="badge badge-partial">Present</span></td><td>product.component.ts</td><td><span class="badge badge-critical">❌ Browser-only</span></td><td>✅</td></tr>
+          <tr><td>BreadcrumbList</td><td><span class="badge badge-partial">Present</span></td><td>common.service.ts:breadCrumbList()</td><td><span class="badge badge-critical">❌ Browser-only</span></td><td>✅</td></tr>
+          <tr><td>BlogPosting</td><td><span class="badge badge-partial">Present</span></td><td>blog-details.component.ts</td><td><span class="badge badge-critical">❌ Browser-only</span></td><td>⚠️ Partial*</td></tr>
+          <tr><td>FAQPage (category)</td><td><span class="badge badge-partial">Present</span></td><td>category.component.ts</td><td><span class="badge badge-critical">❌ Browser-only</span></td><td>✅</td></tr>
+          <tr><td>AggregateRating + Review</td><td><span class="badge badge-partial">Present</span></td><td>product.component.ts</td><td><span class="badge badge-critical">❌ Browser-only</span></td><td>✅</td></tr>
+          <tr><td>MerchantReturnPolicy</td><td><span class="badge badge-partial">Present</span></td><td>home-page-json-ld.ts</td><td><span class="badge badge-critical">❌ Browser-only</span></td><td>✅</td></tr>
+          <tr><td>OfferShippingDetails</td><td><span class="badge badge-partial">Present</span></td><td>category.component.ts</td><td><span class="badge badge-critical">❌ Browser-only</span></td><td>✅</td></tr>
+          <tr><td>Person (Founders)</td><td><span class="badge badge-partial">Partial</span></td><td>home-page-json-ld.ts (code only)</td><td><span class="badge badge-critical">❌ Browser-only</span></td><td>Incomplete</td></tr>
+          <tr><td>SpeakableSpecification</td><td><span class="badge badge-missing">❌ MISSING</span></td><td>—</td><td>—</td><td>—</td></tr>
+          <tr><td>HowTo</td><td><span class="badge badge-missing">❌ MISSING</span></td><td>—</td><td>—</td><td>—</td></tr>
+          <tr><td>VideoObject</td><td><span class="badge badge-missing">❌ MISSING</span></td><td>—</td><td>—</td><td>—</td></tr>
+          <tr><td>ImageObject</td><td><span class="badge badge-missing">❌ MISSING</span></td><td>—</td><td>—</td><td>—</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p style="font-size:.85rem;color:var(--text-muted);">* BlogPosting publisher logo uses <code>localStorage.getItem('random_num')</code> — returns <code>null</code> on SSR, producing an invalid URL.</p>
+
+    <h3>Critical Schema Bugs</h3>
+    <pre><code class="language-typescript">// ❌ BUG 1 — common.service.ts:656
+// JSON-LD NEVER appears in SSR HTML
+applyHomePageJsonLd(): void {
+  if (!isPlatformBrowser(this.platformId)) return; // ← REMOVE THIS
+
+// ✅ FIX:
+applyHomePageJsonLd(): void {
+  this.removeElement('home-jsonld');
+  this.createJsonLD('home-jsonld', buildHomePageJsonLd(this.buildHomeJsonLdInput()));
+}</code></pre>
+
+    <pre><code class="language-typescript">// ❌ BUG 2 — blog-details.component.ts:338
+// localStorage crashes on SSR, produces invalid publisher logo
+"url": environment.img_baseurl + 'uploads/' + this.commonService.store_id +
+       '/logo.png?v=' + localStorage.getItem('random_num')  // ← NULL on server
+
+// ✅ FIX:
+"url": environment.img_baseurl + 'uploads/' + this.commonService.store_id + '/logo.png'</code></pre>
+
+    <h3>Missing: SpeakableSpecification (High GEO Impact)</h3>
+    <pre><code class="language-json">{
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "speakable": {
+    "@type": "SpeakableSpecification",
+    "cssSelector": [".hero-heading", ".brand-story-intro", ".store-description"]
+  },
+  "url": "https://tulsisilks.co.in/"
+}</code></pre>
+
+    <h3>Missing: HowTo Schema (for styling blog posts)</h3>
+    <pre><code class="language-json">{
+  "@context": "https://schema.org",
+  "@type": "HowTo",
+  "name": "How to Wear a Cotton Saree Perfectly",
+  "description": "Step-by-step guide to draping a cotton saree for an elegant look.",
+  "step": [
+    { "@type": "HowToStep", "name": "Tuck the plain end", "text": "Begin by tucking the plain end into the petticoat..." },
+    { "@type": "HowToStep", "name": "Make pleats", "text": "Create 5–7 even pleats approximately 5 inches wide..." }
+  ]
+}</code></pre>
+  </div>
+
+  <!-- PHASE 5: AI VISIBILITY -->
+  <div class="phase" id="phase5">
+    <div class="phase-header">
+      <div class="phase-num">5</div>
+      <h2>AI Visibility Audit</h2>
+    </div>
+
+    <h3>AI Crawler Access Assessment</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>AI System</th><th>Crawler</th><th>Renders JS?</th><th>Can Access Content?</th><th>Risk</th><th>Score</th></tr></thead>
+        <tbody>
+          <tr><td><strong>ChatGPT / OpenAI</strong></td><td>GPTBot</td><td>❌ No</td><td>Only static HTML (empty app-root)</td><td><span class="badge badge-critical">CRITICAL</span></td><td style="color:#dc2626;font-weight:700">1.5/10</td></tr>
+          <tr><td><strong>Google AI Overviews</strong></td><td>Googlebot</td><td>⚠️ Partial</td><td>Partial — limited JS execution</td><td><span class="badge badge-high">HIGH</span></td><td style="color:#ea580c;font-weight:700">3.5/10</td></tr>
+          <tr><td><strong>Gemini</strong></td><td>Google-Extended</td><td>⚠️ Partial</td><td>Schema absent from initial response</td><td><span class="badge badge-high">HIGH</span></td><td style="color:#ea580c;font-weight:700">3.0/10</td></tr>
+          <tr><td><strong>Perplexity</strong></td><td>PerplexityBot</td><td>❌ No</td><td>Only static HTML</td><td><span class="badge badge-critical">CRITICAL</span></td><td style="color:#dc2626;font-weight:700">1.5/10</td></tr>
+          <tr><td><strong>Claude / Anthropic</strong></td><td>ClaudeBot</td><td>❌ No</td><td>Only static HTML</td><td><span class="badge badge-critical">CRITICAL</span></td><td style="color:#dc2626;font-weight:700">1.5/10</td></tr>
+          <tr><td><strong>Microsoft Copilot</strong></td><td>Bingbot</td><td>⚠️ Limited</td><td>Limited JS rendering</td><td><span class="badge badge-high">HIGH</span></td><td style="color:#ea580c;font-weight:700">2.5/10</td></tr>
+          <tr style="background:#fff7f7;"><td colspan="5"><strong>Overall AI Visibility</strong></td><td style="color:#dc2626;font-size:1.1rem;font-weight:800">2.3/10</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Content Citability by AI Systems</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Content</th><th>Citable?</th><th>Reason</th></tr></thead>
+        <tbody>
+          <tr><td>"Weavers of heritage since 1993"</td><td><span class="badge badge-ok">✅ Yes</span></td><td>In SSR footer HTML</td></tr>
+          <tr><td>"Founded in 1993 by Suresh and Santosh Parekh"</td><td><span class="badge badge-partial">⚠️ Partial</span></td><td>In About Us SSR text</td></tr>
+          <tr><td>Product names and prices</td><td><span class="badge badge-critical">❌ No</span></td><td>JS-only via API call</td></tr>
+          <tr><td>All structured data (JSON-LD)</td><td><span class="badge badge-critical">❌ No</span></td><td>Browser-only injection</td></tr>
+          <tr><td>Blog article bodies</td><td><span class="badge badge-partial">⚠️ Partial</span></td><td>Editor.js content JS-rendered</td></tr>
+          <tr><td>Blog titles + dates</td><td><span class="badge badge-ok">✅ Yes</span></td><td>Visible in SSR HTML</td></tr>
+          <tr><td>Author bios</td><td><span class="badge badge-critical">❌ No</span></td><td>Too brief; JS-loaded context</td></tr>
+          <tr><td>Contact details (phone/address)</td><td><span class="badge badge-partial">⚠️ Partial</span></td><td>In header HTML</td></tr>
+          <tr><td>Business hours</td><td><span class="badge badge-critical">❌ No</span></td><td>JS-loaded</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- PHASE 6: IMPLEMENTATION -->
+  <div class="phase" id="phase6">
+    <div class="phase-header">
+      <div class="phase-num">6</div>
+      <h2>Technical Implementation Plan</h2>
+    </div>
+
+    <h3>Priority 1: Static JSON-LD in index.html</h3>
+    <p>Add this block directly to <code>src/index.html</code> before <code>&lt;/head&gt;</code>. No build changes required. Visible to all crawlers immediately.</p>
+    <pre><code class="language-html">&lt;script type="application/ld+json" id="home-jsonld-static"&gt;
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://tulsisilks.co.in/#organization",
+      "name": "Tulsi Silks",
+      "url": "https://tulsisilks.co.in/",
+      "foundingDate": "1993",
+      "founders": [
+        { "@type": "Person", "name": "Suresh Parekh" },
+        { "@type": "Person", "name": "Santosh Parekh" }
+      ],
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "68, Luz Church Rd, CIT Colony, Mylapore",
+        "addressLocality": "Chennai",
+        "addressRegion": "Tamil Nadu",
+        "postalCode": "600004",
+        "addressCountry": "IN"
+      },
+      "telephone": "+918072444353",
+      "email": "orders@tulsisilks.com",
+      "sameAs": [
+        "https://www.instagram.com/tulsisilks/",
+        "https://www.facebook.com/tulsisilks",
+        "https://x.com/TulsiSilks"
+      ]
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://tulsisilks.co.in/#website",
+      "url": "https://tulsisilks.co.in/",
+      "name": "Tulsi Silks",
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://tulsisilks.co.in/search?q={search_term_string}",
+        "query-input": "required name=search_term_string"
+      }
+    }
+  ]
+}
+&lt;/script&gt;</code></pre>
+
+    <h3>Priority 2: Fix meta description fallback in index.html</h3>
+    <pre><code class="language-html">&lt;!-- Replace empty meta tags in src/index.html --&gt;
+&lt;meta name="robots" content="index, follow"&gt;
+&lt;meta name="description" content="Tulsi Silks — premium handwoven silk sarees in Chennai since 1993. Shop Kanjivaram, Banarasi, Organza sarees. Free delivery across India. 68, Luz Church Rd, Mylapore."&gt;
+&lt;meta property="og:type" content="website"&gt;
+&lt;meta property="og:site_name" content="Tulsi Silks"&gt;
+&lt;meta property="og:title" content="Tulsi Silks Chennai | Finest Kanjivaram &amp; Banarasi Silk Sarees"&gt;
+&lt;meta property="og:description" content="Premium handwoven silk sarees since 1993. Kanjivaram, Banarasi, Organza. Free India delivery."&gt;
+&lt;meta name="twitter:card" content="summary_large_image"&gt;
+&lt;link rel="canonical" href="https://tulsisilks.co.in/"&gt;</code></pre>
+
+    <h3>Recommended Sitemap Structure</h3>
+    <pre><code class="language-xml">&lt;!-- Priority tiers for sitemap.xml --&gt;
+&lt;!-- Homepage --&gt;
+&lt;priority&gt;1.0&lt;/priority&gt;&lt;changefreq&gt;daily&lt;/changefreq&gt;
+
+&lt;!-- Category pages --&gt;
+&lt;priority&gt;0.8&lt;/priority&gt;&lt;changefreq&gt;weekly&lt;/changefreq&gt;
+
+&lt;!-- Product pages --&gt;
+&lt;priority&gt;0.7&lt;/priority&gt;&lt;changefreq&gt;weekly&lt;/changefreq&gt;
+
+&lt;!-- Blog posts --&gt;
+&lt;priority&gt;0.6&lt;/priority&gt;&lt;changefreq&gt;monthly&lt;/changefreq&gt;
+
+&lt;!-- Static pages (About, Contact, Policies) --&gt;
+&lt;priority&gt;0.4&lt;/priority&gt;&lt;changefreq&gt;yearly&lt;/changefreq&gt;</code></pre>
+
+    <h3>Recommended Robots.txt</h3>
+    <pre><code class="language-text">User-Agent: *
+Allow: /
+Disallow: /account
+Disallow: /cart
+Disallow: /checkout
+Disallow: /wishlist
+Disallow: /guest-login
+Disallow: /vendor-login
+Disallow: /vendor-register
+Disallow: /search
+Disallow: /order-review/
+Crawl-delay: 1
+
+# Explicit AI crawler permissions
+User-Agent: GPTBot
+Allow: /
+
+User-Agent: ClaudeBot
+Allow: /
+
+User-Agent: Google-Extended
+Allow: /
+
+User-Agent: PerplexityBot
+Allow: /
+
+Sitemap: https://tulsisilks.co.in/sitemap.xml
+Sitemap: https://tulsisilks.co.in/sitemap-images.xml</code></pre>
+  </div>
+
+  <!-- PHASE 7: ROADMAP -->
+  <div class="phase" id="phase7">
+    <div class="phase-header">
+      <div class="phase-num">7</div>
+      <h2>GEO Roadmap</h2>
+    </div>
+
+    <div class="roadmap-section">
+      <div class="roadmap-header roadmap-quick">🚀 Quick Wins — 1 to 2 Days</div>
+      <div style="padding:0 20px 16px;">
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>#</th><th>Task</th><th>Impact</th><th>Difficulty</th><th>GEO Gain</th></tr></thead>
+            <tbody>
+              <tr><td>1</td><td>Add static JSON-LD to <code>index.html</code></td><td><span class="badge badge-critical">Very High</span></td><td>Easy</td><td>+1.5</td></tr>
+              <tr><td>2</td><td>Remove <code>isPlatformBrowser</code> guard from <code>applyHomePageJsonLd()</code></td><td><span class="badge badge-critical">Very High</span></td><td>Easy (1 line)</td><td>+1.0</td></tr>
+              <tr><td>3</td><td>Fix <code>index.html</code> meta description</td><td><span class="badge badge-high">High</span></td><td>Easy</td><td>+0.5</td></tr>
+              <tr><td>4</td><td>Fix <code>robots</code> meta: add "follow"</td><td><span class="badge badge-medium">Medium</span></td><td>Easy (1 char)</td><td>+0.2</td></tr>
+              <tr><td>5</td><td>Fix blog publisher logo: remove <code>localStorage</code></td><td><span class="badge badge-high">High</span></td><td>Easy</td><td>+0.3</td></tr>
+              <tr><td>6</td><td>Add OG + Twitter Card static fallbacks</td><td><span class="badge badge-medium">Medium</span></td><td>Easy</td><td>+0.3</td></tr>
+              <tr><td>7</td><td>Add AI bot directives to <code>robots.txt</code></td><td><span class="badge badge-medium">Medium</span></td><td>Easy</td><td>+0.1</td></tr>
+              <tr><td>8</td><td>Fix sitemap priority tiers</td><td><span class="badge badge-medium">Medium</span></td><td>Easy</td><td>+0.2</td></tr>
+              <tr><td>9</td><td>Add <code>&lt;changefreq&gt;</code> to sitemap</td><td><span class="badge badge-low">Low</span></td><td>Easy</td><td>+0.1</td></tr>
+              <tr><td>10</td><td>Add canonical href to <code>index.html</code></td><td><span class="badge badge-medium">Medium</span></td><td>Easy</td><td>+0.2</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="alert alert-success">
+          <span class="alert-icon">✅</span>
+          <div><strong>Estimated combined impact: AI Visibility jumps from 2.3/10 to ~6.5/10 within 2 days.</strong></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="roadmap-section">
+      <div class="roadmap-header roadmap-medium">📅 Medium Improvements — 1 Week</div>
+      <div style="padding:0 20px 16px;">
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>#</th><th>Task</th><th>Impact</th><th>Difficulty</th><th>GEO Gain</th></tr></thead>
+            <tbody>
+              <tr><td>1</td><td>Move SEO data fetching to Angular SSR resolvers</td><td><span class="badge badge-critical">Very High</span></td><td>Medium</td><td>+1.5</td></tr>
+              <tr><td>2</td><td>Create About Us founder profile pages with 300+ word bios</td><td><span class="badge badge-high">High</span></td><td>Medium</td><td>+1.0</td></tr>
+              <tr><td>3</td><td>Add Person schema to About Us (SSR-rendered)</td><td><span class="badge badge-high">High</span></td><td>Medium</td><td>+0.8</td></tr>
+              <tr><td>4</td><td>Add SpeakableSpecification schema to homepage and blogs</td><td><span class="badge badge-high">High</span></td><td>Medium</td><td>+0.6</td></tr>
+              <tr><td>5</td><td>Prerender: About Us, Contact, Blog posts, static pages</td><td><span class="badge badge-critical">Very High</span></td><td>Medium</td><td>+1.2</td></tr>
+              <tr><td>6</td><td>Add canonical tags SSR-side via Angular Meta service</td><td><span class="badge badge-high">High</span></td><td>Medium</td><td>+0.5</td></tr>
+              <tr><td>7</td><td>Improve blog author bios to 150+ words with credentials</td><td><span class="badge badge-high">High</span></td><td>Medium</td><td>+0.7</td></tr>
+              <tr><td>8</td><td>Add HowTo schema to styling/draping blog posts</td><td><span class="badge badge-medium">Medium</span></td><td>Medium</td><td>+0.4</td></tr>
+              <tr><td>9</td><td>Fix product image alt text strategy</td><td><span class="badge badge-medium">Medium</span></td><td>Medium</td><td>+0.3</td></tr>
+              <tr><td>10</td><td>Fix URL 404s: add /category/ prefix to menu links</td><td><span class="badge badge-high">High</span></td><td>Medium</td><td>+0.3</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="roadmap-section">
+      <div class="roadmap-header roadmap-major">🏗️ Major Improvements — 1 Month</div>
+      <div style="padding:0 20px 16px;">
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>#</th><th>Task</th><th>Impact</th><th>Difficulty</th><th>GEO Gain</th></tr></thead>
+            <tbody>
+              <tr><td>1</td><td>Full SSR-safe meta/schema pipeline for all page types</td><td><span class="badge badge-critical">Critical</span></td><td>Hard</td><td>+2.0</td></tr>
+              <tr><td>2</td><td>Product page prerendering for top 500 SKUs</td><td><span class="badge badge-critical">Very High</span></td><td>Hard</td><td>+1.5</td></tr>
+              <tr><td>3</td><td>Craft knowledge base pages (how Kanjivaram/Banarasi is made)</td><td><span class="badge badge-critical">Very High</span></td><td>Medium</td><td>+1.5</td></tr>
+              <tr><td>4</td><td>Expert article series by Suresh Parekh with detailed credentials</td><td><span class="badge badge-high">High</span></td><td>Medium</td><td>+1.0</td></tr>
+              <tr><td>5</td><td>Image sitemap with descriptive captions</td><td><span class="badge badge-high">High</span></td><td>Medium</td><td>+0.5</td></tr>
+              <tr><td>6</td><td>Wikidata entity creation for Tulsi Silks + founders</td><td><span class="badge badge-high">High</span></td><td>Hard</td><td>+0.8</td></tr>
+              <tr><td>7</td><td>Wikipedia-style brand history page</td><td><span class="badge badge-critical">Very High</span></td><td>Medium</td><td>+1.2</td></tr>
+              <tr><td>8</td><td>VideoObject schema for product/process videos</td><td><span class="badge badge-medium">Medium</span></td><td>Medium</td><td>+0.4</td></tr>
+              <tr><td>9</td><td>Reviews aggregate visible in SSR HTML</td><td><span class="badge badge-high">High</span></td><td>Hard</td><td>+0.6</td></tr>
+              <tr><td>10</td><td>Speakable CSS classes + schema across all content zones</td><td><span class="badge badge-high">High</span></td><td>Medium</td><td>+0.5</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PHASE 8: FINAL SCORECARD -->
+  <div class="phase" id="phase8">
+    <div class="phase-header">
+      <div class="phase-num">8</div>
+      <h2>Final Scorecard</h2>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Category</th><th>Score</th><th>Rating</th><th>Key Issue</th></tr></thead>
+        <tbody>
+          <tr><td>Technical SEO</td><td style="font-weight:700;color:#d97706">4.5/10</td><td><span class="badge badge-medium">Fair</span></td><td>Meta/canonical empty in initial HTML; sitemap priorities flat</td></tr>
+          <tr><td>Structured Data</td><td style="font-weight:700;color:#ea580c">3.5/10</td><td><span class="badge badge-high">Poor</span></td><td>All JSON-LD browser-only; never in SSR HTML</td></tr>
+          <tr><td>AI Crawlability</td><td style="font-weight:700;color:#dc2626">2.3/10</td><td><span class="badge badge-critical">Critical</span></td><td>GPTBot/ClaudeBot/PerplexityBot see empty app-root</td></tr>
+          <tr><td>Knowledge Graph</td><td style="font-weight:700;color:#ea580c">3.0/10</td><td><span class="badge badge-high">Poor</span></td><td>No Person entities visible; Organization only in JS</td></tr>
+          <tr><td>Founder Discoverability</td><td style="font-weight:700;color:#dc2626">2.0/10</td><td><span class="badge badge-critical">Critical</span></td><td>No profile pages; bio too brief for AI citation</td></tr>
+          <tr><td>GEO Readiness</td><td style="font-weight:700;color:#dc2626">2.5/10</td><td><span class="badge badge-critical">Critical</span></td><td>No Speakable; no citable expertise content in static HTML</td></tr>
+          <tr><td>Core Web Vitals / SSR</td><td style="font-weight:700;color:#d97706">6.0/10</td><td><span class="badge badge-medium">Fair</span></td><td>SSR implemented; hero preloads good; inline CSS good</td></tr>
+          <tr><td>E-E-A-T Signals</td><td style="font-weight:700;color:#ea580c">3.5/10</td><td><span class="badge badge-high">Poor</span></td><td>Founders exist but not credentialed in visible content</td></tr>
+          <tr><td>Local SEO</td><td style="font-weight:700;color:#d97706">6.5/10</td><td><span class="badge badge-medium">Fair</span></td><td>Address/phone visible; GeoCoordinates in schema</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- TOP 10 ISSUES -->
+  <div class="phase">
+    <div class="phase-header">
+      <div class="phase-num">!</div>
+      <h2>Top 10 Issues Preventing AI Visibility</h2>
+    </div>
+    <ol class="top10">
+      <li><div><strong>JSON-LD never reaches SSR HTML.</strong> <code>isPlatformBrowser</code> guard in <code>applyHomePageJsonLd()</code> strips ALL structured data from the server response. This is the single highest-impact fix available.</div></li>
+      <li><div><strong>Meta description, OG tags, and canonical are empty strings in <code>index.html</code>.</strong> AI crawlers reading raw HTML see no description, no title context, and no canonical URL.</div></li>
+      <li><div><strong>Product content is entirely JS-dependent.</strong> All product names, descriptions, prices, and availability require JavaScript execution. Non-JS crawlers see an empty product page.</div></li>
+      <li><div><strong>No citable founder/expert profile pages.</strong> Tulsi Silks cannot appear in AI answers about "saree experts" or "Kanjivaram specialists" because no SSR-available content establishes this expertise.</div></li>
+      <li><div><strong>Blog publisher logo uses <code>localStorage</code>.</strong> This crashes BlogPosting schema on SSR, producing invalid publisher data for the blog — the site's most valuable citation content.</div></li>
+      <li><div><strong>Category menu links 404.</strong> Menu links like <code>/kanjivaram-silk-sarees</code> return 404 errors (correct path: <code>/category/kanjivaram-silk-sarees</code>). Broken internal links destroy crawl graph integrity.</div></li>
+      <li><div><strong>No Speakable schema.</strong> Google AI Overviews, Gemini, and voice assistants cannot identify which content zones are authoritative or citable without <code>SpeakableSpecification</code>.</div></li>
+      <li><div><strong>Sitemap: all priorities 1.0.</strong> No crawl budget differentiation. 900+ URLs all equal — search engines cannot distinguish homepage from checkout page.</div></li>
+      <li><div><strong>Author bios too brief for E-E-A-T.</strong> "Decades of experience in sarees and textiles" is one vague sentence. Specific, demonstrable expertise is required for AI citation eligibility.</div></li>
+      <li><div><strong><code>robots</code> meta tag missing "follow".</strong> <code>content="index"</code> without "follow" may prevent link equity flow through the site's extensive internal linking structure.</div></li>
+    </ol>
+  </div>
+
+  <!-- TOP 10 QUICK WINS -->
+  <div class="phase">
+    <div class="phase-header">
+      <div class="phase-num">★</div>
+      <h2>Top 10 Quick Wins</h2>
+    </div>
+    <ol class="top10">
+      <li><div><strong>Add static JSON-LD to <code>index.html</code></strong> — Organization + WebSite schema visible to every crawler immediately. Zero API dependency. ~30 minutes work.</div></li>
+      <li><div><strong>Remove <code>isPlatformBrowser</code> from <code>applyHomePageJsonLd()</code></strong> — One-line deletion in <code>common.service.ts:657</code> enabling homepage schema in SSR HTML.</div></li>
+      <li><div><strong>Fix <code>index.html</code> meta description</strong> — Change <code>content=""</code> to a 150-character description of Tulsi Silks. ~5 minutes.</div></li>
+      <li><div><strong>Fix <code>robots</code> meta</strong> — Change <code>content="index"</code> to <code>content="index, follow"</code>. 1-character fix.</div></li>
+      <li><div><strong>Fix blog publisher logo</strong> — Remove <code>localStorage.getItem('random_num')</code> from the publisher logo URL in <code>blog-details.component.ts:338</code>.</div></li>
+      <li><div><strong>Add AI crawler directives to <code>robots.txt</code></strong> — Explicitly allow GPTBot, ClaudeBot, PerplexityBot, Google-Extended.</div></li>
+      <li><div><strong>Add <code>Disallow</code> rules for private routes</strong> — <code>/account</code>, <code>/cart</code>, <code>/checkout</code>, <code>/wishlist</code> should be blocked from crawlers.</div></li>
+      <li><div><strong>Fix sitemap priority tiers</strong> — Homepage = 1.0, category = 0.8, product = 0.7, blog = 0.6, static = 0.4.</div></li>
+      <li><div><strong>Expand About Us founder bio</strong> — Even 200 extra words about specific expertise, weaver relationships, and regional knowledge dramatically improves AI citability.</div></li>
+      <li><div><strong>Add <code>&lt;changefreq&gt;</code> to sitemap</strong> — Helps search engine crawl scheduling and signals content freshness.</div></li>
+    </ol>
+  </div>
+
+  <!-- DEV TASKS -->
+  <div class="phase" id="tasks">
+    <div class="phase-header">
+      <div class="phase-num">T</div>
+      <h2>Exact Development Tasks</h2>
+    </div>
+
+    <h3>🖥️ Frontend Team</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>#</th><th>Task</th><th>File(s)</th><th>Effort</th></tr></thead>
+        <tbody>
+          <tr><td>F1</td><td>Add static JSON-LD block to <code>index.html</code> (Organization + WebSite)</td><td>src/index.html</td><td>1h</td></tr>
+          <tr><td>F2</td><td>Add static meta description and OG fallbacks to <code>index.html</code></td><td>src/index.html</td><td>30m</td></tr>
+          <tr><td>F3</td><td>Fix <code>robots</code> meta: <code>index</code> → <code>index, follow</code></td><td>src/index.html:9</td><td>5m</td></tr>
+          <tr><td>F4</td><td>Add canonical href to <code>index.html</code></td><td>src/index.html:59</td><td>10m</td></tr>
+          <tr><td>F5</td><td>Remove <code>isPlatformBrowser</code> guard from <code>applyHomePageJsonLd()</code></td><td>src/app/services/common.service.ts:656</td><td>10m</td></tr>
+          <tr><td>F6</td><td>Fix blog publisher logo: remove <code>localStorage.getItem('random_num')</code></td><td>src/app/views/features/blogs/blog-details/blog-details.component.ts:338</td><td>15m</td></tr>
+          <tr><td>F7</td><td>Create Angular route resolvers for SSR-safe meta/schema on home, category, product, blog</td><td>New resolver files + app-routing.module.ts</td><td>2 days</td></tr>
+          <tr><td>F8</td><td>Add <code>TransferState</code> for SEO data to avoid client re-fetch</td><td>src/app/services/common.service.ts</td><td>4h</td></tr>
+          <tr><td>F9</td><td>Add Person schema to About Us component (SSR-rendered)</td><td>src/app/views/properties/about-us/about-us.component.ts</td><td>2h</td></tr>
+          <tr><td>F10</td><td>Add SpeakableSpecification schema to home and blog components</td><td>home.component.ts, blog-details.component.ts</td><td>2h</td></tr>
+          <tr><td>F11</td><td>Add prerender configuration for static pages in <code>angular.json</code></td><td>angular.json</td><td>1h</td></tr>
+          <tr><td>F12</td><td>Create founder profile subpages under <code>/about-us</code> route</td><td>New module + component</td><td>1 day</td></tr>
+          <tr><td>F13</td><td>Add HowTo schema builder to blog component (conditional on content type)</td><td>blog-details.component.ts</td><td>3h</td></tr>
+          <tr><td>F14</td><td>Fix category menu link URLs (add <code>/category/</code> prefix where missing)</td><td>Main header template HTML</td><td>2h</td></tr>
+          <tr><td>F15</td><td>Add <code>twitter:card</code>, <code>twitter:title</code>, <code>twitter:description</code> static tags</td><td>src/index.html</td><td>15m</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>⚙️ Backend Team</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>#</th><th>Task</th><th>Effort</th></tr></thead>
+        <tbody>
+          <tr><td>B1</td><td>Create fast, cached API endpoint that returns store SEO data for SSR preloading</td><td>4h</td></tr>
+          <tr><td>B2</td><td>Update sitemap generation: add <code>changefreq</code>, differentiate <code>priority</code> by page type</td><td>4h</td></tr>
+          <tr><td>B3</td><td>Add image sitemap generation with <code>image:title</code> and <code>image:caption</code></td><td>4h</td></tr>
+          <tr><td>B4</td><td>Add <code>lastmod</code> per URL based on actual content modification date</td><td>2h</td></tr>
+          <tr><td>B5</td><td>Create blog post author profile API (<code>/api/authors/suresh-parekh</code>)</td><td>3h</td></tr>
+          <tr><td>B6</td><td>Add <code>canonical_url</code> field to product/category/blog API responses</td><td>2h</td></tr>
+          <tr><td>B7</td><td>Ensure <code>og:image</code> absolute URLs are returned in API responses</td><td>1h</td></tr>
+          <tr><td>B8</td><td>Add blog post <code>dateModified</code> to API response (currently only <code>created_on</code>)</td><td>1h</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>✍️ SEO / Content Team</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>#</th><th>Task</th><th>Effort</th></tr></thead>
+        <tbody>
+          <tr><td>C1</td><td>Write 300+ word biography for Suresh Parekh: specific expertise, weaver relationships, awards</td><td>4h</td></tr>
+          <tr><td>C2</td><td>Write 300+ word biography for Santosh Parekh: business background, brand vision</td><td>4h</td></tr>
+          <tr><td>C3</td><td>Add professional headshot photos for both founders (with descriptive alt text)</td><td>2h</td></tr>
+          <tr><td>C4</td><td>Update blog author bio from 1 sentence to 150+ words with credentials</td><td>2h</td></tr>
+          <tr><td>C5</td><td>Add founding story section to About Us with specific context, weaver community relationships</td><td>4h</td></tr>
+          <tr><td>C6</td><td>Create "How Kanjivaram Silk is Made" knowledge page (craft process, region, artisans)</td><td>1 day</td></tr>
+          <tr><td>C7</td><td>Create "How Banarasi Silk is Made" knowledge page</td><td>1 day</td></tr>
+          <tr><td>C8</td><td>Update all product image alt text to descriptive fabric+color+occasion format</td><td>2 days</td></tr>
+          <tr><td>C9</td><td>Add FAQ section to homepage (minimum 5 Q&amp;As about shipping, authenticity, care)</td><td>3h</td></tr>
+          <tr><td>C10</td><td>Add descriptive captions to all blog images (not just "blog-image")</td><td>2h</td></tr>
+          <tr><td>C11</td><td>Create Wikidata entity for Tulsi Silks</td><td>2h</td></tr>
+          <tr><td>C12</td><td>Verify Google Business Profile NAP consistency matches schema address</td><td>1h</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div><!-- /container -->
+
+<div class="audit-footer">
+  <p>Tulsi Silks — SEO, GEO &amp; AI Visibility Audit | Generated: June 3, 2026</p>
+  <p style="margin-top:6px;">Next recommended re-audit: After Quick Wins implementation (~4–6 weeks)</p>
+</div>
+
+</body>
+</html>

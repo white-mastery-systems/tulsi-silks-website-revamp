@@ -48,6 +48,17 @@
 }
 }
 .feature-slide-sec{
+  .featured-product-header-actions {
+    gap: 12px;
+    flex-shrink: 0;
+
+    .product-silder-btn {
+      margin-top: 0;
+      margin-bottom: 0;
+      padding-right: 0;
+    }
+  }
+
   .titles-swiper-nav {
     gap: 8px;
     .swiper-button-prev,
@@ -213,6 +224,43 @@
   right: -1.5%;
   top:60%;
  }
+
+  /* Shop by Occasion / multi-tab image sliders — uniform card height */
+  .featured-sections {
+    .swiper-slide {
+      height: auto;
+      display: flex;
+    }
+
+    .product-box,
+    .prod-div {
+      display: block;
+      width: 100%;
+    }
+
+    .product-box figure {
+      position: relative;
+      width: 100%;
+      height: auto;
+      margin: 0;
+      aspect-ratio: 3 / 4;
+      overflow: hidden;
+
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: top center;
+        display: block;
+      }
+    }
+  }
+}
+
+@media (max-width: 767px) {
+  .multi-tab-featured .featured-sections .product-box figure {
+    aspect-ratio: 4 / 5;
+  }
 }
 
 

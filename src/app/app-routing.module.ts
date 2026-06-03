@@ -28,7 +28,7 @@ const mainRoutes: Routes = [
   { path: 'gift-cards', loadChildren: () => import('./views/features/gift-cards/gift-cards.module').then(m => m.GiftCardsModule) },
   { path: 'blogs', loadChildren: () => import('./views/features/blogs/blogs.module').then(m => m.BlogsModule) },
   { path: 'catalog-page', loadChildren: () => import('./views/features/discounts/discounts.module').then(m => m.DiscountsModule) },
-  { path: 'sections/:type', loadChildren: () => import('./views/features/sections/sections.module').then(m => m.SectionsModule) },
+  { path: 'sections', loadChildren: () => import('./views/features/sections/sections.module').then(m => m.SectionsModule) },
   { path: 'brands', loadChildren: () => import('./views/features/collections/collections.module').then(m => m.CollectionsModule) },
   { path: 'services', loadChildren: () => import('./views/features/appointment/appointment.module').then(m => m.AppointmentModule) },
   { path: 'service-confirmed/:id', loadChildren: () => import('./views/features/appointment/service-placed/service-placed.module').then(m => m.ServicePlacedModule), canActivate: [AccountGuard] },

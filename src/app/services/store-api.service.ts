@@ -78,6 +78,8 @@ export class StoreApiService {
   GIFT_CARD_DETAILS(x) { return this.http.get<any>(environment.ws_url+'/store_details/gift_cards?store_id='+this.store_id+'&gc_id='+x); }
   DISCOUNTS() { return this.http.get<any>(environment.ws_url+'/store_details/discounts?store_id='+this.store_id); }
   COLLECTIONS() { return this.http.get<any>(environment.ws_url+'/store_details/collections?store_id='+this.store_id); }
+  CATALOGS_WITH_SUB_CATALOGS() { return this.http.get<any>(environment.ws_url+'/store_details/catalogs_with_sub_catalogs?store_id='+this.store_id); }
+  SUB_CATALOG_DETAILS(categoryId: string) { return this.http.get<any>(environment.ws_url+'/store_details/sub_catalog_details?store_id='+this.store_id+'&category_id='+categoryId); }
   
   BLOG_LIST(skip, limit) { return this.http.get<any>(environment.ws_url+'/store_details/blogs/v1?store_id='+this.store_id+'&skip='+skip+'&limit='+limit); }
   RANDOM_BLOG_LIST(x) { return this.http.post<any>(environment.ws_url+'/store_details/blogs?store_id='+this.store_id, x); }

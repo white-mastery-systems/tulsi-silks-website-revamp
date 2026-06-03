@@ -253,6 +253,12 @@ export function app(): express.Express {
   });
 
   // link redirection
+  server.use('/sections/by-category', function(req, res) {
+    res.redirect(301, '/sections/regional-collections');
+  });
+  server.use('/sections/by-colours', function(req, res) {
+    res.redirect(301, '/sections/sarees-by-colour');
+  });
   server.use('/saree/kanjivaram-silk-sarees.html', function(req, res) {
     res.redirect('/category/kanjivaram-silk-sarees');
   });

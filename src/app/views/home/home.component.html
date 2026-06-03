@@ -498,7 +498,7 @@
                       </div> -->
                       <div class="category-grid-text">
                         <div class="inner-content">
-                          <h2
+                          <h3
                             class="mb-3"
                             [ngClass]="
                               x?.content_details?.text_color == 'dark'
@@ -507,7 +507,7 @@
                             "
                           >
                             {{ x.content_details.heading }}
-                          </h2>
+                          </h3>
                           <p *ngIf="x?.content_details?.description">
                             {{ x.content_details.description }}
                           </p>
@@ -916,53 +916,73 @@
               >
                 <div class="d-flex align-items-center justify-content-between">
                   <h2 [attr.id]="'home-' + segment.type + '-title-' + i">{{ segment.heading }}</h2>
-                  <!-- Desktop: swiper nav buttons sit inline beside the h2 -->
-                  <ng-container
-                    *ngIf="
-                      commonService?.desktop_device &&
-                      segment.product_list?.length > 1
-                    "
-                  >
-                    <div class="d-flex align-items-center titles-swiper-nav">
-                      <div
-                        id="swipe_prev_{{ i + 1 }}"
-                        class="swiper-button swiper-button-prev"
-                      >
-                        <lucide-icon
-                          name="chevron-left"
-                          [size]="20"
-                          stroke="1"
-                          color="black"
-                        ></lucide-icon>
-                      </div>
-                      <div
-                        id="swipe_next_{{ i + 1 }}"
-                        class="swiper-button swiper-button-next"
-                      >
-                        <lucide-icon
-                          name="chevron-right"
-                          [size]="20"
-                          stroke="1"
-                          color="black"
-                        ></lucide-icon>
-                      </div>
-                    </div>
-                  </ng-container>
-                  <!-- Mobile: view all button -->
-                  <div
-                    *ngIf="commonService?.screen_width <= 767"
-                    class="product-silder-btn"
-                  >
-                    <a
-                      class="primary-btn outline-btn"
-                      [routerLink]="exploreAllPath(segment)"
-                      [attr.aria-label]="
-                        (segment?.btn_text ? segment.btn_text : 'View all') +
-                        (segment?.heading ? ' — ' + segment.heading : '')
+                  <div class="d-flex align-items-center featured-product-header-actions">
+                    <div
+                      class="product-silder-btn"
+                      *ngIf="
+                        segment.blogs_type != 'grid' &&
+                        commonService?.screen_width > 767
                       "
                     >
-                      {{ segment?.btn_text ? segment.btn_text : 'View All' }}
-                    </a>
+                      <a
+                        class="primary-btn outline-btn"
+                        [routerLink]="exploreAllPath(segment)"
+                        [attr.aria-label]="
+                          (segment?.btn_text ? segment.btn_text : 'View all') +
+                          (segment?.heading ? ' — ' + segment.heading : '')
+                        "
+                      >
+                        {{ segment?.btn_text ? segment.btn_text : 'View All' }}
+                      </a>
+                    </div>
+                    <!-- Desktop: swiper nav buttons sit inline beside the CTA -->
+                    <ng-container
+                      *ngIf="
+                        commonService?.desktop_device &&
+                        segment.product_list?.length > 1
+                      "
+                    >
+                      <div class="d-flex align-items-center titles-swiper-nav">
+                        <div
+                          id="swipe_prev_{{ i + 1 }}"
+                          class="swiper-button swiper-button-prev"
+                        >
+                          <lucide-icon
+                            name="chevron-left"
+                            [size]="20"
+                            stroke="1"
+                            color="black"
+                          ></lucide-icon>
+                        </div>
+                        <div
+                          id="swipe_next_{{ i + 1 }}"
+                          class="swiper-button swiper-button-next"
+                        >
+                          <lucide-icon
+                            name="chevron-right"
+                            [size]="20"
+                            stroke="1"
+                            color="black"
+                          ></lucide-icon>
+                        </div>
+                      </div>
+                    </ng-container>
+                    <!-- Mobile: view all button -->
+                    <div
+                      *ngIf="commonService?.screen_width <= 767"
+                      class="product-silder-btn"
+                    >
+                      <a
+                        class="primary-btn outline-btn"
+                        [routerLink]="exploreAllPath(segment)"
+                        [attr.aria-label]="
+                          (segment?.btn_text ? segment.btn_text : 'View all') +
+                          (segment?.heading ? ' — ' + segment.heading : '')
+                        "
+                      >
+                        {{ segment?.btn_text ? segment.btn_text : 'View All' }}
+                      </a>
+                    </div>
                   </div>
                 </div>
                 <p
