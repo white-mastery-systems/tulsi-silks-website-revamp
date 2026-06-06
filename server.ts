@@ -482,6 +482,10 @@ export function app(): express.Express {
     res.redirect('/category/cotton-sarees');
   });
 
+  server.use('/google9a3e8f0e11ae13bf.html', function(req, res) {
+    res.type('text/html').send('google-site-verification: google9a3e8f0e11ae13bf.html');
+  });
+
   server.get('*.*', express.static(distFolder, {
     setHeaders(res, filePath) {
       const normalized = filePath.replace(/\\/g, '/');
