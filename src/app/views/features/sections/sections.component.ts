@@ -99,7 +99,7 @@ export class SectionsComponent implements OnInit, OnDestroy {
 
   setSubCatalogView(data: any): void {
     this.catalogDetails = data;
-    this.displayList = data.sub_catalogs || [];
+    this.displayList = (data.sub_catalogs || []).filter((c: any) => (c.product_count ?? 1) > 0);
     this.activePageName = data.name;
     if (data.seo_details?.page_title) {
       this.commonService.setSiteMetaData(data.seo_details, null);

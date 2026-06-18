@@ -54,6 +54,12 @@ export class StoreApiService {
   SIZING_ASSISTANT(x) { return this.http.post<any>(environment.ws_url+'/store_details/sizing_assistant?store_id='+this.store_id, x); }
 
   SEARCH_PRODUCT(x) { return this.http.post<any>(environment.ws_url+'/store_details/product/search?store_id='+this.store_id, x); }
+  SEARCH_PRODUCT_V2(x) { return this.http.post<any>(environment.ws_url+'/store_details/product/search_v2?store_id='+this.store_id, x); }
+  CLASSIFY_SAREE(file: File) {
+    const formData = new FormData();
+    formData.append('image', file);
+    return this.http.post<any>(environment.ws_url+'/store_details/classify-saree?store_id='+this.store_id, formData);
+  }
   COUNTRY_LIST() { return this.http.get<any>(environment.ws_url+'/store_details/country_list'); }
   PRODUCT_TAGS() { return this.http.get<any>(environment.ws_url+'/store_details/product_features/'+this.store_id+'?type=tags'); }
   TAX_RATES() { return this.http.get<any>(environment.ws_url+'/store_details/product_features/'+this.store_id+'?type=tax_rates'); }

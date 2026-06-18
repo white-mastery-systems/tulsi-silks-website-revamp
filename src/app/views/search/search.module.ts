@@ -1,4 +1,6 @@
 import { NgModule } from '@angular/core';
+import { NgxPaginationModule } from 'ngx-pagination';
+import { LucideAngularModule, Search, ImagePlus } from 'lucide-angular';
 
 import { SearchRoutingModule } from './search-routing.module';
 import { SharedModule } from '../../shared/shared.module';
@@ -8,7 +10,9 @@ import { SearchComponent } from './search.component';
   declarations: [SearchComponent],
   imports: [
     SharedModule,
-    SearchRoutingModule
+    SearchRoutingModule,
+    NgxPaginationModule,
+    LucideAngularModule.pick({ Search, ImagePlus })
   ]
 })
 
