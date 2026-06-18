@@ -29,6 +29,8 @@ const FILTER_API_FIELD_MAP: Record<string, SearchFilterApiField> = {
   'Body Colour': 'colour'
 };
 
+export const PRIMARY_FILTER_NAMES = ['Material', 'Body Colour', 'Design', 'Occasion'];
+
 export function toFilterKey(name: string): string {
   return name.trim().toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '');
 }

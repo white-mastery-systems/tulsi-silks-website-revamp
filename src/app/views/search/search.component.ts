@@ -8,10 +8,10 @@ import { CurrencyConversionService } from '../../services/currency-conversion.se
 import { environment } from './../../../environments/environment';
 import {
   SearchFilterGroup,
-  chipOptionsForField,
   deriveColourFamily,
   mapAvailableFilters,
-  matchFilterOption
+  matchFilterOption,
+  PRIMARY_FILTER_NAMES
 } from './search-filter-options';
 import { SEARCH_AVAILABLE_FILTERS_DATA } from './search-available-filters.data';
 
@@ -45,9 +45,9 @@ export class SearchComponent implements OnInit, OnDestroy {
 
   filterGroups: SearchFilterGroup[] = [];
   selectedFilters: Record<string, string> = {};
-  chipLists: Record<string, string[]> = {};
-  expandedFilters: Record<string, boolean> = {};
   priceRange: { min: number; max: number } | null = null;
+  moreFiltersOpen: boolean = false;
+  filtersPanelOpen: boolean = true;
 
   selectedImageFile: File | null = null;
   imagePreview: string | null = null;
@@ -62,7 +62,6 @@ export class SearchComponent implements OnInit, OnDestroy {
   private restorePending = false;
   private readonly allowedImageTypes = ['image/jpeg', 'image/png', 'image/webp'];
   private readonly maxImageSizeBytes = 5 * 1024 * 1024;
-  private readonly chipPreviewLimit = 8;
 
   constructor(
     @Inject(PLATFORM_ID) private platformId: Object,
@@ -102,34 +101,32 @@ export class SearchComponent implements OnInit, OnDestroy {
     return this.activeFilterChips.length > 0;
   }
 
+  get primaryFilterGroups(): SearchFilterGroup[] {
+    return this.filterGroups.filter(group => PRIMARY_FILTER_NAMES.includes(group.name));
+  }
+
+  get moreFilterGroups(): SearchFilterGroup[] {
+    return this.filterGroups.filter(group => !PRIMARY_FILTER_NAMES.includes(group.name));
+  }
+
+  get moreFiltersSelectedCount(): number {
+    return this.moreFilterGroups.filter(group => !!this.selectedFilters[group.key]).length;
+  }
+
   get showPagination(): boolean {
     return this.productCount > this.pageSize;
   }
 
-  toggleFilterGroup(key: string) {
-    this.expandedFilters[key] = !this.expandedFilters[key];
+  toggleFiltersPanel() {
+    this.filtersPanelOpen = !this.filtersPanelOpen;
   }
 
-  visibleChips(group: SearchFilterGroup): string[] {
-    const chips = this.chipLists[group.key] || group.options;
-    if(this.expandedFilters[group.key]) return chips;
-    return chips.slice(0, this.chipPreviewLimit);
+  toggleMoreFilters() {
+    this.moreFiltersOpen = !this.moreFiltersOpen;
   }
 
-  hasMoreChips(group: SearchFilterGroup): boolean {
-    const chips = this.chipLists[group.key] || group.options;
-    return chips.length > this.chipPreviewLimit && !this.expandedFilters[group.key];
-  }
-
-  onFilterChipSelect(group: SearchFilterGroup, value: string) {
+  onFilterChange(group: SearchFilterGroup) {
     this.imageDetected = false;
-    const current = this.selectedFilters[group.key];
-    this.selectedFilters[group.key] = (current === value) ? '' : value;
-    this.syncChipLists();
-  }
-
-  isChipSelected(group: SearchFilterGroup, value: string): boolean {
-    return this.selectedFilters[group.key]?.toLowerCase() === value.toLowerCase();
   }
 
   onSearch() {
@@ -142,6 +139,7 @@ export class SearchComponent implements OnInit, OnDestroy {
     this.searchLoader = true;
     this.page = 1;
     this.fallbackUsed = false;
+    if(!this.commonService.desktop_device) this.filtersPanelOpen = false;
     this.runSearchWithFallback();
   }
 
@@ -155,9 +153,9 @@ export class SearchComponent implements OnInit, OnDestroy {
     this.product_list = [];
     this.productCount = 0;
     this.page = 1;
+    this.moreFiltersOpen = false;
     this.clearImageOnly();
-    this.syncChipLists();
-    this.resetExpandedFilters();
+    this.initFilterState();
   }
 
   onPageChange(page: number) {
@@ -194,7 +192,6 @@ export class SearchComponent implements OnInit, OnDestroy {
 
   removeActiveChip(chip: ActiveFilterChip) {
     this.selectedFilters[chip.key] = '';
-    this.syncChipLists();
     if(this.afterSearchEvent && this.hasActiveFilters) {
       this.page = 1;
       this.searchLoader = true;
@@ -227,9 +224,10 @@ export class SearchComponent implements OnInit, OnDestroy {
   private initFilterState() {
     this.filterGroups.forEach(group => {
       if(this.selectedFilters[group.key] === undefined) this.selectedFilters[group.key] = '';
-      if(this.expandedFilters[group.key] === undefined) this.expandedFilters[group.key] = false;
     });
-    this.syncChipLists();
+    if(this.moreFilterGroups.some(group => this.selectedFilters[group.key])) {
+      this.moreFiltersOpen = true;
+    }
   }
 
   private handleRouteState() {
@@ -248,7 +246,6 @@ export class SearchComponent implements OnInit, OnDestroy {
           materialGroup.options,
           this.pendingQuery
         );
-        this.syncChipLists();
         this.onSearch();
       }
       this.pendingQuery = null;
@@ -283,7 +280,9 @@ export class SearchComponent implements OnInit, OnDestroy {
       if(result.status && result.classification) {
         this.applyClassification(result.classification);
         this.imageDetected = true;
-        this.syncChipLists();
+        if(this.moreFilterGroups.some(group => this.selectedFilters[group.key])) {
+          this.moreFiltersOpen = true;
+        }
         this.onSearch();
       }
       else {
@@ -423,19 +422,12 @@ export class SearchComponent implements OnInit, OnDestroy {
     this.fallbackUsed = !!saved.fallback_used;
     this.imageDetected = !!saved.image_detected;
     this.page = saved.page || 1;
-    this.syncChipLists();
+    if(this.moreFilterGroups.some(group => this.selectedFilters[group.key])) {
+      this.moreFiltersOpen = true;
+    }
     const scrollPos = saved.scroll_y_pos;
     setTimeout(() => { window.scrollTo({ top: scrollPos, behavior: 'smooth' }); }, 500);
     this.commonService.search_page_attr = {};
-  }
-
-  private syncChipLists() {
-    this.filterGroups.forEach(group => {
-      this.chipLists[group.key] = chipOptionsForField(
-        group.options,
-        this.selectedFilters[group.key]
-      );
-    });
   }
 
   private clearImageOnly() {
@@ -443,12 +435,6 @@ export class SearchComponent implements OnInit, OnDestroy {
     if(this.imagePreview) URL.revokeObjectURL(this.imagePreview);
     this.imagePreview = null;
     this.classifyLoader = false;
-  }
-
-  private resetExpandedFilters() {
-    Object.keys(this.expandedFilters).forEach(key => {
-      this.expandedFilters[key] = false;
-    });
   }
 
   ngOnDestroy() {
