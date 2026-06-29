@@ -3,23 +3,18 @@
   <section class="head-breadcrumb search-page__hero">
     <div class="{{template_setting?.body_type}}">
       <div class="row">
-        <div class="col-md-12">
-          <div class="head-breadcrumb-inner border-btm d-flex justify-content-between">
-            <div>
-              <h2>Find Your Saree</h2>
-              <p>Search by photo or refine with filters to discover similar designs</p>
-            </div>
-            <div *ngIf="template_setting?.display_goback && commonService?.desktop_device" class="d-flex align-items-center justify-content-end">
-              <span (click)="commonService.goBack();">GO BACK</span>
-            </div>
-          </div>
-        </div>
         <div *ngIf="template_setting?.breadcrumb" class="col-md-12">
-          <div class="breadcrumb-navigation mt-3">
+          <div class="breadcrumb-navigation">
             <ul class="collapsed">
               <li><a routerLink="/">Home</a></li>
               <li><span class="active-page">Search</span></li>
             </ul>
+          </div>
+        </div>
+        <div class="col-md-12">
+          <div class="search-page__intro">
+            <h2>Find Your Saree</h2>
+            <p>Upload a photo, let AI read the style, and discover matching sarees.</p>
           </div>
         </div>
       </div>
@@ -30,170 +25,261 @@
     <div class="{{template_setting?.body_type}}">
       <div class="search-layout" [class.search-layout--has-results]="afterSearchEvent">
 
-        <!-- Sidebar: upload + filters -->
         <aside class="search-sidebar" [class.search-sidebar--collapsed]="!filtersPanelOpen">
           <button
             type="button"
             class="filter-panel-toggle"
             *ngIf="!commonService.desktop_device"
             (click)="toggleFiltersPanel()"
+            [attr.aria-expanded]="filtersPanelOpen"
           >
-            <span>{{ filtersPanelOpen ? 'Hide filters' : 'Show filters' }}</span>
-            <span *ngIf="hasActiveFilters" class="filter-panel-toggle__count">{{activeFilterChips.length}} active</span>
-            <lucide-icon name="chevron-down" [size]="16" [class.filter-panel-toggle__icon--open]="filtersPanelOpen"></lucide-icon>
+            <span class="filter-panel-toggle__lead">
+              <lucide-icon name="sliders-horizontal" [size]="18" stroke="1.75"></lucide-icon>
+              <span>{{ filtersPanelOpen ? 'Hide search tools' : 'Search & filters' }}</span>
+            </span>
+            <span class="filter-panel-toggle__meta">
+              <span *ngIf="hasActiveFilters" class="filter-panel-toggle__count">{{activeFilterChips.length}}</span>
+              <lucide-icon name="chevron-down" [size]="16" [class.filter-panel-toggle__icon--open]="filtersPanelOpen"></lucide-icon>
+            </span>
           </button>
 
           <div class="search-sidebar__content" *ngIf="filtersPanelOpen || commonService.desktop_device">
-          <div class="search-panel search-panel--upload">
-            <div class="search-panel__head search-panel__head--compact">
-              <h3>Search by Photo</h3>
+            <div class="search-panel search-panel--upload">
+              <div
+                class="upload-dropzone"
+                [class.upload-dropzone--active]="isDragOver"
+                [class.upload-dropzone--has-image]="imagePreview"
+                (dragover)="onDragOver($event)"
+                (dragleave)="onDragLeave($event)"
+                (drop)="onDrop($event)"
+              >
+                <div class="upload-preview" *ngIf="imagePreview">
+                  <img [src]="imagePreview" alt="Uploaded saree preview">
+                  <button
+                    *ngIf="!classifyLoader"
+                    type="button"
+                    class="upload-change-icon"
+                    (click)="sareeFileInput.click()"
+                    aria-label="Change image"
+                  >
+                    <lucide-icon name="image-plus" [size]="16" stroke="1.75"></lucide-icon>
+                  </button>
+                  <div class="upload-analysing" *ngIf="classifyLoader">
+                    <span class="search-inline-spinner" aria-hidden="true"></span>
+                    <span>Analysing your saree…</span>
+                  </div>
+                </div>
+
+                <ng-container *ngIf="!imagePreview">
+                  <div class="upload-dropzone__icon" aria-hidden="true">
+                    <lucide-icon name="cloud-upload" [size]="28" stroke="1.25"></lucide-icon>
+                  </div>
+                  <p class="upload-dropzone__label">Upload Photo</p>
+                  <p class="upload-dropzone__hint">JPG, PNG, WebP — max 5MB</p>
+                  <button type="button" class="primary-btn upload-select-btn" (click)="sareeFileInput.click()">
+                    Select from device
+                  </button>
+                </ng-container>
+
+                <div class="upload-action" *ngIf="imagePreview && !classifyLoader">
+                  <button
+                    type="button"
+                    class="primary-btn upload-analyse-btn"
+                    [disabled]="searchLoader || rateLimitCountdown > 0"
+                    (click)="onAnalyseClick()"
+                  >{{ analysisCached ? 'Search' : 'Analyse' }}</button>
+                </div>
+
+                <input
+                  #sareeFileInput
+                  id="saree-image-input"
+                  type="file"
+                  accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
+                  (change)="onImageSelected($event)"
+                  hidden
+                >
+              </div>
+
+              <p *ngIf="imageError" class="search-error">
+                {{imageError}}
+                <span *ngIf="rateLimitCountdown > 0"> Retry in {{rateLimitCountdown}}s.</span>
+              </p>
+
+              <div class="ai-detected" *ngIf="imageDetected && activeFilterChips.length">
+                <p class="ai-detected__label">AI Detected</p>
+                <div class="ai-detected__tags">
+                  <span class="ai-detected__tag" *ngFor="let chip of activeFilterChips">{{chip.value}}</span>
+                </div>
+              </div>
             </div>
 
-            <div
-              class="upload-dropzone upload-dropzone--compact"
-              [class.upload-dropzone--active]="isDragOver"
-              [class.upload-dropzone--has-image]="imagePreview"
-              (dragover)="onDragOver($event)"
-              (dragleave)="onDragLeave($event)"
-              (drop)="onDrop($event)"
-            >
-              <div class="upload-preview upload-preview--compact" *ngIf="imagePreview">
-                <img [src]="imagePreview" alt="Uploaded saree preview">
-                <div class="upload-analysing" *ngIf="classifyLoader">
-                  <span class="search-inline-spinner" aria-hidden="true"></span>
-                  <span>Analysing your saree…</span>
+            <div class="search-panel search-panel--filters">
+              <div class="search-panel__head">
+                <h3>Refine Your Search</h3>
+              </div>
+
+              <ng-container *ngIf="tag_list.length">
+                <div class="filter-quick-grid">
+                  <div class="filter-field" *ngFor="let group of primaryFilterGroups">
+                    <label [for]="'filter-' + toFilterKey(group.name)">{{group.name}}</label>
+                    <div
+                      class="filter-select-wrap"
+                      [class.filter-select-wrap--active]="!!getFilterSelectValue(group)"
+                    >
+                      <select
+                        [id]="'filter-' + toFilterKey(group.name)"
+                        class="filter-select"
+                        [class.filter-select--placeholder]="!getFilterSelectValue(group)"
+                        [name]="toFilterKey(group.name)"
+                        [ngModel]="getFilterSelectValue(group)"
+                        (ngModelChange)="onFilterSelectChange(group, $event)"
+                      >
+                        <option value="">All {{group.name}}</option>
+                        <option *ngFor="let opt of group.option_list" [value]="opt.name">{{opt.name}}</option>
+                      </select>
+                      <lucide-icon class="filter-select-wrap__chevron" name="chevron-down" [size]="14" stroke="1.75"></lucide-icon>
+                    </div>
+                  </div>
                 </div>
-                <button *ngIf="!classifyLoader" type="button" class="upload-remove" (click)="clearImagePreview()" aria-label="Remove image">&times;</button>
-              </div>
 
-              <div class="upload-compact-row" *ngIf="!imagePreview">
-                <button type="button" class="primary-btn upload-btn-compact" (click)="sareeFileInput.click()">Upload a Photo</button>
-                <span class="upload-compact-hint">JPG, PNG, WebP — max 5MB</span>
-              </div>
-
-              <div class="upload-action" *ngIf="imagePreview && !classifyLoader">
                 <button
                   type="button"
-                  class="primary-btn upload-btn-analyse"
-                  [disabled]="searchLoader || rateLimitCountdown > 0"
-                  (click)="onAnalyseClick()"
-                >Analyse</button>
-                <button type="button" class="secondary-btn upload-btn-change" (click)="sareeFileInput.click()">Change photo</button>
-              </div>
-              <input
-                #sareeFileInput
-                id="saree-image-input"
-                type="file"
-                accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
-                (change)="onImageSelected($event)"
-                hidden
-              >
-            </div>
+                  class="filter-more-toggle"
+                  *ngIf="moreFilterGroups.length"
+                  (click)="toggleMoreFilters()"
+                  [attr.aria-expanded]="moreFiltersOpen"
+                >
+                  <span>More filters</span>
+                  <span *ngIf="moreFiltersSelectedCount" class="filter-more-toggle__badge">{{moreFiltersSelectedCount}}</span>
+                  <lucide-icon name="chevron-down" [size]="16" [class.filter-more-toggle__icon--open]="moreFiltersOpen"></lucide-icon>
+                </button>
 
-            <p *ngIf="imageError" class="search-error">
-              {{imageError}}
-              <span *ngIf="rateLimitCountdown > 0"> Retry in {{rateLimitCountdown}}s.</span>
-            </p>
-          </div>
-
-          <div class="search-panel search-panel--filters">
-            <div class="search-panel__head search-panel__head--compact">
-              <h3>Refine Your Search</h3>
-              <p *ngIf="imageDetected" class="detected-label">We found these details in your image</p>
-            </div>
-
-            <ng-container *ngIf="filterGroups.length">
-              <div class="filter-quick-grid">
-                <div class="filter-field" *ngFor="let group of primaryFilterGroups">
-                  <label [for]="'filter-' + group.key">{{group.name}}</label>
-                  <div
-                    class="filter-select-wrap"
-                    [class.filter-select-wrap--active]="!!selectedFilters[group.key]"
-                  >
-                    <select
-                      [id]="'filter-' + group.key"
-                      class="filter-select"
-                      [class.filter-select--placeholder]="!selectedFilters[group.key]"
-                      [name]="group.key"
-                      [(ngModel)]="selectedFilters[group.key]"
-                      (change)="onFilterChange(group)"
+                <div class="filter-more-panel" *ngIf="moreFiltersOpen && moreFilterGroups.length">
+                  <div class="filter-field" *ngFor="let group of moreFilterGroups">
+                    <label [for]="'filter-more-' + toFilterKey(group.name)">{{group.name}}</label>
+                    <div
+                      class="filter-select-wrap"
+                      [class.filter-select-wrap--active]="!!getFilterSelectValue(group)"
                     >
-                      <option value="">All {{group.name}}</option>
-                      <option *ngFor="let opt of group.options" [value]="opt">{{opt}}</option>
-                    </select>
-                    <lucide-icon class="filter-select-wrap__chevron" name="chevron-down" [size]="14" stroke="1.75"></lucide-icon>
+                      <select
+                        [id]="'filter-more-' + toFilterKey(group.name)"
+                        class="filter-select"
+                        [class.filter-select--placeholder]="!getFilterSelectValue(group)"
+                        [name]="'more-' + toFilterKey(group.name)"
+                        [ngModel]="getFilterSelectValue(group)"
+                        (ngModelChange)="onFilterSelectChange(group, $event)"
+                      >
+                        <option value="">All {{group.name}}</option>
+                        <option *ngFor="let opt of group.option_list" [value]="opt.name">{{opt.name}}</option>
+                      </select>
+                      <lucide-icon class="filter-select-wrap__chevron" name="chevron-down" [size]="14" stroke="1.75"></lucide-icon>
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              <button
-                type="button"
-                class="filter-more-toggle"
-                (click)="toggleMoreFilters()"
-                [attr.aria-expanded]="moreFiltersOpen"
-              >
-                <span>More filters</span>
-                <span *ngIf="moreFiltersSelectedCount" class="filter-more-toggle__badge">{{moreFiltersSelectedCount}}</span>
-                <lucide-icon name="chevron-down" [size]="16" [class.filter-more-toggle__icon--open]="moreFiltersOpen"></lucide-icon>
-              </button>
-
-              <div class="filter-more-panel" *ngIf="moreFiltersOpen">
-                <div class="filter-field" *ngFor="let group of moreFilterGroups">
-                  <label [for]="'filter-' + group.key">{{group.name}}</label>
-                  <div
-                    class="filter-select-wrap"
-                    [class.filter-select-wrap--active]="!!selectedFilters[group.key]"
-                  >
-                    <select
-                      [id]="'filter-' + group.key"
-                      class="filter-select"
-                      [class.filter-select--placeholder]="!selectedFilters[group.key]"
-                      [name]="group.key"
-                      [(ngModel)]="selectedFilters[group.key]"
-                      (change)="onFilterChange(group)"
-                    >
-                      <option value="">All {{group.name}}</option>
-                      <option *ngFor="let opt of group.options" [value]="opt">{{opt}}</option>
-                    </select>
-                    <lucide-icon class="filter-select-wrap__chevron" name="chevron-down" [size]="14" stroke="1.75"></lucide-icon>
-                  </div>
+                <div class="filter-actions">
+                  <button type="button" class="primary-btn" (click)="onSearch()" [disabled]="classifyLoader || searchLoader || !hasActiveFilters">Search</button>
+                  <button type="button" class="secondary-btn" (click)="onClearFilters()" [disabled]="searchLoader">Clear</button>
                 </div>
-              </div>
-
-              <div class="filter-actions">
-                <button type="button" class="primary-btn" (click)="onSearch()" [disabled]="classifyLoader || searchLoader || !hasActiveFilters">Search</button>
-                <button type="button" class="secondary-btn" (click)="onClearFilters()" [disabled]="searchLoader">Clear</button>
-              </div>
-            </ng-container>
-          </div>
+              </ng-container>
+            </div>
           </div>
         </aside>
 
-        <!-- Results -->
         <main class="search-main">
           <div *ngIf="!afterSearchEvent" class="search-welcome">
-            <div class="search-welcome__icon" aria-hidden="true">
-              <lucide-icon name="search" [size]="40" stroke="1.25"></lucide-icon>
+            <div class="search-welcome__head">
+              <h3>Discover Similar Sarees</h3>
+              <p>Upload a photo in the section above — our AI finds sarees that match.</p>
             </div>
-            <h3>Discover your perfect saree</h3>
-            <p>Upload a photo for AI-powered matching, or pick filters on the left and hit Search.</p>
+
+            <div class="search-how">
+              <h4 class="search-how__title">How it works</h4>
+
+              <div class="search-how__steps">
+                <article class="search-how__step">
+                  <div class="search-how__step-badge">Step 1</div>
+                  <div class="search-how__step-icon" aria-hidden="true">
+                    <lucide-icon name="cloud-upload" [size]="22" stroke="1.5"></lucide-icon>
+                  </div>
+                  <h5 class="search-how__step-title">Upload inspiration</h5>
+                  <p class="search-how__step-desc">Choose a saree photo from your device — JPG, PNG or WebP.</p>
+                  <div class="search-how__visual search-how__visual--upload">
+                    <img [src]="demoInspirationImage" alt="Example saree photo to upload">
+                  </div>
+                </article>
+
+                <div class="search-how__connector" aria-hidden="true">
+                  <lucide-icon name="arrow-right" [size]="20" stroke="1.5"></lucide-icon>
+                </div>
+
+                <article class="search-how__step">
+                  <div class="search-how__step-badge">Step 2</div>
+                  <div class="search-how__step-icon" aria-hidden="true">
+                    <lucide-icon name="sparkles" [size]="22" stroke="1.5"></lucide-icon>
+                  </div>
+                  <h5 class="search-how__step-title">AI reads the details</h5>
+                  <p class="search-how__step-desc">We detect colour, fabric, design and other style attributes.</p>
+                  <div class="search-how__visual search-how__visual--tags">
+                    <span class="search-how__tag" *ngFor="let tag of demoAiTags">{{tag}}</span>
+                  </div>
+                </article>
+
+                <div class="search-how__connector" aria-hidden="true">
+                  <lucide-icon name="arrow-right" [size]="20" stroke="1.5"></lucide-icon>
+                </div>
+
+                <article class="search-how__step">
+                  <div class="search-how__step-badge">Step 3</div>
+                  <div class="search-how__step-icon" aria-hidden="true">
+                    <lucide-icon name="search" [size]="22" stroke="1.5"></lucide-icon>
+                  </div>
+                  <h5 class="search-how__step-title">Get matching sarees</h5>
+                  <p class="search-how__step-desc">Browse curated results that closely match your inspiration.</p>
+                  <div class="search-how__visual search-how__visual--results">
+                    <div class="search-how__result" *ngFor="let item of demoPreviewProducts">
+                      <img [src]="item.image" [alt]="item.name">
+                      <div class="search-how__result-meta">
+                        <p>{{item.name}}</p>
+                        <span>{{item.price}}</span>
+                      </div>
+                    </div>
+                  </div>
+                </article>
+              </div>
+
+              <!-- <p class="search-how__cta">
+                <lucide-icon name="cloud-upload" [size]="16" stroke="1.75"></lucide-icon>
+                <span class="search-how__cta-desktop">Start by uploading a photo in the panel on the left</span>
+                <span class="search-how__cta-mobile">Scroll up and upload a photo to get started</span>
+              </p> -->
+            </div>
           </div>
 
           <div *ngIf="afterSearchEvent" class="search-results">
             <div class="results-header">
               <div class="results-header__top">
-                <h3 class="results-title">Results</h3>
-                <p class="results-count" *ngIf="productCount && !searchLoader">
-                  {{productCount}} product{{productCount === 1 ? '' : 's'}} found
-                </p>
-                <p *ngIf="searchLoader && !pageLoader" class="results-searching">
-                  <span class="search-inline-spinner" aria-hidden="true"></span>
-                  Searching…
-                </p>
+                <div class="results-header__intro">
+                  <h3 class="results-title">Similar Sarees Found</h3>
+                  <p class="results-subtitle" *ngIf="imageDetected">AI recommendations based on your uploaded inspiration.</p>
+                  <p class="results-subtitle" *ngIf="!imageDetected">Curated matches based on your selected filters.</p>
+                </div>
+
+                <div class="results-header__summary" *ngIf="!searchLoader || pageLoader">
+                  <p *ngIf="searchLoader && !pageLoader" class="results-searching">
+                    <span class="search-inline-spinner" aria-hidden="true"></span>
+                    Searching…
+                  </p>
+                  <p class="results-count" *ngIf="productCount && !searchLoader">
+                    {{productCount}} product{{productCount === 1 ? '' : 's'}} found
+                    <span *ngIf="fallbackUsed" class="results-count__divider">·</span>
+                    <span *ngIf="fallbackUsed" class="results-count__note">Nearest matches</span>
+                  </p>
+                </div>
               </div>
 
-              <div class="results-header__meta" *ngIf="!searchLoader || pageLoader">
-                <div class="active-chips" *ngIf="activeFilterChips.length">
+              <div class="active-chips-scroll" *ngIf="activeFilterChips.length && (!searchLoader || pageLoader)">
+                <div class="active-chips">
                   <button type="button" class="active-chip" *ngFor="let chip of activeFilterChips"
                     (click)="removeActiveChip(chip)">
                     <span class="active-chip__label">{{chip.label}}</span>
@@ -201,7 +287,6 @@
                     <span class="active-chip__close" aria-hidden="true">&times;</span>
                   </button>
                 </div>
-                <span *ngIf="fallbackUsed" class="fallback-badge">Showing nearest matches</span>
               </div>
             </div>
 
@@ -211,42 +296,62 @@
               </div>
 
               <ng-container *ngIf="!searchLoader">
+                <p class="results-section-label" *ngIf="product_list?.length">Top matches for you</p>
+
                 <div class="product-grid" *ngIf="product_list?.length">
-                  <a
-                    class="search-product-card product-box txt-none"
-                    appMouseHover
+                  <article
+                    class="search-product-card"
                     *ngFor="let x of product_list | paginate: { id: 'search-results', itemsPerPage: pageSize, currentPage: page, totalItems: productCount }"
-                    (click)="onSelectProduct(x);"
-                    routerLink="{{ x.seo_status ? '/product/'+x.seo_details.page_url : '/product/'+x._id }}"
                   >
-                    <div class="prod-div">
-                      <figure class="product-image">
-                        <div class="product_labellist label_{{commonService.application_setting?.tag_position}}">
-                          <span class="span_label" *ngIf="commonService.store_properties?.auto_tags?.sold_out && x.stock<=0">
-                            {{commonService.store_properties?.auto_tags?.sold_out}}
-                          </span>
-                          <ng-container *ngIf="x.stock>0">
-                            <span class="span_label" *ngIf="commonService.store_properties?.auto_tags?.on_sale && x.disc_status">
-                              {{commonService.store_properties?.auto_tags?.on_sale}}
-                            </span>
-                          </ng-container>
-                        </div>
-                        <img width="100%" height="100%" appLqimgLoad appDeferLoad
-                          [ImagelazyLoad]="imgBaseUrl+x.image_list[0]?.image" alt="{{x.name}}">
-                      </figure>
-                      <div class="product-content">
-                        <p class="product-title">{{x.name}}</p>
-                        <div class="product-price">
-                          <span *ngIf="x.disc_status" class="strike">
-                            {{ x.temp_selling_price | currency:cc.pipeCurrencyCode:'symbol-narrow':cc.format:cc.pipeLocale }}
-                          </span>
-                          <span class="price-current">
-                            {{ x.temp_discounted_price | currency:cc.pipeCurrencyCode:'symbol-narrow':cc.format:cc.pipeLocale }}
-                          </span>
-                        </div>
+                    <figure class="product-image" (click)="goToProduct(x)">
+                      <div class="search-product-card__actions">
+                        <button
+                          type="button"
+                          class="search-product-card__action"
+                          [class.search-product-card__action--active]="commonService.wishListIds.indexOf(x._id) != -1"
+                          (click)="onWishlistClick(x, $event)"
+                          aria-label="Add to wishlist"
+                        >
+                          <lucide-icon name="heart" [size]="15" stroke="1.5"></lucide-icon>
+                        </button>
+                        <button
+                          type="button"
+                          class="search-product-card__action"
+                          (click)="goToProduct(x, $event)"
+                          aria-label="View product"
+                        >
+                          <lucide-icon name="shopping-bag" [size]="15" stroke="1.5"></lucide-icon>
+                        </button>
                       </div>
-                    </div>
-                  </a>
+                      <div class="product_labellist label_{{commonService.application_setting?.tag_position}}">
+                        <span class="span_label" *ngIf="commonService.store_properties?.auto_tags?.sold_out && x.stock<=0">
+                          {{commonService.store_properties?.auto_tags?.sold_out}}
+                        </span>
+                        <ng-container *ngIf="x.stock>0">
+                          <span class="span_label" *ngIf="commonService.store_properties?.auto_tags?.on_sale && x.disc_status">
+                            {{commonService.store_properties?.auto_tags?.on_sale}}
+                          </span>
+                        </ng-container>
+                      </div>
+                      <img width="100%" height="100%" appLqimgLoad appDeferLoad
+                        [ImagelazyLoad]="imgBaseUrl+x.image_list[0]?.image" alt="{{x.name}}">
+                    </figure>
+                    <a
+                      class="product-content txt-none"
+                      (click)="onSelectProduct(x);"
+                      routerLink="{{ x.seo_status ? '/product/'+x.seo_details.page_url : '/product/'+x._id }}"
+                    >
+                      <p class="product-title">{{x.name}}</p>
+                      <div class="product-price">
+                        <span *ngIf="x.disc_status" class="strike">
+                          {{ x.temp_selling_price | currency:cc.pipeCurrencyCode:'symbol-narrow':cc.format:cc.pipeLocale }}
+                        </span>
+                        <span class="price-current">
+                          {{ x.temp_discounted_price | currency:cc.pipeCurrencyCode:'symbol-narrow':cc.format:cc.pipeLocale }}
+                        </span>
+                      </div>
+                    </a>
+                  </article>
                 </div>
 
                 <div *ngIf="!product_list?.length" class="search-empty">

@@ -6,12 +6,21 @@ import { CommonService } from '../../services/common.service';
 import { CurrencyConversionService } from '../../services/currency-conversion.service';
 import { environment } from './../../../environments/environment';
 import {
-  SearchFilterGroup,
-  mapAvailableFilters,
-  matchFilterOption,
-  PRIMARY_FILTER_NAMES
-} from './search-filter-options';
-import { SEARCH_AVAILABLE_FILTERS_DATA } from './search-available-filters.data';
+  activeFilterChips as buildActiveFilterChips,
+  countActiveFilterGroups,
+  hasCheckedFilters,
+  mapAvailableFiltersToTagList
+} from '../category/category-api.helpers';
+import { matchFilterOption, PRIMARY_FILTER_NAMES, toFilterKey } from './search-filter-options';
+import { WishlistService } from '../../services/wishlist.service';
+import {
+  buildImageFingerprint,
+  buildPreviewDataUrl,
+  clearSearchSession,
+  readSearchSession,
+  SearchClassifyCache,
+  writeSearchSession
+} from './search-session.storage';
 
 interface ActiveFilterChip {
   label: string;
@@ -41,23 +50,33 @@ export class SearchComponent implements OnInit, OnDestroy {
   page: number = 1;
   pageSize: number = 12;
 
-  filterGroups: SearchFilterGroup[] = [];
-  selectedFilters: Record<string, string> = {};
+  tag_list: any[] = [];
   priceRange: { min: number; max: number } | null = null;
-  moreFiltersOpen: boolean = false;
   filtersPanelOpen: boolean = true;
+  moreFiltersOpen = false;
+  readonly demoInspirationImage = 'assets/images/woven-image.png';
+  readonly demoPreviewProducts = [
+    { name: 'Cream Floral Silk Saree', price: '₹8,450', image: 'assets/images/img-2.jpg' },
+    { name: 'Ivory Wedding Silk Saree', price: '₹12,990', image: 'assets/images/img-3.jpg' }
+  ];
+  readonly demoAiTags = ['Cream', 'Pure Silk', 'Floral', 'Wedding', 'Broad Border'];
+  readonly toFilterKey = toFilterKey;
 
   selectedImageFile: File | null = null;
   imagePreview: string | null = null;
   classifyLoader: boolean = false;
   imageError: string = '';
   imageDetected: boolean = false;
+  analysisCached: boolean = false;
   isDragOver: boolean = false;
   fallbackUsed: boolean = false;
   rateLimitCountdown: number = 0;
 
   private pendingQuery: string | null = null;
   private restorePending = false;
+  private sessionRestorePending = false;
+  private cachedImageFingerprint: string | null = null;
+  private cachedClassification: Record<string, unknown> | null = null;
   private countdownInterval: any;
   private readonly allowedImageTypes = ['image/jpeg', 'image/png', 'image/webp'];
   private readonly maxImageSizeBytes = 5 * 1024 * 1024;
@@ -67,6 +86,7 @@ export class SearchComponent implements OnInit, OnDestroy {
     private storeApi: StoreApiService,
     public commonService: CommonService,
     public cc: CurrencyConversionService,
+    public ws: WishlistService,
     private router: Router,
     public location: Location,
     private activeRoute: ActivatedRoute
@@ -77,39 +97,45 @@ export class SearchComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    if(!this.commonService.desktop_device) this.filtersPanelOpen = false;
     this.restorePending = !!this.commonService.search_page_attr.search_form;
+    if(isPlatformBrowser(this.platformId) && !this.restorePending) {
+      this.sessionRestorePending = !!readSearchSession()?.classify;
+    }
     this.activeRoute.queryParams.subscribe((params: Params) => {
       this.pendingQuery = params['q'] ? String(params['q']) : null;
-      if(this.filterGroups.length) this.handleRouteState();
+      if(this.tag_list.length) this.handleRouteState();
     });
     this.commonService.breadCrumbList(this.bcList);
     this.loadAvailableFilters();
   }
 
   get activeFilterChips(): ActiveFilterChip[] {
-    return this.filterGroups
-      .filter(group => !!this.selectedFilters[group.key])
-      .map(group => ({
-        label: group.name,
-        key: group.key,
-        value: this.selectedFilters[group.key]
-      }));
+    return buildActiveFilterChips(this.tag_list).map(chip => ({
+      label: chip.name,
+      key: toFilterKey(chip.name),
+      value: chip.value
+    }));
   }
 
   get hasActiveFilters(): boolean {
-    return this.activeFilterChips.length > 0;
+    return hasCheckedFilters(this.tag_list);
   }
 
-  get primaryFilterGroups(): SearchFilterGroup[] {
-    return this.filterGroups.filter(group => PRIMARY_FILTER_NAMES.includes(group.name));
+  get activeFilterCount(): number {
+    return countActiveFilterGroups(this.tag_list);
   }
 
-  get moreFilterGroups(): SearchFilterGroup[] {
-    return this.filterGroups.filter(group => !PRIMARY_FILTER_NAMES.includes(group.name));
+  get primaryFilterGroups() {
+    return this.tag_list.filter(group => PRIMARY_FILTER_NAMES.includes(group.name));
+  }
+
+  get moreFilterGroups() {
+    return this.tag_list.filter(group => !PRIMARY_FILTER_NAMES.includes(group.name));
   }
 
   get moreFiltersSelectedCount(): number {
-    return this.moreFilterGroups.filter(group => !!this.selectedFilters[group.key]).length;
+    return this.moreFilterGroups.filter(group => this.getFilterSelectValue(group)).length;
   }
 
   get showPagination(): boolean {
@@ -124,8 +150,19 @@ export class SearchComponent implements OnInit, OnDestroy {
     this.moreFiltersOpen = !this.moreFiltersOpen;
   }
 
-  onFilterChange(group: SearchFilterGroup) {
+  getFilterSelectValue(group: any): string {
+    return (group.option_list || []).find((opt: any) => opt.checked)?.name || '';
+  }
+
+  onFilterSelectChange(group: any, value: string) {
+    group.option_list.forEach((opt: any) => { delete opt.checked; });
+    if(value) {
+      const option = group.option_list.find((opt: any) => opt.name === value);
+      if(option) option.checked = true;
+    }
     this.imageDetected = false;
+    this.analysisCached = false;
+    this.persistSearchSessionState();
   }
 
   onSearch() {
@@ -143,9 +180,13 @@ export class SearchComponent implements OnInit, OnDestroy {
   }
 
   onClearFilters() {
-    this.selectedFilters = {};
+    this.clearTagFilter();
     this.imageError = '';
     this.imageDetected = false;
+    this.analysisCached = false;
+    this.cachedImageFingerprint = null;
+    this.cachedClassification = null;
+    clearSearchSession();
     this.fallbackUsed = false;
     this.rateLimitCountdown = 0;
     clearInterval(this.countdownInterval);
@@ -155,7 +196,12 @@ export class SearchComponent implements OnInit, OnDestroy {
     this.page = 1;
     this.moreFiltersOpen = false;
     this.clearImageOnly();
-    this.initFilterState();
+  }
+
+  clearTagFilter() {
+    this.tag_list.forEach(tag => {
+      tag.option_list.forEach((opt: any) => { delete opt.checked; });
+    });
   }
 
   onPageChange(page: number) {
@@ -191,7 +237,11 @@ export class SearchComponent implements OnInit, OnDestroy {
   }
 
   removeActiveChip(chip: ActiveFilterChip) {
-    this.selectedFilters[chip.key] = '';
+    const group = this.tag_list.find(tag => toFilterKey(tag.name) === chip.key);
+    const option = group?.option_list?.find((opt: any) => opt.name === chip.value);
+    if(option) delete option.checked;
+    this.imageDetected = false;
+    this.analysisCached = false;
     if(this.afterSearchEvent && this.hasActiveFilters) {
       this.page = 1;
       this.searchLoader = true;
@@ -207,31 +257,36 @@ export class SearchComponent implements OnInit, OnDestroy {
   clearImagePreview() {
     this.clearImageOnly();
     this.imageDetected = false;
+    this.analysisCached = false;
+    this.cachedImageFingerprint = null;
+    this.cachedClassification = null;
+    clearSearchSession();
   }
 
   private loadAvailableFilters() {
-    if(this.filterGroups.length) return;
-    this.applyFiltersResponse(SEARCH_AVAILABLE_FILTERS_DATA);
-    this.handleRouteState();
+    if(this.tag_list.length) return;
+    this.storeApi.AVAILABLE_FILTERS({ category_id: 'all' }).subscribe(afResult => {
+      if(afResult.status) {
+        this.applyFiltersResponse(afResult);
+      } else {
+        console.log('available_filters response', afResult);
+        this.tag_list = [];
+        this.priceRange = null;
+      }
+      this.handleRouteState();
+    });
   }
 
   private applyFiltersResponse(result: any) {
-    this.filterGroups = mapAvailableFilters(result.available_filters);
+    this.tag_list = mapAvailableFiltersToTagList(result.available_filters, {});
     this.priceRange = result.price_range || null;
-    this.initFilterState();
-  }
-
-  private initFilterState() {
-    this.filterGroups.forEach(group => {
-      if(this.selectedFilters[group.key] === undefined) this.selectedFilters[group.key] = '';
-    });
-    if(this.moreFilterGroups.some(group => this.selectedFilters[group.key])) {
+    if(this.moreFilterGroups.some(group => this.getFilterSelectValue(group))) {
       this.moreFiltersOpen = true;
     }
   }
 
   private handleRouteState() {
-    if(!this.filterGroups.length) return;
+    if(!this.tag_list.length) return;
 
     if(this.restorePending) {
       this.restorePending = false;
@@ -239,13 +294,22 @@ export class SearchComponent implements OnInit, OnDestroy {
       return;
     }
 
+    if(this.sessionRestorePending) {
+      this.sessionRestorePending = false;
+      this.restoreClassifySession();
+      return;
+    }
+
     if(this.pendingQuery) {
-      const materialGroup = this.filterGroups.find(group => group.name === 'Material');
+      const materialGroup = this.tag_list.find(group => group.name === 'Material');
       if(materialGroup) {
-        this.selectedFilters[materialGroup.key] = matchFilterOption(
-          materialGroup.options,
+        const matched = matchFilterOption(
+          materialGroup.option_list.map((opt: any) => opt.name),
           this.pendingQuery
         );
+        materialGroup.option_list.forEach((opt: any) => { delete opt.checked; });
+        const option = materialGroup.option_list.find((opt: any) => opt.name === matched);
+        if(option) option.checked = true;
         this.onSearch();
       }
       this.pendingQuery = null;
@@ -253,7 +317,14 @@ export class SearchComponent implements OnInit, OnDestroy {
   }
 
   onAnalyseClick() {
-    if(!this.selectedImageFile || this.classifyLoader || this.searchLoader) return;
+    if(this.classifyLoader || this.searchLoader) return;
+    if(this.analysisCached && this.cachedClassification) {
+      this.applyClassification(this.cachedClassification);
+      this.imageDetected = true;
+      this.onSearch();
+      return;
+    }
+    if(!this.selectedImageFile) return;
     this.classifyAndSearch();
   }
 
@@ -271,9 +342,51 @@ export class SearchComponent implements OnInit, OnDestroy {
     this.rateLimitCountdown = 0;
     clearInterval(this.countdownInterval);
     this.imageDetected = false;
+    this.analysisCached = false;
+    this.cachedImageFingerprint = null;
+    this.cachedClassification = null;
     this.selectedImageFile = file;
-    if(this.imagePreview) URL.revokeObjectURL(this.imagePreview);
+    if(this.imagePreview && this.imagePreview.startsWith('blob:')) {
+      URL.revokeObjectURL(this.imagePreview);
+    }
     this.imagePreview = URL.createObjectURL(file);
+
+    if(!isPlatformBrowser(this.platformId)) return;
+    void this.syncSessionForSelectedFile(file);
+  }
+
+  private async syncSessionForSelectedFile(file: File) {
+    const session = readSearchSession();
+    const classifyCache = session?.classify;
+
+    try {
+      const fingerprint = await buildImageFingerprint(file);
+      if(classifyCache && classifyCache.imageFingerprint !== fingerprint) {
+        writeSearchSession({
+          classify: undefined,
+          afterSearchEvent: false,
+          page: 1,
+          fallbackUsed: false,
+          filters: {}
+        });
+        this.analysisCached = false;
+        this.cachedClassification = null;
+        this.cachedImageFingerprint = null;
+        return;
+      }
+
+      if(!classifyCache) return;
+
+      this.cachedImageFingerprint = fingerprint;
+      this.cachedClassification = classifyCache.classification;
+      this.analysisCached = true;
+      if(classifyCache.previewDataUrl) {
+        if(this.imagePreview?.startsWith('blob:')) URL.revokeObjectURL(this.imagePreview);
+        this.imagePreview = classifyCache.previewDataUrl;
+      }
+    } catch {
+      // ignore fingerprint errors
+    }
   }
 
   private classifyAndSearch() {
@@ -283,39 +396,90 @@ export class SearchComponent implements OnInit, OnDestroy {
     this.page = 1;
     this.fallbackUsed = false;
 
-    this.storeApi.CLASSIFY_SAREE(this.selectedImageFile).subscribe({
-      next: result => {
+    void this.syncSessionForSelectedFile(this.selectedImageFile).then(() => {
+      if(this.analysisCached && this.cachedClassification) {
         this.classifyLoader = false;
-        if(result.status && result.classification) {
-          this.applyClassification(result.classification);
-          this.imageDetected = true;
-          if(this.moreFilterGroups.some(group => this.selectedFilters[group.key])) {
-            this.moreFiltersOpen = true;
-          }
-          this.onSearch();
-        }
-        else {
-          this.imageError = result.message || 'Could not classify image. Please select filters manually.';
-          if(result.retry_after_seconds > 0) {
-            this.startCountdown(result.retry_after_seconds);
-          }
-        }
-      },
-      error: () => {
-        this.classifyLoader = false;
-        this.imageError = 'Classification failed. Please try again.';
+        this.applyClassification(this.cachedClassification);
+        this.imageDetected = true;
+        this.onSearch();
+        return;
       }
+
+      this.storeApi.CLASSIFY_SAREE(this.selectedImageFile!).subscribe({
+        next: result => {
+          this.classifyLoader = false;
+          if(result.status && result.classification) {
+            this.applyClassification(result.classification);
+            this.imageDetected = true;
+            void this.persistClassifySession(this.selectedImageFile!, result.classification);
+            this.onSearch();
+          }
+          else {
+            this.imageError = result.message || 'Could not classify image. Please select filters manually.';
+            if(result.retry_after_seconds > 0) {
+              this.startCountdown(result.retry_after_seconds);
+            }
+          }
+        },
+        error: () => {
+          this.classifyLoader = false;
+          this.imageError = 'Classification failed. Please try again.';
+        }
+      });
     });
+  }
+
+  private async persistClassifySession(file: File, classification: Record<string, unknown>) {
+    if(!isPlatformBrowser(this.platformId)) return;
+
+    try {
+      const [imageFingerprint, previewDataUrl] = await Promise.all([
+        buildImageFingerprint(file),
+        buildPreviewDataUrl(file).catch(() => this.imagePreview || '')
+      ]);
+
+      this.cachedImageFingerprint = imageFingerprint;
+      this.cachedClassification = classification;
+      this.analysisCached = true;
+
+      if(previewDataUrl.startsWith('data:')) {
+        if(this.imagePreview?.startsWith('blob:')) URL.revokeObjectURL(this.imagePreview);
+        this.imagePreview = previewDataUrl;
+      }
+
+      const classifyCache: SearchClassifyCache = {
+        imageFingerprint,
+        classification,
+        filters: this.getSelectedFiltersMap(),
+        previewDataUrl: previewDataUrl.startsWith('data:') ? previewDataUrl : '',
+        imageDetected: this.imageDetected,
+        cachedAt: Date.now()
+      };
+
+      writeSearchSession({
+        ...readSearchSession(),
+        classify: classifyCache,
+        filters: classifyCache.filters
+      });
+    } catch (error) {
+      console.log('classify session persist failed', error);
+    }
   }
 
   private applyClassification(classification: any) {
     const classFilters: Record<string, string[]> = classification.filters || {};
-    this.filterGroups.forEach(group => {
-      const values = classFilters[group._id];
-      if(values?.length) {
-        this.selectedFilters[group.key] = matchFilterOption(group.options, values[0]);
-      }
+    this.tag_list.forEach(tag => {
+      const values = classFilters[tag._id];
+      if(!values?.length) return;
+      const matched = matchFilterOption(
+        tag.option_list.map((opt: any) => opt.name),
+        values[0]
+      );
+      tag.option_list.forEach((opt: any) => { delete opt.checked; });
+      const option = tag.option_list.find((opt: any) => opt.name === matched);
+      if(option) option.checked = true;
     });
+    this.persistSearchSessionState();
   }
 
   private startCountdown(seconds: number) {
@@ -359,11 +523,32 @@ export class SearchComponent implements OnInit, OnDestroy {
 
   private buildSearchPayload(skip: number, limit: number) {
     const filters: Record<string, string[]> = {};
-    this.filterGroups.forEach(group => {
-      const val = this.selectedFilters[group.key]?.trim();
-      if(val) filters[group._id] = [val];
+    this.tag_list.forEach(tag => {
+      const selected = (tag.option_list || [])
+        .filter((opt: any) => opt.checked)
+        .map((opt: any) => opt.name);
+      if(selected.length) filters[tag._id] = selected;
     });
     return { filters, skip, limit };
+  }
+
+  private getSelectedFiltersMap(): Record<string, string> {
+    const filters: Record<string, string> = {};
+    this.tag_list.forEach(tag => {
+      const checked = (tag.option_list || []).find((opt: any) => opt.checked);
+      if(checked) filters[toFilterKey(tag.name)] = checked.name;
+    });
+    return filters;
+  }
+
+  private applySelectedFiltersMap(savedFilters: Record<string, string>) {
+    Object.entries(savedFilters || {}).forEach(([key, value]) => {
+      const group = this.tag_list.find(tag => toFilterKey(tag.name) === key);
+      if(!group || !value) return;
+      group.option_list.forEach((opt: any) => { delete opt.checked; });
+      const option = group.option_list.find((opt: any) => opt.name === value);
+      if(option) option.checked = true;
+    });
   }
 
   private applySearchResult(result: any) {
@@ -379,49 +564,127 @@ export class SearchComponent implements OnInit, OnDestroy {
       obj.temp_discounted_price = this.cc.CALC(obj.discounted_price);
     });
     this.product_list = list;
+    this.persistSearchSessionState();
+  }
+
+  private persistSearchSessionState() {
+    if(!isPlatformBrowser(this.platformId)) return;
+
+    const existing = readSearchSession() || {};
+    writeSearchSession({
+      ...existing,
+      afterSearchEvent: this.afterSearchEvent,
+      page: this.page,
+      fallbackUsed: this.fallbackUsed,
+      filters: this.getSelectedFiltersMap(),
+      classify: existing.classify
+        ? {
+            ...existing.classify,
+            filters: this.getSelectedFiltersMap(),
+            imageDetected: this.imageDetected
+          }
+        : undefined
+    });
+  }
+
+  private restoreClassifySession() {
+    const session = readSearchSession();
+    const classifyCache = session?.classify;
+    if(!classifyCache?.classification) return;
+
+    this.cachedImageFingerprint = classifyCache.imageFingerprint;
+    this.cachedClassification = classifyCache.classification;
+    this.analysisCached = true;
+    this.imageDetected = !!classifyCache.imageDetected;
+
+    if(classifyCache.previewDataUrl) {
+      this.imagePreview = classifyCache.previewDataUrl;
+    }
+
+    this.applyClassification(classifyCache.classification);
+
+    if(session?.afterSearchEvent && this.hasActiveFilters) {
+      this.afterSearchEvent = true;
+      this.page = session.page || 1;
+      this.fallbackUsed = !!session.fallbackUsed;
+      this.searchLoader = true;
+      if(this.page > 1) {
+        this.fetchPage(this.page);
+      } else {
+        this.runSearchWithFallback();
+      }
+      return;
+    }
+
+    if(this.moreFilterGroups.some(group => this.getFilterSelectValue(group))) {
+      this.moreFiltersOpen = true;
+    }
   }
 
   onSelectProduct(x: any) {
     this.commonService.selected_product = x;
+    const selectedFilters = this.getSelectedFiltersMap();
     this.commonService.search_page_attr = {
-      search_form: { filters: { ...this.selectedFilters } },
+      search_form: { filters: { ...selectedFilters } },
       product_list: this.product_list,
       scroll_y_pos: this.commonService.scroll_y_pos,
       product_count: this.productCount,
-      ai_search_form: { ...this.selectedFilters },
+      ai_search_form: { ...selectedFilters },
       fallback_used: this.fallbackUsed,
       image_detected: this.imageDetected,
       page: this.page
     };
+    this.persistSearchSessionState();
+  }
+
+  onWishlistClick(product: any, event: Event) {
+    event.preventDefault();
+    event.stopPropagation();
+    if(this.commonService.wishListIds.indexOf(product._id) != -1) {
+      this.ws.removeFromWishList(product._id);
+    } else {
+      this.ws.addToWishList(product);
+    }
+  }
+
+  goToProduct(product: any, event?: Event) {
+    event?.preventDefault();
+    event?.stopPropagation();
+    this.onSelectProduct(product);
+    const url = product.seo_status
+      ? `/product/${product.seo_details.page_url}`
+      : `/product/${product._id}`;
+    this.router.navigate([url]);
   }
 
   private restoreSearchState() {
     this.afterSearchEvent = true;
     const saved = this.commonService.search_page_attr;
     const savedFilters = saved.ai_search_form || saved.search_form?.filters;
-    if(savedFilters) this.selectedFilters = { ...this.selectedFilters, ...savedFilters };
+    if(savedFilters) this.applySelectedFiltersMap(savedFilters);
     this.product_list = saved.product_list;
     this.productCount = saved.product_count;
     this.fallbackUsed = !!saved.fallback_used;
     this.imageDetected = !!saved.image_detected;
     this.page = saved.page || 1;
-    if(this.moreFilterGroups.some(group => this.selectedFilters[group.key])) {
+    if(this.moreFilterGroups.some(group => this.getFilterSelectValue(group))) {
       this.moreFiltersOpen = true;
     }
     const scrollPos = saved.scroll_y_pos;
     setTimeout(() => { window.scrollTo({ top: scrollPos, behavior: 'smooth' }); }, 500);
+    this.persistSearchSessionState();
     this.commonService.search_page_attr = {};
   }
 
   private clearImageOnly() {
     this.selectedImageFile = null;
-    if(this.imagePreview) URL.revokeObjectURL(this.imagePreview);
+    if(this.imagePreview?.startsWith('blob:')) URL.revokeObjectURL(this.imagePreview);
     this.imagePreview = null;
     this.classifyLoader = false;
   }
 
   ngOnDestroy() {
-    if(this.imagePreview) URL.revokeObjectURL(this.imagePreview);
+    if(this.imagePreview?.startsWith('blob:')) URL.revokeObjectURL(this.imagePreview);
     clearInterval(this.countdownInterval);
   }
 
