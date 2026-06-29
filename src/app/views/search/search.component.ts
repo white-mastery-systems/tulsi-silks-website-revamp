@@ -1,14 +1,12 @@
 import { Component, OnInit, OnDestroy, Inject, PLATFORM_ID } from '@angular/core';
 import { Router, ActivatedRoute, Params } from '@angular/router';
 import { isPlatformBrowser, Location } from '@angular/common';
-import { firstValueFrom } from 'rxjs';
 import { StoreApiService } from '../../services/store-api.service';
 import { CommonService } from '../../services/common.service';
 import { CurrencyConversionService } from '../../services/currency-conversion.service';
 import { environment } from './../../../environments/environment';
 import {
   SearchFilterGroup,
-  deriveColourFamily,
   mapAvailableFilters,
   matchFilterOption,
   PRIMARY_FILTER_NAMES
@@ -56,10 +54,11 @@ export class SearchComponent implements OnInit, OnDestroy {
   imageDetected: boolean = false;
   isDragOver: boolean = false;
   fallbackUsed: boolean = false;
-  finalAiTags: string[] = [];
+  rateLimitCountdown: number = 0;
 
   private pendingQuery: string | null = null;
   private restorePending = false;
+  private countdownInterval: any;
   private readonly allowedImageTypes = ['image/jpeg', 'image/png', 'image/webp'];
   private readonly maxImageSizeBytes = 5 * 1024 * 1024;
 
@@ -148,7 +147,8 @@ export class SearchComponent implements OnInit, OnDestroy {
     this.imageError = '';
     this.imageDetected = false;
     this.fallbackUsed = false;
-    this.finalAiTags = [];
+    this.rateLimitCountdown = 0;
+    clearInterval(this.countdownInterval);
     this.afterSearchEvent = false;
     this.product_list = [];
     this.productCount = 0;
@@ -252,6 +252,11 @@ export class SearchComponent implements OnInit, OnDestroy {
     }
   }
 
+  onAnalyseClick() {
+    if(!this.selectedImageFile || this.classifyLoader || this.searchLoader) return;
+    this.classifyAndSearch();
+  }
+
   private processImageFile(file: File) {
     if(!this.allowedImageTypes.includes(file.type)) {
       this.imageError = 'Please upload a JPG, PNG, or WebP image.';
@@ -263,133 +268,113 @@ export class SearchComponent implements OnInit, OnDestroy {
     }
 
     this.imageError = '';
+    this.rateLimitCountdown = 0;
+    clearInterval(this.countdownInterval);
+    this.imageDetected = false;
     this.selectedImageFile = file;
     if(this.imagePreview) URL.revokeObjectURL(this.imagePreview);
     this.imagePreview = URL.createObjectURL(file);
-    this.classifyAndSearch();
   }
 
   private classifyAndSearch() {
     if(!this.selectedImageFile) return;
     this.classifyLoader = true;
+    this.imageError = '';
     this.page = 1;
     this.fallbackUsed = false;
 
-    this.storeApi.CLASSIFY_SAREE(this.selectedImageFile).subscribe(result => {
-      this.classifyLoader = false;
-      if(result.status && result.classification) {
-        this.applyClassification(result.classification);
-        this.imageDetected = true;
-        if(this.moreFilterGroups.some(group => this.selectedFilters[group.key])) {
-          this.moreFiltersOpen = true;
+    this.storeApi.CLASSIFY_SAREE(this.selectedImageFile).subscribe({
+      next: result => {
+        this.classifyLoader = false;
+        if(result.status && result.classification) {
+          this.applyClassification(result.classification);
+          this.imageDetected = true;
+          if(this.moreFilterGroups.some(group => this.selectedFilters[group.key])) {
+            this.moreFiltersOpen = true;
+          }
+          this.onSearch();
         }
-        this.onSearch();
-      }
-      else {
-        this.imageError = result.message || 'Could not classify image. Please select filters manually.';
+        else {
+          this.imageError = result.message || 'Could not classify image. Please select filters manually.';
+          if(result.retry_after_seconds > 0) {
+            this.startCountdown(result.retry_after_seconds);
+          }
+        }
+      },
+      error: () => {
+        this.classifyLoader = false;
+        this.imageError = 'Classification failed. Please try again.';
       }
     });
   }
 
   private applyClassification(classification: any) {
-    const [design, occasion, border] = classification.tags || [];
-    const mappedValues: Record<string, string> = {
-      'Material': classification.keyword || '',
-      'Body Colour': classification.colour || '',
-      'Design': design || '',
-      'Occasion': occasion || '',
-      'Border': border || ''
-    };
-
+    const classFilters: Record<string, string[]> = classification.filters || {};
     this.filterGroups.forEach(group => {
-      const rawValue = mappedValues[group.name];
-      if(rawValue) {
-        this.selectedFilters[group.key] = matchFilterOption(group.options, rawValue);
+      const values = classFilters[group._id];
+      if(values?.length) {
+        this.selectedFilters[group.key] = matchFilterOption(group.options, values[0]);
       }
     });
   }
 
-  private async runSearchWithFallback() {
-    const attempts = this.buildTagAttempts();
-    try {
-      for(let i = 0; i < attempts.length; i++) {
-        const tags = attempts[i];
-        const payload = this.buildSearchPayload(tags, 0, this.pageSize);
-        const result = await firstValueFrom(this.storeApi.SEARCH_PRODUCT_V2(payload));
-        if(result.status && (result.count > 0 || i === attempts.length - 1)) {
-          this.finalAiTags = tags;
-          this.fallbackUsed = i > 0 && result.count > 0;
-          this.applySearchResult(result);
-          break;
-        }
+  private startCountdown(seconds: number) {
+    clearInterval(this.countdownInterval);
+    this.rateLimitCountdown = seconds;
+    this.countdownInterval = setInterval(() => {
+      this.rateLimitCountdown--;
+      if(this.rateLimitCountdown <= 0) {
+        clearInterval(this.countdownInterval);
+        this.rateLimitCountdown = 0;
+        this.imageError = '';
       }
-    }
-    catch (err) {
-      console.log("search error", err);
-      this.imageError = 'Search failed. Please try again.';
-    }
-    finally {
-      this.searchLoader = false;
-    }
+    }, 1000);
+  }
+
+  private runSearchWithFallback() {
+    const payload = this.buildSearchPayload(0, this.pageSize);
+    this.storeApi.SEARCH_PRODUCT_EXACT(payload).subscribe({
+      next: result => {
+        this.applySearchResult(result);
+        this.searchLoader = false;
+      },
+      error: err => {
+        console.log("search error", err);
+        this.imageError = 'Search failed. Please try again.';
+        this.searchLoader = false;
+      }
+    });
   }
 
   private fetchPage(page: number) {
     this.pageLoader = true;
     const skip = (page - 1) * this.pageSize;
-    const payload = this.buildSearchPayload(this.finalAiTags, skip, this.pageSize);
-    this.storeApi.SEARCH_PRODUCT_V2(payload).subscribe(result => {
+    const payload = this.buildSearchPayload(skip, this.pageSize);
+    this.storeApi.SEARCH_PRODUCT_EXACT(payload).subscribe(result => {
       this.pageLoader = false;
       if(result.status) this.applySearchResult(result);
       else console.log("response", result);
     });
   }
 
-  private buildTagAttempts(): string[][] {
-    const allTags = this.getSelectedTagValues();
-    const attempts: string[][] = [];
-    const maxAttempts = 4;
-
-    for(let i = 0; i < maxAttempts; i++) {
-      const tagCount = Math.max(0, allTags.length - i);
-      attempts.push(allTags.slice(0, tagCount));
-      if(tagCount === 0) break;
-    }
-
-    return attempts.length ? attempts : [[]];
-  }
-
-  private getSelectedTagValues(): string[] {
-    return this.filterGroups
-      .filter(group => group.apiField === 'tag' && this.selectedFilters[group.key])
-      .sort((a, b) => a.rank - b.rank)
-      .map(group => this.selectedFilters[group.key]);
-  }
-
-  private buildSearchPayload(tags: string[], skip: number, limit: number) {
-    const materialGroup = this.filterGroups.find(group => group.name === 'Material');
-    const colourGroup = this.filterGroups.find(group => group.name === 'Body Colour');
-    const colour = colourGroup ? this.selectedFilters[colourGroup.key]?.trim() : '';
-
-    return {
-      keyword: materialGroup ? this.selectedFilters[materialGroup.key]?.trim() : '',
-      colour,
-      colour_family: colour ? deriveColourFamily(colour) : '',
-      tags,
-      skip,
-      limit
-    };
+  private buildSearchPayload(skip: number, limit: number) {
+    const filters: Record<string, string[]> = {};
+    this.filterGroups.forEach(group => {
+      const val = this.selectedFilters[group.key]?.trim();
+      if(val) filters[group._id] = [val];
+    });
+    return { filters, skip, limit };
   }
 
   private applySearchResult(result: any) {
     if(!result.status) return;
+    this.fallbackUsed = result.match_type === 'similar';
     this.productCount = result.count;
+    const now = new Date();
     const list = result.list || [];
     list.forEach((obj: any) => {
-      if(obj.hold_till) {
-        let balanceStock = obj.stock;
-        if(new Date() < new Date(obj.hold_till)) balanceStock = obj.stock - obj.hold_qty;
-        obj.stock = balanceStock;
-      }
+      const activeHold = (obj.user_hold || []).find((h: any) => new Date(h.hold_till) > now);
+      if(activeHold) obj.stock = Math.max(0, obj.stock - activeHold.hold_qty);
       obj.temp_selling_price = this.cc.CALC(obj.selling_price);
       obj.temp_discounted_price = this.cc.CALC(obj.discounted_price);
     });
@@ -404,7 +389,6 @@ export class SearchComponent implements OnInit, OnDestroy {
       scroll_y_pos: this.commonService.scroll_y_pos,
       product_count: this.productCount,
       ai_search_form: { ...this.selectedFilters },
-      final_ai_tags: this.finalAiTags,
       fallback_used: this.fallbackUsed,
       image_detected: this.imageDetected,
       page: this.page
@@ -418,7 +402,6 @@ export class SearchComponent implements OnInit, OnDestroy {
     if(savedFilters) this.selectedFilters = { ...this.selectedFilters, ...savedFilters };
     this.product_list = saved.product_list;
     this.productCount = saved.product_count;
-    this.finalAiTags = saved.final_ai_tags || [];
     this.fallbackUsed = !!saved.fallback_used;
     this.imageDetected = !!saved.image_detected;
     this.page = saved.page || 1;
@@ -439,6 +422,7 @@ export class SearchComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     if(this.imagePreview) URL.revokeObjectURL(this.imagePreview);
+    clearInterval(this.countdownInterval);
   }
 
 }

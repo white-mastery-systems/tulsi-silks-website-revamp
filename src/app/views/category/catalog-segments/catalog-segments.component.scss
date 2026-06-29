@@ -1,0 +1,118 @@
+/* Catalog segments — mirrors home primary-section spacing and typography */
+.catalog-segment {
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+}
+
+.catalog-icon-card {
+  border: 1px solid #e8e4df;
+  border-radius: 8px;
+  padding: 1.5rem;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.catalog-icon-card__icon {
+  color: #8b2942;
+}
+
+.catalog-icon-card__title {
+  font-size: 1.1rem;
+  margin: 0;
+}
+
+.catalog-icon-card__desc {
+  font-size: 0.9rem;
+  color: #5c5c5c;
+  flex: 1;
+  margin: 0;
+}
+
+.catalog-founder-intro img {
+  border-radius: 8px;
+  margin-bottom: 1rem;
+}
+
+.catalog-founder-badge {
+  display: inline-block;
+  background: #f5e8ec;
+  color: #8b2942;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  margin-bottom: 0.5rem;
+}
+
+.catalog-highlight-points {
+  list-style: none;
+  margin: 1rem 0 0;
+}
+
+.catalog-highlight-points li {
+  padding: 0.35rem 0;
+  padding-left: 1.25rem;
+  position: relative;
+}
+
+.catalog-highlight-points li::before {
+  content: "✓";
+  position: absolute;
+  left: 0;
+  color: #8b2942;
+  font-weight: bold;
+}
+
+.catalog-founder-faq-item {
+  border-bottom: 1px solid #e8e4df;
+  padding: 1.25rem 0;
+}
+
+.catalog-founder-faq-item:last-child {
+  border-bottom: none;
+}
+
+.catalog-founder-faq-item h4 {
+  font-size: 1rem;
+  margin: 0 0 0.5rem;
+}
+
+.catalog-checklist-label {
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #8b2942;
+  margin-bottom: 0.5rem;
+}
+
+.catalog-checklist-highlight {
+  color: #8b2942;
+}
+
+.catalog-checklist {
+  list-style: none;
+  margin: 0;
+}
+
+.catalog-checklist li {
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-start;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid #e8e4df;
+}
+
+.catalog-checklist li:last-child {
+  border-bottom: none;
+}
+
+.catalog-checklist-split--light {
+  background: #faf9f7;
+  padding: 2rem 0;
+}
+
+.catalog-cta__actions .primary-btn {
+  min-width: 160px;
+}

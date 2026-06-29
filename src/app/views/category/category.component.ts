@@ -1,13 +1,26 @@
-import { Component, OnInit, Inject, PLATFORM_ID, ViewChild, ElementRef, DOCUMENT } from '@angular/core';
+import { Component, OnInit, OnDestroy, Inject, PLATFORM_ID, ViewChild, ElementRef, DOCUMENT } from '@angular/core';
 import { Router, ActivatedRoute, Params } from '@angular/router';
 import { isPlatformBrowser, DecimalPipe } from '@angular/common';
-import { Subscription } from 'rxjs';
+import { Subscription, Subject } from 'rxjs';
+import { debounceTime } from 'rxjs/operators';
 import { environment } from './../../../environments/environment';
 import { StoreApiService } from '../../services/store-api.service';
 import { CommonService } from '../../services/common.service';
 import { WishlistService } from '../../services/wishlist.service';
 import { CurrencyConversionService } from '../../services/currency-conversion.service';
+import { ModalDirective } from 'ngx-bootstrap/modal';
 import { Options } from '@angular-slider/ngx-slider';
+import {
+  isStandardCategoryPage,
+  mapAvailableFiltersToTagList,
+  buildFiltersPayload,
+  buildListV4Payload,
+  hasCheckedFilters,
+  activeFilterChips,
+  categoryRobotsContent,
+  isPriceRangeFiltered,
+  shouldEmitCategoryItemListSchema
+} from './category-api.helpers';
 
 @Component({
     selector: 'app-category',
@@ -16,7 +29,7 @@ import { Options } from '@angular-slider/ngx-slider';
     standalone: false
 })
 
-export class CategoryComponent implements OnInit {
+export class CategoryComponent implements OnInit, OnDestroy {
 
   tag_list: any = []; params: any = {};
   category_details: any = {};
@@ -44,6 +57,73 @@ export class CategoryComponent implements OnInit {
   showNavigationButtons: boolean = false;
   isKanjivaram: boolean; isBanarasi: boolean; isOrganza: boolean;
   selectedOptions: any = {}; qParams: any = {};
+
+  useV4Catalog = false;
+  filtersFromApi = false;
+  listLoader = false;
+  total = 0;
+  totalPages = 0;
+  catalog_page_segments: any[] = [];
+  priceRangeBase = { min: 0, max: 0 };
+  private priceChange$ = new Subject<void>();
+  private priceDebounceSub: Subscription;
+
+  get displayProductCount(): number {
+    return this.useV4Catalog ? this.total : this.list.length;
+  }
+
+  get filterChips() {
+    return activeFilterChips(this.tag_list);
+  }
+
+  get activeFilterCount(): number {
+    let count = this.filterChips.length;
+    if (this.useV4Catalog && this.isPriceFiltered()) count++;
+    return count;
+  }
+
+  filtersDrawerOpen = false;
+  priceFilterOpen = true;
+
+  get catalogProductCountLabel(): string {
+    const count = this.displayProductCount;
+    return `${count} ${count === 1 ? 'product' : 'products'}`;
+  }
+
+  get currentSortLabel(): string {
+    const match = this.sort_list.find(item => item.value === this.sort_value);
+    return match?.name || 'Latest';
+  }
+
+  openFilters() {
+    this.priceFilterOpen = true;
+    this.collapseIndex = -1;
+    this.filterModal.show();
+    this.filtersDrawerOpen = true;
+    if (this.commonService.screen_width < 992) {
+      this.commonService.scrollModalTop(500);
+    }
+  }
+
+  closeFilters() {
+    this.filterModal.hide();
+    this.filtersDrawerOpen = false;
+  }
+
+  onFiltersHidden() {
+    this.filtersDrawerOpen = false;
+  }
+
+  togglePriceFilterSection() {
+    this.priceFilterOpen = !this.priceFilterOpen;
+    if (this.priceFilterOpen) this.collapseIndex = -1;
+  }
+
+  openSortOptions() {
+    if (this.commonService.screen_width < 992) {
+      this.sortModal.show();
+    }
+  }
 
   categorySchema: any = {
     "@context": "https://schema.org",
@@ -200,6 +280,8 @@ export class CategoryComponent implements OnInit {
 
   @ViewChild('navigationScroller') navigationScroller!: ElementRef;
   @ViewChild('imageScroller') imageScroller!: ElementRef;
+  @ViewChild('filterModal') filterModal!: ModalDirective;
+  @ViewChild('sortModal') sortModal!: ModalDirective;
   isAtStart: boolean = true;
   isAtEnd: boolean = false;
   isImageAtStart: boolean = true;
@@ -216,6 +298,9 @@ export class CategoryComponent implements OnInit {
       this.findCurrency();
     });
     if (isPlatformBrowser(this.platformId)) this.IsBrowser = true;
+    this.priceDebounceSub = this.priceChange$.pipe(debounceTime(300)).subscribe(() => {
+      if (this.useV4Catalog) this.onPriceRangeApply();
+    });
   }
 
   // Update your ngAfterViewInit method
@@ -406,12 +491,18 @@ export class CategoryComponent implements OnInit {
       else if (this.params.category_id) {
         // product list
         if (this.commonService.category_page_attr.category_id == this.params.category_id) {
-          this.page = this.commonService.category_page_attr.page;
-          this.gridType = this.commonService.category_page_attr.grid_type;
-          this.sort_value = this.commonService.category_page_attr.sort_value;
-          this.collapseIndex = this.commonService.category_page_attr.collapse_index;
+          const cached = this.commonService.category_page_attr;
+          if (isStandardCategoryPage(this.pageUrl) && !cached.use_v4_catalog) {
+            this.commonService.category_page_attr = {};
+            this.loadStandardCategoryPage();
+            return;
+          }
+          this.page = cached.page;
+          this.gridType = cached.grid_type;
+          this.sort_value = cached.sort_value;
+          this.collapseIndex = cached.collapse_index;
 
-          this.category_details = this.commonService.category_page_attr.category_details;
+          this.category_details = cached.category_details;
           this.isKanjivaram = kanjivaramList.some(item => this.category_details.name.toLowerCase().includes(item.toLowerCase()));
           if(this.isKanjivaram && this.category_details.name=='Kanjivaram Silk Sarees') this.isKanjivaram = false;
           this.isBanarasi = banarasiList.some(item => this.category_details.name.toLowerCase().includes(item.toLowerCase()));
@@ -429,9 +520,17 @@ export class CategoryComponent implements OnInit {
           this.parent_list = this.commonService.category_page_attr.parent_list;
           this.list = this.parent_list;
           this.findCurrency();
-          // tag filter
           this.tag_list = this.commonService.category_page_attr.tag_list;
-          this.onTagFilter(false);
+          this.useV4Catalog = !!this.commonService.category_page_attr.use_v4_catalog;
+          this.filtersFromApi = !!this.commonService.category_page_attr.filters_from_api;
+          this.total = this.commonService.category_page_attr.total || this.list.length;
+          this.catalog_page_segments = this.commonService.category_page_attr.catalog_page_segments || [];
+          this.priceRangeBase = this.commonService.category_page_attr.price_range_base || this.priceRangeBase;
+          if (this.useV4Catalog) {
+            this.tagSelected = hasCheckedFilters(this.tag_list);
+          } else {
+            this.onTagFilter(false);
+          }
           let scrollPos = this.commonService.category_page_attr.scroll_y_pos;
           if(isPlatformBrowser(this.platformId)) {
             setTimeout(() => { window.scrollTo({ top: scrollPos, behavior: 'smooth' }); }, 500);
@@ -439,58 +538,7 @@ export class CategoryComponent implements OnInit {
           this.commonService.category_page_attr = {};
         }
         else {
-          this.page = 1; this.sort_value = "latest";
-          this.pageLoader = true; this.collapseIndex = 0;
-          this.storeApi.PRODUCT_LIST({ category_id: this.params.category_id }).subscribe(result => {
-            setTimeout(() => { this.pageLoader = false; }, 500);
-            if (result.status) {
-
-              this.category_details = result.category_details;
-              this.isKanjivaram = kanjivaramList.some(item => this.category_details.name.toLowerCase().includes(item.toLowerCase()));
-              if(this.isKanjivaram && this.category_details.name=='Kanjivaram Silk Sarees') this.isKanjivaram = false;
-              this.isBanarasi = banarasiList.some(item => this.category_details.name.toLowerCase().includes(item.toLowerCase()));
-              if(this.isBanarasi && this.category_details.name=='Banarasi Silk Sarees') this.isBanarasi = false;
-              this.isOrganza = organzaList.some(item => this.category_details.name.toLowerCase().includes(item.toLowerCase()));
-              if(this.isOrganza && this.category_details.name=='Organza Sarees') this.isOrganza = false;
-
-              if (this.category_details.navigationList?.length) {
-                this.category_details.navigationList = this.category_details.navigationList.sort((a, b) => 0 - (a.rank > b.rank ? -1 : 1))
-                this.onSelectNav(0);
-              }
-              if (this.category_details?.faqs?.length) this.buildFAQSchema();
-              // seo
-              this.updateMetaData();
-              // filter products
-              this.parent_list = [];
-              result.list.forEach(object => {
-                object.created_on = new Date(new Date(new Date(object.created_on).setHours(23, 59, 59, 59)).setDate(new Date(object.created_on).getDate() + 30));
-                if (object.badge_list?.length) object.badge_list = this.commonService.buildTags(object.badge_list);
-                if (object.hold_till) {
-                  let balanceStock = object.stock;
-                  if (new Date() < new Date(object.hold_till)) balanceStock = object.stock - object.hold_qty;
-                  object.stock = balanceStock;
-                }
-                if (this.commonService.store_details?.additional_features?.disp_all_products) {
-                  if (object.stock < this.commonService.min_qty[object.unit]) object.stock = 0;
-                  this.parent_list.push(object);
-                }
-                else {
-                  if (object.stock >= this.commonService.min_qty[object.unit] || object.allow_preorder) this.parent_list.push(object);
-                }
-              });
-              this.list = this.parent_list;
-              if (this.list.length > this.pageSize && this.category_details.prod_list_status) {
-                this.randomProducts = this.getRandomProds(this.list, 15);
-              }
-              this.setCategorySchema();
-              this.findCurrency();
-              this.getProductTags();
-            }
-            else {
-              console.log("c3-response", result, this.pageUrl);
-              this.router.navigate(["/"]);
-            }
-          });
+          this.loadStandardCategoryPage();
         }
       }
     });
@@ -580,6 +628,7 @@ export class CategoryComponent implements OnInit {
   }
 
   buildFAQSchema() {
+    this.categoryFAQSchema.mainEntity = [];
     this.category_details.faqs.forEach(el => {
       this.categoryFAQSchema.mainEntity.push({
         "@type": "Question",
@@ -589,6 +638,189 @@ export class CategoryComponent implements OnInit {
     });
     this.commonService.removeElement('category-faq-jsonld');
     this.commonService.createJsonLD("category-faq-jsonld", this.categoryFAQSchema);
+  }
+
+  private applyCategoryFlags(kanjivaramList: string[], banarasiList: string[], organzaList: string[]) {
+    this.isKanjivaram = kanjivaramList.some(item => this.category_details.name.toLowerCase().includes(item.toLowerCase()));
+    if (this.isKanjivaram && this.category_details.name == 'Kanjivaram Silk Sarees') this.isKanjivaram = false;
+    this.isBanarasi = banarasiList.some(item => this.category_details.name.toLowerCase().includes(item.toLowerCase()));
+    if (this.isBanarasi && this.category_details.name == 'Banarasi Silk Sarees') this.isBanarasi = false;
+    this.isOrganza = organzaList.some(item => this.category_details.name.toLowerCase().includes(item.toLowerCase()));
+    if (this.isOrganza && this.category_details.name == 'Organza Sarees') this.isOrganza = false;
+  }
+
+  loadStandardCategoryPage() {
+    const kanjivaramList = ['Kanjivaram Silk Sarees', 'Kanjivaram Tissue Silk Sarees', 'Kanjivaram Pure Silk Sarees'];
+    const banarasiList = ['Banarasi Silk Sarees'];
+    const organzaList = ['Organza Sarees'];
+
+    this.page = 1;
+    this.sort_value = 'latest';
+    this.pageLoader = true;
+    this.collapseIndex = -1;
+    this.priceFilterOpen = true;
+    this.useV4Catalog = true;
+    this.catalog_page_segments = [];
+
+    this.storeApi.AVAILABLE_FILTERS({ category_id: this.params.category_id }).subscribe(afResult => {
+      if (afResult.status) {
+        this.filtersFromApi = true;
+        this.applyAvailableFiltersResponse(afResult);
+      } else {
+        console.log('available_filters response', afResult);
+        this.tag_list = [];
+        this.filtersFromApi = true;
+      }
+      this.fetchProductList(1, true, kanjivaramList, banarasiList, organzaList);
+    });
+  }
+
+  applyAvailableFiltersResponse(result: any) {
+    this.tag_list = mapAvailableFiltersToTagList(result.available_filters, this.qParams);
+    if (result.price_range) {
+      this.priceRangeBase = { min: result.price_range.min, max: result.price_range.max };
+      const min = this.cc.CALC(result.price_range.min);
+      const max = this.cc.CALC(result.price_range.max);
+      if (!isNaN(min) && !isNaN(max) && max > 0) {
+        this.rangeMin = min;
+        this.rangeMax = max;
+        this.range_disp = { floor: min, ceil: max };
+      }
+    }
+    if (this.tag_list.length) this.gridType = 'three';
+    this.tagSelected = hasCheckedFilters(this.tag_list);
+  }
+
+  fetchProductList(
+    page = this.page,
+    initialLoad = false,
+    kanjivaramList?: string[],
+    banarasiList?: string[],
+    organzaList?: string[]
+  ) {
+    if (!this.useV4Catalog) return;
+    this.listLoader = true;
+
+    const minInr = this.rangeMin ? this.cc.CONVERT_TO_INR(this.rangeMin) : this.priceRangeBase.min;
+    const maxInr = this.rangeMax ? this.cc.CONVERT_TO_INR(this.rangeMax) : this.priceRangeBase.max;
+    const payload = buildListV4Payload({
+      categoryId: this.params.category_id,
+      page,
+      limit: this.pageSize,
+      sortBy: this.sort_value || 'latest',
+      minPriceInr: minInr || this.priceRangeBase.min || 0,
+      maxPriceInr: maxInr || this.priceRangeBase.max || 0,
+      filters: buildFiltersPayload(this.tag_list)
+    });
+
+    this.storeApi.PRODUCT_LIST_V4(payload).subscribe(result => {
+      if (initialLoad) setTimeout(() => { this.pageLoader = false; }, 500);
+      this.listLoader = false;
+      if (result.status) {
+        this.applyListV4Response(result, page, kanjivaramList, banarasiList, organzaList);
+      } else {
+        console.log('list_v4 response', result, this.pageUrl);
+        if (initialLoad) this.router.navigate(['/']);
+      }
+    });
+  }
+
+  applyListV4Response(
+    result: any,
+    page: number,
+    kanjivaramList?: string[],
+    banarasiList?: string[],
+    organzaList?: string[]
+  ) {
+    this.page = page;
+    this.total = result.total || 0;
+    this.totalPages = result.total_pages || 1;
+    this.catalog_page_segments = result.catalog_page_segments || [];
+    this.category_details = result.category_details || {};
+
+    if (kanjivaramList && banarasiList && organzaList) {
+      this.applyCategoryFlags(kanjivaramList, banarasiList, organzaList);
+    }
+
+    if (this.category_details.navigationList?.length) {
+      this.category_details.navigationList = this.category_details.navigationList.sort((a, b) => 0 - (a.rank > b.rank ? -1 : 1));
+      if (!this.navigationImageList.length) this.onSelectNav(0);
+    }
+    if (this.category_details?.faqs?.length) this.buildFAQSchema();
+    this.updateMetaData();
+
+    this.parent_list = this.processRawProducts(result.list || []);
+    this.list = this.parent_list;
+    this.setCategorySchema();
+    this.findCurrency();
+  }
+
+  processRawProducts(rawList: any[]): any[] {
+    const products: any[] = [];
+    rawList.forEach(object => {
+      object.created_on = new Date(new Date(new Date(object.created_on).setHours(23, 59, 59, 59)).setDate(new Date(object.created_on).getDate() + 30));
+      if (object.badge_list?.length) object.badge_list = this.commonService.buildTags(object.badge_list);
+      if (object.hold_till) {
+        let balanceStock = object.stock;
+        if (new Date() < new Date(object.hold_till)) balanceStock = object.stock - object.hold_qty;
+        object.stock = balanceStock;
+      }
+      if (object.user_hold?.length && isPlatformBrowser(this.platformId)) {
+        const sessionId = sessionStorage.getItem('session_id');
+        const hold = object.user_hold.find((h: any) => h.session_id === sessionId);
+        if (hold && new Date() < new Date(hold.hold_till)) {
+          object.stock = Math.max(0, object.stock - (hold.hold_qty || 0));
+        }
+      }
+      if (this.commonService.store_details?.additional_features?.disp_all_products) {
+        if (object.stock < this.commonService.min_qty[object.unit]) object.stock = 0;
+        products.push(object);
+      } else if (object.stock >= this.commonService.min_qty[object.unit] || object.allow_preorder) {
+        products.push(object);
+      }
+    });
+    return products;
+  }
+
+  onSortChange() {
+    if (!this.useV4Catalog) return;
+    this.page = 1;
+    this.applyCategoryIndexing();
+    this.fetchProductList(1);
+  }
+
+  onPageChange(p: number) {
+    this.page = p;
+    if (this.useV4Catalog) {
+      this.fetchProductList(p);
+      this.applyCategoryIndexing();
+    }
+    this.commonService.pageScrollTop();
+  }
+
+  onPriceRangeEnd() {
+    if (this.useV4Catalog) this.priceChange$.next();
+  }
+
+  onPriceRangeApply() {
+    this.page = 1;
+    if (this.useV4Catalog) this.applyCategoryIndexing();
+    this.fetchProductList(1);
+  }
+
+  onFilterAccordionClick(index: number) {
+    this.collapseIndex = this.collapseIndex === index ? -1 : index;
+    if (this.collapseIndex === index) this.priceFilterOpen = false;
+    if (!this.filtersFromApi) this.onCreateTagList(this.list, true);
+  }
+
+  removeFilterChip(chip: { tagId: string; value: string }) {
+    const tag = this.tag_list.find((t: any) => t._id === chip.tagId);
+    const opt = tag?.option_list?.find((o: any) => o.name === chip.value);
+    if (opt) {
+      opt.checked = false;
+      this.onTagNewFilter(tag, opt);
+    }
   }
 
   getProductTags() {
@@ -635,11 +867,12 @@ export class CategoryComponent implements OnInit {
   }
 
   findCurrency() {
-    for (let product of this.parent_list) {
+    const products = this.useV4Catalog ? this.list : this.parent_list;
+    for (let product of products) {
       product.temp_selling_price = this.cc.CALC(product.selling_price);
       product.temp_discounted_price = this.cc.CALC(product.discounted_price);
     }
-    this.findMinMax();
+    if (!this.filtersFromApi) this.findMinMax();
   }
 
   onSelectProduct(x) {
@@ -649,7 +882,10 @@ export class CategoryComponent implements OnInit {
       category_id: this.params.category_id, page: this.page, sort_value: this.sort_value, tag_list: this.tag_list,
       collapse_index: this.collapseIndex, scroll_y_pos: this.commonService.scroll_y_pos, category_details: this.category_details,
       parent_list: this.parent_list, page_url: this.pageUrl, grid_type: this.gridType, random_products: this.randomProducts,
-      range_min: this.rangeMin, range_max: this.rangeMax, range_disp: this.range_disp
+      range_min: this.rangeMin, range_max: this.rangeMax, range_disp: this.range_disp,
+      use_v4_catalog: this.useV4Catalog, filters_from_api: this.filtersFromApi,
+      total: this.total, catalog_page_segments: this.catalog_page_segments,
+      price_range_base: this.priceRangeBase, total_pages: this.totalPages
     }
     if (isPlatformBrowser(this.platformId)) {
       sessionStorage.setItem("category_details", this.commonService.encryptData(this.category_details));
@@ -665,6 +901,10 @@ export class CategoryComponent implements OnInit {
   }
 
   onCreateTagList(list, click) {
+    if (this.filtersFromApi) {
+      if (!click) this.onTagFilter(false);
+      return;
+    }
     let duplicateTagList: any = this.tag_list;
     this.tag_list = []; const counts = {};
     list.forEach(prod => {
@@ -717,6 +957,14 @@ export class CategoryComponent implements OnInit {
     this.onTagFilter(false);
   }
   onTagFilter(changeEvent) {
+    if (this.useV4Catalog) {
+      this.tagSelected = hasCheckedFilters(this.tag_list);
+      if (changeEvent) {
+        this.page = 1;
+        this.fetchProductList(1);
+      }
+      return;
+    }
     let parentProducts: any = this.parent_list;
     this.tagSelected = false;
     let dummyList = [];
@@ -748,65 +996,73 @@ export class CategoryComponent implements OnInit {
     }
     else this.list = this.parent_list;
     if (changeEvent) this.page = 1;
-    this.findMinMax();
-    // recreate tag list
-    let duplicateTagList: any = this.tag_list;
-    this.tag_list = []; const counts = {};
-    this.list.forEach(prod => {
-      if (prod.tag_status) {
-        prod.tag_list.forEach(tagObj => {
-          let tagId = Object.keys(tagObj)[0];
-          let existingTagIndex = duplicateTagList.findIndex(x => x._id.toString() == tagId.toString());
-          if (existingTagIndex != -1) {
-            let tagIndex = this.tag_list.findIndex(x => x._id == tagId);
-            if (tagIndex == -1) this.tag_list.push(duplicateTagList[existingTagIndex]);
-          }
-          else {
-            let tagIndex = this.tag_list.findIndex(x => x._id == tagId);
-            if (tagIndex == -1) {
-              let tIndex = this.store_tags.findIndex(element => element._id == tagId);
-              if (tIndex != -1) {
-                let optionArray = [];
-                tagObj[tagId].forEach(element => {
-                  if (counts[element]) { counts[element]++; } 
-                  else { counts[element] = 1; }
-                  let pushData: any = { name: element, count: counts[element] };
-                  let paramName = this.store_tags[tIndex].name.trim().toLowerCase().replace(/ /g, "_");
-                  let paramElem = element.trim().toLowerCase().replace(/ /g, "_");
-                  if(this.qParams[paramName]?.indexOf(paramElem)>=0) pushData.checked = true;
-                  optionArray.push(pushData);
-                });
-                if (optionArray.length) this.tag_list.push({ _id: tagId, name: this.store_tags[tIndex].name, rank: this.store_tags[tIndex].rank, option_list: optionArray });
-              }
+    if (!this.filtersFromApi) {
+      this.findMinMax();
+      let duplicateTagList: any = this.tag_list;
+      this.tag_list = []; const counts = {};
+      this.list.forEach(prod => {
+        if (prod.tag_status) {
+          prod.tag_list.forEach(tagObj => {
+            let tagId = Object.keys(tagObj)[0];
+            let existingTagIndex = duplicateTagList.findIndex(x => x._id.toString() == tagId.toString());
+            if (existingTagIndex != -1) {
+              let tagIndex = this.tag_list.findIndex(x => x._id == tagId);
+              if (tagIndex == -1) this.tag_list.push(duplicateTagList[existingTagIndex]);
             }
             else {
-              tagObj[tagId].forEach(element => {
-                let optionIndex = this.tag_list[tagIndex].option_list.findIndex(x => x.name == element);
-                if (counts[element]) { counts[element]++; } 
-                else { counts[element] = 1; }
-                if (optionIndex == -1) {
-                  let pushData: any = { name: element, count: counts[element] };
-                  let paramName = this.tag_list[tagIndex].name.trim().toLowerCase().replace(/ /g, "_");
-                  let paramElem = element.trim().toLowerCase().replace(/ /g, "_");
-                  if(this.qParams[paramName]?.indexOf(paramElem)>=0) pushData.checked = true;
-                  this.tag_list[tagIndex].option_list.push(pushData);
+              let tagIndex = this.tag_list.findIndex(x => x._id == tagId);
+              if (tagIndex == -1) {
+                let tIndex = this.store_tags.findIndex(element => element._id == tagId);
+                if (tIndex != -1) {
+                  let optionArray = [];
+                  tagObj[tagId].forEach(element => {
+                    if (counts[element]) { counts[element]++; }
+                    else { counts[element] = 1; }
+                    let pushData: any = { name: element, count: counts[element] };
+                    let paramName = this.store_tags[tIndex].name.trim().toLowerCase().replace(/ /g, "_");
+                    let paramElem = element.trim().toLowerCase().replace(/ /g, "_");
+                    if(this.qParams[paramName]?.indexOf(paramElem)>=0) pushData.checked = true;
+                    optionArray.push(pushData);
+                  });
+                  if (optionArray.length) this.tag_list.push({ _id: tagId, name: this.store_tags[tIndex].name, rank: this.store_tags[tIndex].rank, option_list: optionArray });
                 }
-                else{ this.tag_list[tagIndex].option_list[optionIndex].count = counts[element]; }
-              });
+              }
+              else {
+                tagObj[tagId].forEach(element => {
+                  let optionIndex = this.tag_list[tagIndex].option_list.findIndex(x => x.name == element);
+                  if (counts[element]) { counts[element]++; }
+                  else { counts[element] = 1; }
+                  if (optionIndex == -1) {
+                    let pushData: any = { name: element, count: counts[element] };
+                    let paramName = this.tag_list[tagIndex].name.trim().toLowerCase().replace(/ /g, "_");
+                    let paramElem = element.trim().toLowerCase().replace(/ /g, "_");
+                    if(this.qParams[paramName]?.indexOf(paramElem)>=0) pushData.checked = true;
+                    this.tag_list[tagIndex].option_list.push(pushData);
+                  }
+                  else{ this.tag_list[tagIndex].option_list[optionIndex].count = counts[element]; }
+                });
+              }
             }
-          }
-        });
-      }
-    });
+          });
+        }
+      });
+    }
   }
   clearTagFilter() {
     this.qParams = {};
     this.router.navigate([this.router.url.split('?')[0]], { queryParams: this.qParams });
-    this.list = this.parent_list;
     this.tag_list.forEach(tag => {
       tag.option_list.forEach(tagOption => { delete tagOption.checked; });
     });
     this.tagSelected = false;
+    this.selectedOptions = {};
+    if (this.useV4Catalog) {
+      this.page = 1;
+      this.applyCategoryIndexing();
+      this.fetchProductList(1);
+      return;
+    }
+    this.list = this.parent_list;
     this.onCreateTagList(this.list, false);
     this.findMinMax();
   }
@@ -834,8 +1090,15 @@ export class CategoryComponent implements OnInit {
     for(let key in this.selectedOptions) {
       if(this.selectedOptions.hasOwnProperty(key)) tempParams[key] = this.selectedOptions[key].join("-");
     }
-    if(this.parent_list.length) {
-      this.onTagFilter(true); this.page = 1;
+    if(this.parent_list.length || this.useV4Catalog) {
+      if (this.useV4Catalog) {
+        this.tagSelected = hasCheckedFilters(this.tag_list);
+        this.applyCategoryIndexing();
+        this.fetchProductList(1);
+      } else {
+        this.onTagFilter(true);
+        this.page = 1;
+      }
     }
     this.router.navigate([this.router.url.split('?')[0]], { queryParams: tempParams });
   }
@@ -858,19 +1121,87 @@ export class CategoryComponent implements OnInit {
   updateMetaData() {
     if (this.category_details.seo_status) this.commonService.setSiteMetaData(this.category_details.seo_details, null);
     else this.commonService.getStoreSeoDetails();
-    // schema
-    // if (this.category_details?.name) {
-    //   this.bcList = [
-    //     { name: 'Home', position: 1, link: '/' },
-    //     {
-    //       name: this.category_details.name,
-    //       position: 2,
-    //       link: this.pageUrl,
-    //     }
-    //   ];
-    // }
-    // else this.bcList = [{ name: 'Home', position: 1, link: '/' }];
-    // this.commonService.breadCrumbList(this.bcList);
+    this.buildBreadcrumbList();
+    if (this.useV4Catalog) this.applyCategoryIndexing();
+  }
+
+  private buildBreadcrumbList() {
+    if (!this.category_details?.name) {
+      this.bcList = [{ name: 'Home', position: 1, link: '/' }];
+    } else {
+      this.bcList = [{ name: 'Home', position: 1, link: '/' }];
+      let position = 2;
+      if (this.isKanjivaram) {
+        this.bcList.push({
+          name: 'Kanjivaram Silk Sarees',
+          position: position++,
+          link: '/category/kanjivaram-silk-sarees'
+        });
+      } else if (this.isBanarasi) {
+        this.bcList.push({
+          name: 'Banarasi Silk Sarees',
+          position: position++,
+          link: '/category/banarasi-silk-sarees'
+        });
+      } else if (this.isOrganza) {
+        this.bcList.push({
+          name: 'Organza Sarees',
+          position: position++,
+          link: '/category/organza-sarees'
+        });
+      }
+      this.bcList.push({
+        name: this.category_details.name,
+        position: position,
+        link: this.pageUrl
+      });
+    }
+    this.commonService.breadCrumbList(this.bcList);
+  }
+
+  private isPriceFiltered(): boolean {
+    if (!this.useV4Catalog || !this.priceRangeBase.max) return false;
+    const minInr = this.rangeMin ? this.cc.CONVERT_TO_INR(this.rangeMin) : this.priceRangeBase.min;
+    const maxInr = this.rangeMax ? this.cc.CONVERT_TO_INR(this.rangeMax) : this.priceRangeBase.max;
+    return isPriceRangeFiltered(minInr, maxInr, this.priceRangeBase);
+  }
+
+  private applyCategoryIndexing() {
+    if (!isPlatformBrowser(this.platformId)) return;
+    const canonical = this.commonService.origin + this.pageUrl;
+    const ccLink = this.document.getElementById('ccLink') as HTMLLinkElement | null;
+    if (ccLink) ccLink.href = canonical;
+
+    const robots = categoryRobotsContent({
+      page: this.page,
+      sortValue: this.sort_value,
+      tagList: this.tag_list,
+      priceFiltered: this.isPriceFiltered()
+    });
+    let robotsMeta = this.document.querySelector('meta[name="robots"]') as HTMLMetaElement | null;
+    if (!robotsMeta) {
+      robotsMeta = this.document.createElement('meta');
+      robotsMeta.setAttribute('name', 'robots');
+      this.document.head.appendChild(robotsMeta);
+    }
+    robotsMeta.setAttribute('content', robots);
+  }
+
+  ngOnDestroy() {
+    if (this.priceDebounceSub) this.priceDebounceSub.unsubscribe();
+    if (this.subscription) this.subscription.unsubscribe();
+    this.commonService.removeElement('category-jsonld');
+    this.commonService.removeElement('category-faq-jsonld');
+    if (isPlatformBrowser(this.platformId)) {
+      if (this.useV4Catalog) {
+        const robotsMeta = this.document.querySelector('meta[name="robots"]') as HTMLMetaElement | null;
+        if (robotsMeta) robotsMeta.setAttribute('content', 'index, follow');
+      }
+      window.removeEventListener('resize', () => {
+        this.checkNavigationOverflow();
+        this.updateNavigationButtonVisibility();
+      });
+    }
   }
 
   setCategorySchema() {
@@ -917,101 +1248,106 @@ export class CategoryComponent implements OnInit {
     this.categorySchema['@graph'][2]['url'] = "https://tulsisilks.co.in"+this.pageUrl;
     this.categorySchema['@graph'][2]['name'] = this.category_details.name;
     this.categorySchema['@graph'][2]['description'] = this.category_details.seo_details?.meta_desc || '';
+    const itemCount = this.useV4Catalog
+      ? (this.total || this.category_details.product_count || 0)
+      : (this.category_details.product_count || this.parent_list.length || 0);
+    if (itemCount) {
+      this.categorySchema['@graph'][2]['mainEntity']['numberOfItems'] = itemCount;
+    }
     this.categorySchema['@graph'][2]['mainEntity']['itemListElement'] = [];
 
-    let pageItemList = this.parent_list.sort((a, b) => 0 - (a.rank > b.rank ? 1 : -1)).slice(0, this.pageSize);
-    let ind = 0;
-    for(let itemData of pageItemList)
-    {
-      ind++;
-      this.categorySchema['@graph'][2]['mainEntity']['itemListElement'].push(
-        {
-          "@type": "ListItem",
-          "position": ind,
-          "url": "https://tulsisilks.co.in/product/"+itemData.seo_details.page_url,
-          "item": {
-            "@type": "Product",
-            "@id": "https://tulsisilks.co.in/product/"+itemData.seo_details.page_url+"#product",
-            "name": itemData.name,
-            "image": [environment.img_baseurl+itemData.image_list[0].image],
-            "description": itemData.seo_details.meta_desc,
-            "sku": itemData.sku,
-            // "aggregateRating": {
-            //   "@type": "AggregateRating",
-            //   "ratingValue": 4.8,
-            //   "reviewCount": 255
-            // },
-            "offers": {
-              "@type": "Offer",
-              "priceCurrency": "INR",
-              "price": itemData.discounted_price,
-              "availability": "https://schema.org/InStock",
-              "url": "https://tulsisilks.co.in/product/"+itemData.seo_details.page_url,
-              "priceValidUntil": this.expiryData,
-              "shippingDetails": {
-                "@type": "OfferShippingDetails",
-                "shippingRate": {
-                  "@type": "MonetaryAmount",
-                  "value": 0,
-                  "currency": "INR"
-                },
-                "deliveryTime": {
-                  "@type": "ShippingDeliveryTime",
-                  "transitTime": {
-                    "@type": "QuantitativeValue",
-                    "minValue": 4,
-                    "maxValue": 7,
-                    "unitCode": "d"
-                  }
-                },
-                "shippingDestination": [
-                  {
-                    "@type": "DefinedRegion",
-                    "addressCountry": "IN"
+    const emitItemList = this.useV4Catalog
+      ? shouldEmitCategoryItemListSchema({
+          page: this.page,
+          sortValue: this.sort_value,
+          tagList: this.tag_list,
+          priceFiltered: this.isPriceFiltered()
+        })
+      : this.page === 1;
+
+    if (emitItemList) {
+      let pageItemList = this.parent_list.sort((a, b) => 0 - (a.rank > b.rank ? 1 : -1)).slice(0, this.pageSize);
+      let ind = 0;
+      for (let itemData of pageItemList) {
+        ind++;
+        this.categorySchema['@graph'][2]['mainEntity']['itemListElement'].push(
+          {
+            "@type": "ListItem",
+            "position": ind,
+            "url": "https://tulsisilks.co.in/product/" + itemData.seo_details.page_url,
+            "item": {
+              "@type": "Product",
+              "@id": "https://tulsisilks.co.in/product/" + itemData.seo_details.page_url + "#product",
+              "name": itemData.name,
+              "image": [environment.img_baseurl + itemData.image_list[0].image],
+              "description": itemData.seo_details.meta_desc,
+              "sku": itemData.sku,
+              "offers": {
+                "@type": "Offer",
+                "priceCurrency": "INR",
+                "price": itemData.discounted_price,
+                "availability": "https://schema.org/InStock",
+                "url": "https://tulsisilks.co.in/product/" + itemData.seo_details.page_url,
+                "priceValidUntil": this.expiryData,
+                "shippingDetails": {
+                  "@type": "OfferShippingDetails",
+                  "shippingRate": {
+                    "@type": "MonetaryAmount",
+                    "value": 0,
+                    "currency": "INR"
                   },
-                  {
-                    "@type": "DefinedRegion",
-                    "addressCountry": "US"
+                  "deliveryTime": {
+                    "@type": "ShippingDeliveryTime",
+                    "transitTime": {
+                      "@type": "QuantitativeValue",
+                      "minValue": 4,
+                      "maxValue": 7,
+                      "unitCode": "d"
+                    }
                   },
-                  {
-                    "@type": "DefinedRegion",
-                    "addressCountry": "GB"
-                  },
-                  {
-                    "@type": "DefinedRegion",
-                    "addressCountry": "AE"
-                  }
-                ]
-              },
-              "hasMerchantReturnPolicy": {
-                "@type": "MerchantReturnPolicy",
-                "returnPolicyCategory": "MerchantReturnFiniteReturnWindow",
-                "merchantReturnDays": 1,
-                "applicableCountry": "IN",
-                "returnShippingFeesAmount": {
-                  "@type": "MonetaryAmount",
-                  "currency": "INR",
-                  "value": 0
+                  "shippingDestination": [
+                    { "@type": "DefinedRegion", "addressCountry": "IN" },
+                    { "@type": "DefinedRegion", "addressCountry": "US" },
+                    { "@type": "DefinedRegion", "addressCountry": "GB" },
+                    { "@type": "DefinedRegion", "addressCountry": "AE" }
+                  ]
                 },
-                "refundType": "FullRefund",
-                "description": "Free returns within 1 day of delivery. Initiate return via orders@tulsisilks.com or customer service."
-              },
-              "seller": {
-                "@type": "Organization",
-                "name": "Tulsi Silks",
-                "@id": "https://tulsisilks.co.in/#organization"
+                "hasMerchantReturnPolicy": {
+                  "@type": "MerchantReturnPolicy",
+                  "returnPolicyCategory": "MerchantReturnFiniteReturnWindow",
+                  "merchantReturnDays": 1,
+                  "applicableCountry": "IN",
+                  "returnShippingFeesAmount": {
+                    "@type": "MonetaryAmount",
+                    "currency": "INR",
+                    "value": 0
+                  },
+                  "refundType": "FullRefund",
+                  "description": "Free returns within 1 day of delivery. Initiate return via orders@tulsisilks.com or customer service."
+                },
+                "seller": {
+                  "@type": "Organization",
+                  "name": "Tulsi Silks",
+                  "@id": "https://tulsisilks.co.in/#organization"
+                }
               }
             }
           }
-        }
-      );
+        );
+      }
     }
 
-    let tempList = this.parent_list.sort((a, b) => 0 - (a.discounted_price > b.discounted_price ? -1 : 1));
-    if(tempList.length > 1) {
-      let minPrice = this.decimalPipe.transform(tempList[0].discounted_price, '1.0-0');
-      let maxPrice = this.decimalPipe.transform(tempList[tempList.length-1].discounted_price, '1.0-0');
-      this.categorySchema['@graph'][3]['priceRange'] = "INR "+minPrice+" - INR "+maxPrice;
+    if (this.useV4Catalog && this.priceRangeBase.min && this.priceRangeBase.max) {
+      const minPrice = this.decimalPipe.transform(this.priceRangeBase.min, '1.0-0');
+      const maxPrice = this.decimalPipe.transform(this.priceRangeBase.max, '1.0-0');
+      this.categorySchema['@graph'][3]['priceRange'] = 'INR ' + minPrice + ' - INR ' + maxPrice;
+    } else {
+      let tempList = this.parent_list.sort((a, b) => 0 - (a.discounted_price > b.discounted_price ? -1 : 1));
+      if (tempList.length > 1) {
+        let minPrice = this.decimalPipe.transform(tempList[0].discounted_price, '1.0-0');
+        let maxPrice = this.decimalPipe.transform(tempList[tempList.length - 1].discounted_price, '1.0-0');
+        this.categorySchema['@graph'][3]['priceRange'] = 'INR ' + minPrice + ' - INR ' + maxPrice;
+      }
     }
 
     // JSON-LD — remove first so SPA navigation between categories always injects a fresh block
@@ -1022,20 +1358,6 @@ export class CategoryComponent implements OnInit {
   getRandomProds(arr, num) {
     let shuffled = [...arr].sort(() => 0.5 - Math.random());
     return shuffled.slice(0, num);
-  }
-
-  ngOnDestroy() {
-    this.subscription.unsubscribe();
-    this.commonService.removeElement('category-jsonld');
-    this.commonService.removeElement('category-faq-jsonld');
-
-    // Remove event listeners
-    if(isPlatformBrowser(this.platformId)) {
-      window.removeEventListener('resize', () => {
-        this.checkNavigationOverflow();
-        this.updateNavigationButtonVisibility();
-      });
-    }
   }
 
 }

@@ -72,6 +72,12 @@
               </div>
 
               <div class="upload-action" *ngIf="imagePreview && !classifyLoader">
+                <button
+                  type="button"
+                  class="primary-btn upload-btn-analyse"
+                  [disabled]="searchLoader || rateLimitCountdown > 0"
+                  (click)="onAnalyseClick()"
+                >Analyse</button>
                 <button type="button" class="secondary-btn upload-btn-change" (click)="sareeFileInput.click()">Change photo</button>
               </div>
               <input
@@ -84,7 +90,10 @@
               >
             </div>
 
-            <p *ngIf="imageError" class="search-error">{{imageError}}</p>
+            <p *ngIf="imageError" class="search-error">
+              {{imageError}}
+              <span *ngIf="rateLimitCountdown > 0"> Retry in {{rateLimitCountdown}}s.</span>
+            </p>
           </div>
 
           <div class="search-panel search-panel--filters">
@@ -152,7 +161,7 @@
               </div>
 
               <div class="filter-actions">
-                <button type="button" class="primary-btn" (click)="onSearch()" [disabled]="searchLoader || !hasActiveFilters">Search</button>
+                <button type="button" class="primary-btn" (click)="onSearch()" [disabled]="classifyLoader || searchLoader || !hasActiveFilters">Search</button>
                 <button type="button" class="secondary-btn" (click)="onClearFilters()" [disabled]="searchLoader">Clear</button>
               </div>
             </ng-container>

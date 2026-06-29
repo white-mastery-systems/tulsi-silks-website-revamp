@@ -55,6 +55,7 @@ export class StoreApiService {
 
   SEARCH_PRODUCT(x) { return this.http.post<any>(environment.ws_url+'/store_details/product/search?store_id='+this.store_id, x); }
   SEARCH_PRODUCT_V2(x) { return this.http.post<any>(environment.ws_url+'/store_details/product/search_v2?store_id='+this.store_id, x); }
+  SEARCH_PRODUCT_EXACT(x) { return this.http.post<any>(environment.ws_url+'/store_details/product/search_exact?store_id='+this.store_id, x); }
   CLASSIFY_SAREE(file: File) {
     const formData = new FormData();
     formData.append('image', file);
@@ -68,6 +69,8 @@ export class StoreApiService {
   CATEGORY_DETAILS(x) { return this.http.post<any>(environment.ws_url+'/store_details/category/details/v2?store_id='+this.store_id, x); }
 
   PRODUCT_LIST(x) { return this.http.post<any>(environment.ws_url+'/store_details/product/list/v2?store_id='+this.store_id, x); }
+  AVAILABLE_FILTERS(x) { return this.http.post<any>(environment.ws_url+'/store_details/product/available_filters?store_id='+this.store_id, x); }
+  PRODUCT_LIST_V4(x) { return this.http.post<any>(environment.ws_url+'/store_details/product/list_v4?store_id='+this.store_id, x); }
   FILTERED_PRODUCT_LIST(x) { return this.http.post<any>(environment.ws_url+'/store_details/product/filter?store_id='+this.store_id, x); }
   RANDOM_PRODUCT_LIST(x) { return this.http.post<any>(environment.ws_url+'/store_details/product/random_list?store_id='+this.store_id, x); }
   FOOTER_SEO_LINKS() { return this.http.get<any>(environment.ws_url+'/store_details/footer_seo_links?store_id='+this.store_id); }

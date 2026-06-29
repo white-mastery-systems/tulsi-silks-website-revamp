@@ -1,3 +1,22 @@
+.filter-btn {
+  position: relative;
+}
+
+.filter-count-badge {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 9px;
+  background: #313131;
+  color: #fff;
+  font-size: 11px;
+  line-height: 18px;
+  text-align: center;
+}
+
 .text {
   overflow: hidden;
   transition: max-height 0.8s ease-in-out;
@@ -773,3 +792,454 @@ a.category-card-two   { display: flex; flex-direction: column; }
 
 
 /* Label */
+
+// --- Catalog toolbar & filter v2 (screenshot design) ---
+.catalog-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+}
+
+.catalog-toolbar__left,
+.catalog-toolbar__right {
+  flex: 0 0 auto;
+}
+
+.catalog-toolbar__center {
+  flex: 1 1 auto;
+  text-align: center;
+  min-width: 0;
+}
+
+.catalog-product-count {
+  font-size: 0.875rem;
+  color: #6b6b6b;
+  white-space: nowrap;
+}
+
+.catalog-sort {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.catalog-sort__label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #1a1a1a;
+  white-space: nowrap;
+}
+
+.catalog-pill-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  border: 1px solid #1a1a1a;
+  border-radius: 999px;
+  background: #fff;
+  cursor: pointer;
+  transition: box-shadow 0.2s ease;
+  position: relative;
+
+  &:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  }
+}
+
+.catalog-pill-btn__icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #1a1a1a;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  .material-icons {
+    color: #fff;
+    font-size: 18px;
+    line-height: 1;
+  }
+}
+
+.catalog-pill-btn__text {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #1a1a1a;
+  white-space: nowrap;
+}
+
+.catalog-pill-btn--filters {
+  padding: 4px 14px 4px 4px;
+
+  .catalog-pill-btn__icon {
+    order: 0;
+  }
+}
+
+.catalog-pill-btn__badge {
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 9px;
+  background: #1a1a1a;
+  color: #fff;
+  font-size: 10px;
+  line-height: 18px;
+  text-align: center;
+  margin-left: -4px;
+}
+
+.catalog-pill-btn--sort {
+  padding: 4px 4px 4px 16px;
+
+  .catalog-sort__value {
+    text-transform: none;
+    font-weight: 400;
+    font-size: 0.875rem;
+    letter-spacing: 0;
+    padding-right: 4px;
+  }
+
+  .catalog-pill-btn__icon {
+    order: 2;
+  }
+}
+
+.catalog-sort__select {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+  border: 0;
+  background: transparent;
+}
+
+.filter-panel-v2 {
+  &--sidebar {
+    padding-right: 8px;
+  }
+
+  &__sections {
+    border-top: 1px solid #ececec;
+  }
+
+  &__section {
+    border-bottom: 1px solid #ececec;
+  }
+
+  &__head {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 18px 0;
+    border: 0;
+    background: transparent;
+    font-size: 1rem;
+    font-weight: 500;
+    color: #1a1a1a;
+    cursor: pointer;
+    text-align: left;
+
+    .material-icons {
+      font-size: 20px;
+      color: #1a1a1a;
+    }
+  }
+
+  &__body {
+    padding-bottom: 18px;
+  }
+}
+
+.filter-price-inputs {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.filter-price-field {
+  flex: 1;
+  min-height: 44px;
+  border: 1px solid #d8d8d8;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 16px;
+  background: #fff;
+}
+
+.filter-price-value {
+  font-size: 0.95rem;
+  color: #1a1a1a;
+}
+
+.filter-price-sep {
+  color: #8a8a8a;
+  font-size: 0.875rem;
+}
+
+.filter-show-more a {
+  font-size: 0.875rem;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.filter-panel-v2__body,
+.filter-modal-v2__body {
+  ::ng-deep {
+    .ngx-slider {
+      margin: 12px 0 8px;
+    }
+
+    .ngx-slider .ngx-slider-bar {
+      background: #e5e5e5;
+      height: 2px;
+    }
+
+    .ngx-slider .ngx-slider-selection {
+      background: #1a1a1a;
+    }
+
+    .ngx-slider .ngx-slider-pointer {
+      width: 18px;
+      height: 18px;
+      top: -8px;
+      background: #1a1a1a;
+      border: 2px solid #1a1a1a;
+    }
+
+    .ngx-slider .ngx-slider-pointer:after {
+      display: none;
+    }
+  }
+}
+
+.filter-modal-v2 {
+  .modal-dialog {
+    max-width: 520px;
+  }
+
+  .modal-content {
+    border: none;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+  }
+
+  &__header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 24px 24px 8px;
+    border-bottom: 0;
+  }
+
+  &__title {
+    margin: 0;
+    font-size: 1.75rem;
+    font-weight: 600;
+    color: #1a1a1a;
+    line-height: 1.2;
+  }
+
+  &__count {
+    margin: 6px 0 0;
+    font-size: 0.875rem;
+    color: #8a8a8a;
+  }
+
+  &__close {
+    width: 40px;
+    height: 40px;
+    border: 1px solid #d8d8d8;
+    border-radius: 10px;
+    background: #fff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    flex-shrink: 0;
+
+    .material-icons {
+      font-size: 20px;
+      color: #1a1a1a;
+    }
+  }
+
+  &__body {
+    padding: 0 24px 8px;
+  }
+
+  &__footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 16px 24px 24px;
+    border-top: 0;
+  }
+
+  &__clear {
+    border: 0;
+    background: transparent;
+    padding: 0;
+    font-size: 0.875rem;
+    text-decoration: underline;
+    color: #1a1a1a;
+    cursor: pointer;
+  }
+
+  &__apply {
+    min-width: 140px;
+    border-radius: 999px !important;
+    text-transform: uppercase;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    padding: 12px 28px !important;
+  }
+}
+
+.sort-modal-v2 {
+  .modal-dialog {
+    max-width: 420px;
+  }
+
+  .modal-content {
+    border: none;
+    border-radius: 16px;
+    overflow: hidden;
+  }
+
+  &__option {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 14px 0;
+    border-bottom: 1px solid #ececec;
+    margin: 0;
+    cursor: pointer;
+    font-size: 1rem;
+    color: #1a1a1a;
+
+    &--active {
+      font-weight: 600;
+    }
+
+    .material-icons {
+      font-size: 20px;
+      color: #1a1a1a;
+    }
+  }
+}
+
+@media screen and (min-width: 992px) {
+  .filter-modal-v2 {
+    &.fade .modal-dialog {
+      transition: transform 0.32s ease-out;
+      transform: translateX(-110%);
+    }
+
+    &.show .modal-dialog,
+    &.in .modal-dialog {
+      transform: translateX(0);
+    }
+
+    .modal-dialog,
+    .filter-modal-v2__dialog {
+      position: fixed;
+      top: 0;
+      left: 0;
+      margin: 0;
+      width: 420px;
+      max-width: 420px;
+      height: 100%;
+      min-height: 100vh;
+    }
+
+    .modal-content {
+      height: 100vh;
+      min-height: 100vh;
+      border-radius: 0;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 4px 0 24px rgba(0, 0, 0, 0.12);
+    }
+
+    .filter-modal-v2__body {
+      flex: 1 1 auto;
+      overflow-y: auto;
+    }
+
+    .filter-modal-v2__footer {
+      margin-top: auto;
+      border-top: 1px solid #ececec;
+    }
+  }
+}
+
+@media screen and (max-width: 991px) {
+  .catalog-toolbar {
+    flex-wrap: nowrap;
+  }
+
+  .catalog-toolbar__center {
+    flex: 0 1 auto;
+    text-align: right;
+    padding-right: 4px;
+  }
+
+  .catalog-sort__label {
+    display: none;
+  }
+
+  .catalog-pill-btn--filters .catalog-pill-btn__text {
+    font-size: 0.65rem;
+  }
+
+  .filter-modal-v2 .modal-dialog,
+  .filter-modal-v2 .filter-modal-v2__dialog {
+    max-width: calc(100% - 20px);
+    margin: 10px auto;
+    display: flex;
+    align-items: center;
+    min-height: calc(100% - 20px);
+  }
+
+  .filter-modal-v2.fade .modal-dialog {
+    transition: transform 0.3s ease-out;
+  }
+
+  .filter-modal-v2 .modal-content {
+    min-height: calc(100dvh - 20px);
+    display: flex;
+    flex-direction: column;
+  }
+
+  .filter-modal-v2__body {
+    flex: 1 1 auto;
+    overflow-y: auto;
+  }
+}
+
+@media screen and (max-width: 575px) {
+  .catalog-product-count {
+    font-size: 0.8rem;
+  }
+}

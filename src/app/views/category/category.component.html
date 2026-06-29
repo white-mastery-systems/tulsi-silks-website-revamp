@@ -4,11 +4,6 @@
 
 <section class="over-all smooth-fadein" *ngIf="!pageLoader">
 
-  <!-- SEO h1 tag -->
-  <h1 *ngIf="category_details?.seo_details?.h1_tag && !category_details?.hc_status && !category_details.banner_image && !category_details.image" [hidden]="true">
-    {{category_details.seo_details.h1_tag}}
-  </h1>
-  <!-- #SEO h1 tag -->
 
   <!-- catalog Banner -->
   <section *ngIf="category_details.banner_image" class="category-banner-sec data-bg">
@@ -297,15 +292,18 @@
   </section>
   <!-- #highlights -->
 
-  <!-- header content -->
-  <section class="category-banner-content mt-3" *ngIf="category_details?.hc_status">
+  <!-- header content (legacy above-grid; v4 moves below product grid) -->
+  <section class="category-banner-content mt-3" *ngIf="category_details?.hc_status && !useV4Catalog">
     <div class="{{template_setting?.body_type}}">
       <div class="row">
         <div class="col-md-12">
           <div class="category-banner-accordion">
             <div class="custom-accordion">
-              <div *ngIf="category_details?.seo_details?.h1_tag" class="acc-head">
+              <div *ngIf="category_details?.seo_details?.h1_tag && !category_details.banner_image && !category_details.image" class="acc-head">
                 <h1>{{category_details.seo_details.h1_tag}}</h1>
+              </div>
+              <div *ngIf="category_details?.seo_details?.h1_tag && (category_details.banner_image || category_details.image)" class="acc-head">
+                <h2 class="h4 mb-0">{{category_details.seo_details.h1_tag}}</h2>
               </div>
               <ng-container *ngIf="category_details?.header_content?.length">
                 <div class="acc-body">
@@ -387,225 +385,101 @@
   <!--# breadcrumb #-->
 
   <!-- product list -->
-  <section *ngIf="list.length" class="common-site-section product-list pt-2">
+  <section *ngIf="list.length || (useV4Catalog && !pageLoader)" class="common-site-section product-list pt-2">
     <div class="container-fluid">
       <div class="row">
 
-        <!-- filters -->
-        <div *ngIf="commonService?.screen_width>=992 && tag_list?.length" class="col-lg-3">
-          <div class="col-md-12 p-0" style="height:40px;">
-            <p *ngIf="tagSelected" (click)="clearTagFilter();" style="text-decoration: underline;" class="cursor mt-2 mb-0">Clear All</p>
-          </div>
-          <div style="height:auto;">
-            <div *ngIf="template_setting.price_range && IsBrowser" class="by_price">
-              <!--<p class="by">By Price</p>-->
-              <p class="by">Price Range</p>
-              <div style="margin-top: 20px;">
-                <ngx-slider [(value)]="rangeMin" [(highValue)]="rangeMax" [options]="range_disp"></ngx-slider>
-                <div class="price_label mb-3">
-                  Price:
-                  <span class="from">
-                    <span class="money">{{rangeMin | currency:cc.pipeCurrencyCode:'symbol-narrow':cc.format:cc.pipeLocale}}</span>
-                  </span> - <span class="to">
-                    <span class="money">{{rangeMax | currency:cc.pipeCurrencyCode:'symbol-narrow':cc.format:cc.pipeLocale}}</span>
-                  </span>
-                </div>
-
-                <!-- <div class="price-wrapper mb-3">
-                  <div class="price-box">
-                    <label class="price-label">Min</label>
-                    <span class="from">
-                      <span class="money">{{rangeMin | currency:cc.pipeCurrencyCode:'symbol-narrow':cc.format:cc.pipeLocale}}</span>
-                    </span>
-                  </div>
-
-                  <div class="price-separator">—</div>
-
-                  <div class="price-box">
-                    <label class="price-label">Max</label>
-                    <span class="to">
-                      <span class="money">{{rangeMax | currency:cc.pipeCurrencyCode:'symbol-narrow':cc.format:cc.pipeLocale}}</span>
-                    </span>
-                  </div>
-                </div> -->
-
-              </div>
-            </div>
-          </div>
-          <aside class="sidebar color-select">
-            <div class="accordion" [ngClass]="template_setting?.p_card? 'primary-card': ''" id="accordion"
-              role="tablist">
-              <div class="card color-card" *ngFor="let x of tag_list | orderAsc: 'rank'; let i=index;">
-                <div class="card-header">
-                  <a class="tab-label" (click)="collapseIndex=i; onCreateTagList(list, true);"
-                    [attr.aria-expanded]="collapseIndex==i" aria-controls="collapseBasic">
-                    {{x.name}}</a>
-                </div>
-                <div id="collapseBasic" [collapse]="collapseIndex!=i" [isAnimated]="true">
-                  <div class="product-filter card-body">
-                    <div *ngIf="x?.option_list?.length>6" class="form-group has-search mb-3">
-                      <span class="material-icons form-control-feedback">search</span>
-                      <input type="text" class="form-control" name="tag_search{{i}}" [(ngModel)]="x.tag_search"
-                        (input)="x.show_more=true;" placeholder="Search {{x.name}}">
-                    </div>
-                    <!-- limited option -->
-                    <ng-container *ngIf="!x.show_more">
-                      <div class="chip-wrapper" *ngIf="x.name!='Body Colour'">
-                        <ng-container *ngFor="let y of x.option_list | orderAsc: 'name' | slice:0:6 | orderSearch: 'name':x.tag_search; let j=index;">
-                          <label *ngIf="!y.notFound" class="chip" [class.active]="y.checked">                         
-                            <input type="checkbox" name="{{y.checked}}" [checked]="y.checked" (change)="y.checked=!y.checked; onTagNewFilter(x, y);"/>
-                            <span>{{ y.name }}</span>
-                          </label> 
-                          <p *ngIf="y.notFound">No matches found</p>
-                        </ng-container>
-                      </div>
-
-                      <div *ngIf="x.name=='Body Colour'" class="color-wrapper">
-                        <ng-container *ngFor="let y of x.option_list | orderAsc: 'name' | slice:0:6 | orderSearch: 'name':x.tag_search; let j=index;">
-                          <label *ngIf="!y.notFound" class="color-item" [class.active]="y.checked">                         
-                            <input type="checkbox" name="{{y.checked}}" [checked]="y.checked" (change)="y.checked=!y.checked; onTagNewFilter(x, y);"/>
-                            <span class="color-circle-outer">
-                              <span class="color-circle" [style.background-color]="colorCodes[y.name]">
-                                <i *ngIf="y.checked" class="material-icons">done</i>
-                              </span>
-                            </span>
-                            <span class="color-name">{{ y.name }}</span>
-                          </label> 
-                          <p *ngIf="y.notFound">No matches found</p>
-                        </ng-container>
-                      </div>
-                    </ng-container>
-                    <!-- full option -->
-                    <ng-container *ngIf="x.show_more">
-                      <div class="chip-wrapper" *ngIf="x.name!='Body Colour'">
-                        <ng-container *ngFor="let y of x.option_list | orderAsc: 'name' | orderSearch: 'name':x.tag_search; let j=index;">
-                          <label *ngIf="!y.notFound" class="chip" [class.active]="y.checked">                         
-                            <input type="checkbox" name="{{y.checked}}" [checked]="y.checked" (change)="y.checked=!y.checked; onTagNewFilter(x, y);"/>
-                            <span>{{ y.name }}</span>
-                          </label> 
-                          <p *ngIf="y.notFound">No matches found</p>
-                        </ng-container>
-                      </div>
-
-                      <div *ngIf="x.name=='Body Colour'" class="color-wrapper">
-                        <ng-container *ngFor="let y of x.option_list | orderAsc: 'name' | orderSearch: 'name':x.tag_search; let j=index;">
-                          <label *ngIf="!y.notFound" class="color-item" [class.active]="y.checked">                         
-                            <input type="checkbox" name="{{y.checked}}" [checked]="y.checked" (change)="y.checked=!y.checked; onTagNewFilter(x, y);"/>                           
-                            <span class="color-circle-outer">
-                              <span class="color-circle" [style.background-color]="colorCodes[y.name]">
-                                <i *ngIf="y.checked" class="material-icons">done</i>
-                              </span>
-                            </span>
-                            <span class="color-name">{{ y.name }}</span>
-                          </label> 
-                          <p *ngIf="y.notFound">No matches found</p>
-                        </ng-container>
-                      </div>
-                    </ng-container>
-                    <div *ngIf="x?.option_list?.length>6 && !x.tag_search">
-                      <a (click)="x.show_more=!x.show_more;">Show {{ x.show_more? 'Less': 'More' }}</a>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </aside>
-        </div>
-        <!-- #filters -->
-
         <!-- products -->
-        <div [ngClass]="(commonService?.screen_width>=992 && tag_list?.length)? 'col-lg-9': 'col-lg-12'">
+        <div class="col-lg-12">
           <div class="row" style="padding-right: 15px;">
 
-            <!-- screen width >= 992 -->
-            <div *ngIf="commonService?.screen_width>=992" class="col-md-12">
-              <div class="listing-bar">
-                <div class="row">
-                  <div class="col-6 d-flex flex-column justify-content-center">
-                    <div>
-                      <p *ngIf="template_setting?.display_products_count" class="m-0">
-                        Total <b>{{list.length}}</b>
-                        {{ list.length>1 ? 'products' : 'product' }}
-                      </p>
-                    </div>
-                    <!-- grid icons -->
-                    <div *ngIf="template_setting?.category_grid_options" class="category-grid-select-wrapper">
-                      <div class="d-flex grid-select">
-                        <label class="mb-0">
-                          <input type="radio" class="grid-input-element d-none" name="grid-select-opt"
-                            [(ngModel)]="gridType" value="two">
-                          <div class="card d-flex flex-row justify-content-center align-items-center">
-                            <span class="grid-select-inner-thum"></span>
-                            <span class="grid-select-inner-thum"></span>
-                          </div>
-                        </label>
-                        <label class="mb-0">
-                          <input type="radio" class="grid-input-element d-none" name="grid-select-opt"
-                            [(ngModel)]="gridType" value="three">
-                          <div class="card d-flex flex-row justify-content-center align-items-center">
-                            <span class="grid-select-inner-thum"></span>
-                            <span class="grid-select-inner-thum"></span>
-                            <span class="grid-select-inner-thum"></span>
-                          </div>
-                        </label>
-                        <label class="mb-0">
-                          <input type="radio" class="grid-input-element d-none" name="grid-select-opt"
-                            [(ngModel)]="gridType" value="four">
-                          <div class="card d-flex flex-row justify-content-center align-items-center">
-                            <span class="grid-select-inner-thum"></span>
-                            <span class="grid-select-inner-thum"></span>
-                            <span class="grid-select-inner-thum"></span>
-                            <span class="grid-select-inner-thum"></span>
-                          </div>
-                        </label>
-                      </div>
+            <!-- catalog toolbar -->
+            <div class="col-md-12 mb-3">
+              <div class="catalog-toolbar">
+                <div class="catalog-toolbar__left">
+                  <button *ngIf="tag_list?.length" type="button" class="catalog-pill-btn catalog-pill-btn--filters"
+                    [class.catalog-pill-btn--active]="filtersDrawerOpen || activeFilterCount"
+                    (click)="openFilters()">
+                    <span class="catalog-pill-btn__icon"><i class="material-icons">tune</i></span>
+                    <span class="catalog-pill-btn__text">SHOW FILTERS</span>
+                    <span *ngIf="activeFilterCount" class="catalog-pill-btn__badge">{{ activeFilterCount }}</span>
+                  </button>
+                </div>
+                <div class="catalog-toolbar__center" *ngIf="template_setting?.display_products_count">
+                  <span class="catalog-product-count">{{ catalogProductCountLabel }}</span>
+                </div>
+                <div class="catalog-toolbar__right">
+                  <div class="catalog-sort">
+                    <span class="catalog-sort__label">SORT BY:</span>
+                    <div class="catalog-pill-btn catalog-pill-btn--sort"
+                      [class.catalog-pill-btn--sort-mobile]="commonService.screen_width<992"
+                      (click)="openSortOptions()">
+                      <span class="catalog-pill-btn__text catalog-sort__value">{{ currentSortLabel }}</span>
+                      <span class="catalog-pill-btn__icon"><i class="material-icons">sort</i></span>
+                      <select *ngIf="commonService.screen_width>=992" class="catalog-sort__select" name="sort_list"
+                        [(ngModel)]="sort_value" (ngModelChange)="onSortChange()">
+                        <option *ngFor="let x of sort_list;" [ngValue]="x.value">{{ x.name }}</option>
+                      </select>
                     </div>
                   </div>
-                  <div *ngIf="commonService.screen_width>=992 && list.length" class="col-6">
-                    <span>
-                      Sort by:
-                      <select name="sort_list" [(ngModel)]="sort_value">
-                        <option *ngFor="let x of sort_list;" [ngValue]="x.value">{{x.name}}</option>
-                      </select>
-                    </span>
-                  </div>
-                  <!-- <div class="col-6">
-                    <span>
-                      Sort by:
-                      <select name="sort_list" [(ngModel)]="sort_value">
-                        <option *ngFor="let x of sort_list;" [ngValue]="x.value">{{x.name}}</option>
-                      </select>
-                    </span>
-                  </div> -->
+                </div>
+              </div>
+              <!-- grid icons (desktop) -->
+              <div *ngIf="commonService?.screen_width>=992 && template_setting?.category_grid_options"
+                class="category-grid-select-wrapper mt-3">
+                <div class="d-flex grid-select">
+                  <label class="mb-0">
+                    <input type="radio" class="grid-input-element d-none" name="grid-select-opt"
+                      [(ngModel)]="gridType" value="two">
+                    <div class="card d-flex flex-row justify-content-center align-items-center">
+                      <span class="grid-select-inner-thum"></span>
+                      <span class="grid-select-inner-thum"></span>
+                    </div>
+                  </label>
+                  <label class="mb-0">
+                    <input type="radio" class="grid-input-element d-none" name="grid-select-opt"
+                      [(ngModel)]="gridType" value="three">
+                    <div class="card d-flex flex-row justify-content-center align-items-center">
+                      <span class="grid-select-inner-thum"></span>
+                      <span class="grid-select-inner-thum"></span>
+                      <span class="grid-select-inner-thum"></span>
+                    </div>
+                  </label>
+                  <label class="mb-0">
+                    <input type="radio" class="grid-input-element d-none" name="grid-select-opt"
+                      [(ngModel)]="gridType" value="four">
+                    <div class="card d-flex flex-row justify-content-center align-items-center">
+                      <span class="grid-select-inner-thum"></span>
+                      <span class="grid-select-inner-thum"></span>
+                      <span class="grid-select-inner-thum"></span>
+                      <span class="grid-select-inner-thum"></span>
+                    </div>
+                  </label>
                 </div>
               </div>
             </div>
-            <!-- # screen width >= 992 -->
+            <!-- # catalog toolbar -->
 
-            <!-- screen width < 992 -->
-            <div *ngIf="commonService?.screen_width<992" class="col-md-12 mb-4">
-              <div class="row">
-                <div *ngIf="tag_list?.length" class="col-6 d-flex align-items-center justify-content-start">
-                  <button class="sort-btn" type="button"
-                    (click)="filterModal.show(); commonService?.scrollModalTop(500);">Filter</button>
-                </div>
-                <div class="col-6 d-flex align-items-center pr-0"
-                  [ngClass]="(tag_list?.length)? 'justify-content-end': 'justify-content-start'">
-                  <button class="sort-btn" type="button" (click)="sortModal.show();">Sort by</button>
-                </div>
-                <div *ngIf="template_setting?.display_products_count" class="col-12 pr-0">
-                  <p class="mt-3 mb-0">
-                    Total <b>{{list.length}}</b>
-                    {{ list.length>1 ? 'products' : 'product' }}
-                  </p>
-                </div>
+            <!-- active filter chips -->
+            <div *ngIf="filterChips.length" class="col-md-12 mb-3">
+              <div class="chip-wrapper d-flex flex-wrap align-items-center">
+                <span *ngFor="let chip of filterChips" class="chip active mr-2 mb-2">
+                  {{ chip.name }}: {{ chip.value }}
+                  <i class="material-icons cursor ml-1" style="font-size:16px;vertical-align:middle;"
+                    (click)="removeFilterChip(chip)">close</i>
+                </span>
+                <a *ngIf="tagSelected" (click)="clearTagFilter();" class="cursor ml-2" style="text-decoration:underline;">Clear all</a>
               </div>
             </div>
-            <!-- # screen width < 992 -->
 
-            <!-- product list -->
+            <div *ngIf="listLoader" class="col-md-12 text-center py-4">
+              <app-loading-spinner></app-loading-spinner>
+            </div>
+
+            <!-- product list (server-side v4) -->
+            <ng-container *ngIf="useV4Catalog && !listLoader">
             <div
-              *ngFor="let x of list | rangeFilter:rangeMin:rangeMax | productSort: sort_value | paginate: { itemsPerPage: pageSize, currentPage: page }; let i=index;"
+              *ngFor="let x of list | paginate: { itemsPerPage: pageSize, currentPage: page, totalItems: total }; let i=index;"
               class="cat-grid col-sm-6 col-6 pr-0 d-flex"
               [ngClass]="{ 'col-md-6': gridType=='two', 'col-md-4': gridType=='three', 'col-md-3': gridType=='four' }">
               <!--Wishlist icon-->
@@ -670,16 +544,89 @@
               </a>
             </div>
 
-            <div class="col-md-12">
+            <div *ngIf="useV4Catalog" class="col-md-12">
               <div class="row">
                 <div class="col-md-12 navigation-ngx">
-                  <div>
-                    <pagination-controls (pageChange)="page=$event; commonService.pageScrollTop();" autoHide="true"
-                      responsive="true" maxSize="5" previousLabel="" nextLabel=""></pagination-controls>
-                  </div>
+                  <pagination-controls (pageChange)="onPageChange($event)" autoHide="true"
+                    responsive="true" maxSize="5" previousLabel="" nextLabel=""></pagination-controls>
                 </div>
               </div>
             </div>
+            </ng-container>
+
+            <!-- product list (legacy client-side) -->
+            <ng-container *ngIf="!useV4Catalog && !listLoader">
+            <div
+              *ngFor="let x of list | rangeFilter:rangeMin:rangeMax | productSort: sort_value | paginate: { itemsPerPage: pageSize, currentPage: page }; let i=index;"
+              class="cat-grid col-sm-6 col-6 pr-0 d-flex"
+              [ngClass]="{ 'col-md-6': gridType=='two', 'col-md-4': gridType=='three', 'col-md-3': gridType=='four' }">
+              <div class="product_labellist wishlist-main">
+                <span class="wishlist-icon" (click)="(commonService.wishListIds.indexOf(x._id)!=-1)? ws.removeFromWishList(x._id): ws.addToWishList(x);"
+                [ngClass]="(commonService.wishListIds.indexOf(x._id)!=-1)? 'wishlist-icon-active': null">
+                  <lucide-icon name="heart" [size]="16" stroke="1" color="#000000" fill="#000000"></lucide-icon>
+                </span>
+              </div>
+              <a appMouseHover class="product-box smooth-fadein p-0" [ngClass]="template_setting?.p_card? '': ''"
+                (click)="onSelectProduct(x);"
+                routerLink="{{ x.seo_status ? '/product/'+x.seo_details.page_url : '/product/'+x._id }}">
+                <div class="prod-div">
+                  <figure class="product-image">
+                    <div class="product_labellist label_{{commonService.application_setting?.tag_position}}">
+                      <span class="span_label"
+                        *ngIf="commonService.store_properties?.auto_tags?.sold_out && x.stock<=0">
+                        {{commonService.store_properties?.auto_tags?.sold_out}}
+                      </span>
+                      <ng-container *ngIf="x.stock>0">
+                        <span class="span_label"
+                          *ngIf="commonService.store_properties?.auto_tags?.new_arrival && x.created_on>commonService.currDate">
+                          {{commonService.store_properties?.auto_tags?.new_arrival}}
+                        </span>
+                        <span class="span_label"
+                          *ngIf="commonService.store_properties?.auto_tags?.on_sale && x.disc_status">
+                          {{commonService.store_properties?.auto_tags?.on_sale}}
+                        </span>
+                        <span class="span_label"
+                          *ngFor="let tag of x.badge_list | orderAsc: 'rank';">{{tag.name}}</span>
+                      </ng-container>
+                    </div>
+                    <img width="100%" height="100%" appImgLazyLoad [ImagelazyLoad]="imgBaseUrl+x.image_list[0].image"
+                      alt="{{(x.image_list[0].img_alt)? x.image_list[0].img_alt: 'product-img'}}">
+                    <img width="100%" height="100%" appImgLazyLoad
+                      *ngIf="commonService?.desktop_device && x.image_list.length > 1"
+                      [ImagelazyLoad]="imgBaseUrl+x.image_list[1]?.image"
+                      alt="{{(x.image_list[1].img_alt)? x.image_list[1].img_alt: 'product-img'}}" class="image-hover">
+                    <figcaption *ngIf="template_setting?.purchase_badge">
+                      <span class="swipe-btn">
+                        <span class="swipe-btn-txt">Purchase
+                          <i class="material-icons">shopping_bag</i>
+                        </span>
+                      </span>
+                    </figcaption>
+                  </figure>
+                  <div class="product-content">
+                    <p *ngIf="x.brand" class="product-brand">{{x.brand}}</p>
+                    <p class="product-title">{{x.name}}</p>
+                    <div>
+                      <span *ngIf="x.disc_status" class="strike">{{ x.temp_selling_price | currency:cc.pipeCurrencyCode:'symbol-narrow':cc.format:cc.pipeLocale }}</span>
+                      <span>{{ x.temp_discounted_price | currency:cc.pipeCurrencyCode:'symbol-narrow':cc.format:cc.pipeLocale }}</span>
+                      <div *ngIf="template_setting?.purchase_txt" class="purchase-div">
+                        <a>PURCHASE</a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </a>
+            </div>
+
+            <div class="col-md-12">
+              <div class="row">
+                <div class="col-md-12 navigation-ngx">
+                  <pagination-controls (pageChange)="page=$event; commonService.pageScrollTop();" autoHide="true"
+                    responsive="true" maxSize="5" previousLabel="" nextLabel=""></pagination-controls>
+                </div>
+              </div>
+            </div>
+            </ng-container>
             <!-- ## product list ## -->
 
           </div>
@@ -692,7 +639,7 @@
   <!-- #product list -->
 
   <!-- no items -->
-  <section *ngIf="!list.length" class="site-section product-list smooth-fadein">
+  <section *ngIf="!list.length && !pageLoader && !listLoader" class="site-section product-list smooth-fadein">
     <div class="{{template_setting?.secondary_body_type}}">
       <div class="row m-0">
         <div class="col-12">
@@ -702,13 +649,44 @@
         </div>
         <div class="col-12" align="center">
           <div class="no-items-letter">
-            <p>No items to show</p>
+            <p *ngIf="useV4Catalog && tagSelected">No sarees match your filters.</p>
+            <p *ngIf="!useV4Catalog || !tagSelected">No items to show</p>
+            <button *ngIf="useV4Catalog && tagSelected" class="primary-btn mt-3" (click)="clearTagFilter()">Clear filters</button>
           </div>
         </div>
       </div>
     </div>
   </section>
   <!-- #no items -->
+
+  <!-- catalog page segments (CMS below-fold) -->
+  <app-catalog-segments *ngIf="catalog_page_segments?.length" [segments]="catalog_page_segments"></app-catalog-segments>
+
+  <!-- SEO header content below grid (v4 catalog) -->
+  <section class="category-banner-content mt-3 mb-4" *ngIf="useV4Catalog && category_details?.header_content?.length">
+    <div class="{{template_setting?.body_type}}">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="category-banner-accordion">
+            <div class="custom-accordion">
+              <div class="acc-head">
+                <h2 class="h4 mb-0">About {{ category_details.name }}</h2>
+              </div>
+              <div class="acc-body">
+                <div class="text" [ngClass]="{'collapsed': !showMore, 'expanded': showMore}"
+                  [innerHtml]="category_details.header_content"></div>
+              </div>
+              <div class="acc-read-more mt-1 d-flex justify-content-end">
+                <button class="show-more-btn acc-more" (click)="showMore = !showMore">
+                  {{ showMore ? 'Read Less' : 'Read More' }}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
 
   <!-- profile section -->
   <section *ngIf="category_details.profile_status && category_details.profile_details?.image"
@@ -841,139 +819,145 @@
   <!-- #FAQ -->
 </section>
 
-<!-- filter modal -->
-<div bsModal #filterModal="bs-modal" class="modal fade bd-example-modal-lg" [config]="{backdrop: 'static'}"
-  tabindex="-1" role="dialog" aria-labelledby="dialog-addr">
-  <div class="modal-dialog modal-md modal-dialog-centered modal-dialog-scrollable" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h6 class="modal-title">Filters</h6>
-        <i class="material-icons" (click)="filterModal.hide();">close</i>
-      </div>
-      <div class="modal-body slim-scroll">
-        <div class="row">
-          <div class="col-md-12">
-            <div *ngIf="template_setting.price_range && IsBrowser && !commonService.desktop_device"
-              class="by_price mb-3">
-              <p class="by">By Price</p>
-              <ngx-slider [(value)]="rangeMin" [(highValue)]="rangeMax" [options]="range_disp"></ngx-slider>
-              <div class="price_label">
-                Price:
-                <span class="from">
-                  <span class="money">{{rangeMin | currency:cc.pipeCurrencyCode:'symbol-narrow':cc.format:cc.pipeLocale}}</span>
-                </span> - <span class="to">
-                  <span class="money">{{rangeMax | currency:cc.pipeCurrencyCode:'symbol-narrow':cc.format:cc.pipeLocale}}</span>
-                </span>
-              </div>
-            </div>
-            <div class="accordion" [ngClass]="template_setting?.p_card? 'primary-card': ''" id="accordion"
-              role="tablist">
-              <div class="card color-card" *ngFor="let x of tag_list | orderAsc: 'rank'; let i=index;">
-                <div class="card-header">
-                  <a class="tab-label" (click)="collapseIndex=i; onCreateTagList(list, true);"
-                    [attr.aria-expanded]="collapseIndex==i" aria-controls="collapseBasic">
-                    {{x.name}}</a>
-                </div>
-                <div id="collapseBasic" [collapse]="collapseIndex!=i" [isAnimated]="true">
-                  <div class="product-filter card-body">
-                    <div *ngIf="x?.option_list?.length>6" class="form-group has-search mb-3">
-                      <span class="material-icons form-control-feedback">search</span>
-                      <input type="text" class="form-control" name="tag_search{{i}}" [(ngModel)]="x.tag_search"
-                        (input)="x.show_more=true;" placeholder="Search {{x.name}}">
-                    </div>
-                    <!-- limited option -->
-                    <ng-container *ngIf="!x.show_more">
-                      <div *ngIf="x.name!='Body Colour'" class="chip-wrapper">
-                        <ng-container *ngFor="let y of x.option_list | orderAsc: 'name' | slice:0:6 | orderSearch: 'name':x.tag_search; let j=index;">
-                          <label *ngIf="!y.notFound" class="chip" [class.active]="y.checked">                         
-                            <input type="checkbox" name="{{y.checked}}" [checked]="y.checked" (change)="y.checked=!y.checked; onTagNewFilter(x, y);"/>
-                            <span>{{ y.name }}</span>
-                          </label> 
-                          <p *ngIf="y.notFound">No matches found</p>
-                        </ng-container>
-                      </div>
-
-                      <div *ngIf="x.name=='Body Colour'" class="color-wrapper">
-                        <ng-container *ngFor="let y of x.option_list | orderAsc: 'name' | slice:0:6 | orderSearch: 'name':x.tag_search; let j=index;">
-                          <label *ngIf="!y.notFound" class="color-item" [class.active]="y.checked">                         
-                            <input type="checkbox" name="{{y.checked}}" [checked]="y.checked" (change)="y.checked=!y.checked; onTagNewFilter(x, y);"/>                           
-                            <span class="color-circle-outer">
-                              <span class="color-circle" [style.background-color]="colorCodes[y.name]">
-                                <i *ngIf="y.checked" class="material-icons">done</i>
-                              </span>
-                            </span>
-                            <span class="color-name">{{ y.name }}</span>
-                          </label> 
-                          <p *ngIf="y.notFound">No matches found</p>
-                        </ng-container>
-                      </div>
-                    </ng-container>
-                    <!-- full option -->
-                    <ng-container *ngIf="x.show_more">
-                      <div *ngIf="x.name!='Body Colour'" class="chip-wrapper">
-                        <ng-container *ngFor="let y of x.option_list | orderAsc: 'name' | orderSearch: 'name':x.tag_search; let j=index;">
-                          <label *ngIf="!y.notFound" class="chip" [class.active]="y.checked">                         
-                            <input type="checkbox" name="{{y.checked}}" [checked]="y.checked" (change)="y.checked=!y.checked; onTagNewFilter(x, y);"/>
-                            <span>{{ y.name }}</span>
-                          </label> 
-                          <p *ngIf="y.notFound">No matches found</p>
-                        </ng-container>
-                      </div>
-
-                      <div *ngIf="x.name=='Body Colour'" class="color-wrapper">
-                        <ng-container *ngFor="let y of x.option_list | orderAsc: 'name' | orderSearch: 'name':x.tag_search; let j=index;">
-                          <label *ngIf="!y.notFound" class="color-item" [class.active]="y.checked">                         
-                            <input type="checkbox" name="{{y.checked}}" [checked]="y.checked" (change)="y.checked=!y.checked; onTagNewFilter(x, y);"/>                           
-                            <span class="color-circle-outer">
-                              <span class="color-circle" [style.background-color]="colorCodes[y.name]">
-                                <i *ngIf="y.checked" class="material-icons">done</i>
-                              </span>
-                            </span>
-                            <span class="color-name">{{ y.name }}</span>
-                          </label> 
-                          <p *ngIf="y.notFound">No matches found</p>
-                        </ng-container>
-                      </div>
-                    </ng-container>
-                    <div *ngIf="x?.option_list?.length>6 && !x.tag_search">
-                      <a (click)="x.show_more=!x.show_more;">Show {{ x.show_more? 'Less': 'More' }}</a>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+<!-- shared filter panel -->
+<ng-template #catalogFilterPanel>
+  <div class="filter-panel-v2__sections">
+    <div *ngIf="template_setting.price_range && IsBrowser" class="filter-panel-v2__section">
+      <button type="button" class="filter-panel-v2__head" (click)="togglePriceFilterSection()">
+        <span>Price</span>
+        <i class="material-icons">{{ priceFilterOpen ? 'remove' : 'add' }}</i>
+      </button>
+      <div class="filter-panel-v2__body" *ngIf="priceFilterOpen">
+        <ngx-slider [(value)]="rangeMin" [(highValue)]="rangeMax" [options]="range_disp"
+          (userChangeEnd)="onPriceRangeEnd()"></ngx-slider>
+        <div class="filter-price-inputs">
+          <div class="filter-price-field">
+            <span class="filter-price-value">{{ rangeMin | currency:cc.pipeCurrencyCode:'symbol-narrow':'1.0-0':cc.pipeLocale }}</span>
+          </div>
+          <span class="filter-price-sep">-</span>
+          <div class="filter-price-field">
+            <span class="filter-price-value">{{ rangeMax | currency:cc.pipeCurrencyCode:'symbol-narrow':'1.0-0':cc.pipeLocale }}</span>
           </div>
         </div>
       </div>
-      <div class="modal-footer">
-        <button *ngIf="tagSelected" type="button" class="clear-all-btn" (click)="clearTagFilter();">Clear All</button>
-        <button type="button" class="primary-btn" (click)="filterModal.hide();">Apply</button>
+    </div>
+
+    <div class="filter-panel-v2__section" *ngFor="let x of tag_list | orderAsc: 'rank'; let i=index;">
+      <button type="button" class="filter-panel-v2__head" (click)="onFilterAccordionClick(i)">
+        <span>{{ x.name }}</span>
+        <i class="material-icons">{{ collapseIndex === i ? 'remove' : 'add' }}</i>
+      </button>
+      <div class="filter-panel-v2__body" *ngIf="collapseIndex === i">
+        <div *ngIf="x?.option_list?.length>6" class="form-group has-search mb-3">
+          <span class="material-icons form-control-feedback">search</span>
+          <input type="text" class="form-control" name="tag_search{{i}}" [(ngModel)]="x.tag_search"
+            (input)="x.show_more=true;" placeholder="Search {{x.name}}">
+        </div>
+        <ng-container *ngIf="!x.show_more">
+          <div class="chip-wrapper" *ngIf="x.name!='Body Colour'">
+            <ng-container *ngFor="let y of x.option_list | orderAsc: 'name' | slice:0:6 | orderSearch: 'name':x.tag_search;">
+              <label *ngIf="!y.notFound" class="chip" [class.active]="y.checked">
+                <input type="checkbox" [checked]="y.checked" (change)="y.checked=!y.checked; onTagNewFilter(x, y);"/>
+                <span>{{ y.name }}</span>
+              </label>
+              <p *ngIf="y.notFound">No matches found</p>
+            </ng-container>
+          </div>
+          <div *ngIf="x.name=='Body Colour'" class="color-wrapper">
+            <ng-container *ngFor="let y of x.option_list | orderAsc: 'name' | slice:0:6 | orderSearch: 'name':x.tag_search;">
+              <label *ngIf="!y.notFound" class="color-item" [class.active]="y.checked">
+                <input type="checkbox" [checked]="y.checked" (change)="y.checked=!y.checked; onTagNewFilter(x, y);"/>
+                <span class="color-circle-outer">
+                  <span class="color-circle" [style.background-color]="colorCodes[y.name]">
+                    <i *ngIf="y.checked" class="material-icons">done</i>
+                  </span>
+                </span>
+                <span class="color-name">{{ y.name }}</span>
+              </label>
+              <p *ngIf="y.notFound">No matches found</p>
+            </ng-container>
+          </div>
+        </ng-container>
+        <ng-container *ngIf="x.show_more">
+          <div class="chip-wrapper" *ngIf="x.name!='Body Colour'">
+            <ng-container *ngFor="let y of x.option_list | orderAsc: 'name' | orderSearch: 'name':x.tag_search;">
+              <label *ngIf="!y.notFound" class="chip" [class.active]="y.checked">
+                <input type="checkbox" [checked]="y.checked" (change)="y.checked=!y.checked; onTagNewFilter(x, y);"/>
+                <span>{{ y.name }}</span>
+              </label>
+              <p *ngIf="y.notFound">No matches found</p>
+            </ng-container>
+          </div>
+          <div *ngIf="x.name=='Body Colour'" class="color-wrapper">
+            <ng-container *ngFor="let y of x.option_list | orderAsc: 'name' | orderSearch: 'name':x.tag_search;">
+              <label *ngIf="!y.notFound" class="color-item" [class.active]="y.checked">
+                <input type="checkbox" [checked]="y.checked" (change)="y.checked=!y.checked; onTagNewFilter(x, y);"/>
+                <span class="color-circle-outer">
+                  <span class="color-circle" [style.background-color]="colorCodes[y.name]">
+                    <i *ngIf="y.checked" class="material-icons">done</i>
+                  </span>
+                </span>
+                <span class="color-name">{{ y.name }}</span>
+              </label>
+              <p *ngIf="y.notFound">No matches found</p>
+            </ng-container>
+          </div>
+        </ng-container>
+        <div *ngIf="x?.option_list?.length>6 && !x.tag_search" class="filter-show-more">
+          <a (click)="x.show_more=!x.show_more;">Show {{ x.show_more ? 'Less' : 'More' }}</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-template>
+
+<!-- filter modal / desktop sidebar drawer -->
+<div bsModal #filterModal="bs-modal" class="modal fade filter-modal-v2" [config]="{backdrop: true}"
+  tabindex="-1" role="dialog" aria-labelledby="filter-dialog" (onHidden)="onFiltersHidden()">
+  <div class="modal-dialog modal-dialog-scrollable filter-modal-v2__dialog" role="document">
+    <div class="modal-content">
+      <div class="filter-modal-v2__header">
+        <div>
+          <h2 class="filter-modal-v2__title">Filter</h2>
+          <p class="filter-modal-v2__count">{{ catalogProductCountLabel }}</p>
+        </div>
+        <button type="button" class="filter-modal-v2__close" aria-label="Close" (click)="closeFilters()">
+          <i class="material-icons">close</i>
+        </button>
+      </div>
+      <div class="modal-body filter-modal-v2__body slim-scroll">
+        <ng-container *ngTemplateOutlet="catalogFilterPanel"></ng-container>
+      </div>
+      <div class="filter-modal-v2__footer">
+        <button *ngIf="tagSelected || activeFilterCount" type="button" class="filter-modal-v2__clear"
+          (click)="clearTagFilter();">Remove all</button>
+        <button type="button" class="filter-modal-v2__apply primary-btn" (click)="closeFilters()">Apply</button>
       </div>
     </div>
   </div>
 </div>
 
 <!-- sort modal -->
-<div bsModal #sortModal="bs-modal" class="modal fade bd-example-modal-lg" [config]="{backdrop: 'static'}" tabindex="-1"
-  role="dialog" aria-labelledby="dialog-addr">
-  <div class="modal-dialog modal-md modal-dialog-centered modal-dialog-scrollable" role="document">
+<div bsModal #sortModal="bs-modal" class="modal fade sort-modal-v2" [config]="{backdrop: 'static'}" tabindex="-1"
+  role="dialog" aria-labelledby="sort-dialog">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
     <div class="modal-content">
-      <div class="modal-header">
-        <h6 class="modal-title">Sort by</h6>
-      </div>
-      <div class="modal-body slim-scroll">
-        <div class="row">
-          <div class="col-md-12">
-            <label *ngFor="let x of sort_list;" class="store-label d-flex align-items-center m-0 mb-3">
-              <input type="radio" class="option-input radio" name="sort_list" [(ngModel)]="sort_value"
-                value="{{x.value}}" (change)="sortModal.hide();"/>
-              <span>{{x.name}}</span>
-            </label>
-          </div>
+      <div class="filter-modal-v2__header">
+        <div>
+          <h2 class="filter-modal-v2__title">Sort by</h2>
         </div>
+        <button type="button" class="filter-modal-v2__close" aria-label="Close" (click)="sortModal.hide();">
+          <i class="material-icons">close</i>
+        </button>
       </div>
-      <div class="modal-footer">
-        <button type="button" class="primary-btn" (click)="sortModal.hide();">Close</button>
+      <div class="modal-body filter-modal-v2__body slim-scroll">
+        <label *ngFor="let x of sort_list;" class="sort-modal-v2__option"
+          [class.sort-modal-v2__option--active]="sort_value === x.value">
+          <input type="radio" class="d-none" name="sort_list_mobile" [(ngModel)]="sort_value"
+            [value]="x.value" (change)="sortModal.hide(); onSortChange();"/>
+          <span>{{ x.name }}</span>
+          <i *ngIf="sort_value === x.value" class="material-icons">check</i>
+        </label>
       </div>
     </div>
   </div>
