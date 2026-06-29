@@ -54,6 +54,7 @@ export class SearchComponent implements OnInit, OnDestroy {
   priceRange: { min: number; max: number } | null = null;
   filtersPanelOpen: boolean = true;
   moreFiltersOpen = false;
+  howItWorksOpen = false;
   readonly demoInspirationImage = 'assets/images/woven-image.png';
   readonly demoPreviewProducts = [
     { name: 'Cream Floral Silk Saree', price: '₹8,450', image: 'assets/images/img-2.jpg' },
@@ -140,6 +141,10 @@ export class SearchComponent implements OnInit, OnDestroy {
 
   get showPagination(): boolean {
     return this.productCount > this.pageSize;
+  }
+
+  toggleHowItWorks() {
+    this.howItWorksOpen = !this.howItWorksOpen;
   }
 
   toggleFiltersPanel() {

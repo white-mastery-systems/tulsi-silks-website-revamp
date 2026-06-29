@@ -25,7 +25,80 @@
     <div class="{{template_setting?.body_type}}">
       <div class="search-layout" [class.search-layout--has-results]="afterSearchEvent">
 
-        <aside class="search-sidebar" [class.search-sidebar--collapsed]="!filtersPanelOpen">
+        <aside class="search-sidebar" [class.search-sidebar--filters-collapsed]="!filtersPanelOpen">
+          <div class="search-panel search-panel--upload">
+            <div class="upload-panel-label">
+              <lucide-icon name="image-plus" [size]="15" stroke="1.75"></lucide-icon>
+              <span>Upload a photo to find similar sarees</span>
+            </div>
+            <div
+              class="upload-dropzone"
+              [class.upload-dropzone--active]="isDragOver"
+              [class.upload-dropzone--has-image]="imagePreview"
+              (dragover)="onDragOver($event)"
+              (dragleave)="onDragLeave($event)"
+              (drop)="onDrop($event)"
+            >
+              <div class="upload-preview" *ngIf="imagePreview">
+                <img [src]="imagePreview" alt="Uploaded saree preview">
+                <button
+                  *ngIf="!classifyLoader"
+                  type="button"
+                  class="upload-change-icon"
+                  (click)="sareeFileInput.click()"
+                  aria-label="Change image"
+                >
+                  <lucide-icon name="image-plus" [size]="16" stroke="1.75"></lucide-icon>
+                </button>
+                <div class="upload-analysing" *ngIf="classifyLoader">
+                  <span class="search-inline-spinner" aria-hidden="true"></span>
+                  <span>Analysing your saree…</span>
+                </div>
+              </div>
+
+              <ng-container *ngIf="!imagePreview">
+                <div class="upload-dropzone__icon" aria-hidden="true">
+                  <lucide-icon name="cloud-upload" [size]="28" stroke="1.25"></lucide-icon>
+                </div>
+                <p class="upload-dropzone__label">Upload Photo</p>
+                <p class="upload-dropzone__hint">JPG, PNG, WebP — max 5MB</p>
+                <button type="button" class="primary-btn upload-select-btn" (click)="sareeFileInput.click()">
+                  Select from device
+                </button>
+              </ng-container>
+
+              <div class="upload-action" *ngIf="imagePreview && !classifyLoader">
+                <button
+                  type="button"
+                  class="primary-btn upload-analyse-btn"
+                  [disabled]="searchLoader || rateLimitCountdown > 0"
+                  (click)="onAnalyseClick()"
+                >{{ analysisCached ? 'Search' : 'Analyse' }}</button>
+              </div>
+
+              <input
+                #sareeFileInput
+                id="saree-image-input"
+                type="file"
+                accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
+                (change)="onImageSelected($event)"
+                hidden
+              >
+            </div>
+
+            <p *ngIf="imageError" class="search-error">
+              {{imageError}}
+              <span *ngIf="rateLimitCountdown > 0"> Retry in {{rateLimitCountdown}}s.</span>
+            </p>
+
+            <div class="ai-detected" *ngIf="imageDetected && activeFilterChips.length">
+              <p class="ai-detected__label">AI Detected</p>
+              <div class="ai-detected__tags">
+                <span class="ai-detected__tag" *ngFor="let chip of activeFilterChips">{{chip.value}}</span>
+              </div>
+            </div>
+          </div>
+
           <button
             type="button"
             class="filter-panel-toggle"
@@ -35,7 +108,7 @@
           >
             <span class="filter-panel-toggle__lead">
               <lucide-icon name="sliders-horizontal" [size]="18" stroke="1.75"></lucide-icon>
-              <span>{{ filtersPanelOpen ? 'Hide search tools' : 'Search & filters' }}</span>
+              <span>{{ filtersPanelOpen ? 'Hide filters' : 'Refine with filters' }}</span>
             </span>
             <span class="filter-panel-toggle__meta">
               <span *ngIf="hasActiveFilters" class="filter-panel-toggle__count">{{activeFilterChips.length}}</span>
@@ -43,76 +116,7 @@
             </span>
           </button>
 
-          <div class="search-sidebar__content" *ngIf="filtersPanelOpen || commonService.desktop_device">
-            <div class="search-panel search-panel--upload">
-              <div
-                class="upload-dropzone"
-                [class.upload-dropzone--active]="isDragOver"
-                [class.upload-dropzone--has-image]="imagePreview"
-                (dragover)="onDragOver($event)"
-                (dragleave)="onDragLeave($event)"
-                (drop)="onDrop($event)"
-              >
-                <div class="upload-preview" *ngIf="imagePreview">
-                  <img [src]="imagePreview" alt="Uploaded saree preview">
-                  <button
-                    *ngIf="!classifyLoader"
-                    type="button"
-                    class="upload-change-icon"
-                    (click)="sareeFileInput.click()"
-                    aria-label="Change image"
-                  >
-                    <lucide-icon name="image-plus" [size]="16" stroke="1.75"></lucide-icon>
-                  </button>
-                  <div class="upload-analysing" *ngIf="classifyLoader">
-                    <span class="search-inline-spinner" aria-hidden="true"></span>
-                    <span>Analysing your saree…</span>
-                  </div>
-                </div>
-
-                <ng-container *ngIf="!imagePreview">
-                  <div class="upload-dropzone__icon" aria-hidden="true">
-                    <lucide-icon name="cloud-upload" [size]="28" stroke="1.25"></lucide-icon>
-                  </div>
-                  <p class="upload-dropzone__label">Upload Photo</p>
-                  <p class="upload-dropzone__hint">JPG, PNG, WebP — max 5MB</p>
-                  <button type="button" class="primary-btn upload-select-btn" (click)="sareeFileInput.click()">
-                    Select from device
-                  </button>
-                </ng-container>
-
-                <div class="upload-action" *ngIf="imagePreview && !classifyLoader">
-                  <button
-                    type="button"
-                    class="primary-btn upload-analyse-btn"
-                    [disabled]="searchLoader || rateLimitCountdown > 0"
-                    (click)="onAnalyseClick()"
-                  >{{ analysisCached ? 'Search' : 'Analyse' }}</button>
-                </div>
-
-                <input
-                  #sareeFileInput
-                  id="saree-image-input"
-                  type="file"
-                  accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
-                  (change)="onImageSelected($event)"
-                  hidden
-                >
-              </div>
-
-              <p *ngIf="imageError" class="search-error">
-                {{imageError}}
-                <span *ngIf="rateLimitCountdown > 0"> Retry in {{rateLimitCountdown}}s.</span>
-              </p>
-
-              <div class="ai-detected" *ngIf="imageDetected && activeFilterChips.length">
-                <p class="ai-detected__label">AI Detected</p>
-                <div class="ai-detected__tags">
-                  <span class="ai-detected__tag" *ngFor="let chip of activeFilterChips">{{chip.value}}</span>
-                </div>
-              </div>
-            </div>
-
+          <div class="search-sidebar__filters" *ngIf="filtersPanelOpen || commonService.desktop_device">
             <div class="search-panel search-panel--filters">
               <div class="search-panel__head">
                 <h3>Refine Your Search</h3>
@@ -190,13 +194,59 @@
           <div *ngIf="!afterSearchEvent" class="search-welcome">
             <div class="search-welcome__head">
               <h3>Discover Similar Sarees</h3>
-              <p>Upload a photo in the section above — our AI finds sarees that match.</p>
+              <p class="search-welcome__head-desc-desktop">Upload a photo in the panel on the left — our AI finds sarees that match.</p>
+              <p class="search-welcome__head-desc-mobile">Upload a saree photo above — AI will detect the style and find matches.</p>
             </div>
 
             <div class="search-how">
               <h4 class="search-how__title">How it works</h4>
 
-              <div class="search-how__steps">
+              <ol class="search-how__mobile-flow" aria-label="How it works">
+                <li class="search-how__mobile-step">
+                  <span class="search-how__mobile-track" aria-hidden="true">
+                    <span class="search-how__mobile-num">1</span>
+                  </span>
+                  <div class="search-how__mobile-content">
+                    <span class="search-how__mobile-icon" aria-hidden="true">
+                      <lucide-icon name="cloud-upload" [size]="18" stroke="1.5"></lucide-icon>
+                    </span>
+                    <div class="search-how__mobile-text">
+                      <strong>Upload a photo</strong>
+                      <p>Choose a saree image from your device</p>
+                    </div>
+                  </div>
+                </li>
+                <li class="search-how__mobile-step">
+                  <span class="search-how__mobile-track" aria-hidden="true">
+                    <span class="search-how__mobile-num">2</span>
+                  </span>
+                  <div class="search-how__mobile-content">
+                    <span class="search-how__mobile-icon" aria-hidden="true">
+                      <lucide-icon name="sparkles" [size]="18" stroke="1.5"></lucide-icon>
+                    </span>
+                    <div class="search-how__mobile-text">
+                      <strong>AI reads the style</strong>
+                      <p>Colour, fabric, design and more are detected</p>
+                    </div>
+                  </div>
+                </li>
+                <li class="search-how__mobile-step">
+                  <span class="search-how__mobile-track" aria-hidden="true">
+                    <span class="search-how__mobile-num">3</span>
+                  </span>
+                  <div class="search-how__mobile-content">
+                    <span class="search-how__mobile-icon" aria-hidden="true">
+                      <lucide-icon name="search" [size]="18" stroke="1.5"></lucide-icon>
+                    </span>
+                    <div class="search-how__mobile-text">
+                      <strong>Browse matching sarees</strong>
+                      <p>See curated results closest to your inspiration</p>
+                    </div>
+                  </div>
+                </li>
+              </ol>
+
+              <div class="search-how__steps search-how__steps--desktop">
                 <article class="search-how__step">
                   <div class="search-how__step-badge">Step 1</div>
                   <div class="search-how__step-icon" aria-hidden="true">
@@ -247,12 +297,6 @@
                   </div>
                 </article>
               </div>
-
-              <!-- <p class="search-how__cta">
-                <lucide-icon name="cloud-upload" [size]="16" stroke="1.75"></lucide-icon>
-                <span class="search-how__cta-desktop">Start by uploading a photo in the panel on the left</span>
-                <span class="search-how__cta-mobile">Scroll up and upload a photo to get started</span>
-              </p> -->
             </div>
           </div>
 
