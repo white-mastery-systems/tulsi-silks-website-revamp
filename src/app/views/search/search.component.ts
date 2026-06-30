@@ -143,6 +143,13 @@ export class SearchComponent implements OnInit, OnDestroy {
     return this.productCount > this.pageSize;
   }
 
+  get gridColumns(): number {
+    const count = this.product_list?.length || 0;
+    if (count <= 0 || count >= 4) return 4;
+    if (count === 1) return 2;
+    return count; // 2→2, 3→3
+  }
+
   toggleHowItWorks() {
     this.howItWorksOpen = !this.howItWorksOpen;
   }

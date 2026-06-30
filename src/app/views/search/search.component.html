@@ -26,6 +26,8 @@
       <div class="search-layout" [class.search-layout--has-results]="afterSearchEvent">
 
         <aside class="search-sidebar" [class.search-sidebar--filters-collapsed]="!filtersPanelOpen">
+
+          <!-- Upload panel -->
           <div class="search-panel search-panel--upload">
             <div class="upload-panel-label">
               <lucide-icon name="image-plus" [size]="15" stroke="1.75"></lucide-icon>
@@ -90,15 +92,9 @@
               {{imageError}}
               <span *ngIf="rateLimitCountdown > 0"> Retry in {{rateLimitCountdown}}s.</span>
             </p>
-
-            <div class="ai-detected" *ngIf="imageDetected && activeFilterChips.length">
-              <p class="ai-detected__label">AI Detected</p>
-              <div class="ai-detected__tags">
-                <span class="ai-detected__tag" *ngFor="let chip of activeFilterChips">{{chip.value}}</span>
-              </div>
-            </div>
           </div>
 
+          <!-- Mobile filter toggle -->
           <button
             type="button"
             class="filter-panel-toggle"
@@ -116,76 +112,95 @@
             </span>
           </button>
 
+          <!-- Unified AI-detected + Filters panel -->
           <div class="search-sidebar__filters" *ngIf="filtersPanelOpen || commonService.desktop_device">
-            <div class="search-panel search-panel--filters">
-              <div class="search-panel__head">
-                <h3>Refine Your Search</h3>
+            <div class="search-panel search-panel--refine">
+
+              <!-- AI Detected section (only when AI has run) -->
+              <div class="refine-section refine-section--ai" *ngIf="imageDetected && activeFilterChips.length">
+                <p class="refine-section__label">
+                  <lucide-icon name="sparkles" [size]="11" stroke="2"></lucide-icon>
+                  AI Detected
+                </p>
+                <div class="refine-tags">
+                  <span class="refine-tag" *ngFor="let chip of activeFilterChips">{{chip.value}}</span>
+                </div>
               </div>
 
-              <ng-container *ngIf="tag_list.length">
-                <div class="filter-quick-grid">
-                  <div class="filter-field" *ngFor="let group of primaryFilterGroups">
-                    <label [for]="'filter-' + toFilterKey(group.name)">{{group.name}}</label>
-                    <div
-                      class="filter-select-wrap"
-                      [class.filter-select-wrap--active]="!!getFilterSelectValue(group)"
-                    >
-                      <select
-                        [id]="'filter-' + toFilterKey(group.name)"
-                        class="filter-select"
-                        [class.filter-select--placeholder]="!getFilterSelectValue(group)"
-                        [name]="toFilterKey(group.name)"
-                        [ngModel]="getFilterSelectValue(group)"
-                        (ngModelChange)="onFilterSelectChange(group, $event)"
+              <!-- Refine / Filters section -->
+              <div class="refine-section refine-section--filters">
+                <p class="refine-section__label">
+                  <lucide-icon name="sliders-horizontal" [size]="11" stroke="2"></lucide-icon>
+                  Refine
+                </p>
+
+                <ng-container *ngIf="tag_list.length">
+                  <div class="filter-quick-grid">
+                    <div class="filter-field" *ngFor="let group of primaryFilterGroups">
+                      <label [for]="'filter-' + toFilterKey(group.name)">{{group.name}}</label>
+                      <div
+                        class="filter-select-wrap"
+                        [class.filter-select-wrap--active]="!!getFilterSelectValue(group)"
                       >
-                        <option value="">All {{group.name}}</option>
-                        <option *ngFor="let opt of group.option_list" [value]="opt.name">{{opt.name}}</option>
-                      </select>
-                      <lucide-icon class="filter-select-wrap__chevron" name="chevron-down" [size]="14" stroke="1.75"></lucide-icon>
+                        <select
+                          [id]="'filter-' + toFilterKey(group.name)"
+                          class="filter-select"
+                          [class.filter-select--placeholder]="!getFilterSelectValue(group)"
+                          [name]="toFilterKey(group.name)"
+                          [ngModel]="getFilterSelectValue(group)"
+                          (ngModelChange)="onFilterSelectChange(group, $event)"
+                        >
+                          <option value="">All {{group.name}}</option>
+                          <option *ngFor="let opt of group.option_list" [value]="opt.name">{{opt.name}}</option>
+                        </select>
+                        <lucide-icon class="filter-select-wrap__chevron" name="chevron-down" [size]="14" stroke="1.75"></lucide-icon>
+                      </div>
                     </div>
                   </div>
-                </div>
 
-                <button
-                  type="button"
-                  class="filter-more-toggle"
-                  *ngIf="moreFilterGroups.length"
-                  (click)="toggleMoreFilters()"
-                  [attr.aria-expanded]="moreFiltersOpen"
-                >
-                  <span>More filters</span>
-                  <span *ngIf="moreFiltersSelectedCount" class="filter-more-toggle__badge">{{moreFiltersSelectedCount}}</span>
-                  <lucide-icon name="chevron-down" [size]="16" [class.filter-more-toggle__icon--open]="moreFiltersOpen"></lucide-icon>
-                </button>
+                  <button
+                    type="button"
+                    class="filter-more-toggle"
+                    *ngIf="moreFilterGroups.length"
+                    (click)="toggleMoreFilters()"
+                    [attr.aria-expanded]="moreFiltersOpen"
+                  >
+                    <span>More filters</span>
+                    <span *ngIf="moreFiltersSelectedCount" class="filter-more-toggle__badge">{{moreFiltersSelectedCount}}</span>
+                    <lucide-icon name="chevron-down" [size]="16" [class.filter-more-toggle__icon--open]="moreFiltersOpen"></lucide-icon>
+                  </button>
 
-                <div class="filter-more-panel" *ngIf="moreFiltersOpen && moreFilterGroups.length">
-                  <div class="filter-field" *ngFor="let group of moreFilterGroups">
-                    <label [for]="'filter-more-' + toFilterKey(group.name)">{{group.name}}</label>
-                    <div
-                      class="filter-select-wrap"
-                      [class.filter-select-wrap--active]="!!getFilterSelectValue(group)"
-                    >
-                      <select
-                        [id]="'filter-more-' + toFilterKey(group.name)"
-                        class="filter-select"
-                        [class.filter-select--placeholder]="!getFilterSelectValue(group)"
-                        [name]="'more-' + toFilterKey(group.name)"
-                        [ngModel]="getFilterSelectValue(group)"
-                        (ngModelChange)="onFilterSelectChange(group, $event)"
+                  <div class="filter-more-panel" *ngIf="moreFiltersOpen && moreFilterGroups.length">
+                    <div class="filter-field" *ngFor="let group of moreFilterGroups">
+                      <label [for]="'filter-more-' + toFilterKey(group.name)">{{group.name}}</label>
+                      <div
+                        class="filter-select-wrap"
+                        [class.filter-select-wrap--active]="!!getFilterSelectValue(group)"
                       >
-                        <option value="">All {{group.name}}</option>
-                        <option *ngFor="let opt of group.option_list" [value]="opt.name">{{opt.name}}</option>
-                      </select>
-                      <lucide-icon class="filter-select-wrap__chevron" name="chevron-down" [size]="14" stroke="1.75"></lucide-icon>
+                        <select
+                          [id]="'filter-more-' + toFilterKey(group.name)"
+                          class="filter-select"
+                          [class.filter-select--placeholder]="!getFilterSelectValue(group)"
+                          [name]="'more-' + toFilterKey(group.name)"
+                          [ngModel]="getFilterSelectValue(group)"
+                          (ngModelChange)="onFilterSelectChange(group, $event)"
+                        >
+                          <option value="">All {{group.name}}</option>
+                          <option *ngFor="let opt of group.option_list" [value]="opt.name">{{opt.name}}</option>
+                        </select>
+                        <lucide-icon class="filter-select-wrap__chevron" name="chevron-down" [size]="14" stroke="1.75"></lucide-icon>
+                      </div>
                     </div>
                   </div>
-                </div>
+                </ng-container>
+              </div>
 
-                <div class="filter-actions">
-                  <button type="button" class="primary-btn" (click)="onSearch()" [disabled]="classifyLoader || searchLoader || !hasActiveFilters">Search</button>
-                  <button type="button" class="secondary-btn" (click)="onClearFilters()" [disabled]="searchLoader">Clear</button>
-                </div>
-              </ng-container>
+              <!-- Filter actions -->
+              <div class="filter-actions" *ngIf="tag_list.length">
+                <button type="button" class="primary-btn" (click)="onSearch()" [disabled]="classifyLoader || searchLoader || !hasActiveFilters">Search</button>
+                <button type="button" class="secondary-btn" (click)="onClearFilters()" [disabled]="searchLoader">Clear</button>
+              </div>
+
             </div>
           </div>
         </aside>
@@ -302,26 +317,25 @@
 
           <div *ngIf="afterSearchEvent" class="search-results">
             <div class="results-header">
-              <div class="results-header__top">
-                <div class="results-header__intro">
+
+              <!-- Single bar: title left, count + sort right -->
+              <div class="results-header__bar">
+                <div class="results-header__title-group">
                   <h3 class="results-title">Similar Sarees Found</h3>
                   <p class="results-subtitle" *ngIf="imageDetected">AI recommendations based on your uploaded inspiration.</p>
                   <p class="results-subtitle" *ngIf="!imageDetected">Curated matches based on your selected filters.</p>
                 </div>
 
-                <div class="results-header__summary" *ngIf="!searchLoader || pageLoader">
+                <div class="results-header__controls">
                   <p *ngIf="searchLoader && !pageLoader" class="results-searching">
                     <span class="search-inline-spinner" aria-hidden="true"></span>
                     Searching…
                   </p>
-                  <p class="results-count" *ngIf="productCount && !searchLoader">
-                    {{productCount}} product{{productCount === 1 ? '' : 's'}} found
-                    <span *ngIf="fallbackUsed" class="results-count__divider">·</span>
-                    <span *ngIf="fallbackUsed" class="results-count__note">Nearest matches</span>
-                  </p>
+                  <span class="results-count" *ngIf="productCount && !searchLoader">{{productCount}} found</span>
                 </div>
               </div>
 
+              <!-- Active filter chips -->
               <div class="active-chips-scroll" *ngIf="activeFilterChips.length && (!searchLoader || pageLoader)">
                 <div class="active-chips">
                   <button type="button" class="active-chip" *ngFor="let chip of activeFilterChips"
@@ -340,9 +354,12 @@
               </div>
 
               <ng-container *ngIf="!searchLoader">
-                <p class="results-section-label" *ngIf="product_list?.length">Top matches for you</p>
 
-                <div class="product-grid" *ngIf="product_list?.length">
+                <div
+                  class="product-grid"
+                  *ngIf="product_list?.length"
+                  [style.--result-cols]="gridColumns"
+                >
                   <article
                     class="search-product-card"
                     *ngFor="let x of product_list | paginate: { id: 'search-results', itemsPerPage: pageSize, currentPage: page, totalItems: productCount }"
@@ -396,6 +413,12 @@
                       </div>
                     </a>
                   </article>
+                </div>
+
+                <!-- Few-results hint (1–3 results) -->
+                <div class="search-few-results" *ngIf="product_list?.length > 0 && product_list.length < 4">
+                  <lucide-icon name="info" [size]="14" stroke="1.75"></lucide-icon>
+                  <p>Showing {{product_list.length}} result{{product_list.length === 1 ? '' : 's'}} — broaden your filters to see more.</p>
                 </div>
 
                 <div *ngIf="!product_list?.length" class="search-empty">
