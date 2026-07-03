@@ -50,6 +50,12 @@ export class SearchComponent implements OnInit, OnDestroy {
   productCount: number = 0;
   page: number = 1;
   pageSize: number = 12;
+  sort_value = 'price_desc';
+  readonly sort_list = [
+    { name: 'Latest', value: 'latest' },
+    { name: 'Price: Low to High', value: 'price_asc' },
+    { name: 'Price: High to Low', value: 'price_desc' }
+  ];
 
   tag_list: any[] = [];
   priceRange: { min: number; max: number } | null = null;
@@ -75,6 +81,7 @@ export class SearchComponent implements OnInit, OnDestroy {
   fallbackUsed: boolean = false;
   rateLimitCountdown: number = 0;
   searchQuery: string = '';
+  searchPlaceholder = '';
   cameraOpen: boolean = false;
   searchMode: 'text' | 'image' = 'text';
   expandedFilters: Record<string, boolean> = {};
@@ -85,10 +92,23 @@ export class SearchComponent implements OnInit, OnDestroy {
   private cachedImageFingerprint: string | null = null;
   private cachedClassification: Record<string, unknown> | null = null;
   private countdownInterval: any;
+  private typewriterTimeout: ReturnType<typeof setTimeout> | null = null;
+  private typewriterPhraseIndex = 0;
+  private typewriterCharIndex = 0;
+  private typewriterBackspacing = false;
+  private typewriterStopped = false;
+  private readonly searchPlaceholderPhrases = [
+    "Type 'pink floral linen'...",
+    'Or upload a photo to match style...',
+    'Or select filters on the left...',
+    "Type 'traditional temple border'..."
+  ];
+  private readonly searchPlaceholderActive = 'Describe style, fabric, color, or upload a saree photo...';
   private readonly allowedImageTypes = ['image/jpeg', 'image/png', 'image/webp'];
   private readonly maxImageSizeBytes = 5 * 1024 * 1024;
 
   @ViewChild('filterModal') filterModal!: ModalDirective;
+  @ViewChild('sortModal') sortModal!: ModalDirective;
 
   constructor(
     @Inject(PLATFORM_ID) private platformId: Object,
@@ -116,6 +136,12 @@ export class SearchComponent implements OnInit, OnDestroy {
     });
     this.commonService.breadCrumbList(this.bcList);
     this.loadAvailableFilters();
+    if (isPlatformBrowser(this.platformId) && !this.searchQuery.trim()) {
+      this.startTypewriterAnimation();
+    } else {
+      this.typewriterStopped = true;
+      this.searchPlaceholder = this.searchPlaceholderActive;
+    }
   }
 
   get activeFilterChips(): ActiveFilterChip[] {
@@ -153,6 +179,28 @@ export class SearchComponent implements OnInit, OnDestroy {
   get catalogProductCountLabel(): string {
     const count = this.productCount;
     return `${count} ${count === 1 ? 'product' : 'products'}`;
+  }
+
+  get currentSortLabel(): string {
+    return this.sort_list.find(item => item.value === this.sort_value)?.name || 'Latest';
+  }
+
+  get sortEnabled(): boolean {
+    return !!this.afterSearchEvent
+      && !this.searchLoader
+      && (this.product_list?.length > 0);
+  }
+
+  get hasUploadedImage(): boolean {
+    return !!(this.selectedImageFile || this.imagePreview);
+  }
+
+  onSearchInputFocus() {
+    this.stopTypewriterAnimation();
+  }
+
+  onSearchInputChange() {
+    this.stopTypewriterAnimation();
   }
 
   toggleHowItWorks() {
@@ -202,6 +250,18 @@ export class SearchComponent implements OnInit, OnDestroy {
     this.clearTagFilter();
   }
 
+  openSortOptions() {
+    if (!this.sortEnabled) return;
+    if (this.commonService.screen_width < 992) {
+      this.sortModal.show();
+    }
+  }
+
+  onSortChange() {
+    if (!this.sortEnabled) return;
+    this.sortProductList();
+  }
+
   toggleCameraPanel() {
     this.cameraOpen = !this.cameraOpen;
   }
@@ -225,6 +285,7 @@ export class SearchComponent implements OnInit, OnDestroy {
   }
 
   selectPreset(query: string) {
+    this.stopTypewriterAnimation();
     this.searchQuery = query;
     this.onSearch();
   }
@@ -388,6 +449,9 @@ export class SearchComponent implements OnInit, OnDestroy {
     this.cachedClassification = null;
     this.cameraOpen = false;
     clearSearchSession();
+    if (!this.searchQuery.trim()) {
+      this.restartTypewriterAnimation();
+    }
   }
 
   private loadAvailableFilters() {
@@ -473,6 +537,8 @@ export class SearchComponent implements OnInit, OnDestroy {
     if(this.imagePreview?.startsWith('blob:')) URL.revokeObjectURL(this.imagePreview);
     this.imagePreview = URL.createObjectURL(file);
     this.cameraOpen = true;
+    this.stopTypewriterAnimation();
+    this.searchQuery = '';
 
     if(!isPlatformBrowser(this.platformId)) return;
     void this.syncSessionForSelectedFile(file).then(() => {
@@ -752,7 +818,25 @@ export class SearchComponent implements OnInit, OnDestroy {
       obj.temp_discounted_price = this.cc.CALC(obj.discounted_price);
     });
     this.product_list = list;
+    this.sortProductList();
     this.persistSearchSessionState();
+  }
+
+  private sortProductList() {
+    if (!this.product_list?.length) return;
+
+    const list = [...this.product_list];
+    switch (this.sort_value) {
+      case 'price_asc':
+        list.sort((a, b) => (a.temp_discounted_price || 0) - (b.temp_discounted_price || 0));
+        break;
+      case 'price_desc':
+        list.sort((a, b) => (b.temp_discounted_price || 0) - (a.temp_discounted_price || 0));
+        break;
+      default:
+        break;
+    }
+    this.product_list = list;
   }
 
   private persistSearchSessionState() {
@@ -874,6 +958,66 @@ export class SearchComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     if(this.imagePreview?.startsWith('blob:')) URL.revokeObjectURL(this.imagePreview);
     clearInterval(this.countdownInterval);
+    this.clearTypewriterTimeout();
+  }
+
+  private startTypewriterAnimation() {
+    if (!isPlatformBrowser(this.platformId) || this.typewriterStopped) return;
+    this.clearTypewriterTimeout();
+    this.typewriterPhraseIndex = 0;
+    this.typewriterCharIndex = 0;
+    this.typewriterBackspacing = false;
+    this.runTypewriterStep();
+  }
+
+  private restartTypewriterAnimation() {
+    this.typewriterStopped = false;
+    this.startTypewriterAnimation();
+  }
+
+  private stopTypewriterAnimation() {
+    if (this.typewriterStopped) return;
+    this.typewriterStopped = true;
+    this.clearTypewriterTimeout();
+    this.searchPlaceholder = this.searchPlaceholderActive;
+  }
+
+  private clearTypewriterTimeout() {
+    if (this.typewriterTimeout) {
+      clearTimeout(this.typewriterTimeout);
+      this.typewriterTimeout = null;
+    }
+  }
+
+  private runTypewriterStep() {
+    if (!isPlatformBrowser(this.platformId) || this.typewriterStopped) return;
+
+    const currentPhrase = this.searchPlaceholderPhrases[this.typewriterPhraseIndex];
+
+    if (this.typewriterBackspacing) {
+      this.searchPlaceholder = currentPhrase.substring(0, this.typewriterCharIndex);
+      this.typewriterCharIndex--;
+
+      if (this.typewriterCharIndex < 0) {
+        this.typewriterBackspacing = false;
+        this.typewriterPhraseIndex = (this.typewriterPhraseIndex + 1) % this.searchPlaceholderPhrases.length;
+        this.typewriterCharIndex = 0;
+        this.typewriterTimeout = setTimeout(() => this.runTypewriterStep(), 400);
+      } else {
+        this.typewriterTimeout = setTimeout(() => this.runTypewriterStep(), 20);
+      }
+      return;
+    }
+
+    this.searchPlaceholder = currentPhrase.substring(0, this.typewriterCharIndex + 1);
+    this.typewriterCharIndex++;
+
+    if (this.typewriterCharIndex === currentPhrase.length) {
+      this.typewriterBackspacing = true;
+      this.typewriterTimeout = setTimeout(() => this.runTypewriterStep(), 2200);
+    } else {
+      this.typewriterTimeout = setTimeout(() => this.runTypewriterStep(), 45);
+    }
   }
 
 }

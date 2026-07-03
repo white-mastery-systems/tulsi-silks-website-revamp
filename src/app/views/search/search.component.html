@@ -13,88 +13,101 @@
   <section class="search-hero">
     <div class="container">
 
-      <h1 class="search-hero__title">Search Sarees</h1>
+      <span class="search-hero__badge">
+        <lucide-icon name="sparkles" [size]="12" stroke="2"></lucide-icon>
+        AI-POWERED VISUAL SEARCH
+      </span>
 
-      <!-- ── Search bar ─────────────────────────────────────────────────── -->
-      <div class="search-wrapper">
-        <div class="smart-search-bar" [class.bar--has-image]="imagePreview">
+      <h1 class="search-hero__title">Search by Saree Photo or Style</h1>
 
-          <!-- Upload zone -->
-          <div
-            class="upload-zone"
-            [class.upload-zone--active]="imagePreview"
-            (click)="onUploadZoneClick(sareeFileInput, $event)"
-            role="button"
-            tabindex="0"
-            (keydown.enter)="onUploadZoneClick(sareeFileInput, $event)"
-          >
-            <ng-container *ngIf="!imagePreview">
-              <lucide-icon name="cloud-upload" [size]="17" stroke="1.75"></lucide-icon>
-              <span class="upload-zone__label">Upload Photo</span>
-            </ng-container>
-            <ng-container *ngIf="imagePreview">
-              <img class="upload-zone__thumb" [src]="imagePreview" alt="uploaded preview">
-              <button type="button" class="upload-zone__clear" (click)="onClearImageClick($event)" aria-label="Remove photo">&#x2715;</button>
-            </ng-container>
-          </div>
-
-          <!-- Text input -->
-          <label class="search-field-wrap" for="search-text-input">
-            <lucide-icon name="search" [size]="15" stroke="2"></lucide-icon>
-            <input
-              id="search-text-input"
-              type="text"
-              class="search-field"
-              placeholder="Material, colour, occasion, or a saree name…"
-              [(ngModel)]="searchQuery"
-              (keydown.enter)="onMainSearch()"
-              autocomplete="off"
-            >
-          </label>
-
-          <!-- Submit -->
-          <button type="button" class="search-btn" (click)="onMainSearch()" [disabled]="searchLoader || classifyLoader">
-            <span *ngIf="searchLoader || classifyLoader" class="btn-spinner"></span>
-            <span *ngIf="!(searchLoader || classifyLoader)">Search</span>
-          </button>
+      <div class="search-command">
+        <div
+          class="search-preview-box"
+          [class.search-preview-box--filled]="imagePreview"
+          (click)="onUploadZoneClick(sareeFileInput, $event)"
+          role="button"
+          tabindex="0"
+          (keydown.enter)="onUploadZoneClick(sareeFileInput, $event)"
+        >
+          <ng-container *ngIf="!imagePreview">
+            <lucide-icon name="image-plus" [size]="28" stroke="1.25"></lucide-icon>
+            <p class="search-preview-box__hint">Uploaded image preview will show here</p>
+          </ng-container>
+          <ng-container *ngIf="imagePreview">
+            <img class="search-preview-box__img" [src]="imagePreview" alt="Uploaded saree photo">
+            <button type="button" class="search-preview-box__clear" (click)="onClearImageClick($event)" aria-label="Remove photo">&#x2715;</button>
+          </ng-container>
         </div>
 
-        <p class="search-error" *ngIf="imageError">
-          {{imageError}}<span *ngIf="rateLimitCountdown > 0"> Retry in {{rateLimitCountdown}}s.</span>
-        </p>
+        <div class="search-command__main">
+          <div class="search-wrapper">
+            <div class="smart-search-bar">
 
-        <!-- Preset pills -->
-        <div class="presets-row">
-          <span class="presets-row__label">Try:</span>
-          <button type="button" class="preset-pill" (click)="selectPreset('Kanjivaram Silk')">Kanchivaram Silk</button>
-          <button type="button" class="preset-pill" (click)="selectPreset('Banarasi')">Banarasi</button>
-          <button type="button" class="preset-pill" (click)="selectPreset('Sungudi')">Madurai Sungudi</button>
-          <button type="button" class="preset-pill" (click)="selectPreset('Cotton saree')">Coimbatore Cotton</button>
-        </div>
+              <div
+                class="upload-zone"
+                (click)="onUploadZoneClick(sareeFileInput, $event)"
+                role="button"
+                tabindex="0"
+                (keydown.enter)="onUploadZoneClick(sareeFileInput, $event)"
+              >
+                <lucide-icon name="cloud-upload" [size]="17" stroke="1.75"></lucide-icon>
+                <span class="upload-zone__label">Upload photo / Search with an image</span>
+              </div>
 
-        <!-- How it works -->
-        <div class="hiw-row">
-          <a class="hiw-link" (click)="toggleHowItWorks()">
-            <lucide-icon name="info" [size]="12" stroke="1.75"></lucide-icon>
-            How does photo search work?
-          </a>
-        </div>
+              <label class="search-field-wrap" [class.search-field-wrap--disabled]="hasUploadedImage" for="search-text-input">
+                <lucide-icon name="search" [size]="15" stroke="2"></lucide-icon>
+                <input
+                  id="search-text-input"
+                  type="text"
+                  class="search-field"
+                  [attr.placeholder]="searchPlaceholder"
+                  [(ngModel)]="searchQuery"
+                  [disabled]="hasUploadedImage"
+                  (focus)="onSearchInputFocus()"
+                  (input)="onSearchInputChange()"
+                  (keydown.enter)="onMainSearch()"
+                  autocomplete="off"
+                >
+              </label>
 
-        <!-- Step guide -->
-        <div class="step-guide" [class.step-guide--open]="howItWorksOpen">
-          <div class="step-guide__step">
-            <span class="step-guide__num">01</span>
-            <span class="step-guide__label">Upload a saree photo</span>
-          </div>
-          <span class="step-guide__sep" aria-hidden="true">→</span>
-          <div class="step-guide__step">
-            <span class="step-guide__num">02</span>
-            <span class="step-guide__label">AI reads style &amp; fabric</span>
-          </div>
-          <span class="step-guide__sep" aria-hidden="true">→</span>
-          <div class="step-guide__step">
-            <span class="step-guide__num">03</span>
-            <span class="step-guide__label">See matching sarees</span>
+              <button type="button" class="search-btn" (click)="onMainSearch()" [disabled]="searchLoader || classifyLoader">
+                <span *ngIf="searchLoader || classifyLoader" class="btn-spinner"></span>
+                <span *ngIf="!(searchLoader || classifyLoader)">{{ hasUploadedImage ? 'Analyse' : 'Search' }}</span>
+              </button>
+            </div>
+
+            <p class="search-error" *ngIf="imageError">
+              {{imageError}}<span *ngIf="rateLimitCountdown > 0"> Retry in {{rateLimitCountdown}}s.</span>
+            </p>
+
+            <div class="presets-row">
+              <span class="presets-row__label">Try inspiration presets:</span>
+              <button type="button" class="preset-pill" (click)="selectPreset('Kanjivaram Silk')">Kanchivaram Silks</button>
+              <button type="button" class="preset-pill" (click)="selectPreset('Banarasi')">Banarasi</button>
+              <button type="button" class="preset-pill" (click)="selectPreset('Sungudi')">Madurai Sungudi</button>
+              <button type="button" class="preset-pill" (click)="selectPreset('Cotton saree')">Coimbatore Cotton</button>
+            </div>
+
+            <div class="hiw-row">
+              <a class="hiw-link" (click)="toggleHowItWorks()">How does photo search work?</a>
+            </div>
+
+            <div class="step-guide" [class.step-guide--open]="howItWorksOpen">
+              <div class="step-guide__step">
+                <span class="step-guide__num">01</span>
+                <span class="step-guide__label">Upload a saree photo</span>
+              </div>
+              <span class="step-guide__sep" aria-hidden="true">→</span>
+              <div class="step-guide__step">
+                <span class="step-guide__num">02</span>
+                <span class="step-guide__label">AI reads style &amp; fabric</span>
+              </div>
+              <span class="step-guide__sep" aria-hidden="true">→</span>
+              <div class="step-guide__step">
+                <span class="step-guide__num">03</span>
+                <span class="step-guide__label">See matching sarees</span>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -126,10 +139,27 @@
                   <span class="catalog-pill-btn__text catalog-pill-btn__text--short">FILTERS</span>
                   <span *ngIf="activeFilterCount" class="catalog-pill-btn__badge">{{ activeFilterCount }}</span>
                 </button>
-                <span *ngIf="afterSearchEvent && productCount" class="catalog-product-count">{{ catalogProductCountLabel }}</span>
+                <span *ngIf="afterSearchEvent" class="catalog-product-count">
+                  <ng-container *ngIf="searchLoader && !pageLoader">Searching…</ng-container>
+                  <ng-container *ngIf="!(searchLoader && !pageLoader) && productCount">{{ catalogProductCountLabel }}</ng-container>
+                </span>
               </div>
               <div class="catalog-toolbar__right">
-                <span *ngIf="searchLoader && !pageLoader && afterSearchEvent" class="catalog-product-count">Searching…</span>
+                <div class="catalog-sort">
+                  <div class="catalog-pill-btn catalog-pill-btn--sort"
+                    [class.catalog-pill-btn--sort-mobile]="commonService.screen_width < 992"
+                    [class.catalog-pill-btn--disabled]="!sortEnabled"
+                    (click)="openSortOptions()">
+                    <span class="catalog-pill-btn__text catalog-sort__value">{{ currentSortLabel }}</span>
+                    <span class="catalog-pill-btn__icon" aria-hidden="true">
+                      <i class="material-icons">sort</i>
+                    </span>
+                    <select *ngIf="commonService.screen_width >= 992" class="catalog-sort__select" name="search_sort_list"
+                      [(ngModel)]="sort_value" (ngModelChange)="onSortChange()" [disabled]="!sortEnabled">
+                      <option *ngFor="let x of sort_list" [ngValue]="x.value">{{ x.name }}</option>
+                    </select>
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -148,10 +178,10 @@
           <!-- Empty state -->
           <div class="empty-state" *ngIf="!afterSearchEvent">
             <div class="empty-state__icon">
-              <lucide-icon name="search" [size]="26" stroke="1.25"></lucide-icon>
+              <lucide-icon name="info" [size]="28" stroke="1.5"></lucide-icon>
             </div>
-            <p class="empty-state__title">Discover your saree</p>
-            <p class="empty-state__body">Type a keyword, choose a preset, or upload a photo to get started.</p>
+            <p class="empty-state__title">No Image Uploaded Yet</p>
+            <p class="empty-state__body">Upload an inspiration photo or select a preset link to scan and display matching products.</p>
           </div>
 
           <!-- Results -->
@@ -302,6 +332,32 @@
             <span *ngIf="searchLoader" class="btn-spinner"></span>
             <span *ngIf="!searchLoader">Apply</span>
           </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div bsModal #sortModal="bs-modal" class="modal fade sort-modal-v2" [config]="{backdrop: 'static'}" tabindex="-1"
+    role="dialog" aria-labelledby="search-sort-dialog">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
+      <div class="modal-content">
+        <div class="filter-modal-v2__header">
+          <div>
+            <h2 class="filter-modal-v2__title" id="search-sort-dialog">Sort by</h2>
+          </div>
+          <button type="button" class="filter-modal-v2__close" aria-label="Close" (click)="sortModal.hide()">
+            <i class="material-icons">close</i>
+          </button>
+        </div>
+        <div class="modal-body filter-modal-v2__body slim-scroll">
+          <label *ngFor="let x of sort_list" class="sort-modal-v2__option"
+            [class.sort-modal-v2__option--active]="sort_value === x.value"
+            [class.sort-modal-v2__option--disabled]="!sortEnabled">
+            <input type="radio" class="d-none" name="search_sort_mobile" [(ngModel)]="sort_value"
+              [value]="x.value" [disabled]="!sortEnabled" (change)="sortModal.hide(); onSortChange()"/>
+            <span>{{ x.name }}</span>
+            <i *ngIf="sort_value === x.value" class="material-icons">check</i>
+          </label>
         </div>
       </div>
     </div>
