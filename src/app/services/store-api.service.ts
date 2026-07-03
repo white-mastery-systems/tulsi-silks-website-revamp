@@ -53,7 +53,7 @@ export class StoreApiService {
   AI_STYLES_FILTER(x) { return this.http.post<any>(environment.ws_url+'/store_details/product/ai_styles_filter_v2?store_id='+this.store_id, x); }
   SIZING_ASSISTANT(x) { return this.http.post<any>(environment.ws_url+'/store_details/sizing_assistant?store_id='+this.store_id, x); }
 
-  SEARCH_PRODUCT(x) { return this.http.post<any>(environment.ws_url+'/store_details/product/search?store_id='+this.store_id, x); }
+  SEARCH_PRODUCT(x) { return this.http.post<any>(environment.ws_url+'/store_details/v1/product/search?store_id='+this.store_id, x); }
   SEARCH_PRODUCT_V2(x) { return this.http.post<any>(environment.ws_url+'/store_details/product/search_v2?store_id='+this.store_id, x); }
   SEARCH_PRODUCT_EXACT(x) { return this.http.post<any>(environment.ws_url+'/store_details/product/search_exact?store_id='+this.store_id, x); }
   CLASSIFY_SAREE(file: File) {

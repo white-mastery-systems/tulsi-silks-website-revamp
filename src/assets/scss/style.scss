@@ -555,7 +555,7 @@ article, aside, footer, header, nav, section { width: 100%; float: left; positio
 
 /* MOBILE RESPONSIVE FIXES */
 @media screen and (min-width: 768px) and (max-width: 1024px) and (orientation: portrait) {
-.category-banner-sec img{
+.category-banner-sec:not(.category-atf-hero) img{
   height: 400px!important;
 }
 .category-filter-section{
@@ -627,7 +627,7 @@ article, aside, footer, header, nav, section { width: 100%; float: left; positio
       }
   }  
   
-  .category-banner-sec img{
+  .category-banner-sec:not(.category-atf-hero) img{
     height: 300px!important;
   }
   .common-site-section .blog-details .blog-content .blog-title {
@@ -665,7 +665,7 @@ article, aside, footer, header, nav, section { width: 100%; float: left; positio
 
   .footer{padding:50px 25px}
 
-  .category-banner-sec{
+  .category-banner-sec:not(.category-atf-hero){
     padding:20px 0!important;
   }
 

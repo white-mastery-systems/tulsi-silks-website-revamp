@@ -5,107 +5,68 @@
 <section class="over-all smooth-fadein" *ngIf="!pageLoader">
 
 
-  <!-- catalog Banner -->
-  <section *ngIf="category_details.banner_image" class="category-banner-sec data-bg">
-    <div class="container-fluid">
-      <div class="category-banner row align-items-end">
-        <div class="col-md-6 category-banner-col pl-md-0">
-
-          <div class="category-banner-text">
-            <!-- breadcrumb -->
-            <div *ngIf="template_setting?.breadcrumb" class="head-breadcrumb pt-0" style="text-align:left">
-              <div class="{{template_setting?.body_type}}">
-                <div class="row">
-                  <div class="col-md-12 d-flex align-items-left justify-content-between px-0">
-                    <div class="breadcrumb-navigation col-xl-12 col-12 px-0">
-                      <ul class="collapsed mb-2">
-                        <li>
-                          <a routerLink="/">Home</a>
-                        </li>
-                        <li *ngIf="isKanjivaram">
-                          <a routerLink="/category/kanjivaram-silk-sarees">Kanjivaram Silk Sarees</a>
-                        </li>
-                        <li *ngIf="isBanarasi">
-                          <a routerLink="/category/banarasi-silk-sarees">Banarasi Silk Sarees</a>
-                        </li>
-                        <li *ngIf="isOrganza">
-                          <a routerLink="/category/organza-sarees">Organza Sarees</a>
-                        </li>
-                        <li *ngIf="category_details?.name">
-                          <span class="active-page">{{category_details.name}}</span>
-                        </li>
-                      </ul>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <!--# breadcrumb #-->
-            <h1 class="mb-2">{{category_details.seo_details.h1_tag}}</h1>
-            <div *ngIf="category_details.description" [innerHtml]="category_details.description" class="pr-md-3"></div>
-          </div>
+  <!-- catalog hero -->
+  <section *ngIf="hasCategoryHero()" class="category-banner-sec category-atf-hero">
+    <div class="category-atf-hero__stage">
+      <div class="category-atf-hero__content">
+        <div class="category-atf-hero__content-inner">
+          <nav *ngIf="template_setting?.breadcrumb" class="category-atf-hero__breadcrumb" aria-label="Breadcrumb">
+            <ol class="category-atf-hero__crumbs">
+              <li><a routerLink="/">Home</a></li>
+              <li *ngIf="isKanjivaram">
+                <a routerLink="/category/kanjivaram-silk-sarees">Kanjivaram Silk Sarees</a>
+              </li>
+              <li *ngIf="isBanarasi">
+                <a routerLink="/category/banarasi-silk-sarees">Banarasi Silk Sarees</a>
+              </li>
+              <li *ngIf="isOrganza">
+                <a routerLink="/category/organza-sarees">Organza Sarees</a>
+              </li>
+              <li *ngIf="category_details?.name" aria-current="page">
+                <span>{{ category_details.name }}</span>
+              </li>
+            </ol>
+          </nav>
+          <h1 class="category-atf-hero__title">{{ category_details.seo_details.h1_tag }}</h1>
+          <div *ngIf="category_details.description"
+            class="category-atf-hero__desc"
+            [innerHtml]="category_details.description"></div>
         </div>
-
-        <div class="col-md-6 pr-md-0">
-          <!-- <div class="banner_overlay"></div> -->
-          <img width="100%" height="100%" appImgLazyLoad [ImagelazyLoad]="imgBaseUrl+category_details.banner_image"
-            alt="category-banner">
-        </div>
+      </div>
+      <div class="category-atf-hero__media">
+        <img class="category-atf-hero__bg" width="100%" height="100%" appImgLazyLoad
+          [ImagelazyLoad]="imgBaseUrl + categoryHeroImage()"
+          [alt]="category_details.seo_details?.h1_tag || category_details.name || 'category-banner'">
+        <div class="category-atf-hero__shade" aria-hidden="true"></div>
       </div>
     </div>
   </section>
-  <!-- #catalog Banner -->
-
-  <!-- catalog Image -->
-  <section *ngIf="!category_details.banner_image && category_details.image" class="category-banner-sec category-banner-sec2 data-bg py-0 mt-4" style="background: transparent;">
-    <div class="container-fluid px-0 category-image-sec-main" style="background-color: #f2f2f2;">
-      <div class="category-banner row align-items-center">
-        <div class="col-md-12 d-flex align-items-center category-banner-col">
-          <div class="p-4 category-banner-text">
-            <h1 class="mb-2">{{category_details.seo_details.h1_tag}}</h1>
-            <div *ngIf="category_details.description" [innerHtml]="category_details.description" class="pr-md-3"></div>
-          </div>
-          <div class="category-image-sec">
-            <img width="100%" height="100%" appImgLazyLoad [ImagelazyLoad]="imgBaseUrl+category_details.image" alt="category-banner">
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-  <!-- #catalog Image -->
+  <!-- #catalog hero -->
 
   <!-- navigations -->
   <ng-container *ngIf="category_details.navigationList?.length">
-    <section class="primary-section primary-highlighted-sec color-slider-section">
+    <section class="primary-section primary-highlighted-sec color-slider-section category-atf-nav">
       <div class="container-fluid">
         <div class="row">
           <div class="col-12 px-0">
-            <div class="navigation-container">
-              <!-- Navigation scroll wrapper -->
-              <div class="navigation-scroll-wrapper" #navigationScroller>
-                <div *ngFor="let x of category_details.navigationList | orderAsc: 'rank'; let i=index;"
-                class="navigation-item" [ngClass]="{'active': i === activeSlideIndex}" (click)="onSelectNav(i)">
-                  <div class="navigation-tab">
-                    <p class="mb-0 py-0">{{ x.name }}</p>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Navigation buttons - Only show when navigation items overflow -->
-              <button *ngIf="showNavigationButtons" 
-                    class="nav-button nav-button-prev" 
-                    #navPrev 
-                    (click)="scrollNav('left')"
-                    [ngClass]="{'hidden': isAtStart}">
-                <lucide-icon name="chevron-left" [size]="20" stroke="2"></lucide-icon>
-              </button>
-              <button *ngIf="showNavigationButtons" 
-                    class="nav-button nav-button-next" 
-                    #navNext 
-                    (click)="scrollNav('right')"
-                    [ngClass]="{'hidden': isAtEnd}">
-                <lucide-icon name="chevron-right" [size]="20" stroke="2"></lucide-icon>
-              </button>
+            <div class="tabs category-nav-tabs">
+              <ul class="nav nav-tabs" role="tablist">
+                <li
+                  *ngFor="let x of category_details.navigationList | orderAsc: 'rank'; let i = index"
+                  role="presentation"
+                  [class.active]="i === activeSlideIndex"
+                >
+                  <button
+                    type="button"
+                    role="tab"
+                    [class.active]="i === activeSlideIndex"
+                    [attr.aria-selected]="i === activeSlideIndex"
+                    (click)="onSelectNav(i)"
+                  >
+                    <span>{{ x.name }}</span>
+                  </button>
+                </li>
+              </ul>
             </div>
           </div>
         </div>
@@ -113,7 +74,7 @@
     </section>
 
     <!-- navigation sections -->
-    <section class="primary-section category-filter-section">
+    <section class="primary-section category-filter-section category-atf-grid">
       <div class="container-fluid">
         <div class="row section-height-big" [ngStyle]="{
           'min-height': commonService.desktop_device ? '350px' : '340px',
@@ -299,10 +260,10 @@
         <div class="col-md-12">
           <div class="category-banner-accordion">
             <div class="custom-accordion">
-              <div *ngIf="category_details?.seo_details?.h1_tag && !category_details.banner_image && !category_details.image" class="acc-head">
+              <div *ngIf="category_details?.seo_details?.h1_tag && !hasCategoryHero()" class="acc-head">
                 <h1>{{category_details.seo_details.h1_tag}}</h1>
               </div>
-              <div *ngIf="category_details?.seo_details?.h1_tag && (category_details.banner_image || category_details.image)" class="acc-head">
+              <div *ngIf="category_details?.seo_details?.h1_tag && hasCategoryHero()" class="acc-head">
                 <h2 class="h4 mb-0">{{category_details.seo_details.h1_tag}}</h2>
               </div>
               <ng-container *ngIf="category_details?.header_content?.length">
@@ -323,7 +284,7 @@
     </div>
   </section>
 
-  <section class="category-banner-content mt-3" *ngIf="!category_details.banner_image && !category_details.image && !category_details?.hc_status && category_details.description && category_details?.seo_details?.h1_tag">
+  <section class="category-banner-content mt-3" *ngIf="!hasCategoryHero() && !category_details?.hc_status && category_details.description && category_details?.seo_details?.h1_tag">
     <div class="{{template_setting?.body_type}}">
       <div class="row">
         <div class="col-md-12">
@@ -345,11 +306,11 @@
 
   <!-- breadcrumb -->
   <ng-container *ngIf="template_setting?.breadcrumb">
-    <section *ngIf="!category_details.banner_image && commonService.screen_width>=992 && list.length" class="head-breadcrumb mt-3">
+    <section *ngIf="!hasCategoryHero() && commonService.screen_width>=992 && list.length" class="head-breadcrumb mt-3">
       <div class="container-fluid">
         <div class="row">
           <div class="col-md-12 d-flex align-items-center justify-content-between">
-            <div class="breadcrumb-navigation col-xl-6 col-12 px-0" *ngIf="!category_details.banner_image">
+            <div class="breadcrumb-navigation col-xl-6 col-12 px-0" *ngIf="!hasCategoryHero()">
               <ul class="collapsed">
                 <li>
                   <a routerLink="/">Home</a>
@@ -369,7 +330,7 @@
               </ul>
             </div>
             <!-- <div *ngIf="commonService.screen_width>=992 && list.length" class="d-flex justify-content-end pr-0"
-              [ngClass]="category_details.banner_image? 'col-xl-12': 'col-xl-6'">
+              [ngClass]="hasCategoryHero()? 'col-xl-12': 'col-xl-6'">
               <span>
                 Sort by:
                 <select name="sort_list" [(ngModel)]="sort_value">
@@ -385,7 +346,7 @@
   <!--# breadcrumb #-->
 
   <!-- product list -->
-  <section *ngIf="list.length || (useV4Catalog && !pageLoader)" class="common-site-section product-list pt-2">
+  <section *ngIf="list.length || (useV4Catalog && !pageLoader)" class="common-site-section product-list catalog-product-list">
     <div class="container-fluid">
       <div class="row">
 
@@ -394,13 +355,15 @@
           <div class="row" style="padding-right: 15px;">
 
             <!-- catalog toolbar -->
-            <div class="col-md-12 mb-3">
+            <div class="col-md-12 catalog-toolbar-block">
               <div class="catalog-toolbar">
                 <div class="catalog-toolbar__left">
                   <button *ngIf="tag_list?.length" type="button" class="catalog-pill-btn catalog-pill-btn--filters"
                     [class.catalog-pill-btn--active]="filtersDrawerOpen || activeFilterCount"
                     (click)="openFilters()">
-                    <span class="catalog-pill-btn__icon"><i class="material-icons">tune</i></span>
+                    <span class="catalog-pill-btn__icon" aria-hidden="true">
+                      <i class="material-icons">tune</i>
+                    </span>
                     <span class="catalog-pill-btn__text">SHOW FILTERS</span>
                     <span *ngIf="activeFilterCount" class="catalog-pill-btn__badge">{{ activeFilterCount }}</span>
                   </button>
@@ -415,7 +378,9 @@
                       [class.catalog-pill-btn--sort-mobile]="commonService.screen_width<992"
                       (click)="openSortOptions()">
                       <span class="catalog-pill-btn__text catalog-sort__value">{{ currentSortLabel }}</span>
-                      <span class="catalog-pill-btn__icon"><i class="material-icons">sort</i></span>
+                      <span class="catalog-pill-btn__icon" aria-hidden="true">
+                        <i class="material-icons">sort</i>
+                      </span>
                       <select *ngIf="commonService.screen_width>=992" class="catalog-sort__select" name="sort_list"
                         [(ngModel)]="sort_value" (ngModelChange)="onSortChange()">
                         <option *ngFor="let x of sort_list;" [ngValue]="x.value">{{ x.name }}</option>
@@ -423,6 +388,17 @@
                     </div>
                   </div>
                 </div>
+              </div>
+
+              <div *ngIf="filterChips.length" class="catalog-active-filters">
+                <span *ngFor="let chip of filterChips" class="catalog-filter-chip">
+                  {{ chip.name }}: {{ chip.value }}
+                  <button type="button" class="catalog-filter-chip__remove" aria-label="Remove filter"
+                    (click)="removeFilterChip(chip)">
+                    <i class="material-icons">close</i>
+                  </button>
+                </span>
+                <button type="button" class="catalog-filter-chip__clear" (click)="clearTagFilter()">Clear all</button>
               </div>
               <!-- grid icons (desktop) -->
               <div *ngIf="commonService?.screen_width>=992 && template_setting?.category_grid_options"
@@ -455,22 +431,22 @@
                       <span class="grid-select-inner-thum"></span>
                     </div>
                   </label>
+                  <label class="mb-0">
+                    <input type="radio" class="grid-input-element d-none" name="grid-select-opt"
+                      [(ngModel)]="gridType" value="six">
+                    <div class="card d-flex flex-row justify-content-center align-items-center">
+                      <span class="grid-select-inner-thum"></span>
+                      <span class="grid-select-inner-thum"></span>
+                      <span class="grid-select-inner-thum"></span>
+                      <span class="grid-select-inner-thum"></span>
+                      <span class="grid-select-inner-thum"></span>
+                      <span class="grid-select-inner-thum"></span>
+                    </div>
+                  </label>
                 </div>
               </div>
             </div>
             <!-- # catalog toolbar -->
-
-            <!-- active filter chips -->
-            <div *ngIf="filterChips.length" class="col-md-12 mb-3">
-              <div class="chip-wrapper d-flex flex-wrap align-items-center">
-                <span *ngFor="let chip of filterChips" class="chip active mr-2 mb-2">
-                  {{ chip.name }}: {{ chip.value }}
-                  <i class="material-icons cursor ml-1" style="font-size:16px;vertical-align:middle;"
-                    (click)="removeFilterChip(chip)">close</i>
-                </span>
-                <a *ngIf="tagSelected" (click)="clearTagFilter();" class="cursor ml-2" style="text-decoration:underline;">Clear all</a>
-              </div>
-            </div>
 
             <div *ngIf="listLoader" class="col-md-12 text-center py-4">
               <app-loading-spinner></app-loading-spinner>
@@ -481,12 +457,16 @@
             <div
               *ngFor="let x of list | paginate: { itemsPerPage: pageSize, currentPage: page, totalItems: total }; let i=index;"
               class="cat-grid col-sm-6 col-6 pr-0 d-flex"
-              [ngClass]="{ 'col-md-6': gridType=='two', 'col-md-4': gridType=='three', 'col-md-3': gridType=='four' }">
+              [ngClass]="productGridColClass()">
               <!--Wishlist icon-->
-              <div class="product_labellist wishlist-main">
-                <span class="wishlist-icon" (click)="(commonService.wishListIds.indexOf(x._id)!=-1)? ws.removeFromWishList(x._id): ws.addToWishList(x);"
+              <div class="product_labellist wishlist-main catalog-card-actions">
+                <span class="wishlist-icon" (click)="onWishlistClick(x, $event)"
                 [ngClass]="(commonService.wishListIds.indexOf(x._id)!=-1)? 'wishlist-icon-active': null">                      
-                  <lucide-icon name="heart" [size]="16" stroke="1" color="#000000" fill="#000000"></lucide-icon>                        
+                  <lucide-icon name="heart" [size]="16" [strokeWidth]="2"
+                    [color]="commonService.wishListIds.indexOf(x._id) !== -1 ? '#d32f2f' : '#000000'"></lucide-icon>                        
+                </span>
+                <span class="wishlist-icon catalog-bag-icon" (click)="goToProduct(x, $event)" aria-label="View product">
+                  <lucide-icon name="shopping-bag" [size]="16" [strokeWidth]="2" color="#000000"></lucide-icon>
                 </span>
               </div>
               <!--#Wishlist icon-->
@@ -532,9 +512,11 @@
                   <div class="product-content">
                     <p *ngIf="x.brand" class="product-brand">{{x.brand}}</p>
                     <p class="product-title">{{x.name}}</p>
-                    <div>
-                      <span *ngIf="x.disc_status" class="strike">{{ x.temp_selling_price | currency:cc.pipeCurrencyCode:'symbol-narrow':cc.format:cc.pipeLocale }}</span>
-                      <span>{{ x.temp_discounted_price | currency:cc.pipeCurrencyCode:'symbol-narrow':cc.format:cc.pipeLocale }}</span>
+                    <div class="catalog-product-price">
+                      <div class="catalog-product-price__row">
+                        <span *ngIf="x.disc_status" class="catalog-product-price__old strike">{{ x.temp_selling_price | currency:cc.pipeCurrencyCode:'symbol-narrow':cc.format:cc.pipeLocale }}</span>
+                        <span class="catalog-product-price__now">{{ x.temp_discounted_price | currency:cc.pipeCurrencyCode:'symbol-narrow':cc.format:cc.pipeLocale }}</span>
+                      </div>
                       <div *ngIf="template_setting?.purchase_txt" class="purchase-div">
                         <a>PURCHASE</a>
                       </div>
@@ -559,11 +541,15 @@
             <div
               *ngFor="let x of list | rangeFilter:rangeMin:rangeMax | productSort: sort_value | paginate: { itemsPerPage: pageSize, currentPage: page }; let i=index;"
               class="cat-grid col-sm-6 col-6 pr-0 d-flex"
-              [ngClass]="{ 'col-md-6': gridType=='two', 'col-md-4': gridType=='three', 'col-md-3': gridType=='four' }">
-              <div class="product_labellist wishlist-main">
-                <span class="wishlist-icon" (click)="(commonService.wishListIds.indexOf(x._id)!=-1)? ws.removeFromWishList(x._id): ws.addToWishList(x);"
+              [ngClass]="productGridColClass()">
+              <div class="product_labellist wishlist-main catalog-card-actions">
+                <span class="wishlist-icon" (click)="onWishlistClick(x, $event)"
                 [ngClass]="(commonService.wishListIds.indexOf(x._id)!=-1)? 'wishlist-icon-active': null">
-                  <lucide-icon name="heart" [size]="16" stroke="1" color="#000000" fill="#000000"></lucide-icon>
+                  <lucide-icon name="heart" [size]="16" [strokeWidth]="2"
+                    [color]="commonService.wishListIds.indexOf(x._id) !== -1 ? '#d32f2f' : '#000000'"></lucide-icon>
+                </span>
+                <span class="wishlist-icon catalog-bag-icon" (click)="goToProduct(x, $event)" aria-label="View product">
+                  <lucide-icon name="shopping-bag" [size]="16" [strokeWidth]="2" color="#000000"></lucide-icon>
                 </span>
               </div>
               <a appMouseHover class="product-box smooth-fadein p-0" [ngClass]="template_setting?.p_card? '': ''"
@@ -606,9 +592,11 @@
                   <div class="product-content">
                     <p *ngIf="x.brand" class="product-brand">{{x.brand}}</p>
                     <p class="product-title">{{x.name}}</p>
-                    <div>
-                      <span *ngIf="x.disc_status" class="strike">{{ x.temp_selling_price | currency:cc.pipeCurrencyCode:'symbol-narrow':cc.format:cc.pipeLocale }}</span>
-                      <span>{{ x.temp_discounted_price | currency:cc.pipeCurrencyCode:'symbol-narrow':cc.format:cc.pipeLocale }}</span>
+                    <div class="catalog-product-price">
+                      <div class="catalog-product-price__row">
+                        <span *ngIf="x.disc_status" class="catalog-product-price__old strike">{{ x.temp_selling_price | currency:cc.pipeCurrencyCode:'symbol-narrow':cc.format:cc.pipeLocale }}</span>
+                        <span class="catalog-product-price__now">{{ x.temp_discounted_price | currency:cc.pipeCurrencyCode:'symbol-narrow':cc.format:cc.pipeLocale }}</span>
+                      </div>
                       <div *ngIf="template_setting?.purchase_txt" class="purchase-div">
                         <a>PURCHASE</a>
                       </div>
@@ -660,7 +648,33 @@
   <!-- #no items -->
 
   <!-- catalog page segments (CMS below-fold) -->
-  <app-catalog-segments *ngIf="catalog_page_segments?.length" [segments]="catalog_page_segments"></app-catalog-segments>
+  <app-catalog-segments
+    *ngIf="catalog_page_segments?.length"
+    [segments]="catalog_page_segments"
+    [blogList]="blog_list">
+  </app-catalog-segments>
+
+  <!-- Articles (legacy fallback when CMS blogs segment is absent) -->
+  <section *ngIf="blog_list?.length && !hasCatalogSegment('blogs')" class="primary-section news home-section">
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-12 px-0 d-flex justify-content-between align-items-end">
+          <div class="titles custom-title w-auto pl-0">
+            <h2 class="mb-0">Articles</h2>
+            <p class="mt-2 mb-0">Stories woven in silk and tradition</p>
+          </div>
+          <div class="blog-slider-btn">
+            <a class="primary-btn outline-btn" routerLink="/blogs" aria-label="View all blog posts">View All</a>
+          </div>
+        </div>
+        <div class="row d-flex flex-wrap align-items-stretch home-blog-grid">
+          <div class="col-12 col-md-6 col-lg-3 d-flex mb-4" *ngFor="let blog of blog_list">
+            <app-blog-card [item]="blog" [imgBaseUrl]="imgBaseUrl"></app-blog-card>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
 
   <!-- SEO header content below grid (v4 catalog) -->
   <section class="category-banner-content mt-3 mb-4" *ngIf="useV4Catalog && category_details?.header_content?.length">
@@ -731,31 +745,42 @@
   <!-- #footer content -->
 
   <!-- seo links -->
-  <section *ngIf="commonService.footer_seo_links?.length && pageUrl!='/category/printed-sarees' && pageUrl!='/category/soft-silk'" class="mt-3">
+  <section *ngIf="commonService.footer_seo_links?.length && pageUrl!='/category/printed-sarees' && pageUrl!='/category/soft-silk' && !hasCatalogSegment('internal_links')" class="primary-section catalog-collections">
     <div class="{{template_setting?.body_type}}">
       <div class="row">
-        <div class="col-md-12">
-          <div class="collections">
-            <ng-container *ngFor="let x of commonService.footer_seo_links | slice:0: (pageUrl.indexOf('kanjivaram')==-1)? 2: commonService.footer_seo_links.length | orderAsc: 'rank';">
-              <p>{{x.name}}</p>
-              <!--<ul class="pl-0">
-                <li *ngFor="let y of x.links">
-                  <a [routerLink]="(y.link_type=='internal')? y.link: null"
-                    (click)="(y.link_type!='internal')? commonService.onPageRedirect(y): null;">
-                    {{y.name}}
-                  </a>
-                </li>
-              </ul>-->
-              <div class="row mb-5 border-divider">
-                <div class="col-md-4 d-flex justify-content-center text-center" *ngFor="let y of x.links">
-                  <a class="collect-list" [routerLink]="(y.link_type=='internal')? y.link: null"
-                    (click)="(y.link_type!='internal')? commonService.onPageRedirect(y): null;">
-                    {{y.name}}
-                  </a>
-                </div>
-              </div>
-            </ng-container>
+        <div class="col-12 mb-4">
+          <div class="titles custom-title text-center catalog-collections__header">
+            <h2>Explore Our Collections</h2>
+            <p>Discover our exquisite range of weaves, fabrics and designs. Find the perfect saree that speaks to your style.</p>
           </div>
+        </div>
+        <div class="col-md-12">
+          <accordion [closeOthers]="true" [isAnimated]="true" class="catalog-collections__accordion">
+            <ng-container *ngFor="let x of commonService.footer_seo_links | slice:0: (pageUrl.indexOf('kanjivaram')==-1)? 2: commonService.footer_seo_links.length | orderAsc: 'rank'; let i=index;">
+              <accordion-group [isOpen]="i===0">
+                <div accordion-heading class="catalog-collections__heading">
+                  <span class="catalog-collections__toggle" aria-hidden="true">
+                    <lucide-icon class="catalog-collections__toggle-icon catalog-collections__toggle-icon--plus" name="plus" [size]="18" stroke="3"></lucide-icon>
+                    <lucide-icon class="catalog-collections__toggle-icon catalog-collections__toggle-icon--minus" name="minus" [size]="18" stroke="3"></lucide-icon>
+                  </span>
+                  <span class="catalog-collections__heading-text">{{ x.name }}</span>
+                  <lucide-icon class="catalog-collections__chevron" name="chevron-down" [size]="18" stroke="1.5"></lucide-icon>
+                </div>
+                <div class="row catalog-collections__links">
+                  <div class="col-md-4 col-sm-6" *ngFor="let column of internalLinksColumns(x.links)">
+                    <ul class="catalog-collections__link-list pl-0">
+                      <li *ngFor="let y of column">
+                        <a class="collect-list" [routerLink]="(y.link_type=='internal')? y.link: null"
+                          (click)="(y.link_type!='internal')? commonService.onPageRedirect(y): null;">
+                          {{y.name}}
+                        </a>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </accordion-group>
+            </ng-container>
+          </accordion>
         </div>
       </div>
     </div>
@@ -798,12 +823,14 @@
   <!-- #random products -->
 
   <!-- FAQ -->
-  <section *ngIf="category_details?.faqs?.length" class="primary-section pb-5">
+  <section *ngIf="category_details?.faqs?.length && !hasCatalogSegment('faq')" class="primary-section catalog-faq pb-5">
     <div class="{{template_setting.body_type}}">
       <div class="row">
         <div class="col-md-12">
-          <h3 class="mt-5">{{ category_details.faq_title? category_details.faq_title: 'FAQs' }}</h3>
-          <div class="mt-3">
+          <div class="titles">
+            <h2>{{ category_details.faq_title? category_details.faq_title: 'FAQs' }}</h2>
+          </div>
+          <div class="tulsi-blog-detail__faq-acc">
             <accordion *ngIf="category_details.faqs?.length" [closeOthers]="true" [isAnimated]="true">
               <ng-container *ngFor="let x of category_details.faqs;">
                 <accordion-group heading="{{x.ques}}">
@@ -822,21 +849,22 @@
 <!-- shared filter panel -->
 <ng-template #catalogFilterPanel>
   <div class="filter-panel-v2__sections">
-    <div *ngIf="template_setting.price_range && IsBrowser" class="filter-panel-v2__section">
+    <div *ngIf="template_setting.price_range && IsBrowser" class="filter-panel-v2__section filter-panel-v2__section--price">
       <button type="button" class="filter-panel-v2__head" (click)="togglePriceFilterSection()">
         <span>Price</span>
         <i class="material-icons">{{ priceFilterOpen ? 'remove' : 'add' }}</i>
       </button>
-      <div class="filter-panel-v2__body" *ngIf="priceFilterOpen">
-        <ngx-slider [(value)]="rangeMin" [(highValue)]="rangeMax" [options]="range_disp"
+      <div class="filter-panel-v2__body filter-panel-v2__body--price" [class.is-open]="priceFilterOpen">
+        <ngx-slider [(value)]="sliderMin" [(highValue)]="sliderMax" [options]="range_disp"
+          (userChange)="onPriceUserChange($event)"
           (userChangeEnd)="onPriceRangeEnd()"></ngx-slider>
         <div class="filter-price-inputs">
           <div class="filter-price-field">
-            <span class="filter-price-value">{{ rangeMin | currency:cc.pipeCurrencyCode:'symbol-narrow':'1.0-0':cc.pipeLocale }}</span>
+            <span class="filter-price-value">{{ priceDisplayMin }}</span>
           </div>
           <span class="filter-price-sep">-</span>
           <div class="filter-price-field">
-            <span class="filter-price-value">{{ rangeMax | currency:cc.pipeCurrencyCode:'symbol-narrow':'1.0-0':cc.pipeLocale }}</span>
+            <span class="filter-price-value">{{ priceDisplayMax }}</span>
           </div>
         </div>
       </div>
@@ -931,7 +959,7 @@
       <div class="filter-modal-v2__footer">
         <button *ngIf="tagSelected || activeFilterCount" type="button" class="filter-modal-v2__clear"
           (click)="clearTagFilter();">Remove all</button>
-        <button type="button" class="filter-modal-v2__apply primary-btn" (click)="closeFilters()">Apply</button>
+        <button type="button" class="primary-btn filter-modal-v2__apply" (click)="closeFilters()">Apply</button>
       </div>
     </div>
   </div>

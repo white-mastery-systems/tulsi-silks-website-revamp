@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy, Inject, PLATFORM_ID, ViewChild, ElementRef, DOCUMENT } from '@angular/core';
 import { Router, ActivatedRoute, Params } from '@angular/router';
-import { isPlatformBrowser, DecimalPipe } from '@angular/common';
+import { isPlatformBrowser, DecimalPipe, CurrencyPipe } from '@angular/common';
 import { Subscription, Subject } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 import { environment } from './../../../environments/environment';
@@ -9,7 +9,7 @@ import { CommonService } from '../../services/common.service';
 import { WishlistService } from '../../services/wishlist.service';
 import { CurrencyConversionService } from '../../services/currency-conversion.service';
 import { ModalDirective } from 'ngx-bootstrap/modal';
-import { Options } from '@angular-slider/ngx-slider';
+import { Options, ChangeContext } from '@angular-slider/ngx-slider';
 import {
   isStandardCategoryPage,
   mapAvailableFiltersToTagList,
@@ -46,9 +46,12 @@ export class CategoryComponent implements OnInit, OnDestroy {
     { name: "Price: High to Low", value: "price_desc" }
   ];
   subscription: Subscription;
-  store_tags: any = []; gridType: string = "four";
+  store_tags: any = []; gridType: string = "six";
   rangeMin: number; rangeMax: number;
-  range_disp: Options = { floor: 0, ceil: 0 };
+  sliderMin: number; sliderMax: number;
+  priceDisplayMin = '';
+  priceDisplayMax = '';
+  range_disp: Options = { floor: 0, ceil: 0, animate: false };
   randomProducts: any = []; page: number = 1;
   pageSize: number = this.template_setting.products_per_page;
   bcList: any = []; pageUrl: string;
@@ -64,8 +67,10 @@ export class CategoryComponent implements OnInit, OnDestroy {
   total = 0;
   totalPages = 0;
   catalog_page_segments: any[] = [];
+  blog_list: any[] = [];
   priceRangeBase = { min: 0, max: 0 };
   private priceChange$ = new Subject<void>();
+  private priceRangeDirty = false;
   private priceDebounceSub: Subscription;
 
   get displayProductCount(): number {
@@ -96,6 +101,8 @@ export class CategoryComponent implements OnInit, OnDestroy {
   }
 
   openFilters() {
+    this.syncSliderFromRange();
+    this.priceRangeDirty = false;
     this.priceFilterOpen = true;
     this.collapseIndex = -1;
     this.filterModal.show();
@@ -106,6 +113,12 @@ export class CategoryComponent implements OnInit, OnDestroy {
   }
 
   closeFilters() {
+    if (this.useV4Catalog && this.priceRangeDirty) {
+      this.rangeMin = this.sliderMin;
+      this.rangeMax = this.sliderMax;
+      this.priceRangeDirty = false;
+      this.onPriceRangeApply();
+    }
     this.filterModal.hide();
     this.filtersDrawerOpen = false;
   }
@@ -292,14 +305,17 @@ export class CategoryComponent implements OnInit, OnDestroy {
   constructor(
     @Inject(PLATFORM_ID) private platformId: Object, private router: Router, private activeRoute: ActivatedRoute,
     private storeApi: StoreApiService, public cc: CurrencyConversionService, public commonService: CommonService,
-    @Inject(DOCUMENT) private document, private decimalPipe: DecimalPipe, public ws: WishlistService
+    @Inject(DOCUMENT) private document, private decimalPipe: DecimalPipe, private currencyPipe: CurrencyPipe, public ws: WishlistService
   ) {
     this.subscription = this.commonService.currency_type.subscribe(currency => {
       this.findCurrency();
     });
     if (isPlatformBrowser(this.platformId)) this.IsBrowser = true;
     this.priceDebounceSub = this.priceChange$.pipe(debounceTime(300)).subscribe(() => {
-      if (this.useV4Catalog) this.onPriceRangeApply();
+      if (this.useV4Catalog && !this.filtersDrawerOpen) {
+        this.priceRangeDirty = false;
+        this.onPriceRangeApply();
+      }
     });
   }
 
@@ -392,6 +408,7 @@ export class CategoryComponent implements OnInit, OnDestroy {
           this.rangeMin = this.commonService.category_page_attr.range_min;
           this.rangeMax = this.commonService.category_page_attr.range_max;
           this.range_disp = this.commonService.category_page_attr.range_disp;
+          this.syncSliderFromRange();
           // seo
           this.updateMetaData();
           this.parent_list = this.commonService.category_page_attr.parent_list;
@@ -499,6 +516,9 @@ export class CategoryComponent implements OnInit, OnDestroy {
           }
           this.page = cached.page;
           this.gridType = cached.grid_type;
+          if (cached.use_v4_catalog && !this.template_setting?.category_grid_options && this.gridType !== 'six') {
+            this.gridType = 'six';
+          }
           this.sort_value = cached.sort_value;
           this.collapseIndex = cached.collapse_index;
 
@@ -513,6 +533,7 @@ export class CategoryComponent implements OnInit, OnDestroy {
           this.rangeMin = this.commonService.category_page_attr.range_min;
           this.rangeMax = this.commonService.category_page_attr.range_max;
           this.range_disp = this.commonService.category_page_attr.range_disp;
+          this.syncSliderFromRange();
           this.randomProducts = this.commonService.category_page_attr.random_products;
           if (this.category_details?.faqs?.length) this.buildFAQSchema();
           // seo
@@ -627,6 +648,56 @@ export class CategoryComponent implements OnInit, OnDestroy {
     }
   }
 
+  loadCategoryArticles() {
+    if (!isPlatformBrowser(this.platformId)) return;
+    if (!(this.commonService.ys_features?.indexOf('blogs') > -1)) return;
+    this.storeApi.HOME_PAGE_BLOG_LIST(4).subscribe(result => {
+      if (result.status) this.blog_list = (result.list || []).slice(0, 4);
+      else console.log('category blog list response', result);
+    });
+  }
+
+  hasCatalogBlogsSegment(): boolean {
+    return this.hasCatalogSegment('blogs');
+  }
+
+  hasCatalogSegment(type: string): boolean {
+    return (this.catalog_page_segments || []).some(
+      s => s.type === type && s.active_status !== false
+    );
+  }
+
+  internalLinksColumns(links: any[], columnCount = 3): any[][] {
+    const items = links || [];
+    if (!items.length) return [];
+    const perCol = Math.ceil(items.length / columnCount);
+    const columns: any[][] = [];
+    for (let i = 0; i < columnCount; i++) {
+      const chunk = items.slice(i * perCol, (i + 1) * perCol);
+      if (chunk.length) columns.push(chunk);
+    }
+    return columns;
+  }
+
+  categoryHeroImage(): string | null {
+    const d = this.category_details;
+    if (!d) return null;
+    return d.banner_image || d.image || null;
+  }
+
+  hasCategoryHero(): boolean {
+    return !!this.categoryHeroImage();
+  }
+
+  productGridColClass(): Record<string, boolean> {
+    return {
+      'col-md-6': this.gridType === 'two',
+      'col-md-4': this.gridType === 'three',
+      'col-md-3': this.gridType === 'four',
+      'col-grid-six': this.gridType === 'six',
+    };
+  }
+
   buildFAQSchema() {
     this.categoryFAQSchema.mainEntity = [];
     this.category_details.faqs.forEach(el => {
@@ -654,6 +725,8 @@ export class CategoryComponent implements OnInit, OnDestroy {
     const banarasiList = ['Banarasi Silk Sarees'];
     const organzaList = ['Organza Sarees'];
 
+    this.loadCategoryArticles();
+
     this.page = 1;
     this.sort_value = 'latest';
     this.pageLoader = true;
@@ -671,7 +744,7 @@ export class CategoryComponent implements OnInit, OnDestroy {
         this.tag_list = [];
         this.filtersFromApi = true;
       }
-      this.fetchProductList(1, true, kanjivaramList, banarasiList, organzaList);
+      this.fetchProductList(1, true, kanjivaramList, banarasiList, organzaList, true);
     });
   }
 
@@ -682,12 +755,9 @@ export class CategoryComponent implements OnInit, OnDestroy {
       const min = this.cc.CALC(result.price_range.min);
       const max = this.cc.CALC(result.price_range.max);
       if (!isNaN(min) && !isNaN(max) && max > 0) {
-        this.rangeMin = min;
-        this.rangeMax = max;
-        this.range_disp = { floor: min, ceil: max };
+        this.setPriceRange(min, max);
       }
     }
-    if (this.tag_list.length) this.gridType = 'three';
     this.tagSelected = hasCheckedFilters(this.tag_list);
   }
 
@@ -696,7 +766,8 @@ export class CategoryComponent implements OnInit, OnDestroy {
     initialLoad = false,
     kanjivaramList?: string[],
     banarasiList?: string[],
-    organzaList?: string[]
+    organzaList?: string[],
+    includeMetadata = false
   ) {
     if (!this.useV4Catalog) return;
     this.listLoader = true;
@@ -710,14 +781,15 @@ export class CategoryComponent implements OnInit, OnDestroy {
       sortBy: this.sort_value || 'latest',
       minPriceInr: minInr || this.priceRangeBase.min || 0,
       maxPriceInr: maxInr || this.priceRangeBase.max || 0,
-      filters: buildFiltersPayload(this.tag_list)
+      filters: buildFiltersPayload(this.tag_list),
+      includeMetadata
     });
 
     this.storeApi.PRODUCT_LIST_V4(payload).subscribe(result => {
       if (initialLoad) setTimeout(() => { this.pageLoader = false; }, 500);
       this.listLoader = false;
       if (result.status) {
-        this.applyListV4Response(result, page, kanjivaramList, banarasiList, organzaList);
+        this.applyListV4Response(result, page, kanjivaramList, banarasiList, organzaList, includeMetadata);
       } else {
         console.log('list_v4 response', result, this.pageUrl);
         if (initialLoad) this.router.navigate(['/']);
@@ -730,24 +802,28 @@ export class CategoryComponent implements OnInit, OnDestroy {
     page: number,
     kanjivaramList?: string[],
     banarasiList?: string[],
-    organzaList?: string[]
+    organzaList?: string[],
+    includeMetadata = false
   ) {
     this.page = page;
     this.total = result.total || 0;
     this.totalPages = result.total_pages || 1;
-    this.catalog_page_segments = result.catalog_page_segments || [];
-    this.category_details = result.category_details || {};
 
-    if (kanjivaramList && banarasiList && organzaList) {
-      this.applyCategoryFlags(kanjivaramList, banarasiList, organzaList);
-    }
+    if (includeMetadata) {
+      this.catalog_page_segments = result.catalog_page_segments || [];
+      this.category_details = result.category_details || {};
 
-    if (this.category_details.navigationList?.length) {
-      this.category_details.navigationList = this.category_details.navigationList.sort((a, b) => 0 - (a.rank > b.rank ? -1 : 1));
-      if (!this.navigationImageList.length) this.onSelectNav(0);
+      if (kanjivaramList && banarasiList && organzaList) {
+        this.applyCategoryFlags(kanjivaramList, banarasiList, organzaList);
+      }
+
+      if (this.category_details.navigationList?.length) {
+        this.category_details.navigationList = this.category_details.navigationList.sort((a, b) => 0 - (a.rank > b.rank ? -1 : 1));
+        if (!this.navigationImageList.length) this.onSelectNav(0);
+      }
+      if (this.category_details?.faqs?.length) this.buildFAQSchema();
+      this.updateMetaData();
     }
-    if (this.category_details?.faqs?.length) this.buildFAQSchema();
-    this.updateMetaData();
 
     this.parent_list = this.processRawProducts(result.list || []);
     this.list = this.parent_list;
@@ -798,8 +874,19 @@ export class CategoryComponent implements OnInit, OnDestroy {
     this.commonService.pageScrollTop();
   }
 
+  onPriceUserChange(ctx: ChangeContext) {
+    this.syncPriceDisplay(ctx.value, ctx.highValue ?? this.sliderMax);
+  }
+
   onPriceRangeEnd() {
-    if (this.useV4Catalog) this.priceChange$.next();
+    if (!this.useV4Catalog) return;
+    this.priceRangeDirty = true;
+    this.syncPriceDisplay();
+    if (!this.filtersDrawerOpen) {
+      this.rangeMin = this.sliderMin;
+      this.rangeMax = this.sliderMax;
+      this.priceChange$.next();
+    }
   }
 
   onPriceRangeApply() {
@@ -873,6 +960,26 @@ export class CategoryComponent implements OnInit, OnDestroy {
       product.temp_discounted_price = this.cc.CALC(product.discounted_price);
     }
     if (!this.filtersFromApi) this.findMinMax();
+  }
+
+  onWishlistClick(product: any, event: Event) {
+    event.preventDefault();
+    event.stopPropagation();
+    if (this.commonService.wishListIds.indexOf(product._id) !== -1) {
+      this.ws.removeFromWishList(product._id);
+    } else {
+      this.ws.addToWishList(product);
+    }
+  }
+
+  goToProduct(product: any, event: Event) {
+    event.preventDefault();
+    event.stopPropagation();
+    this.onSelectProduct(product);
+    const url = product.seo_status
+      ? `/product/${product.seo_details.page_url}`
+      : `/product/${product._id}`;
+    this.router.navigate([url]);
   }
 
   onSelectProduct(x) {
@@ -953,7 +1060,6 @@ export class CategoryComponent implements OnInit, OnDestroy {
         });
       }
     });
-    if (this.tag_list.length && !click) this.gridType = "three";
     this.onTagFilter(false);
   }
   onTagFilter(changeEvent) {
@@ -1113,9 +1219,39 @@ export class CategoryComponent implements OnInit, OnDestroy {
     else {
       let minPrice = this.list.reduce((min, p) => parseFloat(p?.temp_discounted_price) < min ? parseFloat(p?.temp_discounted_price) : min, parseFloat(this.list[0]?.temp_discounted_price));
       let maxPrice = this.list.reduce((max, p) => parseFloat(p?.temp_discounted_price) > max ? parseFloat(p?.temp_discounted_price) : max, parseFloat(this.list[0]?.temp_discounted_price));
-      this.rangeMin = minPrice; this.rangeMax = maxPrice;
-      if (!isNaN(minPrice) && !isNaN(maxPrice)) this.range_disp = { floor: minPrice, ceil: maxPrice };
+      if (!isNaN(minPrice) && !isNaN(maxPrice)) this.setPriceRange(minPrice, maxPrice);
     }
+  }
+
+  private setPriceRange(min: number, max: number) {
+    this.rangeMin = min;
+    this.rangeMax = max;
+    this.sliderMin = min;
+    this.sliderMax = max;
+    this.range_disp = { floor: min, ceil: max, animate: false };
+    this.syncPriceDisplay(min, max);
+  }
+
+  private syncSliderFromRange() {
+    this.sliderMin = this.rangeMin;
+    this.sliderMax = this.rangeMax;
+    this.syncPriceDisplay(this.sliderMin, this.sliderMax);
+  }
+
+  private syncPriceDisplay(min = this.sliderMin, max = this.sliderMax) {
+    this.priceDisplayMin = this.formatFilterPrice(min);
+    this.priceDisplayMax = this.formatFilterPrice(max);
+  }
+
+  private formatFilterPrice(value: number): string {
+    if (value == null || isNaN(value)) return '';
+    return this.currencyPipe.transform(
+      Math.round(value),
+      this.cc.pipeCurrencyCode,
+      'symbol-narrow',
+      '1.0-0',
+      this.cc.pipeLocale
+    ) ?? '';
   }
 
   updateMetaData() {

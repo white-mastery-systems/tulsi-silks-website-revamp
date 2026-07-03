@@ -13,24 +13,19 @@ import { tap, timeout, catchError } from 'rxjs/operators';
 /**
  * Per-URL SSR timeouts (ms).
  *
- * details_v3 and layouts are pre-seeded by Express before Angular boots, so
- * their Angular-level calls should always be instant cache hits.  The 1 000 ms
- * here is a safety net for the rare case where Express seeding fails (e.g. cold
- * start with a completely unreachable API).  Cut from 2 500 ms to 1 000 ms so
- * even an unseeded cold-start can't spend more than 1 s per call.
- *
- * footer_seo_links is now also pre-seeded — same rationale, same cap.
+ * Raised to 5 000 ms across the board to give slow/cold APIs enough time to
+ * respond before Angular gives up and returns an empty/fallback response.
  */
 const SSR_TIMEOUT_MS: Record<string, number> = {
-  '/store_details/details_v3':     1000,
-  '/store_details/layouts':        1000,
-  '/store_details/footer_seo_links': 800,
-  '/store_details/blogs':           800,
-  '/store_details/contact_page':    600,
-  '/store_details/ai_styles':       600,
+  '/store_details/details_v3':       5000,
+  '/store_details/layouts':          5000,
+  '/store_details/footer_seo_links': 5000,
+  '/store_details/blogs':            5000,
+  '/store_details/contact_page':     5000,
+  '/store_details/ai_styles':        5000,
 };
 
-const DEFAULT_SSR_TIMEOUT_MS = 800;
+const DEFAULT_SSR_TIMEOUT_MS = 5000;
 
 @Injectable()
 export class SsrHttpTimeoutInterceptor implements HttpInterceptor {

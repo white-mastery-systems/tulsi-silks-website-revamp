@@ -18,7 +18,7 @@ export class CategoryHighlightsDirective {
     auto_play: false,
     loop: true,
     break_points: {
-      1024: { slidesPerView: 4.5, spaceBetween: 15 },
+      1024: { slidesPerView: 5.5, spaceBetween: 15 },
       768: { slidesPerView: 2.15, spaceBetween: 15 },
       640: { slidesPerView: 1.15, spaceBetween: 15 },
       320: { slidesPerView: 1.15, spaceBetween: 15 }
@@ -28,7 +28,7 @@ export class CategoryHighlightsDirective {
     auto_play: false,
     loop: true,
     break_points: {
-      1024: { slidesPerView: 4.5, spaceBetween: 15 },
+      1024: { slidesPerView: 5.5, spaceBetween: 15 },
       768: { slidesPerView: 2.15, spaceBetween: 15 },
       640: { slidesPerView: 1.15, spaceBetween: 15 },
       320: { slidesPerView: 1.15, spaceBetween: 15 }
@@ -38,7 +38,7 @@ export class CategoryHighlightsDirective {
     auto_play: false,
     loop: true,
     break_points: {
-      1024: { slidesPerView: 4.5, spaceBetween: 15 },
+      1024: { slidesPerView: 5.5, spaceBetween: 15 },
       768: { slidesPerView: 2.15, spaceBetween: 15 },
       640: { slidesPerView: 1.15, spaceBetween: 15 },
       320: { slidesPerView: 1.15, spaceBetween: 15 }

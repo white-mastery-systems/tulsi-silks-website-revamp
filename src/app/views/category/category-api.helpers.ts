@@ -65,6 +65,7 @@ export function buildListV4Payload(params: {
   minPriceInr: number;
   maxPriceInr: number;
   filters: Record<string, string[]>;
+  includeMetadata?: boolean;
 }): ListV4Payload {
   return {
     category_id: params.categoryId,
@@ -73,7 +74,8 @@ export function buildListV4Payload(params: {
     min_price: params.minPriceInr,
     max_price: params.maxPriceInr,
     sort_by: params.sortBy || 'latest',
-    filters: params.filters || {}
+    filters: params.filters || {},
+    include_metadata: params.includeMetadata === true
   };
 }
 

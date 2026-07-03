@@ -13,7 +13,7 @@ const COLOUR_FAMILY_MAP: Record<string, string> = {
   red: 'Red', maroon: 'Red', crimson: 'Red', wine: 'Red', ruby: 'Red', burgundy: 'Red',
   pink: 'Pink', rose: 'Pink', magenta: 'Pink', fuchsia: 'Pink', mauve: 'Pink',
   blue: 'Blue', teal: 'Blue', navy: 'Blue', cobalt: 'Blue', 'sky blue': 'Blue', indigo: 'Blue',
-  'navy blue': 'Blue', 'turquoise blue': 'Blue', 'sea green': 'Blue',
+  'navy blue': 'Blue', 'turquoise blue': 'Blue',
   green: 'Green', olive: 'Green', mint: 'Green', emerald: 'Green', sage: 'Green', 'lime green': 'Green',
   yellow: 'Yellow', gold: 'Yellow', mustard: 'Yellow', amber: 'Yellow',
   orange: 'Orange', coral: 'Orange', peach: 'Orange', rust: 'Orange',
@@ -66,8 +66,13 @@ export function deriveColourFamily(colour: string): string {
 export function matchFilterOption(options: string[], value: string): string {
   if(!value?.trim()) return '';
   const normalised = value.trim().toLowerCase();
-  const match = options.find(opt => opt.toLowerCase() === normalised);
-  return match || value.trim();
+  const exact = options.find(opt => opt.trim().toLowerCase() === normalised);
+  if(exact) return exact;
+  const partial = options.find(opt => {
+    const optNorm = opt.trim().toLowerCase();
+    return optNorm.includes(normalised) || normalised.includes(optNorm);
+  });
+  return partial || value.trim();
 }
 
 export function chipOptionsForField(options: string[], selected: string): string[] {

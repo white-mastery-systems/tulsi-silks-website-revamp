@@ -43,6 +43,34 @@ export class SsrTransferCacheTrimInterceptor implements HttpInterceptor {
 
     const url = req.url;
 
+    // ── STORE_DETAILS (/store_details/details_v3) ───────────────────────────
+    // The raw response includes section_list (all categories with banner images,
+    // HTML descriptions, meta fields) and menu_list (mega-menu with category image
+    // trees). Both get serialised wholesale into the transfer-cache <script> tag,
+    // duplicating the already-trimmed SSR_STATE_KEY snapshot and adding ~100–300 KB.
+    // We strip display-only fields that are unused during menu/routing build and
+    // only needed on individual category pages (which re-fetch via their own route).
+    if (url.includes('/store_details/details_v3')) {
+      return next.handle(req).pipe(
+        map(event => {
+          if (!(event instanceof HttpResponse) || !event.body?.status) return event;
+          return event.clone({ body: trimStoreDetails(event.body) });
+        }),
+      );
+    }
+
+    // ── FOOTER_SEO_LINKS (/store_details/footer_seo_links) ──────────────────
+    // Each link object may carry CMS-authored text blocks, SEO metadata, and
+    // redundant fields beyond the name/link/type triplet the footer renders.
+    if (url.includes('/store_details/footer_seo_links')) {
+      return next.handle(req).pipe(
+        map(event => {
+          if (!(event instanceof HttpResponse) || !event.body?.status) return event;
+          return event.clone({ body: trimFooterSeoLinks(event.body) });
+        }),
+      );
+    }
+
     // ── LAYOUT_LIST (/store_details/layouts) ────────────────────────────────
     // Strip product fields to card-display minimum; remove Instagram config
     // body (only the token is needed — the full insta section data is fetched
@@ -137,6 +165,63 @@ function trimProducts(products: any[]): any[] {
       img_alt: img.img_alt,
     })),
   }));
+}
+
+// ── /store_details/details_v3 ─────────────────────────────────────────────
+
+function trimStoreDetails(body: any): any {
+  if (!body?.store_details) return body;
+  return {
+    ...body,
+    store_details: {
+      ...body.store_details,
+      section_list: trimSectionList(body.store_details.section_list),
+    },
+  };
+}
+
+// Strip every field from section_list items that is not needed for
+// menu/routing/nav. Keeps: id, name, status, rank, hierarchy ids, seo routing,
+// and the single cover image (copied into mega-menu category items at runtime).
+// Strips: description, banner_image, meta_description, meta_keywords, and any
+// other CMS/display-only fields that can be 500–2 000 chars per entry.
+function trimSectionList(list: any[]): any[] {
+  if (!Array.isArray(list)) return list ?? [];
+  return list.map((cat: any) => ({
+    _id:         cat._id,
+    name:        cat.name,
+    status:      cat.status,
+    rank:        cat.rank,
+    section_id:  cat.section_id,
+    parent_id:   cat.parent_id,
+    seo_status:  cat.seo_status,
+    seo_details: cat.seo_details ? { page_url: cat.seo_details.page_url } : undefined,
+    // image is the cover URL; ngAfterContentInit copies it into mega-menu items
+    // (cat.image = catData.image). Keeping it here avoids a missing-image flash.
+    image: cat.image,
+  }));
+}
+
+// ── /store_details/footer_seo_links ──────────────────────────────────────────
+
+// Keep only the three fields the footer template renders plus category_id for
+// the routing resolution that runs in ngAfterContentInit.
+function trimFooterSeoLinks(body: any): any {
+  if (!Array.isArray(body.list)) return body;
+  return {
+    ...body,
+    list: body.list.map((group: any) => ({
+      title: group.title,
+      links: Array.isArray(group.links)
+        ? group.links.map((link: any) => ({
+            name:        link.name,
+            link:        link.link,
+            link_type:   link.link_type,
+            category_id: link.category_id,
+          }))
+        : group.links,
+    })),
+  };
 }
 
 function trimBlogList(body: any): any {

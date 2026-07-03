@@ -1,38 +1,57 @@
-<!-- Catalog below-fold segments — design aligned with home primary-section blocks -->
+<!-- Catalog below-fold segments — typography, buttons and spacing match home primary-section blocks -->
+<div class="home-section catalog-segments">
 <ng-container *ngFor="let segment of activeSegments(); let i = index">
 
   <!-- icon_card_grid -->
   <section
     *ngIf="segment.type === 'icon_card_grid' && segment.icon_card_list?.length"
-    class="primary-section catalog-segment catalog-icon-cards"
+    class="primary-section catalog-icon-cards"
+    [class.catalog-icon-cards--cta]="hasIconCardCta(segment)"
+    [class.catalog-icon-cards--info]="!hasIconCardCta(segment)"
     [attr.aria-labelledby]="segment.heading ? 'cat-seg-' + i + '-title' : null">
-    <div class="container-fluid">
+    <div class="{{ template_setting?.body_type }}">
       <div class="row">
-        <div *ngIf="segment.heading || segment.sub_heading || segment.description"
-          class="col-12 px-0 d-flex justify-content-between align-items-end mb-4">
-          <div class="titles custom-title w-auto pl-0">
+        <div *ngIf="segment.heading || segment.sub_heading || segment.description" class="col-12">
+          <div class="titles">
+            <h2 *ngIf="segment.heading" [attr.id]="'cat-seg-' + i + '-title'">{{ segment.heading }}</h2>
             <p *ngIf="segment.sub_heading" [innerHTML]="segment.sub_heading"></p>
-            <h2 *ngIf="segment.heading" class="mb-0 mt-2" [attr.id]="'cat-seg-' + i + '-title'">{{ segment.heading }}</h2>
-            <p *ngIf="segment.description" class="mt-2 mb-0" [innerHTML]="segment.description"></p>
+            <p *ngIf="segment.description" [innerHTML]="segment.description"></p>
           </div>
         </div>
-        <div class="col-12 px-0">
-          <div class="row catalog-icon-cards__grid">
+        <div class="col-12">
+          <!-- Occasion cards with CTA -->
+          <div class="row catalog-icon-cards__grid" *ngIf="hasIconCardCta(segment)">
             <div *ngFor="let card of segment.icon_card_list | orderAsc: 'rank'"
               class="col-md-6 col-lg-3 mb-4"
               [class.d-none]="!card.active_status && card.active_status === false">
               <div class="catalog-icon-card h-100">
                 <div class="catalog-icon-card__icon" *ngIf="card.icon_name">
-                  <lucide-icon [name]="card.icon_name" [size]="28" stroke="1.5"></lucide-icon>
+                  <lucide-icon [name]="segmentIconName(card.icon_name)" [size]="28" stroke="1.5"></lucide-icon>
                 </div>
-                <h3 *ngIf="card.heading" class="catalog-icon-card__title">{{ card.heading }}</h3>
-                <p *ngIf="card.description" class="catalog-icon-card__desc">{{ card.description }}</p>
+                <h3 *ngIf="card.heading">{{ card.heading }}</h3>
+                <p *ngIf="card.description">{{ card.description }}</p>
                 <a *ngIf="card.btn_status && card.btn_text"
-                  class="primary-btn"
+                  class="catalog-icon-card__link"
                   [routerLink]="segmentBtnLink(card)"
                   (click)="onSegmentBtnClick(card, $event)">
-                  {{ card.btn_text }}
+                  <span>{{ card.btn_text }}</span>
+                  <lucide-icon name="arrow-right" [size]="14" stroke="1.75"></lucide-icon>
                 </a>
+              </div>
+            </div>
+          </div>
+          <!-- SEO / info columns with dividers -->
+          <div class="catalog-icon-cards__columns" *ngIf="!hasIconCardCta(segment)">
+            <div *ngFor="let card of segment.icon_card_list | orderAsc: 'rank'; let last = last"
+              class="catalog-icon-cards__column"
+              [class.catalog-icon-cards__column--last]="last"
+              [class.d-none]="!card.active_status && card.active_status === false">
+              <div class="catalog-icon-card catalog-icon-card--column h-100">
+                <div class="catalog-icon-card__icon" *ngIf="card.icon_name">
+                  <lucide-icon [name]="segmentIconName(card.icon_name)" [size]="28" stroke="1.5"></lucide-icon>
+                </div>
+                <h3 *ngIf="card.heading">{{ card.heading }}</h3>
+                <p *ngIf="card.description">{{ card.description }}</p>
               </div>
             </div>
           </div>
@@ -41,10 +60,10 @@
     </div>
   </section>
 
-  <!-- founder_faq_grid -->
+  <!-- founder_faq_grid: with FAQ list (image+intro left, questions right) -->
   <section
-    *ngIf="segment.type === 'founder_faq_grid'"
-    class="primary-section catalog-segment catalog-founder-faq"
+    *ngIf="segment.type === 'founder_faq_grid' && segment.founder_faq_list?.length"
+    class="primary-section catalog-founder-faq"
     [attr.aria-labelledby]="segment.heading ? 'cat-seg-' + i + '-title' : null">
     <div class="{{ template_setting?.body_type }}">
       <div class="row">
@@ -65,7 +84,12 @@
             <p *ngIf="segment.founder_intro.sub_heading" class="text-muted">{{ segment.founder_intro.sub_heading }}</p>
             <p *ngIf="segment.founder_intro.description">{{ segment.founder_intro.description }}</p>
             <ul *ngIf="segment.highlight_points?.length" class="catalog-highlight-points pl-0">
-              <li *ngFor="let pt of segment.highlight_points | orderAsc: 'rank'">{{ pt.text }}</li>
+              <li *ngFor="let pt of segment.highlight_points | orderAsc: 'rank'">
+                <span class="catalog-secondary-split__check" aria-hidden="true">
+                  <lucide-icon name="check" [size]="12" stroke="3"></lucide-icon>
+                </span>
+                <span class="catalog-secondary-split__feature-text">{{ pt.text }}</span>
+              </li>
             </ul>
           </div>
         </div>
@@ -87,17 +111,49 @@
     </div>
   </section>
 
+  <!-- founder_faq_grid: intro only (image left, heading/description/2x2 checklist right) -->
+  <section
+    *ngIf="segment.type === 'founder_faq_grid' && !segment.founder_faq_list?.length && segment.founder_intro"
+    class="primary-section catalog-founder-intro-split"
+    [attr.aria-labelledby]="segment.heading ? 'cat-seg-' + i + '-title' : null">
+    <div class="{{ template_setting?.body_type }}">
+      <div class="row align-items-center">
+        <div class="col-md-6" *ngIf="segment.founder_intro.image">
+          <div class="catalog-founder-intro-split__img">
+            <img width="100%" height="auto" appImgLazyLoad
+              [ImagelazyLoad]="imgBaseUrl + segment.founder_intro.image"
+              [alt]="segment.founder_intro.img_alt || segment.founder_intro.heading || 'Founder'">
+          </div>
+        </div>
+        <div class="col-md-6">
+          <span *ngIf="segment.founder_intro.badge_text" class="catalog-founder-badge">{{ segment.founder_intro.badge_text }}</span>
+          <h2 *ngIf="segment.founder_intro.heading" class="mt-2" [attr.id]="'cat-seg-' + i + '-title'">{{ segment.founder_intro.heading }}</h2>
+          <p *ngIf="segment.founder_intro.sub_heading" class="text-muted">{{ segment.founder_intro.sub_heading }}</p>
+          <p *ngIf="segment.founder_intro.description">{{ segment.founder_intro.description }}</p>
+          <ul *ngIf="segment.highlight_points?.length" class="catalog-founder-checklist pl-0">
+            <li *ngFor="let pt of segment.highlight_points | orderAsc: 'rank'">
+              <span class="catalog-secondary-split__check" aria-hidden="true">
+                <lucide-icon name="check" [size]="12" stroke="3"></lucide-icon>
+              </span>
+              <span class="catalog-secondary-split__feature-text">{{ pt.text }}</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- content_checklist_split -->
   <section
     *ngIf="segment.type === 'content_checklist_split'"
-    class="primary-section catalog-segment catalog-checklist-split"
+    class="primary-section catalog-checklist-split"
     [class.catalog-checklist-split--light]="segment.theme === 'light'"
     [attr.aria-labelledby]="segment.heading ? 'cat-seg-' + i + '-title' : null"
     [style.background-color]="segment.bg_color || null">
     <div class="{{ template_setting?.body_type }}">
       <div class="row align-items-center">
         <div class="col-md-6" *ngIf="segment.content_split_intro">
-          <p *ngIf="segment.content_split_intro.label" class="catalog-checklist-label">{{ segment.content_split_intro.label }}</p>
+          <p *ngIf="segment.content_split_intro.label" class="subtitle">{{ segment.content_split_intro.label }}</p>
           <h2 *ngIf="segment.content_split_intro.heading" [attr.id]="'cat-seg-' + i + '-title'">
             {{ segment.content_split_intro.heading }}
             <span *ngIf="segment.content_split_intro.highlighted_text" class="catalog-checklist-highlight">{{ segment.content_split_intro.highlighted_text }}</span>
@@ -121,31 +177,313 @@
     </div>
   </section>
 
-  <!-- cta -->
+  <!-- feature_list: 1 item -> image + text split (e.g. "Understanding Silk Sarees") -->
   <section
-    *ngIf="segment.type === 'cta' && segment.cta_list?.length"
-    class="primary-section catalog-segment catalog-cta"
+    *ngIf="segment.type === 'feature_list' && segment.feature_list?.length === 1"
+    class="primary-section catalog-feature-split"
+    [attr.aria-labelledby]="segment.heading ? 'cat-seg-' + i + '-title' : null">
+    <div class="{{ template_setting?.body_type }}">
+      <div class="row align-items-center">
+        <ng-container *ngFor="let card of segment.feature_list">
+          <div class="col-md-6">
+            <p *ngIf="segment.sub_heading" class="subtitle">{{ segment.sub_heading }}</p>
+            <h2 *ngIf="segment.heading" [attr.id]="'cat-seg-' + i + '-title'">{{ segment.heading }}</h2>
+            <p *ngIf="segment.description">{{ segment.description }}</p>
+            <h3 *ngIf="card.heading" class="mt-3">{{ card.heading }}</h3>
+            <p *ngIf="card.sub_heading" class="text-muted">{{ card.sub_heading }}</p>
+            <p *ngIf="card.description">{{ card.description }}</p>
+            <ul *ngIf="card.features?.length" class="catalog-highlight-points pl-0">
+              <li *ngFor="let pt of card.features | orderAsc: 'rank'">
+                <span class="catalog-secondary-split__check" aria-hidden="true">
+                  <lucide-icon name="check" [size]="12" stroke="3"></lucide-icon>
+                </span>
+                <span class="catalog-secondary-split__feature-text">{{ pt.text }}</span>
+              </li>
+            </ul>
+            <a *ngIf="card.btn_status && card.btn_text"
+              class="primary-btn outline-btn"
+              [routerLink]="segmentBtnLink(card)"
+              (click)="onSegmentBtnClick(card, $event)">
+              {{ card.btn_text }}
+            </a>
+          </div>
+          <div class="col-md-6" *ngIf="card.image">
+            <div class="catalog-feature-split__img">
+              <img width="100%" height="auto" appImgLazyLoad
+                [ImagelazyLoad]="imgBaseUrl + card.image"
+                [alt]="card.heading || segment.heading || 'Silk saree detail'">
+            </div>
+          </div>
+        </ng-container>
+      </div>
+    </div>
+  </section>
+
+  <!-- feature_list: 2+ items -> card grid (e.g. "How To Choose The Right Silk Saree") -->
+  <section
+    *ngIf="segment.type === 'feature_list' && segment.feature_list?.length > 1"
+    class="primary-section background-grey catalog-feature-grid"
     [attr.aria-labelledby]="segment.heading ? 'cat-seg-' + i + '-title' : null">
     <div class="{{ template_setting?.body_type }}">
       <div class="row">
-        <div class="col-12 text-center mb-4" *ngIf="segment.heading || segment.sub_heading || segment.description">
+        <div class="col-12" *ngIf="segment.heading || segment.sub_heading || segment.description">
+          <div class="titles">
+            <h2 *ngIf="segment.heading" [attr.id]="'cat-seg-' + i + '-title'">{{ segment.heading }}</h2>
+            <p *ngIf="segment.sub_heading" [innerHTML]="segment.sub_heading"></p>
+            <p *ngIf="segment.description">{{ segment.description }}</p>
+          </div>
+        </div>
+        <div class="col-12">
+          <div class="row catalog-feature-grid__cards">
+            <div class="col-md-6 mb-4" *ngFor="let card of segment.feature_list; let ci = index">
+              <div class="catalog-feature-card">
+                <div class="catalog-feature-card__media" *ngIf="card.image">
+                  <img width="100%" height="auto" appImgLazyLoad
+                    [ImagelazyLoad]="imgBaseUrl + card.image"
+                    [alt]="card.heading || 'Guide'">
+                </div>
+                <div class="catalog-feature-card__body">
+                  <div class="catalog-feature-card__heading-row">
+                    <span class="catalog-feature-card__num">{{ ci + 1 < 10 ? '0' + (ci + 1) : ci + 1 }}</span>
+                    <h3 *ngIf="card.heading">{{ card.heading }}</h3>
+                  </div>
+                  <p *ngIf="card.sub_heading" class="catalog-feature-card__sub">{{ card.sub_heading }}</p>
+                  <p *ngIf="card.description" class="catalog-feature-card__desc">{{ card.description }}</p>
+                  <ul *ngIf="card.features?.length" class="catalog-feature-card__list pl-0">
+                    <li *ngFor="let pt of card.features | orderAsc: 'rank'">
+                      <lucide-icon name="diamond" [size]="10" stroke="2"></lucide-icon>
+                      <span>{{ pt.text || pt.name }}</span>
+                    </li>
+                  </ul>
+                  <a *ngIf="card.btn_status && card.btn_text"
+                    class="primary-btn outline-btn"
+                    [routerLink]="segmentBtnLink(card)"
+                    (click)="onSegmentBtnClick(card, $event)">
+                    {{ card.btn_text }}
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-12" *ngIf="segment.quote_text">
+          <blockquote class="catalog-feature-grid__quote">
+            <span class="catalog-feature-grid__quote-mark catalog-feature-grid__quote-mark--open" aria-hidden="true">&ldquo;</span>
+            <p>{{ segment.quote_text }}</p>
+            <span class="catalog-feature-grid__quote-mark catalog-feature-grid__quote-mark--close" aria-hidden="true">&rdquo;</span>
+          </blockquote>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- secondary: image + text split (home highlighted-sec pattern) -->
+  <section
+    *ngIf="segment.type === 'secondary' && segment.image_list?.length"
+    class="primary-section highlight-sec-margin highlighted-sec catalog-secondary-split"
+    [attr.aria-labelledby]="segment.heading ? 'cat-seg-' + i + '-title' : null">
+    <div class="{{ template_setting?.body_type }}">
+      <ng-container *ngIf="segment.image_list[0] as img">
+        <div class="row align-items-center catalog-secondary-split__row"
+          [class.catalog-secondary-split__row--image-right]="img.position === 'right' && commonService.desktop_device"
+          [class.catalog-secondary-split__row--image-right-mobile]="img.position === 'right' && !commonService.desktop_device">
+          <div class="col-md-6 d-flex flex-column align-items-start justify-content-center px-0">
+            <div class="landing-highlighted w-100" *ngIf="img.desktop_img || img.mobile_img">
+              <figure>
+                <img width="100%" height="auto" appImgLazyLoad
+                  [ImagelazyLoad]="segmentImageSrc(img)"
+                  [alt]="img.img_alt || segment.heading || 'Featured image'">
+              </figure>
+            </div>
+          </div>
+          <div class="col-md-6 d-flex flex-column align-items-start justify-content-center">
+            <div class="highlighted-text-width">
+              <div class="landing-highlighted-text d-flex flex-column text-left">
+                <p *ngIf="segment.sub_heading" class="subtitle">{{ segment.sub_heading }}</p>
+                <h2 *ngIf="segment.heading" [attr.id]="'cat-seg-' + i + '-title'">{{ segment.heading }}</h2>
+                <p *ngIf="segment.description" class="story-body">{{ segment.description }}</p>
+                <ul *ngIf="img.features?.length"
+                  class="catalog-secondary-split__features pl-0"
+                  [class.catalog-secondary-split__features--grid]="secondaryFeaturesLayout(img.features) === 'grid'"
+                  [class.catalog-secondary-split__features--stack]="secondaryFeaturesLayout(img.features) === 'stack'">
+                  <li *ngFor="let feat of img.features">
+                    <span class="catalog-secondary-split__check" aria-hidden="true">
+                      <lucide-icon name="check" [size]="12" stroke="3"></lucide-icon>
+                    </span>
+                    <span class="catalog-secondary-split__feature-text">{{ feat.name }}</span>
+                  </li>
+                </ul>
+              </div>
+              <a *ngIf="img.btn_status && img.btn_text"
+                class="primary-btn"
+                [routerLink]="commonService.getRedirectPath(img)"
+                (click)="$event.preventDefault(); commonService.onPageRedirect(img)">
+                {{ img.btn_text }}
+              </a>
+            </div>
+          </div>
+          <span class="catalog-secondary-split__divider" aria-hidden="true">+</span>
+        </div>
+      </ng-container>
+    </div>
+  </section>
+
+  <!-- highlighted_section: generic centered content banner -->
+  <section
+    *ngIf="segment.type === 'highlighted_section'"
+    class="primary-section catalog-generic-section"
+    [attr.aria-labelledby]="segment.heading ? 'cat-seg-' + i + '-title' : null">
+    <div class="{{ template_setting?.body_type }}">
+      <div class="row">
+        <div class="col-12 text-center">
           <div class="titles custom-title">
             <h2 *ngIf="segment.heading" [attr.id]="'cat-seg-' + i + '-title'">{{ segment.heading }}</h2>
             <p *ngIf="segment.sub_heading" [innerHTML]="segment.sub_heading"></p>
             <p *ngIf="segment.description" [innerHTML]="segment.description"></p>
           </div>
+          <div class="d-flex flex-wrap justify-content-center catalog-cta__actions" *ngIf="segment.cta_list?.length">
+            <a *ngFor="let cta of segment.cta_list"
+              class="catalog-cta-banner__btn m-2"
+              [class.catalog-cta-banner__btn--primary]="cta.btn_style !== 'secondary' && cta.btn_style !== 'outline'"
+              [class.catalog-cta-banner__btn--outline]="cta.btn_style === 'secondary' || cta.btn_style === 'outline'"
+              [routerLink]="segmentBtnLink(cta)"
+              (click)="onSegmentBtnClick(cta, $event)">
+              {{ cta.btn_text }}
+            </a>
+          </div>
         </div>
-        <div class="col-12 d-flex flex-wrap justify-content-center catalog-cta__actions">
-          <a *ngFor="let cta of segment.cta_list"
-            class="primary-btn m-2"
-            [class.outline-btn]="cta.btn_style !== 'primary'"
+      </div>
+    </div>
+  </section>
+
+  <!-- cta banner -->
+  <section
+    *ngIf="segment.type === 'cta' && (segment.cta_list?.length || segment.heading)"
+    class="primary-section catalog-cta-banner"
+    [attr.aria-labelledby]="segment.heading ? 'cat-seg-' + i + '-title' : null">
+    <div class="{{ template_setting?.body_type }}">
+      <div class="catalog-cta-banner__inner">
+        <div class="landing-highlighted-text" *ngIf="segment.heading || segment.sub_heading">
+          <h2 *ngIf="segment.heading" [attr.id]="'cat-seg-' + i + '-title'">{{ segment.heading }}</h2>
+          <p *ngIf="segment.sub_heading" class="story-body">{{ segment.sub_heading }}</p>
+        </div>
+        <span class="catalog-cta-banner__divider" aria-hidden="true">+</span>
+        <div class="catalog-cta-banner__actions">
+          <a *ngFor="let cta of catalogCtaButtons(segment)"
+            class="catalog-cta-banner__btn"
+            [class.catalog-cta-banner__btn--primary]="cta.btn_style !== 'secondary' && cta.btn_style !== 'outline'"
+            [class.catalog-cta-banner__btn--outline]="cta.btn_style === 'secondary' || cta.btn_style === 'outline'"
             [routerLink]="segmentBtnLink(cta)"
             (click)="onSegmentBtnClick(cta, $event)">
             {{ cta.btn_text }}
+          </a>
+          <a *ngIf="showWhatsappAdvisor(segment)"
+            class="catalog-cta-banner__btn catalog-cta-banner__btn--outline"
+            [href]="whatsappAdvisorUrl()"
+            target="_blank"
+            rel="noopener noreferrer">
+            WhatsApp Advisor
           </a>
         </div>
       </div>
     </div>
   </section>
 
+  <!-- blogs (home news section pattern) -->
+  <section
+    *ngIf="segment.type === 'blogs' && segmentBlogList?.length"
+    class="primary-section news"
+    [attr.aria-labelledby]="segment.heading ? 'cat-seg-' + i + '-title' : null">
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-12 px-0 d-flex justify-content-between align-items-end">
+          <div class="titles custom-title w-auto pl-0">
+            <h2 *ngIf="segment.heading" [attr.id]="'cat-seg-' + i + '-title'">{{ segment.heading }}</h2>
+            <p *ngIf="segment.sub_heading" [innerHTML]="segment.sub_heading"></p>
+          </div>
+          <div class="blog-slider-btn">
+            <a class="primary-btn outline-btn" routerLink="/blogs" aria-label="View all blog posts">View All</a>
+          </div>
+        </div>
+        <div class="row d-flex flex-wrap align-items-stretch home-blog-grid">
+          <div class="col-12 col-md-6 col-lg-3 d-flex mb-4" *ngFor="let blog of segmentBlogList">
+            <app-blog-card [item]="blog" [imgBaseUrl]="imgBaseUrl"></app-blog-card>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- internal_links -->
+  <section
+    *ngIf="segment.type === 'internal_links' && segment.group_list?.length"
+    class="primary-section catalog-collections"
+    [attr.aria-labelledby]="segment.heading ? 'cat-seg-' + i + '-title' : null">
+    <div class="{{ template_setting?.body_type }}">
+      <div class="row">
+        <div class="col-12 mb-4" *ngIf="segment.heading || segment.description">
+          <div class="titles custom-title text-center catalog-collections__header">
+            <h2 *ngIf="segment.heading" [attr.id]="'cat-seg-' + i + '-title'">{{ segment.heading }}</h2>
+            <p *ngIf="segment.description">{{ segment.description }}</p>
+          </div>
+        </div>
+        <div class="col-md-12">
+          <accordion [closeOthers]="true" [isAnimated]="true" class="catalog-collections__accordion">
+            <accordion-group *ngFor="let group of segment.group_list | orderAsc: 'rank'; let gi = index"
+              [isOpen]="gi === 0">
+              <div accordion-heading class="catalog-collections__heading">
+                <span class="catalog-collections__toggle" aria-hidden="true">
+                  <lucide-icon class="catalog-collections__toggle-icon catalog-collections__toggle-icon--plus" name="plus" [size]="18" stroke="3"></lucide-icon>
+                  <lucide-icon class="catalog-collections__toggle-icon catalog-collections__toggle-icon--minus" name="minus" [size]="18" stroke="3"></lucide-icon>
+                </span>
+                <span class="catalog-collections__heading-text">{{ group.heading }}</span>
+                <lucide-icon class="catalog-collections__chevron" name="chevron-down" [size]="18" stroke="1.5"></lucide-icon>
+              </div>
+              <div class="row catalog-collections__links">
+                <div class="col-md-4 col-sm-6"
+                  *ngFor="let column of internalLinksColumns(groupLinks(group))">
+                  <ul class="catalog-collections__link-list pl-0">
+                    <li *ngFor="let link of column">
+                      <a class="collect-list"
+                        [routerLink]="segmentBtnLink(link)"
+                        (click)="onSegmentBtnClick(link, $event)">
+                        {{ link.btn_text }}
+                      </a>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </accordion-group>
+          </accordion>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- faq -->
+  <section
+    *ngIf="segment.type === 'faq' && segment.faq_list?.length"
+    class="primary-section catalog-faq"
+    [attr.aria-labelledby]="'cat-seg-' + i + '-title'">
+    <div class="{{ template_setting?.body_type }}">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="titles">
+            <h2 [attr.id]="'cat-seg-' + i + '-title'">{{ segment.heading || 'FAQs' }}</h2>
+            <p *ngIf="segment.sub_heading" [innerHTML]="segment.sub_heading"></p>
+          </div>
+          <div class="tulsi-blog-detail__faq-acc">
+            <accordion [closeOthers]="true" [isAnimated]="true">
+              <accordion-group *ngFor="let faq of segment.faq_list | orderAsc: 'rank'"
+                heading="{{ faq.ques }}">
+                <p>{{ faq.answer }}</p>
+              </accordion-group>
+            </accordion>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
 </ng-container>
+</div>

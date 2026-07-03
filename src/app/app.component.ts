@@ -438,6 +438,14 @@ export class AppComponent implements AfterViewInit, OnDestroy {
             this.commonService.storeLoaded = true;
             // menus
             this.commonService.menu_list = storeDetails.menu_list;
+            // Build a single O(1) Map before the 4-level menu loop.
+            // The previous code called catalog_list.findIndex / .find at every
+            // node: ~15 menus × 4 sections × 8 categories × 4 sub-categories ×
+            // 300–600 catalog entries ≈ 0.5–2 M comparisons per SSR render.
+            // Map lookup collapses that to O(catalog_list.length) once.
+            const catalogMap = new Map<string, any>(
+              (this.commonService.catalog_list as any[]).map(el => [String(el._id), el])
+            );
             this.commonService.menu_list.forEach(menu => {
               menu.sec_count = menu.sections.length + menu.menu_images.length;
               if (menu.sections.length) {
@@ -448,46 +456,42 @@ export class AppComponent implements AfterViewInit, OnDestroy {
                 }
               }
               if (menu.link_status && menu.link_type == 'category') {
-                let cInd = this.commonService.catalog_list.findIndex(el => el._id == menu.category_id);
-                if (cInd != -1) {
+                const c = catalogMap.get(String(menu.category_id));
+                if (c) {
                   menu.link_type = 'internal';
-                  menu.link = '/category/' + this.commonService.catalog_list[cInd]._id;
-                  if (this.commonService.catalog_list[cInd].seo_status) menu.link = '/category/' + this.commonService.catalog_list[cInd].seo_details?.page_url;
+                  menu.link = c.seo_status ? '/category/' + c.seo_details?.page_url : '/category/' + c._id;
                 }
               }
               // section
               if (menu.sections?.length) {
                 menu.sections.forEach(sec => {
                   if (sec.link_status && sec.link_type == 'category') {
-                    let cInd = this.commonService.catalog_list.findIndex(el => el._id == sec.category_id);
-                    if (cInd != -1) {
+                    const c = catalogMap.get(String(sec.category_id));
+                    if (c) {
                       sec.link_type = 'internal';
-                      sec.link = '/category/' + this.commonService.catalog_list[cInd]._id;
-                      if (this.commonService.catalog_list[cInd].seo_status) sec.link = '/category/' + this.commonService.catalog_list[cInd].seo_details?.page_url;
+                      sec.link = c.seo_status ? '/category/' + c.seo_details?.page_url : '/category/' + c._id;
                     }
                   }
                   // category
                   if (sec.categories?.length) {
                     sec.categories.forEach(cat => {
                       if (cat.link_status && cat.link_type == 'category') {
-                        let catData = this.commonService.catalog_list.find(el => el._id == cat.category_id);
-                        if (catData) {
+                        const c = catalogMap.get(String(cat.category_id));
+                        if (c) {
                           cat.link_type = 'internal';
-                          cat.link = '/category/' + catData._id;
-                          if (catData.seo_status) cat.link = '/category/' + catData.seo_details?.page_url;
-                          if (catData.image) cat.image = catData.image;
+                          cat.link = c.seo_status ? '/category/' + c.seo_details?.page_url : '/category/' + c._id;
+                          if (c.image) cat.image = c.image;
                         }
                       }
                       // sub category
                       if (cat.sub_categories?.length) {
                         cat.sub_categories.forEach(subCat => {
                           if (subCat.link_status && subCat.link_type == 'category') {
-                            let cInd = this.commonService.catalog_list.findIndex(el => el._id == subCat.category_id);
-                            if (cInd != -1) {
+                            const c = catalogMap.get(String(subCat.category_id));
+                            if (c) {
                               subCat.link_type = 'internal';
-                              subCat.link = '/category/' + this.commonService.catalog_list[cInd]._id;
-                              if (this.commonService.catalog_list[cInd].seo_status) subCat.link = '/category/' + this.commonService.catalog_list[cInd].seo_details?.page_url;
-                              if (this.commonService.catalog_list[cInd].image) subCat.image = this.commonService.catalog_list[cInd].image;
+                              subCat.link = c.seo_status ? '/category/' + c.seo_details?.page_url : '/category/' + c._id;
+                              if (c.image) subCat.image = c.image;
                             }
                           }
                         });
@@ -505,9 +509,12 @@ export class AppComponent implements AfterViewInit, OnDestroy {
                 this.commonService.footer_seo_links.forEach(obj => {
                   obj.links.forEach(el => {
                     if (el.link_type == 'category') {
-                      let urlDetails = this.findUrl(el);
-                      if (urlDetails.link_type) el.link_type = urlDetails.link_type;
-                      if (urlDetails.link) el.link = urlDetails.link;
+                      // Use the catalogMap already built above — O(1) vs linear scan
+                      const c = catalogMap.get(String(el.category_id));
+                      if (c) {
+                        el.link_type = 'internal';
+                        el.link = c.seo_status ? '/category/' + c.seo_details?.page_url : '/category/' + c._id;
+                      }
                     }
                   });
                 });

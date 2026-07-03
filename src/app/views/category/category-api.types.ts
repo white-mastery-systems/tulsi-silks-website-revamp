@@ -36,6 +36,7 @@ export interface ListV4Payload {
   max_price: number;
   sort_by: string;
   filters: Record<string, string[]>;
+  include_metadata?: boolean;
 }
 
 export interface ListV4Response {
@@ -59,6 +60,7 @@ export interface CatalogPageSegment {
   sub_heading?: string;
   description?: string;
   icon_card_list?: any[];
+  layout?: 'bordered' | 'plain';
   founder_intro?: any;
   founder_faq_list?: any[];
   highlight_points?: any[];
@@ -68,4 +70,11 @@ export interface CatalogPageSegment {
   cta_list?: any[];
   theme?: string;
   bg_color?: string;
+  feature_list?: any[];
+  image_list?: any[];
+  quote_text?: string;
+  faq_list?: any[];
+  group_list?: any[];
+  blogs_type?: string;
+  section_grid_type?: string;
 }
