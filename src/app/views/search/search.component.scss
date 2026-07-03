@@ -289,24 +289,38 @@ $mob-bar-h:  54px;
 // ══ BODY ══════════════════════════════════════════════════════════════════════
 
 .search-page__body {
-  background: $bg;
+  // background: $bg;
   padding-top: 2rem;
   padding-bottom: 3.5rem;
   float: none;
   width: 100%;
   position: relative;
+  overflow: visible !important;
+  height: auto !important;
+}
+
+.search-page .catalog-product-list {
+  padding-top: 0 !important;
+  background: transparent;
 }
 
 // ─── Two-column canvas ────────────────────────────────────────────────────────
 
 .search-canvas {
-  display: grid;
-  grid-template-columns: 220px 1fr;
-  gap: 2rem;
-  align-items: start;
+  display: block;
+  width: 100%;
+
+  &--full {
+    max-width: 100%;
+  }
 
   aside  { float: none; width: auto; }
   section { float: none; }
+}
+
+.results-col--full {
+  width: 100%;
+  min-width: 0;
 }
 
 // ══ SIDEBAR ═══════════════════════════════════════════════════════════════════
@@ -1096,7 +1110,7 @@ $mob-bar-h:  54px;
   .filter-panel__head { display: none; } // Header is in mob-drawer-head
 
   .search-page__body {
-    padding-bottom: calc(#{$mob-bar-h} + 2rem);
+    padding-bottom: 2rem;
   }
 }
 

@@ -1,6 +1,7 @@
-import { Component, OnInit, OnDestroy, Inject, PLATFORM_ID } from '@angular/core';
+import { Component, OnInit, OnDestroy, Inject, PLATFORM_ID, ViewChild } from '@angular/core';
 import { Router, ActivatedRoute, Params } from '@angular/router';
 import { isPlatformBrowser, Location } from '@angular/common';
+import { ModalDirective } from 'ngx-bootstrap/modal';
 import { StoreApiService } from '../../services/store-api.service';
 import { CommonService } from '../../services/common.service';
 import { CurrencyConversionService } from '../../services/currency-conversion.service';
@@ -52,7 +53,8 @@ export class SearchComponent implements OnInit, OnDestroy {
 
   tag_list: any[] = [];
   priceRange: { min: number; max: number } | null = null;
-  filtersPanelOpen: boolean = false;
+  filtersDrawerOpen = false;
+  filterCollapseIndex = -1;
   moreFiltersOpen = false;
   howItWorksOpen = false;
   readonly demoInspirationImage = 'assets/images/woven-image.png';
@@ -85,6 +87,8 @@ export class SearchComponent implements OnInit, OnDestroy {
   private countdownInterval: any;
   private readonly allowedImageTypes = ['image/jpeg', 'image/png', 'image/webp'];
   private readonly maxImageSizeBytes = 5 * 1024 * 1024;
+
+  @ViewChild('filterModal') filterModal!: ModalDirective;
 
   constructor(
     @Inject(PLATFORM_ID) private platformId: Object,
@@ -146,19 +150,56 @@ export class SearchComponent implements OnInit, OnDestroy {
     return this.productCount > this.pageSize;
   }
 
-  get gridColumns(): number {
-    const count = this.product_list?.length || 0;
-    if (count <= 0 || count >= 3) return 3;
-    if (count === 1) return 2;
-    return count;
+  get catalogProductCountLabel(): string {
+    const count = this.productCount;
+    return `${count} ${count === 1 ? 'product' : 'products'}`;
   }
 
   toggleHowItWorks() {
     this.howItWorksOpen = !this.howItWorksOpen;
   }
 
-  toggleFiltersPanel() {
-    this.filtersPanelOpen = !this.filtersPanelOpen;
+  openFilters() {
+    this.filterCollapseIndex = -1;
+    this.filterModal.show();
+    this.filtersDrawerOpen = true;
+  }
+
+  applyFilters() {
+    this.filterModal.hide();
+    this.filtersDrawerOpen = false;
+    if (this.selectedImageFile) {
+      this.onAnalyseClick();
+      return;
+    }
+    if (this.searchQuery.trim()) {
+      this.runTextSearch();
+      return;
+    }
+    if (this.hasActiveFilters) {
+      this.runFilterSearch();
+    }
+  }
+
+  cancelFilters() {
+    this.filterModal.hide();
+    this.filtersDrawerOpen = false;
+  }
+
+  onFiltersHidden() {
+    this.filtersDrawerOpen = false;
+  }
+
+  panelHasFilters(): boolean {
+    return hasCheckedFilters(this.tag_list);
+  }
+
+  onFilterAccordionClick(index: number) {
+    this.filterCollapseIndex = this.filterCollapseIndex === index ? -1 : index;
+  }
+
+  clearFilterDraft() {
+    this.clearTagFilter();
   }
 
   toggleCameraPanel() {
@@ -241,7 +282,6 @@ export class SearchComponent implements OnInit, OnDestroy {
     this.page = 1;
     this.fallbackUsed = false;
     this.searchMode = 'text';
-    if(!this.commonService.desktop_device) this.filtersPanelOpen = false;
     const payload = { category_id: '', name: this.searchQuery.trim(), skip: 0, limit: this.pageSize };
     this.storeApi.SEARCH_PRODUCT(payload).subscribe({
       next: result => {
@@ -262,7 +302,6 @@ export class SearchComponent implements OnInit, OnDestroy {
     this.page = 1;
     this.fallbackUsed = false;
     this.searchMode = 'image';
-    if(!this.commonService.desktop_device) this.filtersPanelOpen = false;
     this.runSearchWithFallback();
   }
 

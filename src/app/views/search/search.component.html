@@ -107,129 +107,43 @@
   <!-- ══ BODY ══════════════════════════════════════════════════════════════════ -->
   <section class="common-site-section search-page__body">
 
-    <!-- Mobile bottom bar ─────────────────────────────────────────────────── -->
-    <div class="mob-bar" *ngIf="!commonService.desktop_device">
-      <button type="button" class="mob-bar__btn" (click)="toggleFiltersPanel()">
-        <lucide-icon name="sliders-horizontal" [size]="14" stroke="1.75"></lucide-icon>
-        Filter
-        <span class="mob-bar__badge" *ngIf="hasActiveFilters">{{activeFilterCount}}</span>
-      </button>
-    </div>
-
-    <!-- Mobile backdrop ────────────────────────────────────────────────────── -->
-    <div class="mob-backdrop" *ngIf="filtersPanelOpen && !commonService.desktop_device" (click)="toggleFiltersPanel()"></div>
-
     <div class="container">
-      <div class="search-canvas">
+      <div class="search-canvas search-canvas--full">
 
-        <!-- ── Sidebar ──────────────────────────────────────────────────── -->
-        <div class="search-sidebar-wrap" [class.is-open]="filtersPanelOpen">
+        <main class="results-col results-col--full">
 
-          <!-- Mobile drawer header -->
-          <div class="mob-drawer-head" *ngIf="!commonService.desktop_device">
-            <span class="mob-drawer-head__title">Filters</span>
-            <div class="mob-drawer-head__right">
-              <button type="button" class="mob-drawer-head__clear" *ngIf="hasActiveFilters" (click)="onClearFilters()">Clear all</button>
-              <button type="button" class="mob-drawer-head__close" (click)="toggleFiltersPanel()">
-                <lucide-icon name="x" [size]="16" stroke="1.75"></lucide-icon>
-              </button>
-            </div>
-          </div>
-
-          <div class="sidebar-scroll" *ngIf="filtersPanelOpen || commonService.desktop_device">
-
-            <!-- Inspiration card -->
-            <div class="inspo-card" *ngIf="imagePreview">
-              <div class="inspo-card__head">
-                <span class="inspo-card__title">Inspiration Photo</span>
-                <button type="button" class="inspo-card__change" (click)="sareeFileInput.click()">Change</button>
-              </div>
-              <div class="inspo-card__img-wrap">
-                <img [src]="imagePreview" alt="Uploaded saree photo">
-                <div class="inspo-card__overlay" *ngIf="classifyLoader">
-                  <span class="btn-spinner btn-spinner--dark"></span>
-                  <span>Analysing…</span>
-                </div>
-                <span class="inspo-card__badge" *ngIf="imageDetected && !classifyLoader">
-                  <lucide-icon name="check" [size]="10" stroke="2.5"></lucide-icon>
-                  Style detected
-                </span>
-              </div>
-              <p class="inspo-card__status">
-                <ng-container *ngIf="imageDetected && !classifyLoader">AI has read the style. Apply filters or search again.</ng-container>
-                <ng-container *ngIf="!imageDetected && !classifyLoader">Hit Search to detect style from this photo.</ng-container>
-                <ng-container *ngIf="classifyLoader">Reading style from photo…</ng-container>
-              </p>
-            </div>
-
-            <!-- Filter panel -->
-            <aside class="filter-panel">
-
-              <!-- Desktop header -->
-              <div class="filter-panel__head" *ngIf="commonService.desktop_device">
-                <span class="filter-panel__title">Filters</span>
-                <button type="button" class="filter-panel__clear" *ngIf="hasActiveFilters" (click)="onClearFilters()">Clear all</button>
-              </div>
-
-              <!-- AI sync strip -->
-              <div class="ai-strip" *ngIf="imagePreview">
-                <lucide-icon name="sparkles" [size]="11" stroke="2"></lucide-icon>
-                <span *ngIf="classifyLoader">Analysing image…</span>
-                <span *ngIf="!classifyLoader && imageDetected">AI filters active</span>
-                <span *ngIf="!classifyLoader && !imageDetected">Search to auto-fill filters</span>
-              </div>
-
-              <!-- Accordion groups -->
-              <div class="filter-accordion" *ngIf="tag_list.length">
-                <div class="fa-group" *ngFor="let group of tag_list | orderAsc: 'rank'">
-                  <button type="button" class="fa-group__head" (click)="toggleFilterGroup(group.name)">
-                    <span class="fa-group__name">
-                      {{group.name}}
-                      <span class="fa-group__dot" *ngIf="getFilterSelectValue(group)"></span>
-                    </span>
-                    <lucide-icon name="chevron-down" [size]="12" stroke="1.5" [class.rotate]="isFilterGroupOpen(group.name)"></lucide-icon>
-                  </button>
-                  <div class="fa-group__body" *ngIf="isFilterGroupOpen(group.name)">
-                    <div class="fchip-list">
-                      <label
-                        class="fchip"
-                        *ngFor="let opt of group.option_list | orderAsc: 'name'"
-                        [class.fchip--on]="opt.checked"
-                        [class.fchip--ai]="imageDetected && opt.checked"
-                      >
-                        <input type="checkbox" [checked]="opt.checked" (change)="toggleFilterOption(group, opt)" hidden>
-                        <span class="fchip__box"></span>
-                        <span class="fchip__text">{{opt.name}}</span>
-                      </label>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Apply / clear (desktop) -->
-              <div class="filter-actions" *ngIf="hasActiveFilters && commonService.desktop_device">
-                <button type="button" class="primary-btn filter-actions__apply" (click)="runFilterSearch()" [disabled]="classifyLoader || searchLoader">
-                  <span *ngIf="searchLoader && searchMode === 'image'" class="btn-spinner"></span>
-                  <span *ngIf="!(searchLoader && searchMode === 'image')">Apply Filters</span>
+          <div *ngIf="tag_list?.length" class="catalog-toolbar-block">
+            <div class="catalog-toolbar">
+              <div class="catalog-toolbar__left">
+                <button type="button"
+                  class="catalog-pill-btn catalog-pill-btn--filters"
+                  [class.catalog-pill-btn--active]="filtersDrawerOpen || activeFilterCount"
+                  (click)="openFilters()">
+                  <span class="catalog-pill-btn__icon" aria-hidden="true">
+                    <i class="material-icons">tune</i>
+                  </span>
+                  <span class="catalog-pill-btn__text catalog-pill-btn__text--full">SHOW FILTERS</span>
+                  <span class="catalog-pill-btn__text catalog-pill-btn__text--short">FILTERS</span>
+                  <span *ngIf="activeFilterCount" class="catalog-pill-btn__badge">{{ activeFilterCount }}</span>
                 </button>
+                <span *ngIf="afterSearchEvent && productCount" class="catalog-product-count">{{ catalogProductCountLabel }}</span>
               </div>
+              <div class="catalog-toolbar__right">
+                <span *ngIf="searchLoader && !pageLoader && afterSearchEvent" class="catalog-product-count">Searching…</span>
+              </div>
+            </div>
 
-            </aside>
+            <div *ngIf="activeFilterChips.length && (!searchLoader || pageLoader)" class="catalog-active-filters">
+              <span *ngFor="let chip of activeFilterChips" class="catalog-filter-chip">
+                {{ chip.label }}: {{ chip.value }}
+                <button type="button" class="catalog-filter-chip__remove" aria-label="Remove filter"
+                  (click)="removeActiveChip(chip)">
+                  <i class="material-icons">close</i>
+                </button>
+              </span>
+              <button type="button" class="catalog-filter-chip__clear" (click)="onClearFilters()">Clear all</button>
+            </div>
           </div>
-
-          <!-- Mobile drawer footer -->
-          <div class="mob-drawer-foot" *ngIf="!commonService.desktop_device && (filtersPanelOpen || commonService.desktop_device)">
-            <button type="button" class="primary-btn mob-drawer-foot__apply" (click)="runFilterSearch(); toggleFiltersPanel();" [disabled]="searchLoader">
-              <span *ngIf="searchLoader" class="btn-spinner"></span>
-              <span *ngIf="!searchLoader">View Results<ng-container *ngIf="productCount"> ({{productCount}})</ng-container></span>
-            </button>
-          </div>
-
-        </div>
-        <!-- ── /Sidebar ─────────────────────────────────────────────────── -->
-
-        <!-- ── Results ──────────────────────────────────────────────────── -->
-        <main class="results-col">
 
           <!-- Empty state -->
           <div class="empty-state" *ngIf="!afterSearchEvent">
@@ -241,126 +155,156 @@
           </div>
 
           <!-- Results -->
-          <div *ngIf="afterSearchEvent" class="results-panel">
+          <div *ngIf="afterSearchEvent" class="results-panel catalog-product-list product-list">
 
-            <!-- Results bar -->
-            <div class="results-bar">
-              <div class="results-bar__left">
-                <h2 class="results-bar__heading">
-                  <ng-container *ngIf="searchMode === 'text'">Search Results</ng-container>
-                  <ng-container *ngIf="searchMode === 'image'">Visually Similar Sarees</ng-container>
-                </h2>
-                <p class="results-bar__sub" *ngIf="searchMode === 'image' && imageDetected">Matched by AI from your photo</p>
-              </div>
-              <div class="results-bar__right">
-                <span class="results-bar__searching" *ngIf="searchLoader && !pageLoader">
-                  <span class="btn-spinner btn-spinner--dark btn-spinner--sm"></span>
-                  Searching…
-                </span>
-                <span class="results-bar__count" *ngIf="productCount && !searchLoader">{{productCount}} results</span>
-              </div>
-            </div>
-
-            <!-- Active filter chips -->
-            <div class="active-chip-row" *ngIf="activeFilterChips.length && (!searchLoader || pageLoader)">
-              <button type="button" class="active-chip" *ngFor="let chip of activeFilterChips" (click)="removeActiveChip(chip)">
-                <span class="active-chip__key">{{chip.label}}</span>
-                <span class="active-chip__val">{{chip.value}}</span>
-                <span class="active-chip__x" aria-hidden="true">&#x2715;</span>
-              </button>
-            </div>
-
-            <!-- Grid -->
-            <div class="results-body" [class.results-body--busy]="pageLoader">
-              <div *ngIf="pageLoader" class="page-loader">
+            <div class="row" style="padding-right: 15px;">
+              <div *ngIf="pageLoader" class="col-12 text-center py-4">
                 <span class="btn-spinner btn-spinner--dark"></span>
               </div>
 
               <ng-container *ngIf="!searchLoader">
-
-                <div class="product-grid" *ngIf="product_list?.length" [style.--cols]="gridColumns">
-                  <article
-                    class="product-card"
-                    *ngFor="let x of product_list | paginate: { id: 'search-results', itemsPerPage: pageSize, currentPage: page, totalItems: productCount }"
-                  >
-                    <figure class="product-card__fig" (click)="goToProduct(x)">
-                      <div class="product-card__actions">
-                        <button type="button" class="product-card__action"
-                          [class.product-card__action--on]="commonService.wishListIds.indexOf(x._id) != -1"
-                          (click)="onWishlistClick(x, $event)" aria-label="Wishlist">
-                          <lucide-icon name="heart" [size]="14" stroke="1.5"></lucide-icon>
-                        </button>
-                        <button type="button" class="product-card__action"
-                          (click)="goToProduct(x, $event)" aria-label="View product">
-                          <lucide-icon name="shopping-bag" [size]="14" stroke="1.5"></lucide-icon>
-                        </button>
-                      </div>
-                      <div class="product_labellist label_{{commonService.application_setting?.tag_position}}">
-                        <span class="span_label" *ngIf="commonService.store_properties?.auto_tags?.sold_out && x.stock<=0">
-                          {{commonService.store_properties?.auto_tags?.sold_out}}
-                        </span>
-                        <ng-container *ngIf="x.stock>0">
-                          <span class="span_label" *ngIf="commonService.store_properties?.auto_tags?.on_sale && x.disc_status">
-                            {{commonService.store_properties?.auto_tags?.on_sale}}
-                          </span>
-                        </ng-container>
-                      </div>
-                      <img width="100%" height="100%" appLqimgLoad appDeferLoad
-                        [ImagelazyLoad]="imgBaseUrl+x.image_list[0]?.image" alt="{{x.name}}">
-                    </figure>
-                    <a class="product-card__info txt-none"
-                      (click)="onSelectProduct(x)"
-                      routerLink="{{ x.seo_status ? '/product/'+x.seo_details.page_url : '/product/'+x._id }}">
-                      <p class="product-card__name">{{x.name}}</p>
-                      <div class="product-card__price">
-                        <span class="product-card__price-old" *ngIf="x.disc_status">
-                          {{ x.temp_selling_price | currency:cc.pipeCurrencyCode:'symbol-narrow':cc.format:cc.pipeLocale }}
-                        </span>
-                        <span class="product-card__price-now">
-                          {{ x.temp_discounted_price | currency:cc.pipeCurrencyCode:'symbol-narrow':cc.format:cc.pipeLocale }}
-                        </span>
-                      </div>
-                    </a>
-                  </article>
-                </div>
-
-                <div class="few-results" *ngIf="product_list?.length > 0 && product_list.length < 4">
-                  <lucide-icon name="info" [size]="13" stroke="1.75"></lucide-icon>
-                  <span>{{product_list.length}} result{{product_list.length === 1 ? '' : 's'}} — try broader filters for more.</span>
-                </div>
-
-                <div *ngIf="!product_list?.length" class="no-results">
-                  <div class="no-items d-flex align-items-center justify-content-center">
-                    <img width="100%" height="100%" imgBroken src="assets/images/no_items_found.svg" alt="not-found">
+                <div
+                  *ngFor="let x of product_list | paginate: { id: 'search-results', itemsPerPage: pageSize, currentPage: page, totalItems: productCount }"
+                  class="cat-grid col-sm-6 col-6 pr-0 d-flex col-grid-six">
+                  <div class="product_labellist wishlist-main catalog-card-actions">
+                    <span class="wishlist-icon" (click)="onWishlistClick(x, $event)"
+                      [ngClass]="(commonService.wishListIds.indexOf(x._id)!=-1)? 'wishlist-icon-active': null">
+                      <lucide-icon name="heart" [size]="16" [strokeWidth]="2"
+                        [color]="commonService.wishListIds.indexOf(x._id) !== -1 ? '#d32f2f' : '#000000'"></lucide-icon>
+                    </span>
+                    <span class="wishlist-icon catalog-bag-icon" (click)="goToProduct(x, $event)" aria-label="View product">
+                      <lucide-icon name="shopping-bag" [size]="16" [strokeWidth]="2" color="#000000"></lucide-icon>
+                    </span>
                   </div>
-                  <p>No matching sarees found.</p>
-                  <p class="no-results__hint">Try different keywords or broaden your filters.</p>
+                  <a appMouseHover class="product-box smooth-fadein p-0"
+                    (click)="onSelectProduct(x);"
+                    routerLink="{{ x.seo_status ? '/product/'+x.seo_details.page_url : '/product/'+x._id }}">
+                    <div class="prod-div">
+                      <figure class="product-image">
+                        <div class="product_labellist label_{{commonService.application_setting?.tag_position}}">
+                          <span class="span_label" *ngIf="commonService.store_properties?.auto_tags?.sold_out && x.stock<=0">
+                            {{commonService.store_properties?.auto_tags?.sold_out}}
+                          </span>
+                          <ng-container *ngIf="x.stock>0">
+                            <span class="span_label" *ngIf="commonService.store_properties?.auto_tags?.on_sale && x.disc_status">
+                              {{commonService.store_properties?.auto_tags?.on_sale}}
+                            </span>
+                          </ng-container>
+                        </div>
+                        <img width="100%" height="100%" appLqimgLoad appDeferLoad
+                          [ImagelazyLoad]="imgBaseUrl+x.image_list[0]?.image"
+                          alt="{{(x.image_list[0]?.img_alt)? x.image_list[0].img_alt: x.name}}">
+                        <img width="100%" height="100%" appLqimgLoad appDeferLoad
+                          *ngIf="commonService?.desktop_device && x.image_list?.length > 1"
+                          [ImagelazyLoad]="imgBaseUrl+x.image_list[1]?.image"
+                          alt="{{(x.image_list[1]?.img_alt)? x.image_list[1].img_alt: x.name}}" class="image-hover">
+                      </figure>
+                      <div class="product-content">
+                        <p *ngIf="x.brand" class="product-brand">{{x.brand}}</p>
+                        <p class="product-title">{{x.name}}</p>
+                        <div class="catalog-product-price">
+                          <div class="catalog-product-price__row">
+                            <span *ngIf="x.disc_status" class="catalog-product-price__old strike">{{ x.temp_selling_price | currency:cc.pipeCurrencyCode:'symbol-narrow':cc.format:cc.pipeLocale }}</span>
+                            <span class="catalog-product-price__now">{{ x.temp_discounted_price | currency:cc.pipeCurrencyCode:'symbol-narrow':cc.format:cc.pipeLocale }}</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </a>
                 </div>
 
-                <div class="search-pagination" *ngIf="showPagination">
-                  <pagination-controls
-                    id="search-results"
-                    (pageChange)="onPageChange($event)"
-                    [maxSize]="5"
-                    [directionLinks]="true"
-                    [autoHide]="false"
-                    [responsive]="true"
-                    previousLabel=""
-                    nextLabel=""
-                  ></pagination-controls>
+                <div class="col-md-12" *ngIf="product_list?.length > 0 && product_list.length < 4">
+                  <div class="few-results">
+                    <lucide-icon name="info" [size]="13" stroke="1.75"></lucide-icon>
+                    <span>{{product_list.length}} result{{product_list.length === 1 ? '' : 's'}} — try broader filters for more.</span>
+                  </div>
                 </div>
 
+                <div *ngIf="!product_list?.length" class="col-md-12">
+                  <div class="no-results">
+                    <div class="no-items d-flex align-items-center justify-content-center">
+                      <img width="100%" height="100%" imgBroken src="assets/images/no_items_found.svg" alt="not-found">
+                    </div>
+                    <p>No matching sarees found.</p>
+                    <p class="no-results__hint">Try different keywords or broaden your filters.</p>
+                  </div>
+                </div>
+
+                <div class="col-md-12" *ngIf="showPagination">
+                  <div class="row">
+                    <div class="col-md-12 navigation-ngx search-pagination">
+                      <pagination-controls
+                        id="search-results"
+                        (pageChange)="onPageChange($event)"
+                        maxSize="5"
+                        directionLinks="true"
+                        autoHide="false"
+                        responsive="true"
+                        previousLabel=""
+                        nextLabel=""
+                      ></pagination-controls>
+                    </div>
+                  </div>
+                </div>
               </ng-container>
             </div>
 
           </div>
 
         </main>
-        <!-- ── /Results ─────────────────────────────────────────────────── -->
 
       </div>
     </div>
   </section>
   <!-- ══ /BODY ══════════════════════════════════════════════════════════════ -->
+
+  <ng-template #searchFilterPanel>
+    <div class="filter-panel-v2__sections" *ngIf="tag_list.length">
+      <div class="filter-panel-v2__section" *ngFor="let group of tag_list | orderAsc: 'rank'; let i = index">
+        <button type="button" class="filter-panel-v2__head" (click)="onFilterAccordionClick(i)">
+          <span>{{ group.name }}</span>
+          <i class="material-icons">{{ filterCollapseIndex === i ? 'remove' : 'add' }}</i>
+        </button>
+        <div class="filter-panel-v2__body" *ngIf="filterCollapseIndex === i">
+          <div class="chip-wrapper">
+            <label class="chip" *ngFor="let opt of group.option_list | orderAsc: 'name'"
+              [class.active]="opt.checked">
+              <input type="checkbox" [checked]="opt.checked" (change)="toggleFilterOption(group, opt)" hidden>
+              <span>{{ opt.name }}</span>
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-template>
+
+  <div bsModal #filterModal="bs-modal" class="modal fade filter-modal-v2" [config]="{backdrop: true}"
+    tabindex="-1" role="dialog" aria-labelledby="search-filter-dialog" (onHidden)="onFiltersHidden()">
+    <div class="modal-dialog modal-dialog-scrollable filter-modal-v2__dialog" role="document">
+      <div class="modal-content">
+        <div class="filter-modal-v2__header">
+          <div>
+            <h2 class="filter-modal-v2__title" id="search-filter-dialog">Filter</h2>
+            <p *ngIf="afterSearchEvent && productCount" class="filter-modal-v2__count">{{ catalogProductCountLabel }}</p>
+          </div>
+          <button type="button" class="filter-modal-v2__close" aria-label="Close" (click)="cancelFilters()">
+            <i class="material-icons">close</i>
+          </button>
+        </div>
+        <div class="modal-body filter-modal-v2__body slim-scroll">
+          <ng-container *ngTemplateOutlet="searchFilterPanel"></ng-container>
+        </div>
+        <div class="filter-modal-v2__footer">
+          <button *ngIf="panelHasFilters()" type="button" class="filter-modal-v2__clear"
+            (click)="clearFilterDraft()">Remove all</button>
+          <button type="button" class="primary-btn filter-modal-v2__apply" (click)="applyFilters()"
+            [disabled]="classifyLoader || searchLoader">
+            <span *ngIf="searchLoader" class="btn-spinner"></span>
+            <span *ngIf="!searchLoader">Apply</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
 
 </section>
