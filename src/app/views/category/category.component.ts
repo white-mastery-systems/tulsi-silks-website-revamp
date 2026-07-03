@@ -78,17 +78,26 @@ export class CategoryComponent implements OnInit, OnDestroy, AfterViewChecked {
   }
 
   get filterChips() {
-    return activeFilterChips(this.tag_list);
+    const tagSource = this.filtersDrawerOpen && this.appliedTagListSnapshot
+      ? this.appliedTagListSnapshot
+      : this.tag_list;
+    return activeFilterChips(tagSource);
   }
 
   get activeFilterCount(): number {
     let count = this.filterChips.length;
-    if (this.useV4Catalog && this.isPriceFiltered()) count++;
+    if (this.useV4Catalog) {
+      const priceFiltered = this.filtersDrawerOpen && this.filterDraftSnapshot
+        ? this.filterDraftSnapshot.priceFiltered
+        : this.isPriceFiltered();
+      if (priceFiltered) count++;
+    }
     return count;
   }
 
   filtersDrawerOpen = false;
   priceFilterOpen = true;
+  showScrollTop = false;
   catalogToolbarPinned = false;
   catalogToolbarHeight = 0;
   catalogToolbarLeft = 0;
@@ -102,6 +111,28 @@ export class CategoryComponent implements OnInit, OnDestroy, AfterViewChecked {
   private catalogToolbarResizeHandler?: () => void;
   private catalogToolbarRafId = 0;
   private catalogToolbarPinInitialized = false;
+  private filterDraftSnapshot: {
+    tagList: any[];
+    selectedOptions: Record<string, string[]>;
+    rangeMin: number;
+    rangeMax: number;
+    sliderMin: number;
+    sliderMax: number;
+    priceFiltered: boolean;
+  } | null = null;
+  private appliedTagListSnapshot: any[] | null = null;
+  private filterApplyCommitted = false;
+  private readonly scrollTopThresholdPx = 500;
+  private scrollTopRafScheduled = false;
+  private scrollTopScrollHandler?: () => void;
+  private readonly boundScrollTopHandler = (): void => {
+    if (!isPlatformBrowser(this.platformId) || this.scrollTopRafScheduled) return;
+    this.scrollTopRafScheduled = true;
+    requestAnimationFrame(() => {
+      this.scrollTopRafScheduled = false;
+      this.updateScrollTopVisibility();
+    });
+  };
 
   get catalogProductCountLabel(): string {
     const count = this.displayProductCount;
@@ -114,10 +145,13 @@ export class CategoryComponent implements OnInit, OnDestroy, AfterViewChecked {
   }
 
   openFilters() {
+    this.captureFilterDraftSnapshot();
+    this.appliedTagListSnapshot = this.cloneTagListSnapshot(this.tag_list);
     this.syncSliderFromRange();
     this.priceRangeDirty = false;
     this.priceFilterOpen = true;
     this.collapseIndex = -1;
+    this.filterApplyCommitted = false;
     this.filterModal.show();
     this.filtersDrawerOpen = true;
     if (this.commonService.screen_width < 992) {
@@ -125,19 +159,128 @@ export class CategoryComponent implements OnInit, OnDestroy, AfterViewChecked {
     }
   }
 
-  closeFilters() {
-    if (this.useV4Catalog && this.priceRangeDirty) {
+  applyFilters() {
+    if (!this.useV4Catalog) {
+      this.filterModal.hide();
+      this.filtersDrawerOpen = false;
+      return;
+    }
+
+    this.filterApplyCommitted = true;
+
+    if (this.priceRangeDirty) {
       this.rangeMin = this.sliderMin;
       this.rangeMax = this.sliderMax;
       this.priceRangeDirty = false;
-      this.onPriceRangeApply();
     }
+
+    const tempParams: Record<string, string> = {};
+    for (const key in this.selectedOptions) {
+      if (this.selectedOptions.hasOwnProperty(key)) {
+        tempParams[key] = this.selectedOptions[key].join('-');
+      }
+    }
+
+    this.page = 1;
+    this.tagSelected = hasCheckedFilters(this.tag_list);
+    this.router.navigate([this.router.url.split('?')[0]], { queryParams: tempParams });
+    this.applyCategoryIndexing();
+    this.fetchProductList(1);
+    this.appliedTagListSnapshot = null;
+    this.filterDraftSnapshot = null;
+    this.filterModal.hide();
+    this.filtersDrawerOpen = false;
+  }
+
+  cancelFilters() {
+    this.filterApplyCommitted = false;
+    this.restoreFilterDraftSnapshot();
+    this.appliedTagListSnapshot = null;
     this.filterModal.hide();
     this.filtersDrawerOpen = false;
   }
 
   onFiltersHidden() {
+    if (!this.filterApplyCommitted) {
+      this.restoreFilterDraftSnapshot();
+    }
     this.filtersDrawerOpen = false;
+    this.filterApplyCommitted = false;
+    this.appliedTagListSnapshot = null;
+    this.filterDraftSnapshot = null;
+  }
+
+  scrollToTop(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+    try {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } catch {
+      window.scrollTo(0, 0);
+    }
+  }
+
+  private captureFilterDraftSnapshot(): void {
+    this.filterDraftSnapshot = {
+      tagList: this.cloneTagListSnapshot(this.tag_list),
+      selectedOptions: JSON.parse(JSON.stringify(this.selectedOptions || {})),
+      rangeMin: this.rangeMin,
+      rangeMax: this.rangeMax,
+      sliderMin: this.sliderMin,
+      sliderMax: this.sliderMax,
+      priceFiltered: this.isPriceFiltered()
+    };
+  }
+
+  private restoreFilterDraftSnapshot(): void {
+    const snap = this.filterDraftSnapshot;
+    if (!snap) return;
+
+    this.tag_list = this.cloneTagListSnapshot(snap.tagList);
+    this.selectedOptions = JSON.parse(JSON.stringify(snap.selectedOptions || {}));
+    this.rangeMin = snap.rangeMin;
+    this.rangeMax = snap.rangeMax;
+    this.sliderMin = snap.sliderMin;
+    this.sliderMax = snap.sliderMax;
+    this.syncPriceDisplay();
+    this.priceRangeDirty = false;
+    this.tagSelected = hasCheckedFilters(this.tag_list);
+    this.filterDraftSnapshot = null;
+  }
+
+  private cloneTagListSnapshot(tagList: any[]): any[] {
+    return (tagList || []).map(tag => ({
+      ...tag,
+      option_list: (tag.option_list || []).map((opt: any) => ({ ...opt }))
+    }));
+  }
+
+  private updateScrollTopVisibility(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+    const y =
+      window.scrollY ||
+      this.document.documentElement?.scrollTop ||
+      this.document.body?.scrollTop ||
+      0;
+    const next = y > this.scrollTopThresholdPx;
+    if (next === this.showScrollTop) return;
+    this.showScrollTop = next;
+    this.cdr.markForCheck();
+  }
+
+  private initScrollTopButton(): void {
+    if (!isPlatformBrowser(this.platformId) || this.scrollTopScrollHandler) return;
+    this.updateScrollTopVisibility();
+    this.scrollTopScrollHandler = this.boundScrollTopHandler;
+    this.document.addEventListener('scroll', this.scrollTopScrollHandler, { passive: true, capture: true });
+    window.addEventListener('scroll', this.scrollTopScrollHandler, { passive: true });
+  }
+
+  private teardownScrollTopButton(): void {
+    if (!this.scrollTopScrollHandler || !isPlatformBrowser(this.platformId)) return;
+    this.document.removeEventListener('scroll', this.scrollTopScrollHandler, true);
+    window.removeEventListener('scroll', this.scrollTopScrollHandler);
+    this.scrollTopScrollHandler = undefined;
+    this.showScrollTop = false;
   }
 
   togglePriceFilterSection() {
@@ -149,6 +292,10 @@ export class CategoryComponent implements OnInit, OnDestroy, AfterViewChecked {
     if (this.commonService.screen_width < 992) {
       this.sortModal.show();
     }
+  }
+
+  panelHasFilters(): boolean {
+    return hasCheckedFilters(this.tag_list) || this.priceRangeDirty || this.tagSelected;
   }
 
   categorySchema: any = {
@@ -363,6 +510,7 @@ export class CategoryComponent implements OnInit, OnDestroy, AfterViewChecked {
       }
 
       this.scheduleCatalogToolbarSticky();
+      this.initScrollTopButton();
     }, 100);
   }
 
@@ -1278,9 +1426,8 @@ export class CategoryComponent implements OnInit, OnDestroy, AfterViewChecked {
       });
     }
   }
-  clearTagFilter() {
+  clearTagFilter(applyImmediately = true) {
     this.qParams = {};
-    this.router.navigate([this.router.url.split('?')[0]], { queryParams: this.qParams });
     this.tag_list.forEach(tag => {
       tag.option_list.forEach(tagOption => { delete tagOption.checked; });
     });
@@ -1288,8 +1435,13 @@ export class CategoryComponent implements OnInit, OnDestroy, AfterViewChecked {
     this.selectedOptions = {};
     if (this.useV4Catalog) {
       this.page = 1;
-      this.applyCategoryIndexing();
-      this.fetchProductList(1);
+      if (applyImmediately) {
+        this.router.navigate([this.router.url.split('?')[0]], { queryParams: this.qParams });
+        this.applyCategoryIndexing();
+        this.fetchProductList(1);
+        this.appliedTagListSnapshot = null;
+        this.filterDraftSnapshot = null;
+      }
       return;
     }
     this.list = this.parent_list;
@@ -1322,6 +1474,9 @@ export class CategoryComponent implements OnInit, OnDestroy, AfterViewChecked {
     }
     if(this.parent_list.length || this.useV4Catalog) {
       if (this.useV4Catalog) {
+        if (this.filtersDrawerOpen) {
+          return;
+        }
         this.tagSelected = hasCheckedFilters(this.tag_list);
         this.applyCategoryIndexing();
         this.fetchProductList(1);
@@ -1330,7 +1485,9 @@ export class CategoryComponent implements OnInit, OnDestroy, AfterViewChecked {
         this.page = 1;
       }
     }
-    this.router.navigate([this.router.url.split('?')[0]], { queryParams: tempParams });
+    if (!this.filtersDrawerOpen) {
+      this.router.navigate([this.router.url.split('?')[0]], { queryParams: tempParams });
+    }
   }
 
   findMinMax() {
@@ -1451,6 +1608,7 @@ export class CategoryComponent implements OnInit, OnDestroy, AfterViewChecked {
     if (this.priceDebounceSub) this.priceDebounceSub.unsubscribe();
     if (this.subscription) this.subscription.unsubscribe();
     this.teardownCatalogToolbarSticky();
+    this.teardownScrollTopButton();
     this.commonService.removeElement('category-jsonld');
     this.commonService.removeElement('category-faq-jsonld');
     if (isPlatformBrowser(this.platformId)) {

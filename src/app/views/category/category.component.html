@@ -957,7 +957,7 @@
           <h2 class="filter-modal-v2__title">Filter</h2>
           <p class="filter-modal-v2__count">{{ catalogProductCountLabel }}</p>
         </div>
-        <button type="button" class="filter-modal-v2__close" aria-label="Close" (click)="closeFilters()">
+        <button type="button" class="filter-modal-v2__close" aria-label="Close" (click)="cancelFilters()">
           <i class="material-icons">close</i>
         </button>
       </div>
@@ -965,9 +965,9 @@
         <ng-container *ngTemplateOutlet="catalogFilterPanel"></ng-container>
       </div>
       <div class="filter-modal-v2__footer">
-        <button *ngIf="tagSelected || activeFilterCount" type="button" class="filter-modal-v2__clear"
-          (click)="clearTagFilter();">Remove all</button>
-        <button type="button" class="primary-btn filter-modal-v2__apply" (click)="closeFilters()">Apply</button>
+        <button *ngIf="panelHasFilters()" type="button" class="filter-modal-v2__clear"
+          (click)="clearTagFilter(false)">Remove all</button>
+        <button type="button" class="primary-btn filter-modal-v2__apply" (click)="applyFilters()">Apply</button>
       </div>
     </div>
   </div>
@@ -998,3 +998,13 @@
     </div>
   </div>
 </div>
+
+<button
+  *ngIf="showScrollTop"
+  type="button"
+  class="catalog-scroll-top"
+  (click)="scrollToTop()"
+  aria-label="Scroll to top"
+>
+  <lucide-icon name="arrow-up" [size]="20" stroke="2"></lucide-icon>
+</button>
