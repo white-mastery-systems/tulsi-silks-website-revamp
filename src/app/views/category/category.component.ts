@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, Inject, PLATFORM_ID, ViewChild, ElementRef, DOCUMENT } from '@angular/core';
+import { Component, OnInit, OnDestroy, AfterViewChecked, Inject, PLATFORM_ID, ViewChild, ElementRef, DOCUMENT, ChangeDetectorRef } from '@angular/core';
 import { Router, ActivatedRoute, Params } from '@angular/router';
 import { isPlatformBrowser, DecimalPipe, CurrencyPipe } from '@angular/common';
 import { Subscription, Subject } from 'rxjs';
@@ -29,7 +29,7 @@ import {
     standalone: false
 })
 
-export class CategoryComponent implements OnInit, OnDestroy {
+export class CategoryComponent implements OnInit, OnDestroy, AfterViewChecked {
 
   tag_list: any = []; params: any = {};
   category_details: any = {};
@@ -89,6 +89,19 @@ export class CategoryComponent implements OnInit, OnDestroy {
 
   filtersDrawerOpen = false;
   priceFilterOpen = true;
+  catalogToolbarPinned = false;
+  catalogToolbarHeight = 0;
+  catalogToolbarLeft = 0;
+  catalogToolbarWidth = 0;
+  catalogHeaderOffset = 0;
+
+  @ViewChild('catalogToolbarAnchor') catalogToolbarAnchor?: ElementRef<HTMLElement>;
+  @ViewChild('catalogToolbarBlock') catalogToolbarBlock?: ElementRef<HTMLElement>;
+  @ViewChild('catalogToolbarSentinel') catalogToolbarSentinel?: ElementRef<HTMLElement>;
+  private catalogToolbarScrollHandler?: () => void;
+  private catalogToolbarResizeHandler?: () => void;
+  private catalogToolbarRafId = 0;
+  private catalogToolbarPinInitialized = false;
 
   get catalogProductCountLabel(): string {
     const count = this.displayProductCount;
@@ -305,7 +318,8 @@ export class CategoryComponent implements OnInit, OnDestroy {
   constructor(
     @Inject(PLATFORM_ID) private platformId: Object, private router: Router, private activeRoute: ActivatedRoute,
     private storeApi: StoreApiService, public cc: CurrencyConversionService, public commonService: CommonService,
-    @Inject(DOCUMENT) private document, private decimalPipe: DecimalPipe, private currencyPipe: CurrencyPipe, public ws: WishlistService
+    @Inject(DOCUMENT) private document, private decimalPipe: DecimalPipe, private currencyPipe: CurrencyPipe, public ws: WishlistService,
+    private cdr: ChangeDetectorRef
   ) {
     this.subscription = this.commonService.currency_type.subscribe(currency => {
       this.findCurrency();
@@ -347,7 +361,116 @@ export class CategoryComponent implements OnInit, OnDestroy {
           this.updateNavigationButtonVisibility();
         });
       }
+
+      this.scheduleCatalogToolbarSticky();
     }, 100);
+  }
+
+  ngAfterViewChecked(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+    if (!this.catalogToolbarAnchor?.nativeElement) {
+      this.catalogToolbarPinInitialized = false;
+      return;
+    }
+    if (!this.catalogToolbarPinInitialized) {
+      this.catalogToolbarPinInitialized = true;
+      this.initCatalogToolbarPin();
+    }
+  }
+
+  private scheduleCatalogToolbarSticky(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+    setTimeout(() => {
+      this.cdr.detectChanges();
+      if (this.catalogToolbarAnchor?.nativeElement) {
+        this.initCatalogToolbarPin();
+      }
+    }, 0);
+  }
+
+  private initCatalogToolbarPin(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+
+    const anchor = this.catalogToolbarAnchor?.nativeElement;
+    const block = this.catalogToolbarBlock?.nativeElement;
+    if (!anchor || !block) return;
+
+    this.teardownCatalogToolbarScrollListener();
+    this.updateCatalogToolbarPin();
+
+    const onScrollOrResize = () => {
+      if (this.catalogToolbarRafId) return;
+      this.catalogToolbarRafId = requestAnimationFrame(() => {
+        this.catalogToolbarRafId = 0;
+        this.updateCatalogToolbarPin();
+      });
+    };
+
+    this.catalogToolbarScrollHandler = onScrollOrResize;
+    this.document.addEventListener('scroll', onScrollOrResize, { passive: true, capture: true });
+    window.addEventListener('scroll', onScrollOrResize, { passive: true });
+
+    if (!this.catalogToolbarResizeHandler) {
+      this.catalogToolbarResizeHandler = onScrollOrResize;
+      window.addEventListener('resize', onScrollOrResize);
+    }
+  }
+
+  private updateCatalogToolbarPin(): void {
+    const anchor = this.catalogToolbarAnchor?.nativeElement;
+    const block = this.catalogToolbarBlock?.nativeElement;
+    if (!anchor || !block) return;
+
+    this.catalogHeaderOffset = this.document.getElementById('headroom-head')?.offsetHeight
+      ?? (this.commonService.screen_width < 992 ? 129 : 168);
+
+    const shouldPin = anchor.getBoundingClientRect().top <= this.catalogHeaderOffset;
+
+    if (shouldPin) {
+      const anchorRect = anchor.getBoundingClientRect();
+      const blockHeight = block.offsetHeight;
+      const changed = !this.catalogToolbarPinned
+        || this.catalogToolbarHeight !== blockHeight
+        || this.catalogToolbarLeft !== anchorRect.left
+        || this.catalogToolbarWidth !== anchorRect.width;
+      this.catalogToolbarPinned = true;
+      this.catalogToolbarHeight = blockHeight;
+      this.catalogToolbarLeft = anchorRect.left;
+      this.catalogToolbarWidth = anchorRect.width;
+      if (changed) this.cdr.markForCheck();
+      return;
+    }
+
+    if (this.catalogToolbarPinned) {
+      this.catalogToolbarPinned = false;
+      this.catalogToolbarHeight = 0;
+      this.cdr.markForCheck();
+    }
+  }
+
+  private teardownCatalogToolbarScrollListener(): void {
+    if (this.catalogToolbarRafId) {
+      cancelAnimationFrame(this.catalogToolbarRafId);
+      this.catalogToolbarRafId = 0;
+    }
+    if (this.catalogToolbarScrollHandler && isPlatformBrowser(this.platformId)) {
+      this.document.removeEventListener('scroll', this.catalogToolbarScrollHandler, true);
+      window.removeEventListener('scroll', this.catalogToolbarScrollHandler);
+      this.catalogToolbarScrollHandler = undefined;
+    }
+  }
+
+  private teardownCatalogToolbarSticky(): void {
+    this.teardownCatalogToolbarScrollListener();
+    if (this.catalogToolbarResizeHandler && isPlatformBrowser(this.platformId)) {
+      window.removeEventListener('resize', this.catalogToolbarResizeHandler);
+      this.catalogToolbarResizeHandler = undefined;
+    }
+    this.catalogToolbarPinInitialized = false;
+    this.catalogToolbarPinned = false;
+    this.catalogToolbarHeight = 0;
+    this.catalogToolbarLeft = 0;
+    this.catalogToolbarWidth = 0;
   }
 
   checkNavigationOverflow() {
@@ -788,6 +911,7 @@ export class CategoryComponent implements OnInit, OnDestroy {
     this.storeApi.PRODUCT_LIST_V4(payload).subscribe(result => {
       if (initialLoad) setTimeout(() => { this.pageLoader = false; }, 500);
       this.listLoader = false;
+      this.scheduleCatalogToolbarSticky();
       if (result.status) {
         this.applyListV4Response(result, page, kanjivaramList, banarasiList, organzaList, includeMetadata);
       } else {
@@ -1326,6 +1450,7 @@ export class CategoryComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     if (this.priceDebounceSub) this.priceDebounceSub.unsubscribe();
     if (this.subscription) this.subscription.unsubscribe();
+    this.teardownCatalogToolbarSticky();
     this.commonService.removeElement('category-jsonld');
     this.commonService.removeElement('category-faq-jsonld');
     if (isPlatformBrowser(this.platformId)) {

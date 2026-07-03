@@ -1221,6 +1221,16 @@ p.error-msg {
 
 }
 
+.common-site-section.catalog-product-list {
+  overflow: visible !important;
+  height: auto !important;
+}
+
+.catalog-toolbar-block--pinned {
+  position: fixed !important;
+  z-index: 99 !important;
+}
+
 .catalog-product-list {
   .wishlist-main.catalog-card-actions {
     display: flex;

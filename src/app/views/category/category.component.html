@@ -355,94 +355,102 @@
           <div class="row" style="padding-right: 15px;">
 
             <!-- catalog toolbar -->
-            <div class="col-md-12 catalog-toolbar-block">
-              <div class="catalog-toolbar">
-                <div class="catalog-toolbar__left">
-                  <button *ngIf="tag_list?.length" type="button" class="catalog-pill-btn catalog-pill-btn--filters"
-                    [class.catalog-pill-btn--active]="filtersDrawerOpen || activeFilterCount"
-                    (click)="openFilters()">
-                    <span class="catalog-pill-btn__icon" aria-hidden="true">
-                      <i class="material-icons">tune</i>
-                    </span>
-                    <span class="catalog-pill-btn__text">SHOW FILTERS</span>
-                    <span *ngIf="activeFilterCount" class="catalog-pill-btn__badge">{{ activeFilterCount }}</span>
-                  </button>
-                </div>
-                <div class="catalog-toolbar__center" *ngIf="template_setting?.display_products_count">
-                  <span class="catalog-product-count">{{ catalogProductCountLabel }}</span>
-                </div>
-                <div class="catalog-toolbar__right">
-                  <div class="catalog-sort">
-                    <span class="catalog-sort__label">SORT BY:</span>
-                    <div class="catalog-pill-btn catalog-pill-btn--sort"
-                      [class.catalog-pill-btn--sort-mobile]="commonService.screen_width<992"
-                      (click)="openSortOptions()">
-                      <span class="catalog-pill-btn__text catalog-sort__value">{{ currentSortLabel }}</span>
+            <div class="col-md-12 catalog-toolbar-anchor" #catalogToolbarAnchor>
+              <div #catalogToolbarSentinel class="catalog-toolbar-sentinel" aria-hidden="true"></div>
+              <div class="catalog-toolbar-spacer" [style.height.px]="catalogToolbarPinned ? catalogToolbarHeight : 0" aria-hidden="true"></div>
+              <div #catalogToolbarBlock
+                class="catalog-toolbar-block"
+                [class.catalog-toolbar-block--pinned]="catalogToolbarPinned"
+                [style.top.px]="catalogToolbarPinned ? catalogHeaderOffset : null"
+                [style.left.px]="catalogToolbarPinned ? catalogToolbarLeft : null"
+                [style.width.px]="catalogToolbarPinned ? catalogToolbarWidth : null">
+                <div class="catalog-toolbar">
+                  <div class="catalog-toolbar__left">
+                    <button *ngIf="tag_list?.length" type="button" class="catalog-pill-btn catalog-pill-btn--filters"
+                      [class.catalog-pill-btn--active]="filtersDrawerOpen || activeFilterCount"
+                      (click)="openFilters()">
                       <span class="catalog-pill-btn__icon" aria-hidden="true">
-                        <i class="material-icons">sort</i>
+                        <i class="material-icons">tune</i>
                       </span>
-                      <select *ngIf="commonService.screen_width>=992" class="catalog-sort__select" name="sort_list"
-                        [(ngModel)]="sort_value" (ngModelChange)="onSortChange()">
-                        <option *ngFor="let x of sort_list;" [ngValue]="x.value">{{ x.name }}</option>
-                      </select>
+                      <span class="catalog-pill-btn__text catalog-pill-btn__text--full">SHOW FILTERS</span>
+                      <span class="catalog-pill-btn__text catalog-pill-btn__text--short">FILTERS</span>
+                      <span *ngIf="activeFilterCount" class="catalog-pill-btn__badge">{{ activeFilterCount }}</span>
+                    </button>
+                    <span *ngIf="template_setting?.display_products_count" class="catalog-product-count">{{ catalogProductCountLabel }}</span>
+                  </div>
+                  <div class="catalog-toolbar__right">
+                    <div class="catalog-sort">
+                      <span class="catalog-sort__label">SORT BY:</span>
+                      <div class="catalog-pill-btn catalog-pill-btn--sort"
+                        [class.catalog-pill-btn--sort-mobile]="commonService.screen_width<992"
+                        (click)="openSortOptions()">
+                        <span class="catalog-pill-btn__text catalog-sort__value">{{ currentSortLabel }}</span>
+                        <span class="catalog-pill-btn__icon" aria-hidden="true">
+                          <i class="material-icons">sort</i>
+                        </span>
+                        <select *ngIf="commonService.screen_width>=992" class="catalog-sort__select" name="sort_list"
+                          [(ngModel)]="sort_value" (ngModelChange)="onSortChange()">
+                          <option *ngFor="let x of sort_list;" [ngValue]="x.value">{{ x.name }}</option>
+                        </select>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
 
-              <div *ngIf="filterChips.length" class="catalog-active-filters">
-                <span *ngFor="let chip of filterChips" class="catalog-filter-chip">
-                  {{ chip.name }}: {{ chip.value }}
-                  <button type="button" class="catalog-filter-chip__remove" aria-label="Remove filter"
-                    (click)="removeFilterChip(chip)">
-                    <i class="material-icons">close</i>
-                  </button>
-                </span>
-                <button type="button" class="catalog-filter-chip__clear" (click)="clearTagFilter()">Clear all</button>
-              </div>
-              <!-- grid icons (desktop) -->
-              <div *ngIf="commonService?.screen_width>=992 && template_setting?.category_grid_options"
-                class="category-grid-select-wrapper mt-3">
-                <div class="d-flex grid-select">
-                  <label class="mb-0">
-                    <input type="radio" class="grid-input-element d-none" name="grid-select-opt"
-                      [(ngModel)]="gridType" value="two">
-                    <div class="card d-flex flex-row justify-content-center align-items-center">
-                      <span class="grid-select-inner-thum"></span>
-                      <span class="grid-select-inner-thum"></span>
-                    </div>
-                  </label>
-                  <label class="mb-0">
-                    <input type="radio" class="grid-input-element d-none" name="grid-select-opt"
-                      [(ngModel)]="gridType" value="three">
-                    <div class="card d-flex flex-row justify-content-center align-items-center">
-                      <span class="grid-select-inner-thum"></span>
-                      <span class="grid-select-inner-thum"></span>
-                      <span class="grid-select-inner-thum"></span>
-                    </div>
-                  </label>
-                  <label class="mb-0">
-                    <input type="radio" class="grid-input-element d-none" name="grid-select-opt"
-                      [(ngModel)]="gridType" value="four">
-                    <div class="card d-flex flex-row justify-content-center align-items-center">
-                      <span class="grid-select-inner-thum"></span>
-                      <span class="grid-select-inner-thum"></span>
-                      <span class="grid-select-inner-thum"></span>
-                      <span class="grid-select-inner-thum"></span>
-                    </div>
-                  </label>
-                  <label class="mb-0">
-                    <input type="radio" class="grid-input-element d-none" name="grid-select-opt"
-                      [(ngModel)]="gridType" value="six">
-                    <div class="card d-flex flex-row justify-content-center align-items-center">
-                      <span class="grid-select-inner-thum"></span>
-                      <span class="grid-select-inner-thum"></span>
-                      <span class="grid-select-inner-thum"></span>
-                      <span class="grid-select-inner-thum"></span>
-                      <span class="grid-select-inner-thum"></span>
-                      <span class="grid-select-inner-thum"></span>
-                    </div>
-                  </label>
+                <div *ngIf="filterChips.length" class="catalog-active-filters">
+                  <span *ngFor="let chip of filterChips" class="catalog-filter-chip">
+                    {{ chip.name }}: {{ chip.value }}
+                    <button type="button" class="catalog-filter-chip__remove" aria-label="Remove filter"
+                      (click)="removeFilterChip(chip)">
+                      <i class="material-icons">close</i>
+                    </button>
+                  </span>
+                  <button type="button" class="catalog-filter-chip__clear" (click)="clearTagFilter()">Clear all</button>
+                </div>
+                <!-- grid icons (desktop) -->
+                <div *ngIf="commonService?.screen_width>=992 && template_setting?.category_grid_options"
+                  class="category-grid-select-wrapper mt-3">
+                  <div class="d-flex grid-select">
+                    <label class="mb-0">
+                      <input type="radio" class="grid-input-element d-none" name="grid-select-opt"
+                        [(ngModel)]="gridType" value="two">
+                      <div class="card d-flex flex-row justify-content-center align-items-center">
+                        <span class="grid-select-inner-thum"></span>
+                        <span class="grid-select-inner-thum"></span>
+                      </div>
+                    </label>
+                    <label class="mb-0">
+                      <input type="radio" class="grid-input-element d-none" name="grid-select-opt"
+                        [(ngModel)]="gridType" value="three">
+                      <div class="card d-flex flex-row justify-content-center align-items-center">
+                        <span class="grid-select-inner-thum"></span>
+                        <span class="grid-select-inner-thum"></span>
+                        <span class="grid-select-inner-thum"></span>
+                      </div>
+                    </label>
+                    <label class="mb-0">
+                      <input type="radio" class="grid-input-element d-none" name="grid-select-opt"
+                        [(ngModel)]="gridType" value="four">
+                      <div class="card d-flex flex-row justify-content-center align-items-center">
+                        <span class="grid-select-inner-thum"></span>
+                        <span class="grid-select-inner-thum"></span>
+                        <span class="grid-select-inner-thum"></span>
+                        <span class="grid-select-inner-thum"></span>
+                      </div>
+                    </label>
+                    <label class="mb-0">
+                      <input type="radio" class="grid-input-element d-none" name="grid-select-opt"
+                        [(ngModel)]="gridType" value="six">
+                      <div class="card d-flex flex-row justify-content-center align-items-center">
+                        <span class="grid-select-inner-thum"></span>
+                        <span class="grid-select-inner-thum"></span>
+                        <span class="grid-select-inner-thum"></span>
+                        <span class="grid-select-inner-thum"></span>
+                        <span class="grid-select-inner-thum"></span>
+                        <span class="grid-select-inner-thum"></span>
+                      </div>
+                    </label>
+                  </div>
                 </div>
               </div>
             </div>
