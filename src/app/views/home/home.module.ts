@@ -8,7 +8,7 @@ import { HomeSwiperDirective } from './directives/home-swiper.directive';
 import { HomeHighlightsDirective } from './directives/home-highlights.directive';
 import { SharedBlogUiModule } from '../features/blogs/shared/shared-blog-ui.module';
 
-import { LucideAngularModule, ArrowUp, ChevronLeft, ChevronRight } from 'lucide-angular';
+import { LucideAngularModule, ArrowUp, ChevronLeft, ChevronRight, CloudUpload, Search, Sparkles } from 'lucide-angular';
 
 @NgModule({
   declarations: [HomeComponent, HomeSwiperDirective, HomeHighlightsDirective],
@@ -17,7 +17,7 @@ import { LucideAngularModule, ArrowUp, ChevronLeft, ChevronRight } from 'lucide-
     SharedModule,
     SharedBlogUiModule,
     HomeRoutingModule,
-    LucideAngularModule.pick({ ArrowUp, ChevronLeft, ChevronRight })
+    LucideAngularModule.pick({ ArrowUp, ChevronLeft, ChevronRight, CloudUpload, Search, Sparkles })
   ]
 })
 

@@ -168,6 +168,76 @@
   </section>
   <!-- #Primary Main Slider -->
 
+  <!-- Visual Search promo -->
+  <section
+    *ngIf="commonService.ys_features.indexOf('product_search') != -1"
+    class="primary-section home-visual-search"
+    aria-labelledby="home-visual-search-title"
+  >
+    <div class="{{ template_setting?.body_type }}">
+      <div class="home-visual-search__grid">
+        <div class="home-visual-search__content">
+          <span class="home-visual-search__eyebrow">Introducing Visual Search</span>
+          <div class="titles custom-title w-auto pl-0">
+            <h2 id="home-visual-search-title">
+              Saree Search, Inspired by Your Inspiration.
+            </h2>
+            <p class="mb-0">
+              Upload an inspiration photo or describe the saree you have in mind. Our AI reads weave,
+              colour, and style - then surfaces matching sarees from the Tulsi Silks collection.
+            </p>
+          </div>
+
+          <div class="home-visual-search__bar">
+            <button type="button" class="home-visual-search__upload" (click)="goToSearchPage()">
+              <lucide-icon name="cloud-upload" [size]="18" stroke="1.75"></lucide-icon>
+              <span>Upload photo</span>
+            </button>
+            <span class="home-visual-search__divider" aria-hidden="true"></span>
+            <label class="home-visual-search__field" for="home-visual-search-input">
+              <input
+                id="home-visual-search-input"
+                type="text"
+                class="home-visual-search__input"
+                placeholder="Search by colour, weave, or style…"
+                [(ngModel)]="visualSearchQuery"
+                (keydown.enter)="goToSearchPage()"
+                autocomplete="off"
+              >
+              <lucide-icon name="search" [size]="17" stroke="2" class="home-visual-search__field-icon"></lucide-icon>
+            </label>
+            <button type="button" class="home-visual-search__submit" (click)="goToSearchPage()">Search</button>
+          </div>
+        </div>
+
+        <div class="home-visual-search__visual" aria-hidden="true">
+          <div class="home-visual-search__card home-visual-search__card--inspiration">
+            <img src="assets/images/img-3.jpg" alt="" width="280" height="360" loading="lazy" decoding="async">
+            <span class="home-visual-search__card-label">Inspiration Image</span>
+          </div>
+
+          <div class="home-visual-search__match-badge">
+            <lucide-icon name="sparkles" [size]="14" stroke="2"></lucide-icon>
+            <span>AI matching: <strong>98% Match Found</strong></span>
+          </div>
+
+          <div class="home-visual-search__card home-visual-search__card--result">
+            <span class="home-visual-search__frame home-visual-search__frame--tl"></span>
+            <span class="home-visual-search__frame home-visual-search__frame--tr"></span>
+            <span class="home-visual-search__frame home-visual-search__frame--bl"></span>
+            <span class="home-visual-search__frame home-visual-search__frame--br"></span>
+            <img src="assets/images/img-2.jpg" alt="" width="280" height="360" loading="lazy" decoding="async">
+            <div class="home-visual-search__product">
+              <p class="home-visual-search__product-name">Red Soft Silk Saree</p>
+              <p class="home-visual-search__product-meta">SKU no - T761602 | Price - ₹11,110</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- #Visual Search promo -->
+
   <!-- LAYOUTS -->
   <ng-container
     *ngFor="

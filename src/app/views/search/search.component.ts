@@ -74,6 +74,7 @@ export class SearchComponent implements OnInit, OnDestroy {
   selectedImageFile: File | null = null;
   imagePreview: string | null = null;
   classifyLoader: boolean = false;
+  loadingStatusText = '';
   imageError: string = '';
   imageDetected: boolean = false;
   analysisCached: boolean = false;
@@ -87,12 +88,28 @@ export class SearchComponent implements OnInit, OnDestroy {
   expandedFilters: Record<string, boolean> = {};
 
   private pendingQuery: string | null = null;
+  private pendingTextQuery: string | null = null;
   private restorePending = false;
   private sessionRestorePending = false;
   private cachedImageFingerprint: string | null = null;
   private cachedClassification: Record<string, unknown> | null = null;
+  private passColourHint = false;
   private countdownInterval: any;
   private typewriterTimeout: ReturnType<typeof setTimeout> | null = null;
+  private loadingStatusInterval: ReturnType<typeof setInterval> | null = null;
+  private loadingStatusIndex = 0;
+  private wasClassifying = false;
+  private readonly analyseLoadingPhrases = [
+    'Analysing…',
+    'Reading style…',
+    'Detecting fabric…',
+    'Getting details…'
+  ];
+  private readonly imageSearchLoadingPhrases = [
+    'Finding matches…',
+    'Loading sarees…',
+    'Almost there…'
+  ];
   private typewriterPhraseIndex = 0;
   private typewriterCharIndex = 0;
   private typewriterBackspacing = false;
@@ -132,6 +149,11 @@ export class SearchComponent implements OnInit, OnDestroy {
     }
     this.activeRoute.queryParams.subscribe((params: Params) => {
       this.pendingQuery = params['q'] ? String(params['q']) : null;
+      this.pendingTextQuery = params['text'] ? String(params['text']).trim() : null;
+      if (this.pendingTextQuery) {
+        this.searchQuery = this.pendingTextQuery;
+        this.stopTypewriterAnimation();
+      }
       if(this.tag_list.length) this.handleRouteState();
     });
     this.commonService.breadCrumbList(this.bcList);
@@ -195,6 +217,10 @@ export class SearchComponent implements OnInit, OnDestroy {
     return !!(this.selectedImageFile || this.imagePreview);
   }
 
+  get showImageLoadingText(): boolean {
+    return this.classifyLoader || (this.searchLoader && this.hasUploadedImage);
+  }
+
   onSearchInputFocus() {
     this.stopTypewriterAnimation();
   }
@@ -216,17 +242,16 @@ export class SearchComponent implements OnInit, OnDestroy {
   applyFilters() {
     this.filterModal.hide();
     this.filtersDrawerOpen = false;
-    if (this.selectedImageFile) {
-      this.onAnalyseClick();
-      return;
-    }
+    this.passColourHint = false;
     if (this.searchQuery.trim()) {
       this.runTextSearch();
       return;
     }
     if (this.hasActiveFilters) {
       this.runFilterSearch();
+      return;
     }
+    this.imageError = 'Select at least one filter to apply.';
   }
 
   cancelFilters() {
@@ -360,6 +385,7 @@ export class SearchComponent implements OnInit, OnDestroy {
     this.imageError = '';
     this.afterSearchEvent = true;
     this.searchLoader = true;
+    this.syncImageLoadingStatus();
     this.page = 1;
     this.fallbackUsed = false;
     this.searchMode = 'image';
@@ -368,6 +394,7 @@ export class SearchComponent implements OnInit, OnDestroy {
 
   onClearFilters() {
     this.clearTagFilter();
+    this.passColourHint = false;
     this.imageError = '';
     this.imageDetected = false;
     this.analysisCached = false;
@@ -429,9 +456,11 @@ export class SearchComponent implements OnInit, OnDestroy {
     if(option) delete option.checked;
     this.imageDetected = false;
     this.analysisCached = false;
+    this.passColourHint = false;
     if(this.afterSearchEvent && this.hasActiveFilters) {
       this.page = 1;
       this.searchLoader = true;
+      this.syncImageLoadingStatus();
       this.runSearchWithFallback();
     }
     else if(!this.hasActiveFilters) {
@@ -443,6 +472,7 @@ export class SearchComponent implements OnInit, OnDestroy {
 
   clearImagePreview() {
     this.clearImageOnly();
+    this.passColourHint = false;
     this.imageDetected = false;
     this.analysisCached = false;
     this.cachedImageFingerprint = null;
@@ -488,6 +518,15 @@ export class SearchComponent implements OnInit, OnDestroy {
       return;
     }
 
+    if(this.pendingTextQuery) {
+      const text = this.pendingTextQuery;
+      this.pendingTextQuery = null;
+      this.searchQuery = text;
+      this.stopTypewriterAnimation();
+      this.runTextSearch();
+      return;
+    }
+
     if(this.pendingQuery) {
       const materialGroup = this.tag_list.find(group => group.name === 'Material');
       if(materialGroup) {
@@ -509,6 +548,7 @@ export class SearchComponent implements OnInit, OnDestroy {
     if(this.analysisCached && this.cachedClassification) {
       this.applyClassification(this.cachedClassification);
       this.imageDetected = true;
+      this.passColourHint = true;
       this.runFilterSearch();
       return;
     }
@@ -587,10 +627,12 @@ export class SearchComponent implements OnInit, OnDestroy {
   private startClassifyOnly() {
     if(!this.selectedImageFile) return;
     this.classifyLoader = true;
+    this.syncImageLoadingStatus();
     this.imageError = '';
     this.storeApi.CLASSIFY_SAREE(this.selectedImageFile).subscribe({
       next: result => {
         this.classifyLoader = false;
+        this.syncImageLoadingStatus();
         if(result.status && result.classification) {
           this.applyClassification(result.classification);
           this.imageDetected = true;
@@ -602,6 +644,7 @@ export class SearchComponent implements OnInit, OnDestroy {
       },
       error: () => {
         this.classifyLoader = false;
+        this.syncImageLoadingStatus();
         this.imageError = 'Classification failed. Please try again.';
       }
     });
@@ -610,6 +653,7 @@ export class SearchComponent implements OnInit, OnDestroy {
   private classifyAndSearch() {
     if(!this.selectedImageFile) return;
     this.classifyLoader = true;
+    this.syncImageLoadingStatus();
     this.imageError = '';
     this.page = 1;
     this.fallbackUsed = false;
@@ -619,7 +663,11 @@ export class SearchComponent implements OnInit, OnDestroy {
         this.classifyLoader = false;
         this.applyClassification(this.cachedClassification);
         this.imageDetected = true;
+        this.passColourHint = true;
         this.onSearch();
+        if (!this.showImageLoadingText) {
+          this.syncImageLoadingStatus();
+        }
         return;
       }
 
@@ -630,9 +678,11 @@ export class SearchComponent implements OnInit, OnDestroy {
             this.applyClassification(result.classification);
             this.imageDetected = true;
             void this.persistClassifySession(this.selectedImageFile!, result.classification);
+            this.passColourHint = true;
             this.runFilterSearch();
           }
           else {
+            this.syncImageLoadingStatus();
             this.imageError = result.message || 'Could not classify image. Please select filters manually.';
             if(result.retry_after_seconds > 0) {
               this.startCountdown(result.retry_after_seconds);
@@ -641,6 +691,7 @@ export class SearchComponent implements OnInit, OnDestroy {
         },
         error: () => {
           this.classifyLoader = false;
+          this.syncImageLoadingStatus();
           this.imageError = 'Classification failed. Please try again.';
         }
       });
@@ -734,11 +785,13 @@ export class SearchComponent implements OnInit, OnDestroy {
       next: result => {
         this.applySearchResult(result);
         this.searchLoader = false;
+        this.syncImageLoadingStatus();
       },
       error: err => {
         console.log("search error", err);
         this.imageError = 'Search failed. Please try again.';
         this.searchLoader = false;
+        this.syncImageLoadingStatus();
       }
     });
   }
@@ -783,7 +836,30 @@ export class SearchComponent implements OnInit, OnDestroy {
       });
     }
 
-    return { filters, skip, limit };
+    const payload: {
+      filters: Record<string, string[]>;
+      skip: number;
+      limit: number;
+      colour_hint?: string[];
+    } = { filters, skip, limit };
+
+    if (this.passColourHint && this.searchMode === 'image') {
+      const colourHint = this.getClassificationColourHint();
+      if (colourHint.length) {
+        payload.colour_hint = colourHint;
+      }
+    }
+
+    return payload;
+  }
+
+  private getClassificationColourHint(): string[] {
+    const raw = this.cachedClassification?.['colour_hint'] ?? this.cachedClassification?.['color_hint'];
+    if (!Array.isArray(raw)) return [];
+    return raw
+      .filter((hint): hint is string => typeof hint === 'string')
+      .map(hint => hint.trim())
+      .filter(Boolean);
   }
 
   private getSelectedFiltersMap(): Record<string, string> {
@@ -880,6 +956,7 @@ export class SearchComponent implements OnInit, OnDestroy {
       this.page = session.page || 1;
       this.fallbackUsed = !!session.fallbackUsed;
       this.searchLoader = true;
+      this.syncImageLoadingStatus();
       if(this.page > 1) {
         this.fetchPage(this.page);
       } else {
@@ -953,12 +1030,55 @@ export class SearchComponent implements OnInit, OnDestroy {
     if(this.imagePreview?.startsWith('blob:')) URL.revokeObjectURL(this.imagePreview);
     this.imagePreview = null;
     this.classifyLoader = false;
+    this.syncImageLoadingStatus();
   }
 
   ngOnDestroy() {
     if(this.imagePreview?.startsWith('blob:')) URL.revokeObjectURL(this.imagePreview);
     clearInterval(this.countdownInterval);
     this.clearTypewriterTimeout();
+    this.stopImageLoadingStatus();
+  }
+
+  private getImageLoadingPhrases(): string[] {
+    return this.classifyLoader ? this.analyseLoadingPhrases : this.imageSearchLoadingPhrases;
+  }
+
+  private syncImageLoadingStatus() {
+    if (!isPlatformBrowser(this.platformId)) return;
+
+    const classifying = this.classifyLoader;
+    if (classifying && !this.wasClassifying) {
+      this.loadingStatusIndex = 0;
+    } else if (!classifying && this.wasClassifying && this.searchLoader && this.hasUploadedImage) {
+      this.loadingStatusIndex = 0;
+    }
+    this.wasClassifying = classifying;
+
+    if (this.showImageLoadingText) {
+      const phrases = this.getImageLoadingPhrases();
+      this.loadingStatusText = phrases[this.loadingStatusIndex % phrases.length];
+      if (!this.loadingStatusInterval) {
+        this.loadingStatusInterval = setInterval(() => {
+          const activePhrases = this.getImageLoadingPhrases();
+          this.loadingStatusIndex = (this.loadingStatusIndex + 1) % activePhrases.length;
+          this.loadingStatusText = activePhrases[this.loadingStatusIndex];
+        }, 1800);
+      }
+      return;
+    }
+
+    this.stopImageLoadingStatus();
+  }
+
+  private stopImageLoadingStatus() {
+    if (this.loadingStatusInterval) {
+      clearInterval(this.loadingStatusInterval);
+      this.loadingStatusInterval = null;
+    }
+    this.loadingStatusText = '';
+    this.loadingStatusIndex = 0;
+    this.wasClassifying = false;
   }
 
   private startTypewriterAnimation() {

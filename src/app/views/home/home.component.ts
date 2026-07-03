@@ -57,6 +57,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   styleIndex: number = 0; maxWidth: number = 720;
+  visualSearchQuery = '';
   imgBaseUrl: string = environment.img_baseurl;
   template_setting = environment.template_setting;
 
@@ -1094,6 +1095,17 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
       }
     });
   }
+
+  goToSearchPage(): void {
+    if (this.commonService.ys_features.indexOf('product_search') === -1) return;
+    const text = this.visualSearchQuery.trim();
+    if (text) {
+      this.router.navigate(['/search'], { queryParams: { text } });
+      return;
+    }
+    this.router.navigate(['/search']);
+  }
+
   processAiStyles(list: any) {
     return new Promise((resolve) => {
       const sendData: Record<string, any[]> = {};

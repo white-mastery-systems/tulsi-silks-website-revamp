@@ -18,7 +18,7 @@
         AI-POWERED VISUAL SEARCH
       </span>
 
-      <h1 class="search-hero__title">Search by Saree Photo or Style</h1>
+      <h1 class="search-hero__title">Show Us a Photo. We'll Find the Saree.</h1>
 
       <div class="search-command">
         <div
@@ -30,18 +30,25 @@
           (keydown.enter)="onUploadZoneClick(sareeFileInput, $event)"
         >
           <ng-container *ngIf="!imagePreview">
-            <lucide-icon name="image-plus" [size]="28" stroke="1.25"></lucide-icon>
-            <p class="search-preview-box__hint">Uploaded image preview will show here</p>
+            <div class="search-preview-box__placeholder">
+              <span class="search-preview-box__icon-wrap">
+                <lucide-icon name="image-plus" [size]="24" stroke="1.5"></lucide-icon>
+              </span>
+              <p class="search-preview-box__title">Drop or tap to upload</p>
+              <p class="search-preview-box__hint">Preview appears here. JPG, PNG and WEBP supported.</p>
+            </div>
+            <span class="search-preview-box__label">Inspiration Image</span>
           </ng-container>
           <ng-container *ngIf="imagePreview">
             <img class="search-preview-box__img" [src]="imagePreview" alt="Uploaded saree photo">
+            <span class="search-preview-box__label">Inspiration Image</span>
             <button type="button" class="search-preview-box__clear" (click)="onClearImageClick($event)" aria-label="Remove photo">&#x2715;</button>
           </ng-container>
         </div>
 
         <div class="search-command__main">
           <div class="search-wrapper">
-            <div class="smart-search-bar">
+            <div class="smart-search-bar" [class.bar--has-image]="hasUploadedImage">
 
               <div
                 class="upload-zone"
@@ -50,8 +57,10 @@
                 tabindex="0"
                 (keydown.enter)="onUploadZoneClick(sareeFileInput, $event)"
               >
-                <lucide-icon name="cloud-upload" [size]="17" stroke="1.75"></lucide-icon>
-                <span class="upload-zone__label">Upload photo / Search with an image</span>
+                <span class="upload-zone__icon">
+                  <lucide-icon name="cloud-upload" [size]="16" stroke="1.85"></lucide-icon>
+                </span>
+                <span class="upload-zone__label">{{ hasUploadedImage ? 'Change photo' : 'Upload photo / Search with an image' }}</span>
               </div>
 
               <label class="search-field-wrap" [class.search-field-wrap--disabled]="hasUploadedImage" for="search-text-input">
@@ -71,7 +80,8 @@
               </label>
 
               <button type="button" class="search-btn" (click)="onMainSearch()" [disabled]="searchLoader || classifyLoader">
-                <span *ngIf="searchLoader || classifyLoader" class="btn-spinner"></span>
+                <span *ngIf="searchLoader && !showImageLoadingText" class="btn-spinner"></span>
+                <span *ngIf="showImageLoadingText" class="search-btn__status">{{ loadingStatusText }}</span>
                 <span *ngIf="!(searchLoader || classifyLoader)">{{ hasUploadedImage ? 'Analyse' : 'Search' }}</span>
               </button>
             </div>
@@ -84,8 +94,8 @@
               <span class="presets-row__label">Try inspiration presets:</span>
               <button type="button" class="preset-pill" (click)="selectPreset('Kanjivaram Silk')">Kanchivaram Silks</button>
               <button type="button" class="preset-pill" (click)="selectPreset('Banarasi')">Banarasi</button>
-              <button type="button" class="preset-pill" (click)="selectPreset('Sungudi')">Madurai Sungudi</button>
-              <button type="button" class="preset-pill" (click)="selectPreset('Cotton saree')">Coimbatore Cotton</button>
+              <button type="button" class="preset-pill" (click)="selectPreset('Tussar')">Tussar Silks</button>
+              <button type="button" class="preset-pill" (click)="selectPreset('Cotton saree')">Cotton Sarees</button>
             </div>
 
             <div class="hiw-row">
