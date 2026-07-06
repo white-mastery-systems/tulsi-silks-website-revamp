@@ -126,7 +126,8 @@ export class HomeSwiperDirective {
     this.deferSwiperUrgent =
       HomeSwiperDirective.isHomeHeroSwiperHost(el) ||
       HomeSwiperDirective.isFeaturedSectionSwiperHost(el) ||
-      HomeSwiperDirective.isTabSwiperHost(el);
+      HomeSwiperDirective.isTabSwiperHost(el) ||
+      HomeSwiperDirective.isTestimonialSwiperHost(el);
   }
 
   /** Tab slider (multi-tab featured products): re-rendered on every tab switch via *ngIf,
@@ -170,6 +171,15 @@ export class HomeSwiperDirective {
       if (el.classList[i].includes('feasecslider')) {
         return true;
       }
+    }
+    return false;
+  }
+
+  /** Testimonial carousel: client-only segment — init promptly when layout expands after hydration. */
+  private static isTestimonialSwiperHost(el: HTMLElement): boolean {
+    if (!el?.classList) return false;
+    for (let i = 0; i < el.classList.length; i++) {
+      if (el.classList[i].includes('testimonialslider')) return true;
     }
     return false;
   }
@@ -312,6 +322,10 @@ export class HomeSwiperDirective {
           nextEl: '#swipe_next_'+swipeElement.split("_")[1],
           prevEl: '#swipe_prev_'+swipeElement.split("_")[1]
         }
+      }
+      if (swipeElement.includes('testimonial')) {
+        swipeConfig.observer = true;
+        swipeConfig.observeParents = true;
       }
       if(configData.loop) swipeConfig.loop = true;
       if(configData.auto_play) swipeConfig.autoplay = { delay: 3000, disableOnInteraction: false };

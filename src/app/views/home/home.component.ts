@@ -803,8 +803,10 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
       }
       else if(segment.type=="testimonial") {
         let cardCount = this.swiperService.testimonial.card_count;
-        if(segment.image_list.length && cardCount > segment.image_list.length) {
-          let remaining = cardCount - segment.image_list.length;
+        const slides = (segment.image_list ?? []).filter((item: any) => !!item?.content_details);
+        segment.image_list = slides;
+        if(slides.length && cardCount > slides.length) {
+          let remaining = cardCount - slides.length;
           for(let i=0; i<remaining; i++)
           {
             segment.image_list = segment.image_list.concat(segment.image_list);
@@ -1104,6 +1106,20 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
       return;
     }
     this.router.navigate(['/search']);
+  }
+
+  /** Testimonial slides with renderable review content. */
+  testimonialSlides(segment: { image_list?: any[] }): any[] {
+    return (segment?.image_list ?? []).filter((item) => !!item?.content_details);
+  }
+
+  /** Renders the visual-search promo immediately after the Summer Sarees Edit CMS block. */
+  showVisualSearchAfterSegment(segment: { heading?: string }): boolean {
+    if (this.commonService.ys_features.indexOf('product_search') === -1) {
+      return false;
+    }
+    const heading = (segment?.heading ?? '').trim().toLowerCase();
+    return heading.includes('summer sarees edit');
   }
 
   processAiStyles(list: any) {

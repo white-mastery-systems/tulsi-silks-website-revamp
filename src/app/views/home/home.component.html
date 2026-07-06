@@ -168,75 +168,77 @@
   </section>
   <!-- #Primary Main Slider -->
 
-  <!-- Visual Search promo -->
-  <section
-    *ngIf="commonService.ys_features.indexOf('product_search') != -1"
-    class="primary-section home-visual-search"
-    aria-labelledby="home-visual-search-title"
-  >
-    <div class="{{ template_setting?.body_type }}">
-      <div class="home-visual-search__grid">
-        <div class="home-visual-search__content">
-          <span class="home-visual-search__eyebrow">Introducing Visual Search</span>
-          <div class="titles custom-title w-auto pl-0">
-            <h2 id="home-visual-search-title">
-              Saree Search, Inspired by Your Inspiration.
-            </h2>
-            <p class="mb-0">
-              Upload an inspiration photo or describe the saree you have in mind. Our AI reads weave,
-              colour, and style - then surfaces matching sarees from the Tulsi Silks collection.
-            </p>
+  <ng-template #homeVisualSearch>
+    <section
+      class="primary-section home-visual-search"
+      aria-labelledby="home-visual-search-title"
+    >
+      <div class="{{ template_setting?.body_type }}">
+        <div class="home-visual-search__grid">
+          <div class="home-visual-search__content">
+            <span class="home-visual-search__eyebrow">Introducing Visual Search</span>
+            <div class="titles custom-title w-auto pl-0">
+              <h2 id="home-visual-search-title">
+                Saree Search, Inspired by Your Inspiration.
+              </h2>
+              <p class="mb-0">
+                Upload an inspiration photo or describe the saree you have in mind. Our AI reads weave,
+                colour, and style - then surfaces matching sarees from the Tulsi Silks collection.
+              </p>
+            </div>
+
+            <div class="home-visual-search__bar">
+              <button type="button" class="home-visual-search__upload" (click)="goToSearchPage()">
+                <lucide-icon name="cloud-upload" [size]="18" stroke="1.75"></lucide-icon>
+                <span>Upload photo</span>
+              </button>
+              <label class="home-visual-search__field" for="home-visual-search-input">
+                <lucide-icon name="search" [size]="17" stroke="2" class="home-visual-search__field-icon"></lucide-icon>
+                <input
+                  id="home-visual-search-input"
+                  type="text"
+                  class="home-visual-search__input"
+                  placeholder="Search by colour, weave, or style…"
+                  [(ngModel)]="visualSearchQuery"
+                  (keydown.enter)="goToSearchPage()"
+                  autocomplete="off"
+                >
+              </label>
+              <button type="button" class="home-visual-search__submit" (click)="goToSearchPage()">Search</button>
+            </div>
           </div>
 
-          <div class="home-visual-search__bar">
-            <button type="button" class="home-visual-search__upload" (click)="goToSearchPage()">
-              <lucide-icon name="cloud-upload" [size]="18" stroke="1.75"></lucide-icon>
-              <span>Upload photo</span>
-            </button>
-            <span class="home-visual-search__divider" aria-hidden="true"></span>
-            <label class="home-visual-search__field" for="home-visual-search-input">
-              <input
-                id="home-visual-search-input"
-                type="text"
-                class="home-visual-search__input"
-                placeholder="Search by colour, weave, or style…"
-                [(ngModel)]="visualSearchQuery"
-                (keydown.enter)="goToSearchPage()"
-                autocomplete="off"
-              >
-              <lucide-icon name="search" [size]="17" stroke="2" class="home-visual-search__field-icon"></lucide-icon>
-            </label>
-            <button type="button" class="home-visual-search__submit" (click)="goToSearchPage()">Search</button>
-          </div>
-        </div>
+          <div class="home-visual-search__visual" aria-hidden="true">
+            <div class="home-visual-search__card home-visual-search__card--inspiration">
+              <div class="home-visual-search__card-media">
+                <img src="assets/images/img-3.jpg" alt="" width="200" height="264" loading="lazy" decoding="async">
+                <span class="home-visual-search__card-label">Inspiration Image</span>
+              </div>
+            </div>
 
-        <div class="home-visual-search__visual" aria-hidden="true">
-          <div class="home-visual-search__card home-visual-search__card--inspiration">
-            <img src="assets/images/img-3.jpg" alt="" width="280" height="360" loading="lazy" decoding="async">
-            <span class="home-visual-search__card-label">Inspiration Image</span>
-          </div>
+            <div class="home-visual-search__match-badge">
+              <lucide-icon name="sparkles" [size]="14" stroke="2"></lucide-icon>
+              <span>AI matching: <strong>98% Match Found</strong></span>
+            </div>
 
-          <div class="home-visual-search__match-badge">
-            <lucide-icon name="sparkles" [size]="14" stroke="2"></lucide-icon>
-            <span>AI matching: <strong>98% Match Found</strong></span>
-          </div>
-
-          <div class="home-visual-search__card home-visual-search__card--result">
-            <span class="home-visual-search__frame home-visual-search__frame--tl"></span>
-            <span class="home-visual-search__frame home-visual-search__frame--tr"></span>
-            <span class="home-visual-search__frame home-visual-search__frame--bl"></span>
-            <span class="home-visual-search__frame home-visual-search__frame--br"></span>
-            <img src="assets/images/img-2.jpg" alt="" width="280" height="360" loading="lazy" decoding="async">
-            <div class="home-visual-search__product">
-              <p class="home-visual-search__product-name">Red Soft Silk Saree</p>
-              <p class="home-visual-search__product-meta">SKU no - T761602 | Price - ₹11,110</p>
+            <div class="home-visual-search__card home-visual-search__card--result">
+              <div class="home-visual-search__result-media">
+                <span class="home-visual-search__frame home-visual-search__frame--tl"></span>
+                <span class="home-visual-search__frame home-visual-search__frame--tr"></span>
+                <span class="home-visual-search__frame home-visual-search__frame--bl"></span>
+                <span class="home-visual-search__frame home-visual-search__frame--br"></span>
+                <img src="assets/images/img-2.jpg" alt="" width="200" height="264" loading="lazy" decoding="async">
+              </div>
+              <div class="home-visual-search__product">
+                <p class="home-visual-search__product-name">Red Soft Silk Saree</p>
+                <p class="home-visual-search__product-price">₹11,110</p>
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
-  </section>
-  <!-- #Visual Search promo -->
+    </section>
+  </ng-template>
 
   <!-- LAYOUTS -->
   <ng-container
@@ -2582,11 +2584,7 @@
     <!-- #Secondary Banner -->
 
     <!-- Testimonial -->
-    <!-- @defer: testimonials are below-fold UI only — zero SEO value on the homepage.
-         SSR emits only the placeholder div; the section is rendered client-side when
-         it scrolls into view. Saves ~30–60 KB of testimonial-card DOM from the SSR HTML. -->
-    <ng-container *ngIf="segment.type == 'testimonial' && segment.image_list?.length >= swiperService.testimonial?.card_count">
-    @defer (on viewport; prefetch on idle) {
+    <ng-container *ngIf="segment.type == 'testimonial' && testimonialSlides(segment).length">
     <section
       class="primary-section testimonial-sec feature-slide-sec"
       [attr.aria-labelledby]="segment.heading ? 'home-' + segment.type + '-title-' + i : null"
@@ -2600,7 +2598,7 @@
               <h2 [attr.id]="'home-' + segment.type + '-title-' + i">{{ segment.heading }}</h2>
               <p *ngIf="segment.sub_heading" [innerHTML]="segment.sub_heading"></p>
             </div>
-            <ng-container *ngIf="commonService?.desktop_device && segment.image_list?.length > 1">
+            <ng-container *ngIf="commonService?.desktop_device && testimonialSlides(segment).length > 1">
               <div
                 id="swipe_next_{{ i + 1 }}"
                 class="swiper-button swiper-button-next"
@@ -2638,11 +2636,11 @@
         >
           <div class="swiper-wrapper">
             <div
-              *ngFor="let x of segment.image_list; let j = index"
+              *ngFor="let x of testimonialSlides(segment); let j = index"
               class="swiper-slide testimonial-slide"
             >
               <article class="testimonial-card">
-                <div class="testimonial-card__body" *ngIf="x?.content_details">
+                <div class="testimonial-card__body">
                   <div
                     class="testimonial-card__stars"
                     [attr.aria-label]="(x.content_details.review_star || 0) + ' out of 5 stars'"
@@ -2698,9 +2696,6 @@
         </div>
       </div>
     </section>
-    } @placeholder {
-      <div class="defer-section-placeholder" aria-hidden="true" style="min-height:220px"></div>
-    }
     </ng-container>
     <!-- #Testimonial -->
 
@@ -3207,6 +3202,10 @@
       </section>
     </ng-container>
     <!-- #Visit Our Store -->
+
+    <ng-container *ngIf="showVisualSearchAfterSegment(segment)">
+      <ng-container *ngTemplateOutlet="homeVisualSearch"></ng-container>
+    </ng-container>
   </ng-container>
   <!-- #LAYOUTS -->
 
