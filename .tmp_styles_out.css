@@ -7937,7 +7937,7 @@ button:hover .box .spinner {
   transition-duration: 0.3s;
   padding: 0 30px;
   border: none;
-  color: #ffffff;
+  color: #ffffff !important;
   font-weight: 400;
   background: #000000;
   cursor: pointer;

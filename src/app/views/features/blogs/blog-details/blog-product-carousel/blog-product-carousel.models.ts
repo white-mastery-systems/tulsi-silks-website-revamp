@@ -14,5 +14,7 @@ export interface ProductCarouselBlockData {
   brandLabel?: string;
   category_id?: string;
   productLimit?: number;
+  buttonLabel?: string;
+  buttonLink?: string;
   products?: BlogCarouselProduct[];
 }

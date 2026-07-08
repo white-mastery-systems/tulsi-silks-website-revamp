@@ -133,7 +133,7 @@ export class BlogRendererComponent implements OnChanges {
 
     const tryParse = (blocks: any[]): string => {
       const htmlRaw = parser.parse({ blocks });
-      return wrapEditorJsArticleSections(htmlRaw);
+      return this.decorateEjTables(wrapEditorJsArticleSections(htmlRaw));
     };
 
     // 1) First attempt: render as-is.
@@ -175,5 +175,63 @@ export class BlogRendererComponent implements OnChanges {
         return '';
       }
     }
+  }
+
+  /**
+   * Ensure editorial tables get predictable classes for header styling:
+   * - with <th>: mark table as `ej-table--has-th`
+   * - without <th>: mark `ej-table--no-th` and first cell as `ej-table__label`
+   */
+  private decorateEjTables(html: string): string {
+    if (!html || html.indexOf('ej-table') === -1) return html;
+    return html.replace(
+      /<table\b([^>]*)class=(["'])([^"']*)\2([^>]*)>([\s\S]*?)<\/table>/gi,
+      (_full, before: string, _q: string, classList: string, after: string, inner: string) => {
+        const classes = new Set(
+          String(classList)
+            .split(/\s+/)
+            .map((c) => c.trim())
+            .filter(Boolean)
+        );
+        if (!classes.has('ej-table')) {
+          return `<table${before}class="${classList}"${after}>${inner}</table>`;
+        }
+
+        const hasTh = /<th\b/i.test(inner);
+        classes.delete('ej-table--has-th');
+        classes.delete('ej-table--no-th');
+        classes.add(hasTh ? 'ej-table--has-th' : 'ej-table--no-th');
+
+        let nextInner = inner;
+        if (!hasTh) {
+          // Mark first cell of each row as the label/heading cell.
+          nextInner = nextInner.replace(/<tr\b([^>]*)>([\s\S]*?)<\/tr>/gi, (rowFull, rowAttrs: string, rowInner: string) => {
+            let firstCellDone = false;
+            const updatedRowInner = rowInner.replace(
+              /<(td)(\b[^>]*)>/gi,
+              (cellOpen: string, tag: string, attrs: string) => {
+                if (firstCellDone) return cellOpen;
+                firstCellDone = true;
+                if (/\bclass\s*=/.test(attrs)) {
+                  return `<${tag}${attrs.replace(
+                    /class=(["'])([^"']*)\1/i,
+                    (_m, cq: string, existing: string) => {
+                      const next = existing.includes('ej-table__label')
+                        ? existing
+                        : `${existing} ej-table__label`.trim();
+                      return `class=${cq}${next}${cq}`;
+                    }
+                  )}>`;
+                }
+                return `<${tag} class="ej-table__label"${attrs}>`;
+              }
+            );
+            return `<tr${rowAttrs}>${updatedRowInner}</tr>`;
+          });
+        }
+
+        return `<table${before}class="${Array.from(classes).join(' ')}"${after}>${nextInner}</table>`;
+      }
+    );
   }
 }

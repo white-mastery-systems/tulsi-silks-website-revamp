@@ -286,6 +286,25 @@
       color: $tulsi-blog-ink !important;
     }
 
+    /* Product carousel lives inside blog body — don't apply article heading rules */
+    .ej-pc__title,
+    h2.ej-pc__title {
+      margin: 0 !important;
+      padding: 0 !important;
+      border: 0 !important;
+      font-size: clamp(1.25rem, 2.4vw, 1.65rem) !important;
+      line-height: 1.2 !important;
+    }
+
+    .ej-pc-card__title,
+    h3.ej-pc-card__title {
+      margin: 0 !important;
+      padding: 0 !important;
+      border: 0 !important;
+      font-size: 0.9rem !important;
+      line-height: 1.35 !important;
+    }
+
     h2 {
       font-family: $tulsi-blog-font-display !important;
       font-size: 1.75rem !important;
@@ -294,17 +313,17 @@
       letter-spacing: -0.015em;
       margin: 2.25rem 0 0.9rem !important;
       color: $tulsi-blog-ink !important;
-      padding-top: 1.25rem;
-      border-top: 1px solid rgba(31, 27, 36, 0.08);
+      // padding-top: 1.25rem;
+      // border-top: 1px solid rgba(31, 27, 36, 0.08);
     }
 
     h3 {
       font-family: $tulsi-blog-font-display !important;
-      font-size: 1.5rem !important;
+      font-size: 1rem !important;
       font-weight: 400 !important;
-      line-height: 1.3 !important;
+      line-height: 1.5 !important;
       letter-spacing: -0.01em;
-      margin: 1.85rem 0 0.65rem !important;
+      // margin: 1.85rem 0 0.65rem !important;
       color: $tulsi-blog-ink !important;
     }
 
@@ -375,10 +394,10 @@
     h4 a,
     h5 a,
     blockquote a {
-      color: $tulsi-blog-accent;
-      font-weight: 600;
+      color: #000000;
+      // font-weight: 600;
       text-decoration: underline solid;
-      text-decoration-color: rgba(107, 83, 68, 0.55);
+      text-decoration-color: #000000;
       text-underline-offset: 3px;
       cursor: pointer;
 

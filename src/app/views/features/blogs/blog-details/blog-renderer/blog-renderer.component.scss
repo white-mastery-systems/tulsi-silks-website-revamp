@@ -219,7 +219,7 @@
 
   .ej-table {
     width: 100%;
-    min-width: 560px;
+    min-width: 0;
     border-collapse: separate;
     border-spacing: 0;
     margin: 0;
@@ -227,18 +227,28 @@
     font-size: 0.9375rem;
     background: transparent;
 
-    thead th {
+    @media (min-width: 768px) {
+      min-width: 560px;
+    }
+
+    /* Shared header look for real <th> cells */
+    th {
       border: none;
       border-bottom: 1px solid $ej-table-line;
       padding: 1.25rem 1.5rem;
       font-family: $ej-display-font;
-      font-size: 0.6875rem;
+      // font-size: 0.6875rem;
       font-weight: 500;
       letter-spacing: 0.14em;
       text-transform: uppercase;
       color: $ej-table-header-text;
       text-align: left;
       vertical-align: bottom;
+      background: $ej-table-header-bg;
+      text-decoration: none;
+    }
+
+    thead th {
       background: $ej-table-header-bg;
     }
 
@@ -249,21 +259,51 @@
       vertical-align: top;
       font-family: $ej-display-font;
       font-size: 0.9375rem;
+      font-weight: 400;
+      letter-spacing: normal;
+      text-transform: none;
       line-height: 1.68;
       color: $ej-table-body-text;
       text-align: left;
+      text-decoration: none;
 
       a {
         font-family: inherit;
         color: inherit;
-        text-decoration: underline;
-        text-underline-offset: 4px;
-        text-decoration-color: rgba(31, 27, 36, 0.45);
+        text-decoration: none;
 
         &:hover {
           opacity: 0.88;
+          text-decoration: none;
         }
       }
+    }
+
+    /*
+      No <th>: first column is the row label/heading.
+      Class is set by editorjs table parser + decorateEjTables().
+    */
+    &.ej-table--no-th tbody td:first-child,
+    &.ej-table--no-th td.ej-table__label,
+    &.ej-table--no-th .ej-table__label {
+      font-family: $ej-display-font !important;
+      font-size: 0.6875rem !important;
+      font-weight: 500 !important;
+      letter-spacing: 0.14em !important;
+      text-transform: uppercase !important;
+      color: $ej-table-header-text !important;
+      vertical-align: top;
+      text-decoration: none !important;
+      line-height: 1.45 !important;
+    }
+
+    /* Tables with real headers: do NOT restyle first body column */
+    &.ej-table--has-th tbody td:first-child {
+      font-size: 0.9375rem !important;
+      font-weight: 400 !important;
+      letter-spacing: normal !important;
+      text-transform: none !important;
+      color: $ej-table-body-text !important;
     }
 
     tbody tr:nth-child(odd) td {
@@ -274,20 +314,9 @@
       background: $ej-table-row-even;
     }
 
-    tbody tr:last-child td {
+    tbody tr:last-child td,
+    tbody tr:last-child th {
       border-bottom: none;
-    }
-
-    /* Middle column — “best options” emphasis (matches editorial underline treatment) */
-    tbody td:nth-child(2) {
-      text-decoration: underline;
-      text-decoration-color: rgba(31, 27, 36, 0.28);
-      text-underline-offset: 4px;
-    }
-
-    tbody td:nth-child(2) a {
-      text-decoration: underline;
-      text-underline-offset: 4px;
     }
   }
 }
@@ -543,7 +572,7 @@
 
 :host ::ng-deep .ej-product-cta-shell {
   background: #1a1a1e;
-  border-radius: 18px;
+  // border-radius: 18px;
   padding: 1.65rem 1.35rem 1.35rem;
   box-shadow: 0 20px 56px rgba(0, 0, 0, 0.25);
 
@@ -578,7 +607,7 @@
 
 :host ::ng-deep .ej-product-cta-card {
   background: #ffffff;
-  border-radius: 14px;
+  // border-radius: 14px;
   padding: 1.2rem 1.25rem 1.35rem;
   display: flex;
   flex-direction: column;
@@ -599,7 +628,7 @@
   max-width: 210px;
   aspect-ratio: 3 / 4;
   object-fit: cover;
-  border-radius: 12px;
+  // border-radius: 12px;
   display: block;
   align-self: flex-start;
 

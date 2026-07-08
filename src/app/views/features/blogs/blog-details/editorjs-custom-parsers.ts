@@ -116,8 +116,12 @@ export function createEditorJsCustomParsers(imgBaseUrl: string): Record<string, 
     table: ({ data }) => {
       const rows: string[][] = data.content || [];
       if (!rows.length) return '';
-      let html = '<div class="ej-table-card ej-table-card--premium"><table class="ej-table">';
-      if (data.withHeadings && rows[0]?.length) {
+      const withHeadings = !!(data.withHeadings && rows[0]?.length);
+      const tableClass = withHeadings
+        ? 'ej-table ej-table--has-th'
+        : 'ej-table ej-table--no-th';
+      let html = `<div class="ej-table-card ej-table-card--premium"><table class="${tableClass}">`;
+      if (withHeadings) {
         html += '<thead><tr>';
         rows[0].forEach((cell) => {
           html += `<th>${escapeHtml(String(cell))}</th>`;
@@ -135,8 +139,9 @@ export function createEditorJsCustomParsers(imgBaseUrl: string): Record<string, 
         html += '<tbody>';
         rows.forEach((row) => {
           html += '<tr>';
-          row.forEach((cell) => {
-            html += `<td>${escapeHtml(String(cell))}</td>`;
+          row.forEach((cell, cellIndex) => {
+            const cellClass = cellIndex === 0 ? ' class="ej-table__label"' : '';
+            html += `<td${cellClass}>${escapeHtml(String(cell))}</td>`;
           });
           html += '</tr>';
         });

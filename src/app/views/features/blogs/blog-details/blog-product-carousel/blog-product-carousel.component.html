@@ -1,26 +1,24 @@
 <section class="ej-pc" *ngIf="products.length">
   <header class="ej-pc__head">
     <div class="ej-pc__titles">
-      <h2 class="ej-pc__title" *ngIf="data?.title">{{ data?.title }}</h2>
+      <div class="ej-pc__title-row">
+        <h2 class="ej-pc__title" *ngIf="data?.title">{{ data?.title }}</h2>
+        <ng-container *ngIf="viewAllLabel && (viewAllRouterLink || viewAllExternalHref)">
+          <a
+            *ngIf="viewAllRouterLink"
+            class="ej-pc__view-all"
+            [routerLink]="viewAllRouterLink"
+          >{{ viewAllLabel }}</a>
+          <a
+            *ngIf="!viewAllRouterLink && viewAllExternalHref"
+            class="ej-pc__view-all"
+            [href]="viewAllExternalHref"
+            target="_blank"
+            rel="noopener noreferrer"
+          >{{ viewAllLabel }}</a>
+        </ng-container>
+      </div>
       <p class="ej-pc__subtitle" *ngIf="data?.subtitle">{{ data?.subtitle }}</p>
-    </div>
-    <div class="ej-pc__nav" *ngIf="products.length > 1">
-      <button
-        type="button"
-        #btnPrev
-        class="ej-pc__nav-btn ej-pc__nav-btn--prev"
-        aria-label="Previous slides"
-      >
-        <lucide-icon name="chevron-left" [size]="20" stroke="2" class="ej-pc__nav-ico"></lucide-icon>
-      </button>
-      <button
-        type="button"
-        #btnNext
-        class="ej-pc__nav-btn ej-pc__nav-btn--next"
-        aria-label="Next slides"
-      >
-        <lucide-icon name="chevron-right" [size]="20" stroke="2" class="ej-pc__nav-ico"></lucide-icon>
-      </button>
     </div>
   </header>
 
@@ -62,5 +60,24 @@
         </div>
       </div>
     </div>
+
+    <button
+      type="button"
+      #btnPrev
+      class="ej-pc__nav-btn ej-pc__nav-btn--prev"
+      [hidden]="products.length < 2"
+      aria-label="Previous slides"
+    >
+      <lucide-icon name="chevron-left" [size]="20" stroke="2" class="ej-pc__nav-ico"></lucide-icon>
+    </button>
+    <button
+      type="button"
+      #btnNext
+      class="ej-pc__nav-btn ej-pc__nav-btn--next"
+      [hidden]="products.length < 2"
+      aria-label="Next slides"
+    >
+      <lucide-icon name="chevron-right" [size]="20" stroke="2" class="ej-pc__nav-ico"></lucide-icon>
+    </button>
   </div>
 </section>

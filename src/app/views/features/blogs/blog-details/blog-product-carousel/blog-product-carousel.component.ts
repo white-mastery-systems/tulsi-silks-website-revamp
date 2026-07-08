@@ -65,7 +65,7 @@ export class BlogProductCarouselComponent implements OnChanges, OnDestroy, After
   }
 
   private scheduleMount(): void {
-    if (!isPlatformBrowser(this.platformId) || this.products.length < 2) return;
+    if (!isPlatformBrowser(this.platformId) || this.products.length < 1) return;
     setTimeout(() => this.mountSwiper(), 0);
   }
 
@@ -104,6 +104,46 @@ export class BlogProductCarouselComponent implements OnChanges, OnDestroy, After
     return this.defaultBrand;
   }
 
+  get viewAllLabel(): string | null {
+    const label = this.data?.buttonLabel?.trim();
+    return label ? label : null;
+  }
+
+  /** Same-origin / relative path for SPA navigation (e.g. `/category/gadwal`). */
+  get viewAllRouterLink(): string | null {
+    if (!this.viewAllLabel) return null;
+    const raw = this.data?.buttonLink?.trim();
+    if (!raw || raw === '#') return null;
+
+    if (raw.startsWith('/') && !/^https?:\/\//i.test(raw)) {
+      return raw.split('?')[0] || '/';
+    }
+
+    if (/^https?:\/\//i.test(raw) && isPlatformBrowser(this.platformId)) {
+      try {
+        const url = new URL(raw);
+        if (url.origin === window.location.origin) {
+          return (url.pathname || '/') + (url.search || '');
+        }
+      } catch {
+        /* ignore */
+      }
+    }
+
+    // Absolute URL for this store host even during SSR / before hydration.
+    const match = raw.match(/^https?:\/\/(?:www\.)?tulsisilks\.co\.in(\/[^?#]*)/i);
+    if (match?.[1]) return match[1];
+
+    return null;
+  }
+
+  get viewAllExternalHref(): string | null {
+    if (!this.viewAllLabel || this.viewAllRouterLink) return null;
+    const raw = this.data?.buttonLink?.trim();
+    if (!raw || !/^https?:\/\//i.test(raw)) return null;
+    return raw;
+  }
+
   trackByIdx(i: number): number {
     return i;
   }
@@ -129,17 +169,20 @@ export class BlogProductCarouselComponent implements OnChanges, OnDestroy, After
 
   private mountSwiper(): void {
     const el = this.swiperRoot?.nativeElement;
-    const prevEl = this.btnPrev?.nativeElement;
-    const nextEl = this.btnNext?.nativeElement;
-    if (!el || !prevEl || !nextEl || this.products.length < 2) return;
+    if (!el || this.products.length < 1) return;
+
     this.assets.load('swiper-js', 'swiper-css').then(() => {
       const SwiperCtor = (typeof window !== 'undefined' && (window as any).Swiper) as
         | (new (el: Element, opts: object) => { destroy: (a?: boolean, b?: boolean) => void })
         | undefined;
-      if (!SwiperCtor) return;
+      if (!SwiperCtor || !this.swiperRoot?.nativeElement) return;
+
+      const root = this.swiperRoot.nativeElement;
+      const prevEl = this.btnPrev?.nativeElement;
+      const nextEl = this.btnNext?.nativeElement;
 
       this.teardownSwiper();
-      this.swiper = new SwiperCtor(el, {
+      this.swiper = new SwiperCtor(root, {
         speed: 480,
         slidesPerView: 1.15,
         spaceBetween: 14,
@@ -152,11 +195,15 @@ export class BlogProductCarouselComponent implements OnChanges, OnDestroy, After
           576: { slidesPerView: 2, spaceBetween: 16 },
           992: { slidesPerView: 3, spaceBetween: 18 },
         },
-        navigation: {
-          prevEl,
-          nextEl,
-        },
-        uniqueNavElements: false,
+        ...(prevEl && nextEl
+          ? {
+              navigation: {
+                prevEl,
+                nextEl,
+              },
+              uniqueNavElements: false,
+            }
+          : {}),
       });
     });
   }
