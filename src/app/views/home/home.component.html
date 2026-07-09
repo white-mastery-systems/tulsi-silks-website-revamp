@@ -176,64 +176,81 @@
       <div class="{{ template_setting?.body_type }}">
         <div class="home-visual-search__grid">
           <div class="home-visual-search__content">
-            <span class="home-visual-search__eyebrow">Introducing Visual Search</span>
-            <div class="titles custom-title w-auto pl-0">
-              <h2 id="home-visual-search-title">
-                Saree Search, Inspired by Your Inspiration.
+            <div class="home-visual-search__copy">
+              <h2 id="home-visual-search-title" class="home-visual-search__title">
+                Saree Search, <em>Inspired</em> by Your <em>Inspiration</em>.
               </h2>
-              <p class="mb-0">
+              <p class="home-visual-search__desc">
                 Upload an inspiration photo or describe the saree you have in mind. Our AI reads weave,
                 colour, and style - then surfaces matching sarees from the Tulsi Silks collection.
               </p>
             </div>
 
-            <div class="home-visual-search__bar">
-              <button type="button" class="home-visual-search__upload" (click)="goToSearchPage()">
-                <lucide-icon name="cloud-upload" [size]="18" stroke="1.75"></lucide-icon>
-                <span>Upload photo</span>
-              </button>
-              <label class="home-visual-search__field" for="home-visual-search-input">
-                <lucide-icon name="search" [size]="17" stroke="2" class="home-visual-search__field-icon"></lucide-icon>
-                <input
-                  id="home-visual-search-input"
-                  type="text"
-                  class="home-visual-search__input"
-                  placeholder="Search by colour, weave, or style…"
-                  [(ngModel)]="visualSearchQuery"
-                  (keydown.enter)="goToSearchPage()"
-                  autocomplete="off"
-                >
-              </label>
-              <button type="button" class="home-visual-search__submit" (click)="goToSearchPage()">Search</button>
+            <div class="home-visual-search__visual" aria-hidden="true">
+              <article class="home-visual-search__card home-visual-search__card--inspiration">
+                <figure class="home-visual-search__card-media">
+                  <img src="assets/images/img-3.jpg" alt="" width="192" height="248" loading="lazy" decoding="async">
+                </figure>
+                <span class="home-visual-search__card-label">Inspiration Image</span>
+              </article>
+
+              <article class="home-visual-search__card home-visual-search__card--result">
+                <aside class="home-visual-search__match-badge">
+                  <span class="home-visual-search__match-icon" aria-hidden="true">
+                    <lucide-icon name="sparkles" [size]="14" stroke="2"></lucide-icon>
+                  </span>
+                  <span class="home-visual-search__match-text">
+                    <span class="home-visual-search__match-label">AI matching:</span>
+                    <strong class="home-visual-search__match-result">98% Match Found</strong>
+                  </span>
+                </aside>
+
+                <figure class="home-visual-search__result-media">
+                  <span class="home-visual-search__frame home-visual-search__frame--tl" aria-hidden="true"></span>
+                  <span class="home-visual-search__frame home-visual-search__frame--tr" aria-hidden="true"></span>
+                  <span class="home-visual-search__frame home-visual-search__frame--bl" aria-hidden="true"></span>
+                  <span class="home-visual-search__frame home-visual-search__frame--br" aria-hidden="true"></span>
+                  <img src="assets/images/img-2.jpg" alt="" width="232" height="312" loading="lazy" decoding="async">
+                  <figcaption class="home-visual-search__product">
+                    <p class="home-visual-search__product-name">Red Soft Silk Saree</p>
+                    <p class="home-visual-search__product-meta">₹11,110</p>
+                  </figcaption>
+                </figure>
+              </article>
             </div>
           </div>
 
-          <div class="home-visual-search__visual" aria-hidden="true">
-            <div class="home-visual-search__card home-visual-search__card--inspiration">
-              <div class="home-visual-search__card-media">
-                <img src="assets/images/img-3.jpg" alt="" width="200" height="264" loading="lazy" decoding="async">
-                <span class="home-visual-search__card-label">Inspiration Image</span>
-              </div>
+          <div class="home-visual-search__panel">
+            <button type="button" class="home-visual-search__dropzone" (click)="goToSearchPage()">
+              <span class="home-visual-search__dropzone-icon" aria-hidden="true">
+                <lucide-icon name="cloud-upload" [size]="22" stroke="2"></lucide-icon>
+              </span>
+              <span class="home-visual-search__dropzone-title">Upload Image</span>
+              <span class="home-visual-search__dropzone-hint">Drop an image here or click to browse</span>
+            </button>
+
+            <div class="home-visual-search__or" aria-hidden="true">
+              <span>OR</span>
             </div>
 
-            <div class="home-visual-search__match-badge">
-              <lucide-icon name="sparkles" [size]="14" stroke="2"></lucide-icon>
-              <span>AI matching: <strong>98% Match Found</strong></span>
-            </div>
+            <label class="home-visual-search__field" for="home-visual-search-input">
+              <lucide-icon name="search" [size]="17" stroke="2" class="home-visual-search__field-icon"></lucide-icon>
+              <input
+                id="home-visual-search-input"
+                type="text"
+                class="home-visual-search__input"
+                placeholder="Search 'Temple Border'"
+                [(ngModel)]="visualSearchQuery"
+                (keydown.enter)="goToSearchPage()"
+                autocomplete="off"
+              >
+            </label>
 
-            <div class="home-visual-search__card home-visual-search__card--result">
-              <div class="home-visual-search__result-media">
-                <span class="home-visual-search__frame home-visual-search__frame--tl"></span>
-                <span class="home-visual-search__frame home-visual-search__frame--tr"></span>
-                <span class="home-visual-search__frame home-visual-search__frame--bl"></span>
-                <span class="home-visual-search__frame home-visual-search__frame--br"></span>
-                <img src="assets/images/img-2.jpg" alt="" width="200" height="264" loading="lazy" decoding="async">
-              </div>
-              <div class="home-visual-search__product">
-                <p class="home-visual-search__product-name">Red Soft Silk Saree</p>
-                <p class="home-visual-search__product-price">₹11,110</p>
-              </div>
-            </div>
+            <p class="home-visual-search__footer">
+              Type to search or
+              <button type="button" class="home-visual-search__footer-link" (click)="goToSearchPage()">upload a photo</button>
+              to discover
+            </p>
           </div>
         </div>
       </div>

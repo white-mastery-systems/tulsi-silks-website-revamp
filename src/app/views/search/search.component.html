@@ -20,7 +20,12 @@
 
       <h1 class="search-hero__title">Show Us a Photo. We'll Find the Saree.</h1>
 
-      <div class="search-command">
+      <div
+        class="search-command"
+        [class.search-command--image-active]="hasUploadedImage"
+        [class.search-command--scanning]="classifyLoader || showImageLoadingText"
+        [class.search-command--analysed]="showAiResponsePills && !searchLoader && !classifyLoader"
+      >
         <div
           class="search-preview-box"
           [class.search-preview-box--filled]="imagePreview"
@@ -40,81 +45,143 @@
           <ng-container *ngIf="imagePreview">
             <img class="search-preview-box__img" [src]="imagePreview" alt="Uploaded saree photo">
             <button type="button" class="search-preview-box__clear" (click)="onClearImageClick($event)" aria-label="Remove photo">&#x2715;</button>
+            <button
+              type="button"
+              class="search-preview-box__change"
+              (click)="onUploadZoneClick(sareeFileInput, $event)"
+            >
+              Change image
+            </button>
           </ng-container>
+        </div>
+
+        <button
+          type="button"
+          class="search-analyse-btn"
+          [class.search-analyse-btn--loading]="classifyLoader || searchLoader"
+          (click)="onMainSearch()"
+          [disabled]="searchLoader || classifyLoader"
+        >
+          <span *ngIf="showImageLoadingText" class="search-analyse-btn__status">{{ loadingStatusText }}</span>
+          <span *ngIf="(searchLoader || classifyLoader) && !showImageLoadingText" class="btn-spinner"></span>
+          <span *ngIf="!(searchLoader || classifyLoader)">Analyse Image</span>
+        </button>
+
+        <div *ngIf="showAiResponsePills" class="search-ai-pills">
+          <span class="search-ai-pills__title">AI detected</span>
+          <div class="search-ai-pills__list catalog-active-filters">
+            <span *ngFor="let chip of activeFilterChips" class="catalog-filter-chip catalog-filter-chip--white">
+              <span class="catalog-filter-chip__value">{{ chip.value }}</span>
+            </span>
+          </div>
         </div>
 
         <div class="search-command__main">
           <div class="search-wrapper">
-            <div class="smart-search-bar" [class.bar--has-image]="hasUploadedImage">
+            <div class="search-hero-section">
+              <div class="smart-search-bar-container">
+                <div class="smart-search-bar" [class.bar--has-image]="hasUploadedImage">
+                  <div
+                    class="search-input-container"
+                    [class.search-input-container--locked]="hasUploadedImage"
+                  >
+                    <lucide-icon name="search" [size]="17" stroke="2" class="search-input-container__icon"></lucide-icon>
+                    <input
+                      id="search-text-input"
+                      type="text"
+                      class="search-input-field search-field"
+                      [attr.placeholder]="searchPlaceholder"
+                      [(ngModel)]="searchQuery"
+                      [disabled]="hasUploadedImage"
+                      (focus)="onSearchInputFocus()"
+                      (input)="onSearchInputChange()"
+                      (keydown.enter)="onMainSearch()"
+                      autocomplete="off"
+                    >
+                    <div class="search-input-actions-wrapper">
+                      <button
+                        *ngIf="!imagePreview"
+                        type="button"
+                        class="search-input-upload-btn"
+                        (click)="onUploadZoneClick(sareeFileInput, $event)"
+                        aria-label="Upload image for visual search"
+                      >
+                        <span class="upload-btn-content-wrapper">
+                          <lucide-icon name="camera" [size]="18" stroke="2" class="upload-btn-camera-icon"></lucide-icon>
+                          <span class="upload-btn-text">Upload</span>
+                        </span>
+                      </button>
+                      <div *ngIf="imagePreview" class="search-input-thumbnail-container">
+                        <img
+                          class="search-input-thumbnail-img"
+                          [src]="imagePreview"
+                          alt="Uploaded preview"
+                          (click)="onUploadZoneClick(sareeFileInput, $event)"
+                        >
+                        <button
+                          type="button"
+                          class="search-input-remove-btn"
+                          (click)="onClearImageClick($event)"
+                          aria-label="Remove photo"
+                        >
+                          &#x2715;
+                        </button>
+                      </div>
+                    </div>
+                  </div>
 
-              <div
-                class="upload-zone"
-                (click)="onUploadZoneClick(sareeFileInput, $event)"
-                role="button"
-                tabindex="0"
-                (keydown.enter)="onUploadZoneClick(sareeFileInput, $event)"
-              >
-                <span class="upload-zone__icon">
-                  <lucide-icon name="cloud-upload" [size]="16" stroke="1.85"></lucide-icon>
-                </span>
-                <span class="upload-zone__label">{{ hasUploadedImage ? 'Change photo' : 'Upload photo' }}</span>
+                  <button type="button" class="search-btn search-submit-btn" (click)="onMainSearch()" [disabled]="searchLoader || classifyLoader">
+                    <span *ngIf="searchLoader && !showImageLoadingText" class="btn-spinner"></span>
+                    <span *ngIf="showImageLoadingText" class="search-btn__status">{{ loadingStatusText }}</span>
+                    <span *ngIf="!(searchLoader || classifyLoader)">{{ hasUploadedImage ? 'Analyse' : 'Search' }}</span>
+                  </button>
+                </div>
               </div>
 
-              <label class="search-field-wrap" [class.search-field-wrap--disabled]="hasUploadedImage" for="search-text-input">
-                <lucide-icon name="search" [size]="15" stroke="2"></lucide-icon>
-                <input
-                  id="search-text-input"
-                  type="text"
-                  class="search-field"
-                  [attr.placeholder]="searchPlaceholder"
-                  [(ngModel)]="searchQuery"
-                  [disabled]="hasUploadedImage"
-                  (focus)="onSearchInputFocus()"
-                  (input)="onSearchInputChange()"
-                  (keydown.enter)="onMainSearch()"
-                  autocomplete="off"
-                >
-              </label>
+              <div class="presets-row">
+                <span class="presets-row__label">Try inspiration presets:</span>
+                <button type="button" class="preset-pill" (click)="selectPreset('Kanjivaram Silk')">Kanchivaram Silks</button>
+                <button type="button" class="preset-pill" (click)="selectPreset('Banaras')">Banarasi</button>
+                <button type="button" class="preset-pill" (click)="selectPreset('Tussar')">Tussar Silks</button>
+                <button type="button" class="preset-pill" (click)="selectPreset('Cotton saree')">Cotton Sarees</button>
+              </div>
 
-              <button type="button" class="search-btn" (click)="onMainSearch()" [disabled]="searchLoader || classifyLoader">
-                <span *ngIf="searchLoader && !showImageLoadingText" class="btn-spinner"></span>
-                <span *ngIf="showImageLoadingText" class="search-btn__status">{{ loadingStatusText }}</span>
-                <span *ngIf="!(searchLoader || classifyLoader)">{{ hasUploadedImage ? 'Analyse' : 'Search' }}</span>
-              </button>
+              <div class="hiw-row">
+                <a class="hiw-link" (click)="toggleHowItWorks()">How does photo search work?</a>
+              </div>
+
+              <div class="step-guide" [class.step-guide--open]="howItWorksOpen">
+                <div class="step-guide__inner">
+                  <div class="step-guide__step">
+                    <span class="step-guide__num">1</span>
+                    <div class="step-guide__info">
+                      <strong class="step-guide__title">Upload Saree Photo</strong>
+                      <span class="step-guide__desc">Drag a picture or try a preset</span>
+                    </div>
+                  </div>
+                  <span class="step-guide__sep" aria-hidden="true">→</span>
+                  <div class="step-guide__step">
+                    <span class="step-guide__num">2</span>
+                    <div class="step-guide__info">
+                      <strong class="step-guide__title">AI Scans Style</strong>
+                      <span class="step-guide__desc">Identifies weave, border &amp; design</span>
+                    </div>
+                  </div>
+                  <span class="step-guide__sep" aria-hidden="true">→</span>
+                  <div class="step-guide__step">
+                    <span class="step-guide__num">3</span>
+                    <div class="step-guide__info">
+                      <strong class="step-guide__title">Find Similar Sarees</strong>
+                      <span class="step-guide__desc">View instant matched results</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
 
             <p class="search-error" *ngIf="imageError">
               {{imageError}}<span *ngIf="rateLimitCountdown > 0"> Retry in {{rateLimitCountdown}}s.</span>
             </p>
-
-            <div class="presets-row">
-              <span class="presets-row__label">Try inspiration presets:</span>
-              <button type="button" class="preset-pill" (click)="selectPreset('Kanjivaram Silk')">Kanchivaram Silks</button>
-              <button type="button" class="preset-pill" (click)="selectPreset('Banaras')">Banarasi</button>
-              <button type="button" class="preset-pill" (click)="selectPreset('Tussar')">Tussar Silks</button>
-              <button type="button" class="preset-pill" (click)="selectPreset('Cotton saree')">Cotton Sarees</button>
-            </div>
-
-            <div class="hiw-row">
-              <a class="hiw-link" (click)="toggleHowItWorks()">How does photo search work?</a>
-            </div>
-
-            <div class="step-guide" [class.step-guide--open]="howItWorksOpen">
-              <div class="step-guide__step">
-                <span class="step-guide__num">01</span>
-                <span class="step-guide__label">Upload a saree photo</span>
-              </div>
-              <span class="step-guide__sep" aria-hidden="true">→</span>
-              <div class="step-guide__step">
-                <span class="step-guide__num">02</span>
-                <span class="step-guide__label">AI reads style &amp; fabric</span>
-              </div>
-              <span class="step-guide__sep" aria-hidden="true">→</span>
-              <div class="step-guide__step">
-                <span class="step-guide__num">03</span>
-                <span class="step-guide__label">See matching sarees</span>
-              </div>
-            </div>
           </div>
         </div>
       </div>
@@ -138,6 +205,8 @@
                 <button type="button"
                   class="catalog-pill-btn catalog-pill-btn--filters"
                   [class.catalog-pill-btn--active]="filtersDrawerOpen || activeFilterCount"
+                  [class.catalog-pill-btn--disabled]="!filtersEnabled"
+                  [disabled]="!filtersEnabled"
                   (click)="openFilters()">
                   <span class="catalog-pill-btn__icon" aria-hidden="true">
                     <i class="material-icons">tune</i>
@@ -172,7 +241,8 @@
 
             <div *ngIf="activeFilterChips.length && (!searchLoader || pageLoader)" class="catalog-active-filters">
               <span *ngFor="let chip of activeFilterChips" class="catalog-filter-chip">
-                {{ chip.label }}: {{ chip.value }}
+                <span class="catalog-filter-chip__label">{{ chip.label }}:</span>
+                <span class="catalog-filter-chip__value">{{ chip.value }}</span>
                 <button type="button" class="catalog-filter-chip__remove" aria-label="Remove filter"
                   (click)="removeActiveChip(chip)">
                   <i class="material-icons">close</i>

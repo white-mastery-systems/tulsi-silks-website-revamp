@@ -399,7 +399,8 @@
 
                 <div *ngIf="filterChips.length" class="catalog-active-filters">
                   <span *ngFor="let chip of filterChips" class="catalog-filter-chip">
-                    {{ chip.name }}: {{ chip.value }}
+                    <span class="catalog-filter-chip__label">{{ chip.name }}:</span>
+                    <span class="catalog-filter-chip__value">{{ chip.value }}</span>
                     <button type="button" class="catalog-filter-chip__remove" aria-label="Remove filter"
                       (click)="removeFilterChip(chip)">
                       <i class="material-icons">close</i>

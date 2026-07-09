@@ -1397,35 +1397,61 @@ $catalog-filter-accent: #9a7d4a;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 0.35rem 1rem;
+  gap: 8px;
   margin-top: 0.75rem;
 }
 
 .catalog-filter-chip {
   display: inline-flex;
   align-items: center;
-  gap: 0.2rem;
+  gap: 4px;
+  max-width: 100%;
+  padding: 7px 8px 7px 12px;
+  border: 1px solid #e5e7eb;
+  border-radius: 100px;
+  background: #f7f6f4;
   font-family: $primary-font;
-  font-size: 0.875rem;
+  font-size: 0.75rem;
+  line-height: 1.3;
+  color: #1c1814;
+}
+
+.catalog-filter-chip__label {
+  color: #655f55;
   font-weight: 400;
-  color: $catalog-filter-accent;
-  line-height: 1.4;
+  white-space: nowrap;
+}
+
+.catalog-filter-chip__value {
+  color: #1c1814;
+  font-weight: 600;
+  white-space: nowrap;
 }
 
 .catalog-filter-chip__remove {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
   border: none;
-  background: transparent;
+  border-radius: 50%;
+  background: rgba(28, 24, 20, 0.08);
   padding: 0;
-  margin: 0;
+  margin: 0 0 0 4px;
   cursor: pointer;
-  color: inherit;
+  color: #655f55;
   line-height: 1;
+  transition: background 0.15s ease, color 0.15s ease;
+
+  &:hover {
+    background: rgba(28, 24, 20, 0.14);
+    color: #1c1814;
+  }
 
   .material-icons {
-    font-size: 15px;
+    font-size: 13px;
     color: inherit;
   }
 }
@@ -1436,10 +1462,11 @@ $catalog-filter-accent: #9a7d4a;
   padding: 0;
   margin: 0;
   font-family: $primary-font;
-  font-size: 0.875rem;
-  font-weight: 400;
+  font-size: 0.8125rem;
+  font-weight: 500;
   color: $catalog-filter-accent;
   text-decoration: underline;
+  text-underline-offset: 2px;
   cursor: pointer;
   line-height: 1.4;
 }
@@ -1534,21 +1561,31 @@ $catalog-filter-accent: #9a7d4a;
   }
 
   .catalog-active-filters {
-    gap: 0.35rem 0.65rem;
+    gap: 8px;
     margin-top: 0.5rem;
-    row-gap: 0.25rem;
   }
 
   .catalog-filter-chip {
-    font-size: 0.8125rem;
-    line-height: 1.35;
+    font-size: 0.6875rem;
+    padding: 6px 7px 6px 10px;
+    gap: 3px;
+  }
+
+  .catalog-filter-chip__remove {
+    width: 18px;
+    height: 18px;
+    margin-left: 3px;
+
+    .material-icons {
+      font-size: 12px;
+    }
   }
 
   .catalog-filter-chip__clear {
-    font-size: 0.8125rem;
+    font-size: 0.75rem;
     width: 100%;
     text-align: left;
-    margin-top: 0.15rem;
+    margin-top: 2px;
   }
 }
 

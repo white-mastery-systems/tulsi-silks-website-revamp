@@ -213,12 +213,26 @@ export class SearchComponent implements OnInit, OnDestroy {
       && (this.product_list?.length > 0);
   }
 
+  get filtersEnabled(): boolean {
+    return !!this.afterSearchEvent
+      && !this.classifyLoader
+      && !this.searchLoader
+      && !this.pageLoader;
+  }
+
   get hasUploadedImage(): boolean {
     return !!(this.selectedImageFile || this.imagePreview);
   }
 
   get showImageLoadingText(): boolean {
     return this.classifyLoader || (this.searchLoader && this.hasUploadedImage);
+  }
+
+  get showAiResponsePills(): boolean {
+    return this.imageDetected
+      && this.hasUploadedImage
+      && !this.classifyLoader
+      && this.activeFilterChips.length > 0;
   }
 
   onSearchInputFocus() {
@@ -234,6 +248,7 @@ export class SearchComponent implements OnInit, OnDestroy {
   }
 
   openFilters() {
+    if (!this.filtersEnabled) return;
     this.filterCollapseIndex = -1;
     this.filterModal.show();
     this.filtersDrawerOpen = true;
