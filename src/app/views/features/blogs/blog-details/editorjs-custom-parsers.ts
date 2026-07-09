@@ -259,7 +259,7 @@ export function createEditorJsCustomParsers(imgBaseUrl: string): Record<string, 
         (orig ? `<span class="ej-price-orig">${escapeHtml(orig)}</span>` : '') +
         (sale ? `<span class="ej-price-sale">${escapeHtml(sale)}</span>` : '') +
         `</div>` +
-        `<a class="ej-product-cta-btn" href="${escapeHtml(urlResolved)}"${productIdAttr}>${escapeHtml(ctaLabel)}</a>` +
+        `<a class="primary-btn ej-product-cta-btn" href="${escapeHtml(urlResolved)}"${productIdAttr}>${escapeHtml(ctaLabel)}</a>` +
         `</div></div></div></section>`
       );
     },

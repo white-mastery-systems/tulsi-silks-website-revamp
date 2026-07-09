@@ -538,11 +538,13 @@
 
 :host ::ng-deep figure.ej-figure {
   box-sizing: border-box;
-  margin: 1.5rem 0 !important;
-  max-width: min(24rem, 72%) !important;
+  margin: 0.5rem 0 1.5rem 0 !important;
+  max-width: min(42rem, 92%) !important;
   width: 100%;
   display: block !important;
   text-align: left;
+  // margin-left: auto !important;
+  // margin-right: auto !important;
 
   img {
     box-sizing: border-box;
@@ -562,6 +564,12 @@
     margin-top: 0.5rem;
     text-align: left;
     line-height: 1.45;
+  }
+}
+
+@media (max-width: 576px) {
+  :host ::ng-deep figure.ej-figure {
+    max-width: 100% !important;
   }
 }
 
@@ -587,7 +595,8 @@
   .ej-product-cta-label {
     margin: 0 0 0.45rem;
     font-family: $premium-font-display;
-    font-size: clamp(1.2rem, 2.2vw, 1.45rem);
+    // font-size: clamp(1.2rem, 2.2vw, 1.45rem);
+    font-size: clamp(1.25rem, 2.4vw, 1.65rem) !important;
     font-weight: 500;
     color: #ffffff;
     letter-spacing: 0.02em;
@@ -645,7 +654,7 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-  gap: 0.55rem;
+  gap: 0.25rem;
   min-width: 0;
 }
 
@@ -660,87 +669,83 @@
 }
 
 :host ::ng-deep .ej-product-cta-name {
-  margin: 0;
-  font-family: $premium-font-display;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
   font-size: clamp(1.05rem, 1.9vw, 1.22rem);
-  font-weight: 500;
-  color: $premium-ink;
-  line-height: 1.35;
+  line-height: 1.35 !important;
+  color: #3d3d3d !important;
+  display: -webkit-box;
+  line-clamp: 2;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 :host ::ng-deep .ej-product-cta-prices {
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 0.25rem;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.3rem 0.45rem;
+  margin-top: 0.2rem;
 
   .ej-price-orig {
-    font-family: $premium-font-display;
-    font-size: 0.92rem;
-    color: rgba(26, 23, 28, 0.42);
+    font-family: $ej-font-ui;
+    font-size: 0.8125rem;
+    font-weight: 400;
+    color: #666;
     text-decoration: line-through;
     margin: 0;
-    order: 0;
   }
 
   .ej-price-sale {
-    font-family: $premium-font-display;
     font-size: clamp(1.2rem, 2vw, 1.42rem);
-    font-weight: 600;
-    color: $premium-ink;
-    margin: 0;
+    font-weight: 500;
+    color: #000;
+    margin: 0 0 0.5rem;
     line-height: 1.2;
-    order: 1;
   }
 }
 
 :host ::ng-deep a.ej-product-cta-btn {
+  color: #ffffff;
+  margin-top: auto;
+  width: 100%;
   align-self: flex-start;
-  margin-top: 0.65rem;
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  vertical-align: middle;
-  transform: perspective(1px) translateZ(0);
-  min-height: 48px;
-  padding: 0 30px;
-  border-radius: $btn-radius;
-  background: $primary-btn-bg;
-  color: $primary-btn-txt !important;
-  font-family: $primary-font;
-  font-size: 1rem;
-  font-weight: 400;
-  letter-spacing: normal;
   text-transform: none;
   text-decoration: none !important;
-  border: $btn-border;
-  cursor: pointer;
-  transition-property: color;
-  transition-duration: 0.3s;
-
-  &::before {
-    content: "";
-    position: absolute;
-    z-index: -1;
-    inset: 0;
-    border-radius: $btn-radius;
-    background: $primary-btn-hvr-bg;
-    transform: scaleY(0);
-    transform-origin: 50% 0;
-    transition: transform 0.3s ease-out;
-  }
-
-  &:hover,
-  &:focus {
-    color: $primary-btn-hvr-txt !important;
-    &::before { transform: scaleY(1); }
-  }
 
   &.ej-product-cta-btn--loading {
     pointer-events: none;
     opacity: 0.65;
     cursor: wait;
+  }
+}
+
+:host ::ng-deep .ej-product-cta .primary-btn {
+  background: $primary-btn-bg !important;
+  border: $btn-border !important;
+  color: $primary-btn-txt !important;
+  font-family: $primary-font !important;
+  border-radius: $btn-radius !important;
+
+  &:hover,
+  &:focus,
+  &:active {
+    color: $primary-btn-hvr-txt !important;
+  }
+
+  &::before {
+    background: $primary-btn-hvr-bg !important;
+    border-radius: $btn-radius !important;
+  }
+}
+
+@media (max-width: 767px) {
+  :host ::ng-deep a.ej-product-cta-btn {
+    height: 44px;
+    padding: 0 20px;
+    font-size: 0.95rem;
   }
 }
 

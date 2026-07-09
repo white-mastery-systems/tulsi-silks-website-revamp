@@ -15,14 +15,6 @@
               <li><span class="active-page">{{blog_details?.name}}</span></li>
             </ul>
           </nav>
-          <a
-            *ngIf="template_setting?.display_goback"
-            class="premium-blog-detail__goback"
-            (click)="commonService.goBack()"
-          >
-            <lucide-icon name="arrow-left" [size]="14" stroke="2"></lucide-icon>
-            Back
-          </a>
         </div>
       </div>
     </div>

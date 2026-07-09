@@ -36,9 +36,6 @@
                   loading="lazy"
                   decoding="async"
                 />
-                <div class="ej-pc-card__brand-bar">
-                  <span class="ej-pc-card__brand">{{ brandFor(p) }}</span>
-                </div>
               </div>
             </a>
             <div class="ej-pc-card__body">
@@ -54,7 +51,7 @@
                   <span class="ej-pc-card__price">{{ priceValue(p) | currency: cc.pipeCurrencyCode:'symbol-narrow':cc.format:cc.pipeLocale }}</span>
                 </ng-template>
               </div>
-              <a class="ej-pc-card__cta" [routerLink]="productLink(p)">View Product</a>
+              <a class="primary-btn ej-pc-card__cta" [routerLink]="productLink(p)">View Product</a>
             </div>
           </article>
         </div>
