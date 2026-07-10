@@ -145,6 +145,11 @@
     padding-left: 15px;
     padding-right: 15px;
   }
+
+  .blog-slider-btn .primary-btn.outline-btn {
+    font-size: clamp(0.875rem, 0.7rem + 0.85vw, 1.25rem) !important;
+    // margin-bottom: 0 !important;
+  }
 }
 
 .home-scroll-top{

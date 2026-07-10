@@ -11,6 +11,100 @@ function escapeHtml(s: string): string {
     .replace(/"/g, '&quot;');
 }
 
+/**
+ * Editor.js inline markup (links, bold, etc.) is already HTML — do not escape it.
+ * Normalize CMS `&nbsp;` / NBSP so they render as normal spaces instead of literal "&nbsp;".
+ */
+function normalizeInlineHtml(html: string): string {
+  let s = String(html ?? '');
+  // Literal entity text from double-encoded CMS content
+  s = s.replace(/&amp;nbsp;/gi, ' ');
+  s = s.replace(/&nbsp;/gi, ' ');
+  // Actual Unicode non-breaking space
+  s = s.replace(/\u00a0/g, ' ');
+  return s;
+}
+
+/** Resolve list item content — Editor.js may store string or `{ content, items }`. */
+function listItemInnerHtml(item: unknown, listTag: 'ul' | 'ol'): string {
+  if (item == null) return '';
+
+  if (typeof item === 'string' || typeof item === 'number') {
+    return normalizeInlineHtml(String(item));
+  }
+
+  if (typeof item === 'object') {
+    const obj = item as { content?: unknown; items?: unknown[]; text?: unknown };
+    const content = normalizeInlineHtml(
+      String(obj.content ?? obj.text ?? '')
+    );
+    const nested = Array.isArray(obj.items) ? obj.items : [];
+    if (!nested.length) return content;
+
+    let nestedHtml = `<${listTag}>`;
+    nested.forEach((child) => {
+      nestedHtml += `<li>${listItemInnerHtml(child, listTag)}</li>`;
+    });
+    nestedHtml += `</${listTag}>`;
+    return content + nestedHtml;
+  }
+
+  return normalizeInlineHtml(String(item));
+}
+
+/**
+ * Rewrite same-origin product/category/blog absolute URLs to relative paths
+ * so SPA navigation works (and strip forced target=_blank on internal links).
+ */
+function normalizeBodyLinks(html: string): string {
+  if (!html || html.indexOf('<a') === -1) return html;
+  return html.replace(
+    /<a\b([^>]*)>/gi,
+    (full, attrs: string) => {
+      const hrefMatch = attrs.match(/\bhref\s*=\s*(["'])(.*?)\1/i);
+      if (!hrefMatch) return full;
+      const quote = hrefMatch[1];
+      let href = hrefMatch[2];
+      const originMatch = href.match(
+        /^https?:\/\/(?:www\.)?tulsisilks\.co\.in(\/[^?#]*)(.*)?$/i
+      );
+      if (originMatch) {
+        href = (originMatch[1] || '/') + (originMatch[2] || '');
+        let nextAttrs = attrs.replace(
+          /\bhref\s*=\s*(["']).*?\1/i,
+          `href=${quote}${href}${quote}`
+        );
+        // Keep internal links in the same tab for SPA feel
+        nextAttrs = nextAttrs.replace(/\s*target\s*=\s*(["'])_blank\1/i, '');
+        nextAttrs = nextAttrs.replace(/\s*rel\s*=\s*(["'])[^"']*\1/i, (m) =>
+          /noopener|noreferrer/i.test(m) ? '' : m
+        );
+        return `<a${nextAttrs}>`;
+      }
+      return full;
+    }
+  );
+}
+
+/**
+ * Decode common entities once before escapeHtml — CMS often stores already-encoded text
+ * (e.g. `Hot &amp; humid` → would become `Hot &amp;amp; humid` if escaped raw).
+ */
+function decodeBasicEntities(s: string): string {
+  return String(s ?? '')
+    .replace(/&amp;/gi, '&')
+    .replace(/&nbsp;/gi, ' ')
+    .replace(/\u00a0/g, ' ')
+    .replace(/&lt;/gi, '<')
+    .replace(/&gt;/gi, '>')
+    .replace(/&quot;/gi, '"')
+    .replace(/&#39;/g, "'");
+}
+
+function escapeCellText(cell: unknown): string {
+  return escapeHtml(decodeBasicEntities(String(cell ?? '')));
+}
+
 function resolveMediaUrl(path: string, imgBaseUrl: string): string {
   if (!path) return '';
   if (/^https?:\/\//i.test(path)) return path;
@@ -90,8 +184,25 @@ export function createEditorJsCustomParsers(imgBaseUrl: string): Record<string, 
       const preferred = anchorSlug || titleSlug;
       const headingId = allocateUniqueHeadingId(preferred, level, headingOrdinal);
       const idAttr = ` id="${escapeHtml(headingId)}"`;
-      const text = data.text != null ? String(data.text) : '';
+      const text = data.text != null ? normalizeInlineHtml(String(data.text)) : '';
       return `<h${level}${idAttr}>${text}</h${level}>`;
+    },
+
+    paragraph: ({ data }) => {
+      const text = data?.text != null ? normalizeInlineHtml(String(data.text)) : '';
+      if (!text.trim()) return '';
+      return `<p>${normalizeBodyLinks(text)}</p>`;
+    },
+
+    quote: ({ data }) => {
+      const text = data?.text != null ? normalizeInlineHtml(String(data.text)) : '';
+      const caption =
+        data?.caption != null && String(data.caption).trim() !== ''
+          ? normalizeInlineHtml(String(data.caption).trim())
+          : '';
+      if (!text.trim() && !caption) return '';
+      const cite = caption ? `<cite>${caption}</cite>` : '';
+      return `<blockquote>${normalizeBodyLinks(text)}${cite}</blockquote>`;
     },
 
     image: ({ data }) => {
@@ -124,13 +235,13 @@ export function createEditorJsCustomParsers(imgBaseUrl: string): Record<string, 
       if (withHeadings) {
         html += '<thead><tr>';
         rows[0].forEach((cell) => {
-          html += `<th>${escapeHtml(String(cell))}</th>`;
+          html += `<th>${escapeCellText(cell)}</th>`;
         });
         html += '</tr></thead><tbody>';
         for (let i = 1; i < rows.length; i++) {
           html += '<tr>';
           rows[i].forEach((cell) => {
-            html += `<td>${escapeHtml(String(cell))}</td>`;
+            html += `<td>${escapeCellText(cell)}</td>`;
           });
           html += '</tr>';
         }
@@ -141,7 +252,7 @@ export function createEditorJsCustomParsers(imgBaseUrl: string): Record<string, 
           html += '<tr>';
           row.forEach((cell, cellIndex) => {
             const cellClass = cellIndex === 0 ? ' class="ej-table__label"' : '';
-            html += `<td${cellClass}>${escapeHtml(String(cell))}</td>`;
+            html += `<td${cellClass}>${escapeCellText(cell)}</td>`;
           });
           html += '</tr>';
         });
@@ -153,11 +264,11 @@ export function createEditorJsCustomParsers(imgBaseUrl: string): Record<string, 
 
     list: ({ data }) => {
       const ordered = data.style === 'ordered';
-      const tag = ordered ? 'ol' : 'ul';
+      const tag: 'ul' | 'ol' = ordered ? 'ol' : 'ul';
       const items: unknown[] = Array.isArray(data.items) ? data.items : [];
       let html = `<${tag}>`;
       items.forEach((item) => {
-        html += `<li>${escapeHtml(String(item))}</li>`;
+        html += `<li>${normalizeBodyLinks(listItemInnerHtml(item, tag))}</li>`;
       });
       html += `</${tag}>`;
       return html;
@@ -273,13 +384,13 @@ export function createEditorJsCustomParsers(imgBaseUrl: string): Record<string, 
       const sLabel = secondary.label != null ? String(secondary.label) : '';
       const sHref = resolveBlogCtaHref(secondary.link != null ? String(secondary.link) : '');
       const textHtml = text
-        ? `<p class="ej-cta-block__text">${escapeHtml(text)}</p>`
+        ? `<p class="ej-cta-block__text">${escapeHtml(decodeBasicEntities(text))}</p>`
         : '';
       const primaryHtml = pLabel
         ? `<a class="primary-btn ej-cta-block__link" href="${escapeHtml(pHref)}">${escapeHtml(pLabel)}</a>`
         : '';
       const secondaryHtml = sLabel
-        ? `<a class="secondary-btn ej-cta-block__link" href="${escapeHtml(sHref)}">${escapeHtml(sLabel)}</a>`
+        ? `<a class="primary-btn ej-cta-block__link ej-cta-block__link--ghost" href="${escapeHtml(sHref)}">${escapeHtml(sLabel)}</a>`
         : '';
       const actionsInner = [primaryHtml, secondaryHtml].filter(Boolean).join('');
       const actionsHtml = actionsInner
@@ -288,8 +399,9 @@ export function createEditorJsCustomParsers(imgBaseUrl: string): Record<string, 
       if (!textHtml && !actionsHtml) return '';
       return (
         `<section class="ej-cta-block" aria-label="${escapeHtml(pLabel || 'Call to action')}">` +
+        `<div class="ej-cta-block__shell">` +
         `${textHtml}${actionsHtml}` +
-        `</section>`
+        `</div></section>`
       );
     },
 

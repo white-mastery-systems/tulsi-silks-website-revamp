@@ -207,19 +207,23 @@
   }
 }
 
-/* Editorial table card — injected via innerHTML */
+/* Editorial table — light journal card; horizontal scroll on mobile */
 :host ::ng-deep .ej-table-card {
-  margin: 2.25rem 0;
+  margin: 2.5rem 0;
+  padding: 0;
   border-radius: $premium-radius-lg;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
   box-shadow: $ej-table-shadow;
   border: 1px solid $ej-table-card-border;
   background: $ej-table-row-odd;
+  box-sizing: border-box;
+  max-width: 100%;
 
   .ej-table {
     width: 100%;
-    min-width: 0;
+    min-width: 36rem;
     border-collapse: separate;
     border-spacing: 0;
     margin: 0;
@@ -227,25 +231,25 @@
     font-size: 0.9375rem;
     background: transparent;
 
-    @media (min-width: 768px) {
-      min-width: 560px;
+    th,
+    tbody td {
+      min-width: 8.5rem;
     }
 
-    /* Shared header look for real <th> cells */
     th {
       border: none;
       border-bottom: 1px solid $ej-table-line;
-      padding: 1.25rem 1.5rem;
+      padding: 1.15rem 1.35rem;
       font-family: $ej-display-font;
-      // font-size: 0.6875rem;
       font-weight: 500;
-      letter-spacing: 0.14em;
+      letter-spacing: 0.12em;
       text-transform: uppercase;
       color: $ej-table-header-text;
       text-align: left;
       vertical-align: bottom;
       background: $ej-table-header-bg;
       text-decoration: none;
+      font-size: 0.75rem;
     }
 
     thead th {
@@ -255,41 +259,37 @@
     tbody td {
       border: none;
       border-bottom: 1px solid $ej-table-line;
-      padding: 1.35rem 1.5rem;
+      padding: 1.25rem 1.35rem;
       vertical-align: top;
       font-family: $ej-display-font;
       font-size: 0.9375rem;
       font-weight: 400;
       letter-spacing: normal;
       text-transform: none;
-      line-height: 1.68;
+      line-height: 1.65;
       color: $ej-table-body-text;
       text-align: left;
       text-decoration: none;
 
       a {
         font-family: inherit;
-        color: inherit;
-        text-decoration: none;
+        color: $tulsi-blog-accent;
+        text-decoration: underline;
+        text-underline-offset: 3px;
 
         &:hover {
-          opacity: 0.88;
-          text-decoration: none;
+          opacity: 0.85;
         }
       }
     }
 
-    /*
-      No <th>: first column is the row label/heading.
-      Class is set by editorjs table parser + decorateEjTables().
-    */
     &.ej-table--no-th tbody td:first-child,
     &.ej-table--no-th td.ej-table__label,
     &.ej-table--no-th .ej-table__label {
       font-family: $ej-display-font !important;
-      font-size: 0.6875rem !important;
+      font-size: 0.75rem !important;
       font-weight: 500 !important;
-      letter-spacing: 0.14em !important;
+      letter-spacing: 0.12em !important;
       text-transform: uppercase !important;
       color: $ej-table-header-text !important;
       vertical-align: top;
@@ -297,7 +297,6 @@
       line-height: 1.45 !important;
     }
 
-    /* Tables with real headers: do NOT restyle first body column */
     &.ej-table--has-th tbody td:first-child {
       font-size: 0.9375rem !important;
       font-weight: 400 !important;
@@ -319,54 +318,85 @@
       border-bottom: none;
     }
   }
+
+  @media (max-width: 767px) {
+    margin: 1.75rem 0;
+
+    .ej-table {
+      min-width: 34rem;
+
+      th,
+      tbody td {
+        padding: 0.95rem 0.85rem;
+      }
+
+      th {
+        font-size: 0.6875rem;
+        letter-spacing: 0.1em;
+      }
+
+      tbody td {
+        font-size: 0.875rem;
+        line-height: 1.55;
+      }
+    }
+  }
 }
 
-/* ctaBlock — beige band, serif copy left; pill CTAs (capsule + sans caps; theme-adjacent ink) */
+/* ctaBlock — light shell; primary buttons in a row */
 :host ::ng-deep .ej-cta-block {
+  margin: 2.5rem 0;
+}
+
+:host ::ng-deep .ej-cta-block__shell {
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
   gap: clamp(1rem, 3vw, 2rem);
-  margin: 2rem 0;
-  padding: clamp(1.15rem, 2.5vw, 1.5rem) clamp(1.25rem, 3vw, 1.75rem);
+  padding: clamp(1.35rem, 3vw, 1.75rem) clamp(1.15rem, 3vw, 1.75rem);
   border-radius: $premium-radius-lg;
-  background: #f0e8de;
+  background: $ej-shell-bg;
+  border: 1px solid $ej-table-card-border;
+  box-shadow: $ej-table-shadow;
   box-sizing: border-box;
 
   @media (max-width: 640px) {
     flex-direction: column;
     align-items: stretch;
-    text-align: center;
+    text-align: left;
+    gap: 1.15rem;
   }
 }
 
 :host ::ng-deep .ej-cta-block__text {
-  margin: 0;
+  margin: 0 !important;
   flex: 1;
   min-width: 0;
-  font-family: $premium-font-display;
-  font-size: clamp(1.05rem, 2vw, 1.2rem);
-  font-weight: 400;
-  line-height: 1.45;
-  letter-spacing: 0.01em;
-  color: $premium-ink;
+  font-family: $premium-font-display !important;
+  font-size: clamp(1.15rem, 2.2vw, 1.4rem) !important;
+  font-weight: 400 !important;
+  line-height: 1.4 !important;
+  letter-spacing: -0.01em;
+  color: $ej-shell-ink !important;
 }
 
 :host ::ng-deep .ej-cta-block__actions {
   display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 0.6rem;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.65rem;
   flex-shrink: 0;
 
   @media (max-width: 640px) {
+    flex-direction: column;
     align-items: stretch;
     width: 100%;
   }
 }
 
-/* Anchor + theme button: match global .primary-btn (flat, Montaga, 48px, scaleY hover) */
 :host ::ng-deep .ej-cta-block__link {
   text-decoration: none !important;
   display: inline-flex !important;
@@ -375,7 +405,8 @@
   box-sizing: border-box;
   white-space: nowrap;
   min-height: 48px;
-  padding: 0 30px !important;
+  min-width: 10.5rem;
+  padding: 0 28px !important;
   border-radius: $btn-radius !important;
   font-family: $primary-font !important;
   font-size: 1rem !important;
@@ -385,6 +416,7 @@
   line-height: 1 !important;
   position: relative;
   vertical-align: middle;
+  margin: 0 !important;
 
   &::before {
     border-radius: $btn-radius !important;
@@ -392,6 +424,7 @@
 
   @media (max-width: 640px) {
     width: 100%;
+    min-width: 0;
   }
 }
 
@@ -414,36 +447,26 @@
   }
 }
 
-:host ::ng-deep .ej-cta-block .secondary-btn {
-  background: $secondary-btn-bg !important;
-  border: $btn-border !important;
-  color: $secondary-btn-txt !important;
-  font-family: $primary-font !important;
-  border-radius: $btn-radius !important;
+/* Ghost / secondary action on light shell */
+:host ::ng-deep .ej-cta-block .ej-cta-block__link--ghost {
+  background: #ffffff !important;
+  border: 1px solid rgba(26, 23, 28, 0.18) !important;
+  color: $ej-shell-ink !important;
+
+  &::before {
+    background: rgba(26, 23, 28, 0.06) !important;
+  }
 
   &:hover,
   &:focus,
   &:active {
-    color: $secondary-btn-hvr-txt !important;
-  }
-
-  &::before {
-    background: $secondary-btn-hvr-bg !important;
-    border-radius: $btn-radius !important;
-  }
-
-  i {
-    color: $secondary-btn-txt !important;
-  }
-
-  &:hover i,
-  &:focus i {
-    color: $secondary-btn-hvr-txt !important;
+    color: $ej-shell-ink !important;
+    border-color: rgba(26, 23, 28, 0.32) !important;
   }
 }
 
 :host ::ng-deep .ej-cta-block .primary-btn:focus-visible,
-:host ::ng-deep .ej-cta-block .secondary-btn:focus-visible {
+:host ::ng-deep .ej-cta-block .ej-cta-block__link--ghost:focus-visible {
   outline: 2px solid rgba(26, 23, 28, 0.3);
   outline-offset: 2px;
 }
@@ -539,7 +562,7 @@
 :host ::ng-deep figure.ej-figure {
   box-sizing: border-box;
   margin: 0.5rem 0 1.5rem 0 !important;
-  max-width: min(42rem, 92%) !important;
+  max-width: min(28rem, 72%) !important;
   width: 100%;
   display: block !important;
   text-align: left;

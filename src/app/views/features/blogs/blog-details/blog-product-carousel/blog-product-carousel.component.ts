@@ -13,7 +13,11 @@ import {
 import { isPlatformBrowser } from '@angular/common';
 import { DynamicAssetLoaderService } from '../../../../../services/dynamic-asset-loader.service';
 import { CurrencyConversionService } from '../../../../../services/currency-conversion.service';
-import { BlogCarouselProduct, ProductCarouselBlockData } from './blog-product-carousel.models';
+import {
+  BlogCarouselProduct,
+  normalizeProductBlockData,
+  ProductCarouselBlockData,
+} from './blog-product-carousel.models';
 
 @Component({
     selector: 'app-blog-product-carousel',
@@ -22,16 +26,19 @@ import { BlogCarouselProduct, ProductCarouselBlockData } from './blog-product-ca
     standalone: false
 })
 export class BlogProductCarouselComponent implements OnChanges, OnDestroy, AfterViewInit {
-  @Input() data: ProductCarouselBlockData | null = null;
+  @Input() data: ProductCarouselBlockData | Record<string, unknown> | null = null;
   @Input() imgBaseUrl = '';
   /** Unique id fragment for Swiper nav elements (alphanumeric). */
   @Input() carouselId = 'pc0';
+  /** Editor.js block type: productCarousel | productList */
+  @Input() blockType = 'productCarousel';
 
   @ViewChild('swiperRoot') swiperRoot?: ElementRef<HTMLElement>;
   @ViewChild('btnPrev') btnPrev?: ElementRef<HTMLButtonElement>;
   @ViewChild('btnNext') btnNext?: ElementRef<HTMLButtonElement>;
 
   products: BlogCarouselProduct[] = [];
+  normalized: ProductCarouselBlockData | null = null;
   defaultBrand = 'TULSI SILKS';
 
   private swiper: { destroy: (deleteListeners?: boolean, cleanup?: boolean) => void } | null = null;
@@ -43,11 +50,26 @@ export class BlogProductCarouselComponent implements OnChanges, OnDestroy, After
     readonly cc: CurrencyConversionService
   ) {}
 
+  get isGrid(): boolean {
+    return false;
+  }
+
+  get sectionTitle(): string | null {
+    const t = this.normalized?.title?.trim();
+    return t || null;
+  }
+
+  get sectionSubtitle(): string | null {
+    const t = this.normalized?.subtitle?.trim();
+    return t || null;
+  }
+
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['data'] || changes['imgBaseUrl']) {
+    if (changes['data'] || changes['imgBaseUrl'] || changes['blockType']) {
+      this.normalized = normalizeProductBlockData(this.data, this.blockType);
       this.products = this.normalizeProducts();
     }
-    if (changes['data'] || changes['carouselId']) {
+    if (changes['data'] || changes['carouselId'] || changes['blockType']) {
       this.teardownSwiper();
     }
     if (this.viewInited) {
@@ -65,7 +87,7 @@ export class BlogProductCarouselComponent implements OnChanges, OnDestroy, After
   }
 
   private scheduleMount(): void {
-    if (!isPlatformBrowser(this.platformId) || this.products.length < 1) return;
+    if (!isPlatformBrowser(this.platformId) || this.products.length < 1 || this.isGrid) return;
     setTimeout(() => this.mountSwiper(), 0);
   }
 
@@ -99,20 +121,20 @@ export class BlogProductCarouselComponent implements OnChanges, OnDestroy, After
   brandFor(p: BlogCarouselProduct): string {
     const fromProduct = p.brand?.trim();
     if (fromProduct) return fromProduct.toUpperCase();
-    const fromBlock = this.data?.brandLabel?.trim();
+    const fromBlock = this.normalized?.brandLabel?.trim();
     if (fromBlock) return fromBlock.toUpperCase();
     return this.defaultBrand;
   }
 
   get viewAllLabel(): string | null {
-    const label = this.data?.buttonLabel?.trim();
+    const label = this.normalized?.buttonLabel?.trim();
     return label ? label : null;
   }
 
   /** Same-origin / relative path for SPA navigation (e.g. `/category/gadwal`). */
   get viewAllRouterLink(): string | null {
     if (!this.viewAllLabel) return null;
-    const raw = this.data?.buttonLink?.trim();
+    const raw = this.normalized?.buttonLink?.trim();
     if (!raw || raw === '#') return null;
 
     if (raw.startsWith('/') && !/^https?:\/\//i.test(raw)) {
@@ -130,7 +152,6 @@ export class BlogProductCarouselComponent implements OnChanges, OnDestroy, After
       }
     }
 
-    // Absolute URL for this store host even during SSR / before hydration.
     const match = raw.match(/^https?:\/\/(?:www\.)?tulsisilks\.co\.in(\/[^?#]*)/i);
     if (match?.[1]) return match[1];
 
@@ -139,7 +160,7 @@ export class BlogProductCarouselComponent implements OnChanges, OnDestroy, After
 
   get viewAllExternalHref(): string | null {
     if (!this.viewAllLabel || this.viewAllRouterLink) return null;
-    const raw = this.data?.buttonLink?.trim();
+    const raw = this.normalized?.buttonLink?.trim();
     if (!raw || !/^https?:\/\//i.test(raw)) return null;
     return raw;
   }
@@ -149,8 +170,8 @@ export class BlogProductCarouselComponent implements OnChanges, OnDestroy, After
   }
 
   private normalizeProducts(): BlogCarouselProduct[] {
-    const raw = this.data?.products ?? [];
-    const lim = this.data?.productLimit;
+    const raw = this.normalized?.products ?? [];
+    const lim = this.normalized?.productLimit;
     const capped =
       lim != null && lim > 0 ? raw.slice(0, Math.min(lim, raw.length)) : [...raw];
     return capped.filter((p) => p && (p.title || p.image));
@@ -169,7 +190,7 @@ export class BlogProductCarouselComponent implements OnChanges, OnDestroy, After
 
   private mountSwiper(): void {
     const el = this.swiperRoot?.nativeElement;
-    if (!el || this.products.length < 1) return;
+    if (!el || this.products.length < 1 || this.isGrid) return;
 
     this.assets.load('swiper-js', 'swiper-css').then(() => {
       const SwiperCtor = (typeof window !== 'undefined' && (window as any).Swiper) as

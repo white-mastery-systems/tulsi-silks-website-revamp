@@ -2,7 +2,7 @@
   <header class="ej-pc__head">
     <div class="ej-pc__titles">
       <div class="ej-pc__title-row">
-        <h2 class="ej-pc__title" *ngIf="data?.title">{{ data?.title }}</h2>
+        <h2 class="ej-pc__title" *ngIf="sectionTitle">{{ sectionTitle }}</h2>
         <ng-container *ngIf="viewAllLabel && (viewAllRouterLink || viewAllExternalHref)">
           <a
             *ngIf="viewAllRouterLink"
@@ -18,7 +18,7 @@
           >{{ viewAllLabel }}</a>
         </ng-container>
       </div>
-      <p class="ej-pc__subtitle" *ngIf="data?.subtitle">{{ data?.subtitle }}</p>
+      <p class="ej-pc__subtitle" *ngIf="sectionSubtitle">{{ sectionSubtitle }}</p>
     </div>
   </header>
 

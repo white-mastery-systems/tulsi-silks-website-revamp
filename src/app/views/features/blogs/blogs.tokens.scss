@@ -4,19 +4,21 @@ $tulsi-blog-muted: rgba(31, 27, 36, 0.55);
 $tulsi-blog-accent: #3d2010;
 $tulsi-blog-font-display: 'Montaga', serif;
 
-/* Editor.js — editorial table + CTAs (warm neutrals, Montaga; aligns with journal reference) */
+/* Editor.js — editorial table + CTAs (light journal shell, Montaga) */
 $ej-display-font: 'Montaga', serif;
 $ej-font-ui: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-/* Premium card table — cream base, warm header/zebra (journal layout reference) */
-$ej-table-header-bg: #f3ebe3;
-$ej-table-row-odd: #fdfaf7;
-$ej-table-row-even: #f7f1ea;
-$ej-table-header-text: #5c5659;
+$ej-shell-bg: #f5f5f5;
+$ej-shell-ink: #1a171c;
+$ej-shell-muted: rgba(26, 23, 28, 0.62);
+/* Table — white + light gray (no warm/orange tint) */
+$ej-table-header-bg: #f0f0f0;
+$ej-table-row-odd: #ffffff;
+$ej-table-row-even: #f7f7f7;
+$ej-table-header-text: #3d3d3d;
 $ej-table-body-text: #1f1b24;
-$ej-table-line: rgba(31, 27, 36, 0.09);
-$ej-table-card-border: rgba(31, 27, 36, 0.07);
-$ej-table-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-/* Legacy alias used in td rules */
+$ej-table-line: rgba(0, 0, 0, 0.08);
+$ej-table-card-border: rgba(0, 0, 0, 0.08);
+$ej-table-shadow: 0 8px 28px rgba(0, 0, 0, 0.05);
 $ej-table-row-alt: $ej-table-row-even;
 
 $ej-editor-btn-bg: #1f1b24;

@@ -487,13 +487,23 @@ export class SearchComponent implements OnInit, OnDestroy {
 
   clearImagePreview() {
     this.clearImageOnly();
+    this.clearTagFilter();
+    this.moreFiltersOpen = false;
     this.passColourHint = false;
+    this.imageError = '';
     this.imageDetected = false;
     this.analysisCached = false;
     this.cachedImageFingerprint = null;
     this.cachedClassification = null;
     this.cameraOpen = false;
+    this.afterSearchEvent = false;
+    this.product_list = [];
+    this.productCount = 0;
+    this.page = 1;
+    this.fallbackUsed = false;
+    this.searchMode = 'text';
     clearSearchSession();
+    this.persistSearchSessionState();
     if (!this.searchQuery.trim()) {
       this.restartTypewriterAnimation();
     }

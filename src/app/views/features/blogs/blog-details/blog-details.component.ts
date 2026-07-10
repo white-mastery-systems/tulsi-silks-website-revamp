@@ -177,6 +177,7 @@ export class BlogDetailsComponent implements OnInit, AfterViewInit, OnDestroy {
           if(!this.blog_details.segments) this.blog_details.segments = [];
           for(let segment of this.blog_details.segments) {
             if(segment.type=="featured_product") {
+              if(!segment.product_list) segment.product_list = [];
               let cardCount = this.swiperService.featured_products.card_count;
               segment.product_list.forEach((obj: any) => {
                 obj.created_on = new Date(new Date(new Date(obj.created_on).setHours(23,59,59,59)).setDate(new Date(obj.created_on).getDate() + 30));
@@ -474,6 +475,9 @@ export class BlogDetailsComponent implements OnInit, AfterViewInit, OnDestroy {
    */
   @HostListener('document:click', ['$event'])
   onInPageAnchorClick(event: MouseEvent): void {
+    if (event.defaultPrevented || event.button !== 0) return;
+    if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+
     const root = this.hostRef.nativeElement;
     const raw = event.target as Node | null;
     const t =
@@ -482,29 +486,40 @@ export class BlogDetailsComponent implements OnInit, AfterViewInit, OnDestroy {
 
     const anchorEl = t.closest('a');
     if (!anchorEl || !root.contains(anchorEl)) return;
+    if (anchorEl.closest('a.ej-product-cta-btn')) return;
+
     const href = anchorEl.getAttribute('href');
-    if (!href || href === '#' || !href.startsWith('#')) return;
-    const id = decodeURIComponent(href.slice(1)).trim();
-    if (!id) return;
-    if (!document.getElementById(id)) return;
-    event.preventDefault();
-    event.stopPropagation();
-    /**
-     * `RouterModule.forRoot({ scrollPositionRestoration: 'top' })` scrolls to (0,0) on NavigationEnd.
-     * Updating the fragment runs that flow *after* a naive scroll and wipes it. Run scroll only after
-     * navigation settles (`.finally`) plus a macrotask so restoration runs first.
-     */
-    void this.router
-      .navigate([], {
-        relativeTo: this.activeRoute,
-        fragment: id,
-        replaceUrl: true,
-      })
-      .finally(() => {
-        requestAnimationFrame(() => {
-          requestAnimationFrame(() => this.scrollToArticleFragment(id, undefined, 'auto'));
+    if (!href || href === '#') return;
+
+    // In-article section anchors (#heading-id)
+    if (href.startsWith('#')) {
+      const id = decodeURIComponent(href.slice(1)).trim();
+      if (!id) return;
+      if (!document.getElementById(id)) return;
+      event.preventDefault();
+      event.stopPropagation();
+      void this.router
+        .navigate([], {
+          relativeTo: this.activeRoute,
+          fragment: id,
+          replaceUrl: true,
+        })
+        .finally(() => {
+          requestAnimationFrame(() => {
+            requestAnimationFrame(() => this.scrollToArticleFragment(id, undefined, 'auto'));
+          });
         });
-      });
+      return;
+    }
+
+    // Same-origin relative paths from Editor.js body (product / category / blog links)
+    if (href.startsWith('/') && !href.startsWith('//')) {
+      const target = (anchorEl.getAttribute('target') || '').toLowerCase();
+      if (target === '_blank') return;
+      event.preventDefault();
+      event.stopPropagation();
+      void this.router.navigateByUrl(href);
+    }
   }
 
   /** Offset for fixed site header so headings aren’t hidden under the bar. */
@@ -883,7 +898,7 @@ export class BlogDetailsComponent implements OnInit, AfterViewInit, OnDestroy {
     if(this.blog_details?.segments?.length) {
       for(let segment of this.blog_details.segments) {
         if(segment.type=="featured_product") {
-          for(let product of segment.product_list) {
+          for(let product of segment.product_list || []) {
             product.temp_selling_price = this.cc.CALC(product.selling_price);
             product.temp_discounted_price = this.cc.CALC(product.discounted_price);
           }

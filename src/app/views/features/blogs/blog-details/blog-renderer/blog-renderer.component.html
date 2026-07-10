@@ -1,14 +1,15 @@
-<div
-  *ngIf="segments?.length"
-  class="blog-renderer ej-content editorjs-blog-body premium-blog-body"
->
-  <ng-container *ngFor="let seg of segments">
-    <div *ngIf="seg.kind === 'html'" [innerHTML]="seg.html"></div>
-    <app-blog-product-carousel
-      *ngIf="seg.kind === 'carousel'"
-      [data]="seg.data"
-      [imgBaseUrl]="imgBaseUrl"
-      [carouselId]="seg.carouselKey"
-    ></app-blog-product-carousel>
-  </ng-container>
-</div>
+<div
+  *ngIf="segments?.length"
+  class="blog-renderer ej-content editorjs-blog-body premium-blog-body"
+>
+  <ng-container *ngFor="let seg of segments">
+    <div *ngIf="seg.kind === 'html'" [innerHTML]="seg.html"></div>
+    <app-blog-product-carousel
+      *ngIf="seg.kind === 'carousel'"
+      [data]="seg.data"
+      [imgBaseUrl]="imgBaseUrl"
+      [carouselId]="seg.carouselKey"
+      [blockType]="seg.blockType"
+    ></app-blog-product-carousel>
+  </ng-container>
+</div>

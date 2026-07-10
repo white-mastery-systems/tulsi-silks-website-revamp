@@ -3,14 +3,14 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { createEditorJsCustomParsers } from '../editorjs-custom-parsers';
 import { wrapEditorJsArticleSections } from '../editorjs-section-wrap';
 
-/** Mixed article stream: HTML from Editor.js + interactive blocks (e.g. product carousel). */
+/** Mixed article stream: HTML from Editor.js + interactive blocks (e.g. product carousel / list). */
 export type BlogRendererSegment =
   | { kind: 'html'; html: SafeHtml }
-  | { kind: 'carousel'; data: Record<string, unknown>; carouselKey: string };
+  | { kind: 'carousel'; data: Record<string, unknown>; carouselKey: string; blockType: string };
 
 /**
  * Renders Editor.js JSON (`content.blocks`) to sanitized HTML using Tulsi custom parsers.
- * `productCarousel` blocks are spliced out and rendered as `app-blog-product-carousel` (Swiper).
+ * `productCarousel` / `productList` blocks are spliced out and rendered as `app-blog-product-carousel`.
  *
  * Phase 1 perf: `editorjs-html` is lazy-loaded — it is not bundled into initial `main` / blog route chunk eagerly.
  */
@@ -96,7 +96,7 @@ export class BlogRendererComponent implements OnChanges {
 
     while (i < n) {
       const b = list[i];
-      if (b?.type === 'productCarousel') {
+      if (b?.type === 'productCarousel' || b?.type === 'productList') {
         const data = b.data;
         const prods = data?.products;
         if (Array.isArray(prods) && prods.length) {
@@ -104,12 +104,13 @@ export class BlogRendererComponent implements OnChanges {
             kind: 'carousel',
             data,
             carouselKey: `ejpc${carouselOrdinal++}`,
+            blockType: String(b.type),
           });
         }
         i++;
       } else {
         const start = i;
-        while (i < n && list[i]?.type !== 'productCarousel') {
+        while (i < n && list[i]?.type !== 'productCarousel' && list[i]?.type !== 'productList') {
           i++;
         }
         const chunk = list.slice(start, i);
@@ -133,7 +134,9 @@ export class BlogRendererComponent implements OnChanges {
 
     const tryParse = (blocks: any[]): string => {
       const htmlRaw = parser.parse({ blocks });
-      return this.decorateEjTables(wrapEditorJsArticleSections(htmlRaw));
+      return this.decorateEjTables(
+        this.normalizeRenderedHtml(wrapEditorJsArticleSections(htmlRaw))
+      );
     };
 
     // 1) First attempt: render as-is.
@@ -175,6 +178,42 @@ export class BlogRendererComponent implements OnChanges {
         return '';
       }
     }
+  }
+
+  /**
+   * Normalize CMS quirks in rendered Editor.js HTML:
+   * - literal `&nbsp;` / NBSP → normal spaces
+   * - absolute tulsisilks.co.in links → relative paths for SPA
+   */
+  private normalizeRenderedHtml(html: string): string {
+    if (!html) return html;
+    let s = html
+      .replace(/&amp;nbsp;/gi, ' ')
+      .replace(/&nbsp;/gi, ' ')
+      .replace(/\u00a0/g, ' ')
+      // Fix double-encoded ampersands from CMS table cells
+      .replace(/&amp;amp;/gi, '&amp;');
+
+    if (s.indexOf('<a') === -1) return s;
+
+    return s.replace(/<a\b([^>]*)>/gi, (full, attrs: string) => {
+      const hrefMatch = attrs.match(/\bhref\s*=\s*(["'])(.*?)\1/i);
+      if (!hrefMatch) return full;
+      const quote = hrefMatch[1];
+      const href = hrefMatch[2];
+      const originMatch = href.match(
+        /^https?:\/\/(?:www\.)?tulsisilks\.co\.in(\/[^?#]*)(\?[^#]*)?(#.*)?$/i
+      );
+      if (!originMatch) return full;
+      const nextHref =
+        (originMatch[1] || '/') + (originMatch[2] || '') + (originMatch[3] || '');
+      let nextAttrs = attrs.replace(
+        /\bhref\s*=\s*(["']).*?\1/i,
+        `href=${quote}${nextHref}${quote}`
+      );
+      nextAttrs = nextAttrs.replace(/\s*target\s*=\s*(["'])_blank\1/i, '');
+      return `<a${nextAttrs}>`;
+    });
   }
 
   /**

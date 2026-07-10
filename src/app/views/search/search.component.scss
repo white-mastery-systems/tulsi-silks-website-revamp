@@ -223,28 +223,11 @@ $mob-bar-h:  54px;
 }
 
 .search-command--image-active {
-  .search-hero-section {
-    max-height: 0;
-    opacity: 0;
-    margin: 0;
-    padding: 0;
-    overflow: hidden;
-    pointer-events: none;
-  }
-
-  .search-analyse-btn {
-    display: flex;
-    opacity: 1;
-    max-height: 52px;
-    margin-bottom: 0;
-    transform: translateY(0);
-  }
-
   .search-preview-box__change {
     display: flex;
   }
 
-  &.search-command--analysed .search-analyse-btn {
+  &.search-command--analysed .search-analyse-btn--hero {
     display: none !important;
     max-height: 0 !important;
     margin-bottom: 0 !important;
@@ -252,18 +235,13 @@ $mob-bar-h:  54px;
     overflow: hidden;
     pointer-events: none;
   }
+
+  &.search-command--analysed .search-analyse-btn--inline {
+    display: none !important;
+  }
 }
 
 .search-command--scanning {
-  .search-analyse-btn {
-    display: flex !important;
-    opacity: 1 !important;
-    max-height: 52px !important;
-    margin-bottom: 0;
-    transform: translateY(0) !important;
-    pointer-events: none;
-  }
-
   .search-preview-box__change {
     display: none !important;
   }
@@ -327,6 +305,14 @@ $mob-bar-h:  54px;
 .search-input-container--locked {
   background: #f3f4f6;
   opacity: 0.92;
+
+  .search-input-actions-wrapper {
+    display: none;
+    min-width: 0;
+    width: 0;
+    margin: 0;
+    padding: 0;
+  }
 }
 
 .search-input-actions-wrapper {
@@ -434,6 +420,15 @@ $mob-bar-h:  54px;
   transition: opacity 0.28s ease, transform 0.28s ease, max-height 0.28s ease;
 
   span { color: $white !important; }
+
+  &--inline {
+    display: none;
+    opacity: 1;
+    max-height: none;
+    margin: 0;
+    transform: none;
+    overflow: visible;
+  }
 
   &--loading {
     opacity: 0.92;
@@ -1610,9 +1605,234 @@ $mob-bar-h:  54px;
   .ngx-pagination { margin-bottom: 0; }
 }
 
+// ══ DESKTOP HERO ══════════════════════════════════════════════════════════════
+
+@media (min-width: 992px) {
+  .search-command {
+    display: grid;
+    grid-template-columns: minmax(0, 600px);
+    gap: 1.25rem 1.5rem;
+    align-items: start;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .search-preview-box {
+    display: none;
+
+    &__placeholder {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 10px;
+      text-align: center;
+      color: $ink-muted;
+    }
+
+    &--filled {
+      height: 220px;
+      min-height: 220px;
+      margin-bottom: 0;
+      padding: 0;
+      border-style: solid;
+    }
+
+    &__change {
+      display: none !important;
+    }
+  }
+
+  .search-analyse-btn--hero {
+    display: none !important;
+  }
+
+  .search-command--scanning .search-analyse-btn--hero {
+    display: none !important;
+  }
+
+  .search-command--image-active:not(.search-command--analysed) .search-analyse-btn--inline {
+    display: flex !important;
+    opacity: 1 !important;
+    max-height: none !important;
+    margin: 0 !important;
+    transform: none !important;
+    width: 100%;
+    overflow: visible;
+  }
+
+  .search-command--scanning .search-analyse-btn--inline {
+    pointer-events: none;
+  }
+
+  .search-command__main {
+    grid-column: 1;
+    grid-row: 1;
+    width: 100%;
+    max-width: 600px;
+    justify-self: center;
+  }
+
+  .search-wrapper,
+  .search-hero-section,
+  .smart-search-bar-container,
+  .smart-search-bar {
+    max-width: 600px;
+  }
+
+  .search-command--image-active,
+  .search-command--scanning {
+    .search-hero-section {
+      max-height: 600px;
+      opacity: 1;
+      margin: 0;
+      padding: 0;
+      overflow: visible;
+      pointer-events: auto;
+    }
+  }
+
+  .search-ai-pills {
+    margin-top: 0.75rem;
+    text-align: left;
+    justify-self: center;
+    max-width: 520px;
+    width: 100%;
+
+    &__list {
+      justify-content: flex-start;
+      padding: 0;
+    }
+  }
+
+  .presets-row {
+    justify-content: center;
+  }
+
+  .hiw-row {
+    text-align: center;
+  }
+
+  // Preview left of search; main column stays page-centered (equal side tracks)
+  .search-command.search-command--with-preview {
+    grid-template-columns: 1fr minmax(0, 600px) 1fr;
+    max-width: 1080px;
+    width: 100%;
+
+    .search-preview-box {
+      display: flex;
+      grid-column: 1;
+      grid-row: 1;
+      justify-self: start;
+      align-self: start;
+      flex: none;
+      width: 160px;
+      min-height: 160px;
+      height: 160px;
+      margin: 0;
+      padding: 0;
+      border-width: 1px;
+      border-style: dashed;
+      opacity: 1;
+      visibility: visible;
+      overflow: hidden;
+
+      &__change {
+        display: flex !important;
+      }
+    }
+
+    .search-command__main {
+      grid-column: 2;
+      grid-row: 1;
+      justify-self: stretch;
+      width: 100%;
+      max-width: 600px;
+    }
+  }
+
+  .search-command.search-command--with-preview.search-command--scanning {
+    .search-preview-box__change {
+      display: none !important;
+    }
+  }
+}
+
 // ══ RESPONSIVE ════════════════════════════════════════════════════════════════
 
 @media (max-width: 991px) {
+  .search-command {
+    flex-direction: column;
+    align-items: stretch;
+    max-width: 920px;
+  }
+
+  .search-analyse-btn--inline {
+    display: none !important;
+  }
+
+  .search-command--image-active {
+    .search-analyse-btn--hero {
+      display: flex;
+      opacity: 1;
+      max-height: 52px;
+      margin-bottom: 0;
+      transform: translateY(0);
+    }
+  }
+
+  .search-command--scanning {
+    .search-analyse-btn--hero {
+      display: flex !important;
+      opacity: 1 !important;
+      max-height: 52px !important;
+      margin-bottom: 0;
+      transform: translateY(0) !important;
+      pointer-events: none;
+    }
+  }
+
+  .search-command--image-active {
+    .search-hero-section {
+      max-height: 0;
+      opacity: 0;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      pointer-events: none;
+    }
+  }
+
+  .search-preview-box {
+    flex: none;
+    width: 100%;
+    max-width: none;
+    min-height: 0;
+    height: 0;
+    margin: 0;
+    padding: 0;
+    border-width: 0;
+    opacity: 0;
+    overflow: hidden;
+    visibility: hidden;
+
+    &__placeholder {
+      display: none;
+    }
+
+    &--filled {
+      visibility: visible;
+      height: 200px;
+      min-height: 200px;
+      opacity: 1;
+      margin-bottom: 1rem;
+      padding: 0;
+      border-width: 1px;
+      border-style: solid;
+    }
+  }
+
   .search-hero {
     padding: 1.5rem 0 1.25rem;
   }

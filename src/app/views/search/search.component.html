@@ -25,6 +25,7 @@
         [class.search-command--image-active]="hasUploadedImage"
         [class.search-command--scanning]="classifyLoader || showImageLoadingText"
         [class.search-command--analysed]="showAiResponsePills && !searchLoader && !classifyLoader"
+        [class.search-command--with-preview]="!!imagePreview"
       >
         <div
           class="search-preview-box"
@@ -57,24 +58,15 @@
 
         <button
           type="button"
-          class="search-analyse-btn"
+          class="search-analyse-btn search-analyse-btn--hero"
           [class.search-analyse-btn--loading]="classifyLoader || searchLoader"
           (click)="onMainSearch()"
           [disabled]="searchLoader || classifyLoader"
         >
+          <span *ngIf="(classifyLoader || searchLoader) && !showImageLoadingText" class="btn-spinner"></span>
           <span *ngIf="showImageLoadingText" class="search-analyse-btn__status">{{ loadingStatusText }}</span>
-          <span *ngIf="(searchLoader || classifyLoader) && !showImageLoadingText" class="btn-spinner"></span>
           <span *ngIf="!(searchLoader || classifyLoader)">Analyse Image</span>
         </button>
-
-        <div *ngIf="showAiResponsePills" class="search-ai-pills">
-          <span class="search-ai-pills__title">AI detected</span>
-          <div class="search-ai-pills__list catalog-active-filters">
-            <span *ngFor="let chip of activeFilterChips" class="catalog-filter-chip catalog-filter-chip--white">
-              <span class="catalog-filter-chip__value">{{ chip.value }}</span>
-            </span>
-          </div>
-        </div>
 
         <div class="search-command__main">
           <div class="search-wrapper">
@@ -111,29 +103,31 @@
                           <span class="upload-btn-text">Upload</span>
                         </span>
                       </button>
-                      <div *ngIf="imagePreview" class="search-input-thumbnail-container">
-                        <img
-                          class="search-input-thumbnail-img"
-                          [src]="imagePreview"
-                          alt="Uploaded preview"
-                          (click)="onUploadZoneClick(sareeFileInput, $event)"
-                        >
-                        <button
-                          type="button"
-                          class="search-input-remove-btn"
-                          (click)="onClearImageClick($event)"
-                          aria-label="Remove photo"
-                        >
-                          &#x2715;
-                        </button>
-                      </div>
                     </div>
                   </div>
 
-                  <button type="button" class="search-btn search-submit-btn" (click)="onMainSearch()" [disabled]="searchLoader || classifyLoader">
-                    <span *ngIf="searchLoader && !showImageLoadingText" class="btn-spinner"></span>
-                    <span *ngIf="showImageLoadingText" class="search-btn__status">{{ loadingStatusText }}</span>
-                    <span *ngIf="!(searchLoader || classifyLoader)">{{ hasUploadedImage ? 'Analyse' : 'Search' }}</span>
+                  <button
+                    *ngIf="hasUploadedImage"
+                    type="button"
+                    class="search-analyse-btn search-analyse-btn--inline"
+                    [class.search-analyse-btn--loading]="classifyLoader || searchLoader"
+                    (click)="onMainSearch()"
+                    [disabled]="searchLoader || classifyLoader"
+                  >
+                    <span *ngIf="(classifyLoader || searchLoader) && !showImageLoadingText" class="btn-spinner"></span>
+                    <span *ngIf="showImageLoadingText" class="search-analyse-btn__status">{{ loadingStatusText }}</span>
+                    <span *ngIf="!(searchLoader || classifyLoader)">Analyse Image</span>
+                  </button>
+
+                  <button
+                    *ngIf="!hasUploadedImage"
+                    type="button"
+                    class="search-btn search-submit-btn"
+                    (click)="onMainSearch()"
+                    [disabled]="searchLoader || classifyLoader"
+                  >
+                    <span *ngIf="searchLoader" class="btn-spinner"></span>
+                    <span *ngIf="!searchLoader">Search</span>
                   </button>
                 </div>
               </div>
@@ -176,6 +170,15 @@
                     </div>
                   </div>
                 </div>
+              </div>
+            </div>
+
+            <div *ngIf="showAiResponsePills" class="search-ai-pills">
+              <span class="search-ai-pills__title">AI detected</span>
+              <div class="search-ai-pills__list catalog-active-filters">
+                <span *ngFor="let chip of activeFilterChips" class="catalog-filter-chip catalog-filter-chip--white">
+                  <span class="catalog-filter-chip__value">{{ chip.value }}</span>
+                </span>
               </div>
             </div>
 
