@@ -635,7 +635,7 @@
   flex-shrink: 0;
   width: 100%;
   max-width: 210px;
-  aspect-ratio: 3 / 4;
+  aspect-ratio: 1;
   object-fit: cover;
   // border-radius: 12px;
   display: block;
@@ -709,11 +709,11 @@
 
 :host ::ng-deep a.ej-product-cta-btn {
   color: #ffffff;
-  margin-top: auto;
-  width: 100%;
-  align-self: flex-start;
-  text-transform: none;
-  text-decoration: none !important;
+  // margin-top: auto;
+  // width: 100%;
+  // align-self: flex-start;
+  // text-transform: none;
+  // text-decoration: none !important;
 
   &.ej-product-cta-btn--loading {
     pointer-events: none;
@@ -723,11 +723,11 @@
 }
 
 :host ::ng-deep .ej-product-cta .primary-btn {
-  background: $primary-btn-bg !important;
-  border: $btn-border !important;
-  color: $primary-btn-txt !important;
-  font-family: $primary-font !important;
-  border-radius: $btn-radius !important;
+  // background: $primary-btn-bg !important;
+  // border: $btn-border !important;
+  // color: $primary-btn-txt !important;
+  // font-family: $primary-font !important;
+  // border-radius: $btn-radius !important;
 
   &:hover,
   &:focus,
@@ -741,13 +741,13 @@
   }
 }
 
-@media (max-width: 767px) {
-  :host ::ng-deep a.ej-product-cta-btn {
-    height: 44px;
-    padding: 0 20px;
-    font-size: 0.95rem;
-  }
-}
+// @media (max-width: 767px) {
+//   :host ::ng-deep a.ej-product-cta-btn {
+//     height: 44px;
+//     padding: 0 20px;
+//     font-size: 0.95rem;
+//   }
+// }
 
 :host ::ng-deep .ej-btn-outline {
   position: relative;

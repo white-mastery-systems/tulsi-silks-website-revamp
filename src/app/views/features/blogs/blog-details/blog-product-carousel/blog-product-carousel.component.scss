@@ -3,7 +3,7 @@
 
 .ej-pc {
   margin: 2.5rem 0;
-  padding: clamp(1.35rem, 3vw, 1.85rem) clamp(1rem, 2vw, 1.25rem);
+  padding: clamp(1.35rem, 3vw, 1.25rem) clamp(1rem, 2vw, 1.25rem);
   // border-radius: $premium-radius-lg;
   background: #1a1a1e;
   box-sizing: border-box;
@@ -267,7 +267,7 @@
 @media (max-width: 767px) {
   .ej-pc {
     margin: 1.75rem 0;
-    padding: 1rem 0.85rem 1.1rem;
+    padding: 1.65rem 0.85rem 0.85rem;
     // border-radius: 12px;
   }
 
@@ -331,11 +331,7 @@
     min-height: 0;
   }
 
-  .ej-pc-card__price {
-    font-size: 0.875rem;
-  }
-
-  .ej-pc-card__cta {
+   .ej-pc-card__cta {
     height: 44px; // better touch target while matching `.primary-btn` feel
     padding: 0 20px;
     font-size: 0.95rem;

@@ -244,10 +244,11 @@
         }
         p, h3{
           z-index: 9;
-          font-size: 26px;
+          font-size: clamp(1.25rem, 0.75rem + 1.25vw, 1.625rem);
           font-weight: inherit;
           margin-top: 0;
-          padding: 24px;
+          padding: clamp(0.75rem, 0.5rem + 1.25vw, 1.5rem);
+          line-height: 1.2;
         }
       }
     }
@@ -299,6 +300,7 @@
         }
         p{
           z-index: 9;
+          margin-bottom: 15px !important;
         }
         .inner-content{
           position: absolute;
@@ -935,7 +937,7 @@ span{
     h5,
     .subtitle {
       opacity: 1;
-      margin-bottom: 0px;
+      margin-bottom: 16px;
       font-size: 18px;
       line-height: 2;
       font-weight: 400;
