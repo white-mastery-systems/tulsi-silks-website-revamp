@@ -212,7 +212,7 @@
                   <span class="home-visual-search__frame home-visual-search__frame--br" aria-hidden="true"></span>
                   <img src="assets/images/img-2.jpg" alt="" width="232" height="312" loading="lazy" decoding="async">
                   <figcaption class="home-visual-search__product">
-                    <p class="home-visual-search__product-name">Red Soft Silk Saree</p>
+                    <p class="home-visual-search__product-name">Yellow Soft Silk Saree</p>
                     <p class="home-visual-search__product-meta">₹11,110</p>
                   </figcaption>
                 </figure>
@@ -241,8 +241,11 @@
                 class="home-visual-search__input"
                 placeholder="Search 'Temple Border'"
                 [(ngModel)]="visualSearchQuery"
+                (focus)="goToSearchPage()"
                 (keydown.enter)="goToSearchPage()"
                 autocomplete="off"
+                readonly
+                aria-label="Go to saree search"
               >
             </label>
 

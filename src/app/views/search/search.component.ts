@@ -63,6 +63,9 @@ export class SearchComponent implements OnInit, OnDestroy {
   filterCollapseIndex = -1;
   moreFiltersOpen = false;
   howItWorksOpen = false;
+  private filterDraftSnapshot: any[] | null = null;
+  private appliedTagListSnapshot: any[] | null = null;
+  private filterApplyCommitted = false;
   readonly demoInspirationImage = 'assets/images/woven-image.png';
   readonly demoPreviewProducts = [
     { name: 'Cream Floral Silk Saree', price: '₹8,450', image: 'assets/images/img-2.jpg' },
@@ -167,7 +170,11 @@ export class SearchComponent implements OnInit, OnDestroy {
   }
 
   get activeFilterChips(): ActiveFilterChip[] {
-    return buildActiveFilterChips(this.tag_list).map(chip => ({
+    const tagSource =
+      this.filtersDrawerOpen && this.appliedTagListSnapshot
+        ? this.appliedTagListSnapshot
+        : this.tag_list;
+    return buildActiveFilterChips(tagSource).map(chip => ({
       label: chip.name,
       key: toFilterKey(chip.name),
       value: chip.value
@@ -175,11 +182,19 @@ export class SearchComponent implements OnInit, OnDestroy {
   }
 
   get hasActiveFilters(): boolean {
-    return hasCheckedFilters(this.tag_list);
+    const tagSource =
+      this.filtersDrawerOpen && this.appliedTagListSnapshot
+        ? this.appliedTagListSnapshot
+        : this.tag_list;
+    return hasCheckedFilters(tagSource);
   }
 
   get activeFilterCount(): number {
-    return countActiveFilterGroups(this.tag_list);
+    const tagSource =
+      this.filtersDrawerOpen && this.appliedTagListSnapshot
+        ? this.appliedTagListSnapshot
+        : this.tag_list;
+    return countActiveFilterGroups(tagSource);
   }
 
   get primaryFilterGroups() {
@@ -249,33 +264,48 @@ export class SearchComponent implements OnInit, OnDestroy {
 
   openFilters() {
     if (!this.filtersEnabled) return;
+    this.filterDraftSnapshot = this.cloneTagListSnapshot(this.tag_list);
+    this.appliedTagListSnapshot = this.cloneTagListSnapshot(this.tag_list);
+    this.filterApplyCommitted = false;
     this.filterCollapseIndex = -1;
     this.filterModal.show();
     this.filtersDrawerOpen = true;
   }
 
   applyFilters() {
+    this.filterApplyCommitted = true;
+    this.appliedTagListSnapshot = null;
+    this.filterDraftSnapshot = null;
     this.filterModal.hide();
     this.filtersDrawerOpen = false;
     this.passColourHint = false;
-    if (this.searchQuery.trim()) {
-      this.runTextSearch();
-      return;
-    }
-    if (this.hasActiveFilters) {
-      this.runFilterSearch();
+    this.imageDetected = false;
+    this.analysisCached = false;
+    this.persistSearchSessionState();
+
+    if (this.searchQuery.trim() || hasCheckedFilters(this.tag_list)) {
+      this.runCatalogSearch();
       return;
     }
     this.imageError = 'Select at least one filter to apply.';
   }
 
   cancelFilters() {
+    this.filterApplyCommitted = false;
+    this.restoreFilterDraftSnapshot();
+    this.appliedTagListSnapshot = null;
     this.filterModal.hide();
     this.filtersDrawerOpen = false;
   }
 
   onFiltersHidden() {
+    if (!this.filterApplyCommitted) {
+      this.restoreFilterDraftSnapshot();
+    }
     this.filtersDrawerOpen = false;
+    this.filterApplyCommitted = false;
+    this.appliedTagListSnapshot = null;
+    this.filterDraftSnapshot = null;
   }
 
   panelHasFilters(): boolean {
@@ -299,6 +329,10 @@ export class SearchComponent implements OnInit, OnDestroy {
 
   onSortChange() {
     if (!this.sortEnabled) return;
+    if (this.afterSearchEvent && this.searchMode === 'text') {
+      this.runCatalogSearch();
+      return;
+    }
     this.sortProductList();
   }
 
@@ -339,12 +373,10 @@ export class SearchComponent implements OnInit, OnDestroy {
   }
 
   toggleFilterOption(group: any, option: any) {
-    const wasChecked = !!option.checked;
-    group.option_list.forEach((opt: any) => { delete opt.checked; });
-    if(!wasChecked) option.checked = true;
+    // Multi-select chips — commit to applied chips / API only on Apply
+    option.checked = !option.checked;
     this.imageDetected = false;
     this.analysisCached = false;
-    this.persistSearchSessionState();
   }
 
   toggleMoreFilters() {
@@ -367,33 +399,37 @@ export class SearchComponent implements OnInit, OnDestroy {
   }
 
   onSearch() {
-    if(this.searchQuery.trim()) {
-      this.runTextSearch();
-    } else if(this.hasActiveFilters) {
-      this.runFilterSearch();
+    if(this.searchQuery.trim() || this.hasActiveFilters) {
+      this.runCatalogSearch();
     } else {
       this.imageError = 'Enter a search term or upload a photo to search.';
     }
   }
 
-  private runTextSearch() {
+  private runCatalogSearch() {
     this.imageError = '';
     this.afterSearchEvent = true;
     this.searchLoader = true;
     this.page = 1;
     this.fallbackUsed = false;
     this.searchMode = 'text';
-    const payload = { category_id: '', name: this.searchQuery.trim(), skip: 0, limit: this.pageSize };
+    const payload = this.buildCatalogSearchPayload(0, this.pageSize);
     this.storeApi.SEARCH_PRODUCT(payload).subscribe({
       next: result => {
         this.applySearchResult(result);
         this.searchLoader = false;
+        this.persistSearchSessionState();
       },
       error: () => {
         this.imageError = 'Search failed. Please try again.';
         this.searchLoader = false;
       }
     });
+  }
+
+  /** @deprecated use runCatalogSearch — kept for image-flow callers */
+  private runTextSearch() {
+    this.runCatalogSearch();
   }
 
   runFilterSearch() {
@@ -413,6 +449,17 @@ export class SearchComponent implements OnInit, OnDestroy {
     this.imageError = '';
     this.imageDetected = false;
     this.analysisCached = false;
+    this.moreFiltersOpen = false;
+    this.page = 1;
+
+    // Keep search results — only drop filters and re-query by name
+    if (this.searchQuery.trim()) {
+      this.persistSearchSessionState();
+      this.runCatalogSearch();
+      return;
+    }
+
+    // No search term left — clear results
     this.cachedImageFingerprint = null;
     this.cachedClassification = null;
     clearSearchSession();
@@ -422,9 +469,8 @@ export class SearchComponent implements OnInit, OnDestroy {
     this.afterSearchEvent = false;
     this.product_list = [];
     this.productCount = 0;
-    this.page = 1;
-    this.moreFiltersOpen = false;
     this.clearImageOnly();
+    this.persistSearchSessionState();
   }
 
   clearTagFilter() {
@@ -472,17 +518,25 @@ export class SearchComponent implements OnInit, OnDestroy {
     this.imageDetected = false;
     this.analysisCached = false;
     this.passColourHint = false;
-    if(this.afterSearchEvent && this.hasActiveFilters) {
-      this.page = 1;
-      this.searchLoader = true;
-      this.syncImageLoadingStatus();
-      this.runSearchWithFallback();
+    this.page = 1;
+
+    // Always re-search when a query exists (filters: {} if none left)
+    if (this.searchQuery.trim() || this.hasActiveFilters) {
+      this.persistSearchSessionState();
+      if (this.searchMode === 'text' || this.searchQuery.trim()) {
+        this.runCatalogSearch();
+      } else {
+        this.searchLoader = true;
+        this.syncImageLoadingStatus();
+        this.runSearchWithFallback();
+      }
+      return;
     }
-    else if(!this.hasActiveFilters) {
-      this.afterSearchEvent = false;
-      this.product_list = [];
-      this.productCount = 0;
-    }
+
+    this.afterSearchEvent = false;
+    this.product_list = [];
+    this.productCount = 0;
+    this.persistSearchSessionState();
   }
 
   clearImagePreview() {
@@ -825,7 +879,7 @@ export class SearchComponent implements OnInit, OnDestroy {
     this.pageLoader = true;
     const skip = (page - 1) * this.pageSize;
     if(this.searchMode === 'text') {
-      const payload = { category_id: '', name: this.searchQuery.trim(), skip, limit: this.pageSize };
+      const payload = this.buildCatalogSearchPayload(skip, this.pageSize);
       this.storeApi.SEARCH_PRODUCT(payload).subscribe(result => {
         this.pageLoader = false;
         if(result.status) this.applySearchResult(result);
@@ -840,16 +894,44 @@ export class SearchComponent implements OnInit, OnDestroy {
     }
   }
 
-  private buildSearchPayload(skip: number, limit: number) {
-    const filters: Record<string, string[]> = {};
+  /** Payload for `/store_details/v1/product/search` */
+  private buildCatalogSearchPayload(skip: number, limit: number) {
+    return {
+      name: this.searchQuery.trim(),
+      filters: this.buildSelectedFiltersByTagId(),
+      limit,
+      skip,
+      sort_by: this.sort_value || 'latest'
+    };
+  }
 
+  private buildSelectedFiltersByTagId(): Record<string, string[]> {
+    const filters: Record<string, string[]> = {};
     this.tag_list.forEach(tag => {
       const tagId = String(tag._id);
       const selected = (tag.option_list || [])
         .filter((opt: any) => opt.checked)
         .map((opt: any) => opt.name);
-      if(selected.length) filters[tagId] = selected;
+      if (selected.length) filters[tagId] = selected;
     });
+    return filters;
+  }
+
+  private cloneTagListSnapshot(tagList: any[]): any[] {
+    return (tagList || []).map(tag => ({
+      ...tag,
+      option_list: (tag.option_list || []).map((opt: any) => ({ ...opt }))
+    }));
+  }
+
+  private restoreFilterDraftSnapshot(): void {
+    if (!this.filterDraftSnapshot) return;
+    this.tag_list = this.cloneTagListSnapshot(this.filterDraftSnapshot);
+    this.filterDraftSnapshot = null;
+  }
+
+  private buildSearchPayload(skip: number, limit: number) {
+    const filters: Record<string, string[]> = this.buildSelectedFiltersByTagId();
 
     // Fill gaps from classify API while AI filters are still active (user edits clear imageDetected).
     if(this.searchMode === 'image' && this.imageDetected) {

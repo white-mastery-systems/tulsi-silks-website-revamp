@@ -75,17 +75,19 @@ button {
   transition-property: color;
   -webkit-transition-duration: 0.3s;
   transition-duration: 0.3s;
-  padding: 0 30px;
+  padding: 0 25px;
   border: $btn-border;
   color: $primary-btn-txt;
   font-weight: 400;
   background: #000000;
-  // text-transform: uppercase !important;
+  text-transform: uppercase !important;
   cursor: pointer;
   border-radius: $btn-radius;
   height: 48px;
   font-size: 1rem;
   text-decoration: none;
+  letter-spacing: 1px;
+  line-height: 1.15rem;
   em {
     display: none;
   }
