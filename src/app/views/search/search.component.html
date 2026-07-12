@@ -260,8 +260,14 @@
             <div class="empty-state__icon">
               <lucide-icon name="info" [size]="28" stroke="1.5"></lucide-icon>
             </div>
-            <p class="empty-state__title">No Image Uploaded Yet</p>
-            <p class="empty-state__body">Upload an inspiration photo or select a preset link to scan and display matching products.</p>
+            <ng-container *ngIf="imagePreview || selectedImageFile; else noImageEmpty">
+              <p class="empty-state__title">Image Ready to Analyse</p>
+              <p class="empty-state__body">Your image has been uploaded successfully. Tap Analyse Image to find matching sarees using AI.</p>
+            </ng-container>
+            <ng-template #noImageEmpty>
+              <p class="empty-state__title">No Image Uploaded Yet</p>
+              <p class="empty-state__body">Upload an inspiration photo or select a preset link to scan and display matching products.</p>
+            </ng-template>
           </div>
 
           <!-- Results -->

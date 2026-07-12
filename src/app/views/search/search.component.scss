@@ -270,7 +270,7 @@ $mob-bar-h:  54px;
   padding: 0 0 0 16px;
   background: $white;
   border: 1px solid $border-dark;
-  border-radius: 4px;
+  // border-radius: 4px;
   overflow: hidden;
 
   &__icon {
@@ -342,7 +342,7 @@ $mob-bar-h:  54px;
   box-sizing: border-box;
   font-family: inherit;
   transition: background 0.2s ease;
-  margin-right: 6px;
+  margin-right: 4px;
 
   &:hover,
   &:active {
