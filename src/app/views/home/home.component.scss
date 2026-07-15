@@ -154,13 +154,15 @@
 
 .home-scroll-top{
   position: fixed;
-  right: clamp(0.9rem, 2vw, 1.25rem);
-  bottom: clamp(1rem, 2.2vw, 1.4rem);
+  right: 20px;
+  bottom: 20px;
   z-index: 10001;
 
-  width: 54px;
-  height: 54px;
+  width: 50px;
+  height: 50px;
   border-radius: 999px;
+  box-sizing: border-box;
+  padding: 0;
 
   display: inline-flex;
   align-items: center;
@@ -197,13 +199,6 @@
 .home-scroll-top:focus-visible{
   outline: 2px solid rgba(0, 0, 0, 0.3);
   outline-offset: 3px;
-}
-
-@media (max-width: 576px){
-  .home-scroll-top{
-    width: 50px;
-    height: 50px;
-  }
 }
 
 /* Testimonials: dark Google-Reviews style, theme-matched */
@@ -473,8 +468,8 @@ $visual-search-tan: #c4a574;
   --vs-shadow-sm: 0 10px 24px rgba(31, 27, 36, 0.1);
   --vs-shadow-md: 0 18px 42px rgba(31, 27, 36, 0.12);
   --vs-shadow-lg: 0 22px 48px rgba(31, 27, 36, 0.14);
-  --vs-radius: 16px;
-  --vs-radius-sm: 10px;
+  --vs-radius: 0;
+  --vs-radius-sm: 0;
   --vs-transition: 0.3s ease;
   --vs-ui-font: 'Inter', 'Poppins', system-ui, -apple-system, sans-serif;
   --vs-insp-w: 12rem;
@@ -620,8 +615,8 @@ $visual-search-tan: #c4a574;
     align-items: center;
     gap: 10px;
     width: 100%;
-    min-height: 48px;
-    padding: 0 14px;
+    min-height: 40px;
+    padding: 0 12px;
     margin: 0;
     border: 1px solid #ddd;
     border-radius: var(--vs-radius-sm);
@@ -647,10 +642,10 @@ $visual-search-tan: #c4a574;
     box-shadow: none !important;
     background: transparent;
     font-family: var(--vs-ui-font);
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     font-weight: 400;
     color: $secondary-text-color;
-    padding: 12px 0 !important;
+    // padding: 8px 0 !important;
     height: auto !important;
     width: 100% !important;
 
@@ -738,7 +733,7 @@ $visual-search-tan: #c4a574;
     display: block;
     margin: 0;
     overflow: hidden;
-    border-radius: 10px;
+    border-radius: 0;
     background: #f0eeec;
 
     img {

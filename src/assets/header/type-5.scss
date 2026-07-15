@@ -139,6 +139,26 @@ $mobile-final-height: calc(74px + #{$mobile-announcement-bar-mh});
       margin-right: 0;
     }
   }
+
+  .header-search-cluster {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    vertical-align: middle;
+
+    .header-s-icon {
+      margin: 0;
+    }
+
+    .btn-search,
+    .btn-search-camera {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+      color: inherit;
+    }
+  }
   // .header-wrapper {
   //   height: 70px;
   //   display: flex;

@@ -362,8 +362,8 @@
                 class="catalog-toolbar-block"
                 [class.catalog-toolbar-block--pinned]="catalogToolbarPinned"
                 [style.top.px]="catalogToolbarPinned ? catalogHeaderOffset : null"
-                [style.left.px]="catalogToolbarPinned ? catalogToolbarLeft : null"
-                [style.width.px]="catalogToolbarPinned ? catalogToolbarWidth : null">
+                [style.paddingLeft.px]="catalogToolbarPinned ? catalogToolbarLeft : null"
+                [style.paddingRight.px]="catalogToolbarPinned ? catalogToolbarRightInset : null">
                 <div class="catalog-toolbar">
                   <div class="catalog-toolbar__left">
                     <button *ngIf="tag_list?.length" type="button" class="catalog-pill-btn catalog-pill-btn--filters"
@@ -389,7 +389,8 @@
                           <i class="material-icons">sort</i>
                         </span>
                         <select *ngIf="commonService.screen_width>=992" class="catalog-sort__select" name="sort_list"
-                          [(ngModel)]="sort_value" (ngModelChange)="onSortChange()">
+                          [(ngModel)]="sort_value" (ngModelChange)="onSortChange()"
+                          (click)="$event.stopPropagation()" aria-label="Sort by">
                           <option *ngFor="let x of sort_list;" [ngValue]="x.value">{{ x.name }}</option>
                         </select>
                       </div>
@@ -537,7 +538,7 @@
 
             <div *ngIf="useV4Catalog" class="col-md-12">
               <div class="row">
-                <div class="col-md-12 navigation-ngx">
+                <div class="col-md-12 navigation-ngx" #catalogPagination>
                   <pagination-controls (pageChange)="onPageChange($event)" autoHide="true"
                     responsive="true" maxSize="5" previousLabel="" nextLabel=""></pagination-controls>
                 </div>
@@ -617,8 +618,8 @@
 
             <div class="col-md-12">
               <div class="row">
-                <div class="col-md-12 navigation-ngx">
-                  <pagination-controls (pageChange)="page=$event; commonService.pageScrollTop();" autoHide="true"
+                <div class="col-md-12 navigation-ngx" #catalogPagination>
+                  <pagination-controls (pageChange)="onPageChange($event)" autoHide="true"
                     responsive="true" maxSize="5" previousLabel="" nextLabel=""></pagination-controls>
                 </div>
               </div>
@@ -949,13 +950,13 @@
 </ng-template>
 
 <!-- filter modal / desktop sidebar drawer -->
-<div bsModal #filterModal="bs-modal" class="modal fade filter-modal-v2" [config]="{backdrop: true}"
+<div bsModal #filterModal="bs-modal" class="modal fade filter-modal-v2" [config]="filterModalConfig"
   tabindex="-1" role="dialog" aria-labelledby="filter-dialog" (onHidden)="onFiltersHidden()">
   <div class="modal-dialog modal-dialog-scrollable filter-modal-v2__dialog" role="document">
     <div class="modal-content">
       <div class="filter-modal-v2__header">
         <div>
-          <h2 class="filter-modal-v2__title">Filter</h2>
+          <p class="filter-modal-v2__title" id="filter-dialog">Filter</p>
           <p class="filter-modal-v2__count">{{ catalogProductCountLabel }}</p>
         </div>
         <button type="button" class="filter-modal-v2__close" aria-label="Close" (click)="cancelFilters()">
@@ -975,13 +976,13 @@
 </div>
 
 <!-- sort modal -->
-<div bsModal #sortModal="bs-modal" class="modal fade sort-modal-v2" [config]="{backdrop: 'static'}" tabindex="-1"
+<div bsModal #sortModal="bs-modal" class="modal fade sort-modal-v2" [config]="sortModalConfig" tabindex="-1"
   role="dialog" aria-labelledby="sort-dialog">
   <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
     <div class="modal-content">
       <div class="filter-modal-v2__header">
         <div>
-          <h2 class="filter-modal-v2__title">Sort by</h2>
+          <p class="filter-modal-v2__title" id="sort-dialog">Sort by</p>
         </div>
         <button type="button" class="filter-modal-v2__close" aria-label="Close" (click)="sortModal.hide();">
           <i class="material-icons">close</i>

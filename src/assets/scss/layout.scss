@@ -1867,16 +1867,24 @@ span{
   font-size: 1rem;
 }
 
+/* Floating action buttons — shared size/alignment (WhatsApp + scroll-to-top) */
+$fab-size: 50px;
+$fab-right: 20px;
+$fab-bottom: 20px;
+$fab-gap: 12px;
+
 /* SCROLL UP */
 #scrollup {
-  width: 40px;
-  height: 40px;
-  line-height: 40px;
+  width: $fab-size;
+  height: $fab-size;
+  line-height: $fab-size;
   text-align: center;
   color: $primary-text-color !important;
   position: fixed;
-  bottom: 20px; right: 20px;
-  display: none; z-index: 9;
+  bottom: $fab-bottom;
+  right: $fab-right;
+  display: none;
+  z-index: 9;
   border-radius: 50%;
   background-color: $primary-theme-color;
   box-shadow: 0px 0px 15px rgba(0,0,0,0.3);
@@ -2271,29 +2279,38 @@ span{
 /* WHATSAPP CHAT */
 .whatsapp-chat {
   position: fixed;
-  display: -webkit-box;
   display: flex;
-  -webkit-box-orient: horizontal;
-  -webkit-box-direction: normal;
   flex-direction: row;
-  -webkit-box-pack: center;
   justify-content: center;
-  -webkit-box-align: center;
   align-items: center;
-  // height: 65px;
-  // width: 65px;
+  width: $fab-size;
+  height: $fab-size;
   cursor: pointer;
   border-radius: 100%;
-  margin: 0 auto;
-  bottom: 103px;
-  right: 30px;
+  margin: 0;
+  /* Sit directly above scroll-to-top, same right edge */
+  bottom: calc(#{$fab-bottom} + #{$fab-size} + #{$fab-gap});
+  right: $fab-right;
   z-index: 999;
+  box-sizing: border-box;
+}
+
+.whatsapp-chat a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
 }
 
 .whatsapp-chat img {
   position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
   max-width: 100% !important;
-  width: 50px;
+  object-fit: contain;
 }
 
 .whatsapp-chat::after {

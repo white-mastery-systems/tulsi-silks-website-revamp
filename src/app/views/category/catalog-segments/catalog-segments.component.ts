@@ -89,20 +89,6 @@ export class CatalogSegmentsComponent implements OnInit, OnChanges {
     return buttons;
   }
 
-  showWhatsappAdvisor(segment: CatalogPageSegment): boolean {
-    const buttons = this.catalogCtaButtons(segment);
-    const hasWhatsappBtn = buttons.some(b => /whatsapp/i.test(b.btn_text || ''));
-    return !hasWhatsappBtn && this.commonService.ys_features?.indexOf('whatsapp_chat') > -1
-      && !!this.commonService.application_setting?.chat_status
-      && this.commonService.application_setting?.chat_config?.type === 'whatsapp';
-  }
-
-  whatsappAdvisorUrl(): string {
-    const cfg = this.commonService.application_setting?.chat_config;
-    const message = encodeURIComponent(cfg?.message || '');
-    return `https://api.whatsapp.com/send?phone=${cfg?.mobile}&text=${message}`;
-  }
-
   groupLinks(group: any): any[] {
     return (group?.link_list || []).filter((link: any) => link.btn_status !== false && link.btn_text);
   }

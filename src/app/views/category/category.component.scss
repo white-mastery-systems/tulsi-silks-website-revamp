@@ -729,18 +729,25 @@ $catalog-filter-accent: #9a7d4a;
 }
 
 .catalog-toolbar-block {
-  z-index: 90;
+  z-index: 80;
   background: #fff;
   padding: 0.75rem 0 0.5rem;
   margin-bottom: 1.25rem;
   width: 100%;
+  box-sizing: border-box;
 
   &--pinned {
     position: fixed !important;
+    left: 0 !important;
+    right: 0 !important;
+    width: 100% !important;
+    max-width: 100%;
     margin-bottom: 0;
     border-bottom: 1px solid #f0f0f0;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
-    z-index: 99;
+    /* Keep below sticky-header (z-index: 99) so navbar / mega-menu stay above */
+    z-index: 90;
+    background: #fff;
   }
 }
 
@@ -780,6 +787,7 @@ $catalog-filter-accent: #9a7d4a;
   display: inline-flex;
   align-items: center;
   gap: 0.625rem;
+  vertical-align: middle;
 }
 
 .catalog-sort__label {
@@ -864,7 +872,9 @@ $catalog-filter-accent: #9a7d4a;
 
 .catalog-pill-btn--sort {
   padding: 4px 4px 4px 14px;
-  min-width: 7.5rem;
+  min-width: 10.5rem;
+  align-items: center;
+  justify-content: space-between;
 
   .catalog-sort__value {
     text-transform: none;
@@ -874,6 +884,12 @@ $catalog-filter-accent: #9a7d4a;
     padding-right: 0.25rem;
     flex: 1 1 auto;
     text-align: left;
+    line-height: 1.2;
+    pointer-events: none;
+  }
+
+  .catalog-pill-btn__icon {
+    pointer-events: none;
   }
 }
 
@@ -885,7 +901,13 @@ $catalog-filter-accent: #9a7d4a;
   opacity: 0;
   cursor: pointer;
   border: 0;
+  margin: 0;
+  padding: 0;
   background: transparent;
+  appearance: none;
+  -webkit-appearance: none;
+  font-size: 1rem;
+  z-index: 2;
 }
 
 .catalog-active-filters {
@@ -1416,11 +1438,11 @@ $catalog-filter-accent: #9a7d4a;
 
 .catalog-scroll-top {
   position: fixed;
-  right: clamp(0.9rem, 2vw, 1.25rem);
-  bottom: clamp(1rem, 2.2vw, 1.4rem);
+  right: 20px;
+  bottom: 20px;
   z-index: 10001;
-  width: 54px;
-  height: 54px;
+  width: 50px;
+  height: 50px;
   border-radius: 999px;
   display: inline-flex;
   align-items: center;
@@ -1431,10 +1453,14 @@ $catalog-filter-accent: #9a7d4a;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
   -webkit-tap-highlight-color: transparent;
   transition: transform 180ms ease, box-shadow 180ms ease, background-color 180ms ease;
+  box-sizing: border-box;
+  padding: 0;
 
   lucide-icon,
   lucide-icon svg,
   svg {
+    width: 20px;
+    height: 20px;
     color: #fff !important;
     stroke: #fff !important;
     fill: none !important;
@@ -1448,12 +1474,5 @@ $catalog-filter-accent: #9a7d4a;
   &:focus-visible {
     outline: 2px solid rgba(0, 0, 0, 0.3);
     outline-offset: 3px;
-  }
-}
-
-@media (max-width: 576px) {
-  .catalog-scroll-top {
-    width: 50px;
-    height: 50px;
   }
 }

@@ -410,20 +410,30 @@
       </div>
     </div>
   </ng-container>
-  <!-- search -->
-  <a
-    *ngIf="commonService.ys_features.indexOf('product_search')!=-1"
-    routerLink="/search"
-    class="btn-search header-icon-container header-s-icon"
-    aria-label="Search"
-  >
-    <div class="tooltip-wrapper">
-      <lucide-icon name="search" [size]="20" stroke="1" color="black" aria-hidden="true"></lucide-icon>
-      <div class="custom-tooltip" aria-hidden="true">Search</div>
-    </div>
-    <!-- <img src="assets/images/search.png" alt="search-icon" class="header-s-icon"> -->
-    <!-- <i [hidden]="!commonService?.window_loaded" class="{{template_setting?.mat_icon_type}} transform-90">{{template_setting?.mat_icons?.search}}</i> -->
-  </a>
+  <!-- search + visual search -->
+  <div *ngIf="commonService.ys_features.indexOf('product_search')!=-1" class="header-search-cluster header-icon-container">
+    <a
+      routerLink="/search"
+      class="btn-search header-s-icon"
+      aria-label="Search"
+    >
+      <div class="tooltip-wrapper">
+        <lucide-icon name="search" [size]="20" stroke="1" color="black" aria-hidden="true"></lucide-icon>
+        <div class="custom-tooltip" aria-hidden="true">Search</div>
+      </div>
+    </a>
+    <a
+      routerLink="/search"
+      class="btn-search-camera header-s-icon"
+      aria-label="Visual image search"
+      title="Search by image"
+    >
+      <div class="tooltip-wrapper">
+        <lucide-icon name="camera" [size]="20" stroke="1" color="black" aria-hidden="true"></lucide-icon>
+        <div class="custom-tooltip" aria-hidden="true">Image search</div>
+      </div>
+    </a>
+  </div>
   <!-- wishlist -->
   <div *ngIf="commonService?.screen_width>=991" class="header-icon-container">
     <a

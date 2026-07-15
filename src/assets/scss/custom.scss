@@ -1229,24 +1229,37 @@ p.error-msg {
 
 .catalog-toolbar-block--pinned {
   position: fixed !important;
-  z-index: 99 !important;
+  left: 0 !important;
+  right: 0 !important;
+  width: 100% !important;
+  max-width: 100%;
+  box-sizing: border-box;
+  z-index: 90 !important;
+  background: #fff;
 }
 
 $catalog-filter-accent: #9a7d4a;
 
 .catalog-toolbar-block {
-  z-index: 90;
+  z-index: 80;
   background: #fff;
   padding: 0.75rem 0 0.5rem;
   margin-bottom: 1.25rem;
   width: 100%;
+  box-sizing: border-box;
 
   &--pinned {
     position: fixed !important;
+    left: 0 !important;
+    right: 0 !important;
+    width: 100% !important;
+    max-width: 100%;
     margin-bottom: 0;
     border-bottom: 1px solid #f0f0f0;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
-    z-index: 99;
+    /* Below sticky-header (99) so navbar / mega-menu stay interactive */
+    z-index: 90;
+    background: #fff;
   }
 }
 
@@ -1370,7 +1383,9 @@ $catalog-filter-accent: #9a7d4a;
 
 .catalog-pill-btn--sort {
   padding: 4px 4px 4px 14px;
-  min-width: 7.5rem;
+  min-width: 10.5rem;
+  align-items: center;
+  justify-content: space-between;
 
   .catalog-sort__value {
     text-transform: none;
@@ -1380,6 +1395,12 @@ $catalog-filter-accent: #9a7d4a;
     padding-right: 0.25rem;
     flex: 1 1 auto;
     text-align: left;
+    line-height: 1.2;
+    pointer-events: none;
+  }
+
+  .catalog-pill-btn__icon {
+    pointer-events: none;
   }
 }
 
@@ -1391,7 +1412,13 @@ $catalog-filter-accent: #9a7d4a;
   opacity: 0;
   cursor: pointer;
   border: 0;
+  margin: 0;
+  padding: 0;
   background: transparent;
+  appearance: none;
+  -webkit-appearance: none;
+  font-size: 1rem;
+  z-index: 2;
 }
 
 .catalog-active-filters {

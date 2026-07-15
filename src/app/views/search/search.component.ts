@@ -244,10 +244,7 @@ export class SearchComponent implements OnInit, OnDestroy {
   }
 
   get showAiResponsePills(): boolean {
-    return this.imageDetected
-      && this.hasUploadedImage
-      && !this.classifyLoader
-      && this.activeFilterChips.length > 0;
+    return false;
   }
 
   onSearchInputFocus() {
@@ -283,10 +280,24 @@ export class SearchComponent implements OnInit, OnDestroy {
     this.analysisCached = false;
     this.persistSearchSessionState();
 
-    if (this.searchQuery.trim() || hasCheckedFilters(this.tag_list)) {
+    const hasFilters = hasCheckedFilters(this.tag_list);
+    if (!hasFilters && !this.searchQuery.trim() && !this.hasUploadedImage) {
+      this.imageError = 'Select at least one filter to apply.';
+      return;
+    }
+
+    // Image / visual search → exact match API
+    if (this.hasUploadedImage || this.searchMode === 'image') {
+      this.runFilterSearch();
+      return;
+    }
+
+    // Text search → normal catalog search API
+    if (this.searchQuery.trim() || hasFilters) {
       this.runCatalogSearch();
       return;
     }
+
     this.imageError = 'Select at least one filter to apply.';
   }
 
@@ -329,6 +340,13 @@ export class SearchComponent implements OnInit, OnDestroy {
 
   onSortChange() {
     if (!this.sortEnabled) return;
+    if (this.afterSearchEvent && (this.hasUploadedImage || this.searchMode === 'image')) {
+      this.page = 1;
+      this.searchLoader = true;
+      this.syncImageLoadingStatus();
+      this.runSearchWithFallback();
+      return;
+    }
     if (this.afterSearchEvent && this.searchMode === 'text') {
       this.runCatalogSearch();
       return;
@@ -359,6 +377,7 @@ export class SearchComponent implements OnInit, OnDestroy {
   }
 
   selectPreset(query: string) {
+    if (this.hasUploadedImage || this.classifyLoader || this.searchLoader) return;
     this.stopTypewriterAnimation();
     this.searchQuery = query;
     this.onSearch();
@@ -399,6 +418,7 @@ export class SearchComponent implements OnInit, OnDestroy {
   }
 
   onSearch() {
+    if (this.hasUploadedImage) return;
     if(this.searchQuery.trim() || this.hasActiveFilters) {
       this.runCatalogSearch();
     } else {
@@ -452,7 +472,14 @@ export class SearchComponent implements OnInit, OnDestroy {
     this.moreFiltersOpen = false;
     this.page = 1;
 
-    // Keep search results — only drop filters and re-query by name
+    // Image session → re-query via search_exact (filters cleared)
+    if (this.hasUploadedImage || this.searchMode === 'image') {
+      this.persistSearchSessionState();
+      this.runFilterSearch();
+      return;
+    }
+
+    // Text search → normal search by name
     if (this.searchQuery.trim()) {
       this.persistSearchSessionState();
       this.runCatalogSearch();
@@ -520,15 +547,15 @@ export class SearchComponent implements OnInit, OnDestroy {
     this.passColourHint = false;
     this.page = 1;
 
-    // Always re-search when a query exists (filters: {} if none left)
-    if (this.searchQuery.trim() || this.hasActiveFilters) {
+    // Always re-search when a query / image session / filters remain
+    if (this.searchQuery.trim() || this.hasActiveFilters || this.hasUploadedImage || this.searchMode === 'image') {
       this.persistSearchSessionState();
-      if (this.searchMode === 'text' || this.searchQuery.trim()) {
-        this.runCatalogSearch();
-      } else {
+      if (this.hasUploadedImage || this.searchMode === 'image') {
         this.searchLoader = true;
         this.syncImageLoadingStatus();
         this.runSearchWithFallback();
+      } else {
+        this.runCatalogSearch();
       }
       return;
     }

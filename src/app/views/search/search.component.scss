@@ -715,10 +715,24 @@ $mob-bar-h:  54px;
   font-family: inherit;
   color: $ink;
   cursor: pointer;
-  transition: border-color 0.18s, background 0.18s;
+  transition: border-color 0.18s, background 0.18s, opacity 0.18s;
   letter-spacing: 0.02em;
 
-  &:hover { border-color: $ink; background: $upload-bg; }
+  &:hover:not(:disabled) { border-color: $ink; background: $upload-bg; }
+
+  &:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+}
+
+.presets-row--disabled {
+  opacity: 0.72;
+
+  .presets-row__label {
+    opacity: 0.85;
+  }
 }
 
 // ─── How it works ─────────────────────────────────────────────────────────────

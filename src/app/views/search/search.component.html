@@ -132,12 +132,12 @@
                 </div>
               </div>
 
-              <div class="presets-row">
+              <div class="presets-row" [class.presets-row--disabled]="hasUploadedImage">
                 <span class="presets-row__label">Try inspiration presets:</span>
-                <button type="button" class="preset-pill" (click)="selectPreset('Kanjivaram Silk')">Kanchivaram Silks</button>
-                <button type="button" class="preset-pill" (click)="selectPreset('Banaras')">Banarasi</button>
-                <button type="button" class="preset-pill" (click)="selectPreset('Tussar')">Tussar Silks</button>
-                <button type="button" class="preset-pill" (click)="selectPreset('Cotton saree')">Cotton Sarees</button>
+                <button type="button" class="preset-pill" [disabled]="hasUploadedImage" (click)="selectPreset('Kanjivaram Silk')">Kanchivaram Silks</button>
+                <button type="button" class="preset-pill" [disabled]="hasUploadedImage" (click)="selectPreset('Banaras')">Banarasi</button>
+                <button type="button" class="preset-pill" [disabled]="hasUploadedImage" (click)="selectPreset('Tussar')">Tussar Silks</button>
+                <button type="button" class="preset-pill" [disabled]="hasUploadedImage" (click)="selectPreset('Cotton saree')">Cotton Sarees</button>
               </div>
 
               <div class="hiw-row">
