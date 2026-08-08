@@ -1108,6 +1108,49 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     this.router.navigate(['/search']);
   }
 
+  openVisualSearchFilePicker(input: HTMLInputElement): void {
+    if (this.commonService.ys_features.indexOf('product_search') === -1) return;
+    if (!isPlatformBrowser(this.platformId)) return;
+    input?.click();
+  }
+
+  onVisualSearchImageSelected(event: Event): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    input.value = '';
+    if (!file) return;
+    this.handOffVisualSearchImage(file);
+  }
+
+  onVisualSearchDragOver(event: DragEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+  }
+
+  onVisualSearchDragLeave(event: DragEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+  }
+
+  onVisualSearchDrop(event: DragEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+    if (this.commonService.ys_features.indexOf('product_search') === -1) return;
+    if (!isPlatformBrowser(this.platformId)) return;
+    const file = event.dataTransfer?.files?.[0];
+    if (!file) return;
+    this.handOffVisualSearchImage(file);
+  }
+
+  private handOffVisualSearchImage(file: File): void {
+    const allowed = ['image/jpeg', 'image/png', 'image/webp'];
+    if (!allowed.includes(file.type)) return;
+    if (file.size > 5 * 1024 * 1024) return;
+    this.commonService.pendingSearchImageFile = file;
+    this.router.navigate(['/search']);
+  }
+
   /** Testimonial slides with renderable review content. */
   testimonialSlides(segment: { image_list?: any[] }): any[] {
     return (segment?.image_list ?? []).filter((item) => !!item?.content_details);

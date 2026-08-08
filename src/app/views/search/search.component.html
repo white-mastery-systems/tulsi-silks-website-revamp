@@ -58,7 +58,7 @@
 
         <button
           type="button"
-          class="search-analyse-btn search-analyse-btn--hero"
+          class="primary-btn search-analyse-btn search-analyse-btn--hero"
           [class.search-analyse-btn--loading]="classifyLoader || searchLoader"
           (click)="onMainSearch()"
           [disabled]="searchLoader || classifyLoader"
@@ -109,7 +109,7 @@
                   <button
                     *ngIf="hasUploadedImage"
                     type="button"
-                    class="search-analyse-btn search-analyse-btn--inline"
+                    class="primary-btn search-analyse-btn search-analyse-btn--inline"
                     [class.search-analyse-btn--loading]="classifyLoader || searchLoader"
                     (click)="onMainSearch()"
                     [disabled]="searchLoader || classifyLoader"
@@ -122,9 +122,9 @@
                   <button
                     *ngIf="!hasUploadedImage"
                     type="button"
-                    class="search-btn search-submit-btn"
+                    class="primary-btn search-btn search-submit-btn"
                     (click)="onMainSearch()"
-                    [disabled]="searchLoader || classifyLoader"
+                    [disabled]="searchLoader || classifyLoader || !canSubmitTextSearch"
                   >
                     <span *ngIf="searchLoader" class="btn-spinner"></span>
                     <span *ngIf="!searchLoader">Search</span>

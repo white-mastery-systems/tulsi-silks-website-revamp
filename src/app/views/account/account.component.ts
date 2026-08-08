@@ -19,7 +19,11 @@ export class AccountComponent implements OnInit {
   
   pageLoader: boolean; formType: string;
   registerForm: any = {}; loginForm: any = {}; forgotForm: any = {};
+  country_details: any; mobile_pattern: any;
   template_setting: any = environment.template_setting;
+  accountOrderCount = 0;
+  accountModelCount = 0;
+  accountJoinedYear: number | null = null;
   bcList: any = [
     { name: "Home", position: 1, link: "/" },
     { name: "My Account", position: 2, link: "/account" }
@@ -30,6 +34,10 @@ export class AccountComponent implements OnInit {
     meta_desc: "Manage your account, check orders, and view your order history with Tulsi Silks.",
     meta_keywords: []
   };
+
+  get wishlistCount(): number {
+    return this.commonService?.wish_list?.length || 0;
+  }
 
   constructor(
     @Inject(PLATFORM_ID) private platformId: Object, private http: HttpClient, private router: Router,
@@ -69,7 +77,110 @@ export class AccountComponent implements OnInit {
       this.commonService.setSiteMetaData(this.seoDetails, null);
       // schema
       this.commonService.breadCrumbList(this.bcList);
+      if(this.commonService.customer_token) {
+        this.loadAccountDashboard();
+      }
+      else {
+        this.commonService.getCountryList().then(() => {
+          this.initRegisterPhone();
+        });
+      }
     });
+  }
+
+  getAccountInitials(): string {
+    const name = String(this.commonService?.user_details?.name || '').trim();
+    if(!name) return 'TS';
+    const parts = name.split(/\s+/).filter(Boolean);
+    if(parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+  }
+
+  private loadAccountDashboard() {
+    this.api.USER_DETAILS().subscribe(result => {
+      if(!result?.status || !result?.data) return;
+      const data = result.data;
+      if(data.name || data.email) {
+        this.commonService.user_details = {
+          ...this.commonService.user_details,
+          name: data.name || this.commonService.user_details?.name,
+          email: data.email || this.commonService.user_details?.email,
+          dial_code: data.dial_code || this.commonService.user_details?.dial_code,
+          mobile: data.mobile || this.commonService.user_details?.mobile
+        };
+        if(isPlatformBrowser(this.platformId)) {
+          localStorage.setItem('user_details', this.commonService.encryptData(this.commonService.user_details));
+        }
+      }
+      const created = data.created_on || data.createdAt || data.joined_on;
+      if(created) {
+        const year = new Date(created).getFullYear();
+        if(!Number.isNaN(year)) this.accountJoinedYear = year;
+      }
+      this.accountModelCount = Array.isArray(data.model_list) ? data.model_list.length : 0;
+    });
+
+    this.api.ORDER_LIST('live').subscribe(liveRes => {
+      const liveCount = liveRes?.status && Array.isArray(liveRes.list) ? liveRes.list.length : 0;
+      this.api.ORDER_LIST('completed').subscribe(doneRes => {
+        const doneCount = doneRes?.status && Array.isArray(doneRes.list) ? doneRes.list.length : 0;
+        this.accountOrderCount = liveCount + doneCount;
+      }, () => {
+        this.accountOrderCount = liveCount;
+      });
+    });
+  }
+
+  switchFormType(type: string) {
+    this.formType = type;
+    if(type === 'signup') {
+      this.commonService.getCountryList().then(() => {
+        this.initRegisterPhone();
+      });
+    }
+    this.scrollTop();
+  }
+
+  initRegisterPhone() {
+    delete this.country_details;
+    delete this.mobile_pattern;
+    const countries = this.commonService.country_list || [];
+    if(!countries.length) {
+      this.registerForm.dial_code = this.registerForm.dial_code || '+91';
+      this.onDialCodeChange(this.registerForm.dial_code);
+      return;
+    }
+    if(this.registerForm.dial_code) {
+      this.onDialCodeChange(this.registerForm.dial_code);
+      return;
+    }
+    const storeCountry = this.commonService.store_details?.country;
+    let index = storeCountry ? countries.findIndex(object => object.name == storeCountry) : -1;
+    if(index == -1) index = countries.findIndex(object => object.dial_code == '+91');
+    if(index != -1) {
+      this.country_details = countries[index];
+      this.registerForm.dial_code = this.country_details.dial_code;
+      if(this.country_details.mobileno_length) {
+        this.mobile_pattern = '.{' + this.country_details.mobileno_length + ',' + this.country_details.mobileno_length + '}';
+      }
+    }
+    else {
+      this.registerForm.dial_code = '+91';
+      this.onDialCodeChange('+91');
+    }
+  }
+
+  onDialCodeChange(dialCode: string) {
+    delete this.country_details;
+    delete this.mobile_pattern;
+    const countries = this.commonService.country_list || [];
+    const index = countries.findIndex(object => object.dial_code == dialCode);
+    if(index != -1) {
+      this.country_details = countries[index];
+      if(this.country_details.mobileno_length) {
+        this.mobile_pattern = '.{' + this.country_details.mobileno_length + ',' + this.country_details.mobileno_length + '}';
+      }
+    }
   }
 
   onRegister() {
@@ -77,6 +188,7 @@ export class AccountComponent implements OnInit {
     this.registerForm.cart_list = [];
     if(this.cartService.cart_list) this.registerForm.cart_list = this.cartService.cart_list;
     this.registerForm.store_id = this.commonService.store_id;
+    if(!this.registerForm.dial_code) this.registerForm.dial_code = '+91';
     this.api.REGISTER(this.registerForm).subscribe(result => {
       this.registerForm.submit = false;
       if(result.status) {

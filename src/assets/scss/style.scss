@@ -539,7 +539,7 @@ article, aside, footer, header, nav, section { width: 100%; float: left; positio
 
 /* TABLET RESPONSIVE FIXES */
 @media only screen and (max-width: 989px), only screen and (max-device-width: 989px) {
-	.titles{padding: 0;}
+	// .titles{padding: 0;}
 	.grid-categories .grids .grid-item{width: 50%;}
 	.grid-categories .grids .grid-item.double{width: 100%;}
 	.swiper-button-prev{display: none;}

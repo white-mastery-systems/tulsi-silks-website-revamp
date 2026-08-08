@@ -1,5 +1,239 @@
+.addon-summary-card {
+    margin-bottom: 20px;
+    background: #fff;
+    border: 1px solid #e5e5e5;
+    overflow: hidden;
+}
+
+.addon-card-section {
+    padding: 16px 18px;
+    border-bottom: 1px solid #eee;
+
+    &:last-child {
+        border-bottom: none;
+    }
+}
+
+.addon-section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 10px;
+}
+
+.addon-section-label {
+    margin: 0;
+    font-size: 0.875rem;
+    font-weight: 400;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #888;
+}
+
+.addon-service-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: nowrap;
+}
+
+.addon-close-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    padding: 0;
+    border: none;
+    background: none;
+    cursor: pointer;
+    line-height: 0;
+
+    .material-icons {
+        font-size: 20px;
+        line-height: 1;
+        color: #1a1a1a;
+    }
+
+    &:hover {
+        opacity: 0.7;
+    }
+}
+
+.addon-service-name {
+    flex: 1;
+    min-width: 0;
+    font-family: 'Montaga', Georgia, 'Times New Roman', serif;
+    font-size: 1rem;
+    line-height: 1.4;
+    color: #1a1a1a;
+}
+
+.addon-service-price {
+    flex-shrink: 0;
+    font-size: 0.95rem;
+    font-weight: 700;
+    line-height: 1.4;
+    color: #1a1a1a;
+    white-space: nowrap;
+}
+
+.addon-profile-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.addon-profile-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    flex-shrink: 0;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    background: #fafafa;
+    overflow: hidden;
+
+    img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+}
+
+.addon-profile-name {
+    flex: 1;
+    min-width: 0;
+    font-family: 'Montaga', Georgia, 'Times New Roman', serif;
+    font-size: 1rem;
+    line-height: 1.4;
+    color: #1a1a1a;
+}
+
+.addon-edit-link {
+    padding: 0;
+    border: none;
+    background: none;
+    font-size: 0.9rem;
+    color: #1a1a1a;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    cursor: pointer;
+    white-space: nowrap;
+
+    &:hover {
+        opacity: 0.7;
+    }
+}
+
+.addon-card-section--note {
+    padding-top: 14px;
+    padding-bottom: 14px;
+}
+
+.addon-note-toggle {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    gap: 8px;
+    padding: 10px 12px;
+    border: 1px solid rgba(196, 163, 90, 0.45);
+    border-radius: 6px;
+    background: rgba(196, 163, 90, 0.12);
+    cursor: pointer;
+    text-align: left;
+    animation: addon-note-gold-flash 2.8s ease-in-out infinite;
+}
+
+.addon-note-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+
+    .material-icons {
+        font-size: 16px;
+        color: #c4a35a;
+        line-height: 1;
+    }
+}
+
+.addon-note-label {
+    flex: 1;
+    font-size: 0.75rem;
+    font-weight: 400;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #c4a35a;
+}
+
+.addon-note-chevron {
+    flex-shrink: 0;
+    transition: transform 0.2s ease;
+    color: #c4a35a;
+
+    &.open {
+        transform: rotate(180deg);
+    }
+}
+
+.addon-note-body {
+    display: none;
+    padding-top: 14px;
+
+    p {
+        margin-bottom: 10px;
+        font-size: 0.84rem;
+        line-height: 1.65;
+        color: #555;
+    }
+
+    .addon-note-heading {
+        font-weight: 600;
+        color: #222;
+    }
+
+    &.open {
+        display: block;
+    }
+}
+
+@keyframes addon-note-gold-flash {
+    0%,
+    100% {
+        background: rgba(196, 163, 90, 0.1);
+        border-color: rgba(196, 163, 90, 0.35);
+        box-shadow: 0 0 0 0 rgba(196, 163, 90, 0);
+    }
+    50% {
+        background: rgba(196, 163, 90, 0.28);
+        border-color: rgba(196, 163, 90, 0.75);
+        box-shadow: 0 0 12px 0 rgba(196, 163, 90, 0.35);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .addon-note-toggle {
+        animation: none;
+        background: rgba(196, 163, 90, 0.16);
+        border-color: rgba(196, 163, 90, 0.5);
+    }
+}
+
+@media (max-width: 767px) {
+    .addon-card-section {
+        padding: 14px 16px;
+    }
+}
+
 .new-addons{
-    background-color: #f2f2f2;
+    // background-color: #f2f2f2;
+    border: 1px solid #e5e5e5;
     padding: 35px 15px 15px;
     position: relative;
     margin-top: 20px;
@@ -19,11 +253,6 @@
         padding-top: 20px;
         gap: 15px;
         flex-wrap: wrap-reverse;
-    }
-    .primary-btn{
-        background-color: #fff;
-        color: #000;
-        border: 1px solid rgb(0 0 0 / 20%);
     }
 }
 
@@ -106,14 +335,6 @@
   font-size: 1rem;
   margin-bottom: 20px;
 }
-.selected-option{
-  background-color: #F2F2F2;
-  padding: 8px 20px;
-  margin-left: 15px;
-  .prod-link-mdl{
-    font-size: 16px;
-  }
- }
 
  .stickyCart{
   position: fixed;
@@ -163,12 +384,35 @@
     .pro-qty{
       height: 48px;
     }
-  }  
+  }
+
+  .product-add-btn {
+    .primary-btn,
+    .secondary-btn {
+      white-space: nowrap;
+    }
+  }
  }
 
  @media screen and (max-width: 767px) {  
     .stickyCart{
       height: 80px;
+
+      .product-add-btn {
+        .buy-add-cart-btn-inner {
+          .primary-btn,
+          .secondary-btn {
+            width: auto !important;
+            min-width: 0;
+            max-width: 100%;
+            padding: 0 12px !important;
+            font-size: 12px;
+            letter-spacing: 0;
+            white-space: nowrap;
+            line-height: 1.2;
+          }
+        }
+      }
     }
     .container{
       padding-left: 15px!important;
@@ -176,9 +420,10 @@
     }
     .sticky-cart-details{
       width:100%;
-      justify-content: space-around;
+      // justify-content: flex-end;
       .product-add-btn{
         margin: 0 !important;
+        flex: 0 0 auto;
       }
       .product-image{
         display: none;
@@ -193,7 +438,7 @@
         } 
 
        button{
-          padding:0 16px;
+          padding:0 12px;
         }
     }
   }
@@ -331,12 +576,14 @@
   position: relative;
   width: 100%;
   text-align: center;
-  font-size: 20px;
-  line-height: 45px;
-  height: 45px;
+  font-size: 1rem;
+  line-height: 48px;
+  height: 48px;
   background-color: #000;
   color: #fff;
   cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
 .carousel .change_outer {
@@ -366,16 +613,16 @@
     transform: translateY(0);
   }
   25%, 45% {
-    transform: translateY(-45px);
+    transform: translateY(-48px);
   }
   50%, 70% {
-    transform: translateY(-90px);
+    transform: translateY(-96px);
   }
   75%, 95% {
-    transform: translateY(-135px);
+    transform: translateY(-144px);
   }
   100% {
-    transform: translateY(-180px);
+    transform: translateY(-192px);
   }
 }
 
@@ -384,15 +631,171 @@
     transform: translateY(0);
   }
   25%, 45% {
-    transform: translateY(-45px);
+    transform: translateY(-48px);
   }
   50%, 70% {
-    transform: translateY(-90px);
+    transform: translateY(-96px);
   }
   75%, 95% {
-    transform: translateY(-135px);
+    transform: translateY(-144px);
   }
   100% {
-    transform: translateY(-180px);
+    transform: translateY(-192px);
+  }
+}
+
+/* Product blogs: match home page blog cards + section chrome */
+.product-page {
+  height: auto;
+  overflow: visible;
+}
+
+/* Mobile breadcrumb: only the last crumb ellipsizes after filling remaining width */
+@media screen and (max-width: 767px) {
+  .product-page .head-breadcrumb {
+    .product-breadcrumb-row {
+      min-width: 0;
+      width: 100%;
+    }
+
+    .breadcrumb-navigation {
+      min-width: 0;
+      flex: 1 1 auto;
+      max-width: 100%;
+
+      ul.collapsed {
+        display: flex;
+        flex-wrap: nowrap;
+        align-items: center;
+        width: 100%;
+        min-width: 0;
+        margin: 0;
+      }
+
+      /* Home / category stay full text; do not shrink or ellipsis */
+      li {
+        flex: 0 0 auto;
+        min-width: auto;
+        max-width: none;
+
+        a {
+          overflow: visible;
+          text-overflow: clip;
+          white-space: nowrap;
+        }
+      }
+
+      /* Product name only: take leftover width, then ellipsis */
+      .product-breadcrumb-current {
+        flex: 1 1 0;
+        min-width: 0;
+        max-width: 100%;
+        padding-right: 0;
+        overflow: hidden;
+
+        .active-page {
+          display: block;
+          width: 100% !important;
+          max-width: 100%;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+      }
+    }
+
+    .product-details {
+      flex: 0 0 auto;
+    }
+  }
+}
+
+.product-blogs.news {
+  content-visibility: visible;
+  contain-intrinsic-size: none;
+  float: none;
+  display: block;
+  clear: both;
+  width: 100%;
+  overflow: visible;
+  padding-bottom: 0;
+  margin-bottom: 0;
+
+  .product-blogs__bottom-space {
+    display: block;
+    width: 100%;
+    height: 2.5rem;
+    pointer-events: none;
+  }
+
+  .product-blog-grid {
+    width: 100%;
+    margin-left: 0;
+    margin-right: 0;
+  }
+
+  .product-blog-grid > [class*='col-'] {
+    padding-left: 12px;
+    padding-right: 12px;
+    margin-bottom: 0;
+  }
+
+  app-blog-card {
+    width: 100%;
+  }
+
+  /* Match home `.news` slider gutters; keep room under cards inside swiper clip */
+  .swiper-container {
+    padding-left: 15px;
+    padding-right: 15px;
+    padding-bottom: 8px;
+    height: auto !important;
+  }
+
+  .swiper-wrapper,
+  .swiper-slide {
+    height: auto !important;
+  }
+
+  .blog-slider-btn .primary-btn.outline-btn {
+    font-size: clamp(0.875rem, 0.7rem + 0.85vw, 1.25rem) !important;
+  }
+}
+
+@media screen and (max-width: 767px) {
+  .product-blogs.news {
+    padding-top: 30px;
+
+    .product-blogs__bottom-space {
+      height: 2.5rem;
+    }
+
+    /* Same peek gutter as home mobile blogs */
+    .swiper-container {
+      padding: 0 0 8px 15px;
+    }
+
+    .titles.custom-title {
+      margin-bottom: 18px !important;
+      padding: 0 0 0 15px !important;
+      text-align: left !important;
+
+      h2 {
+        font-size: 24px;
+      }
+
+      p {
+        font-size: 16px !important;
+      }
+    }
+
+    .blog-slider-btn {
+      padding-right: 15px !important;
+
+      .primary-btn.outline-btn {
+        font-size: 1rem !important;
+        margin-bottom: 25px !important;
+      }
+    }
   }
 }

@@ -1,82 +1,492 @@
-<section class="over-all smooth-fadein">
+<section *ngIf="pageLoader">
+  <app-loading-spinner></app-loading-spinner>
+</section>
 
-  <!-- breadcrumb -->
-  <section class="head-breadcrumb">
+<section class="over-all smooth-fadein profile-page" *ngIf="!pageLoader">
+  <section class="profile-page__hero">
     <div class="{{template_setting?.body_type}}">
-      <div class="row">
-        <div class="col-md-12">
-          <div class="head-breadcrumb-inner border-btm d-flex justify-content-between">
-            <div>
-              <h2>My Profile</h2>
-              <p>Edit you personal info and addresses</p>
-            </div>
-            <div *ngIf="template_setting?.display_goback && commonService?.desktop_device" class="d-flex align-items-center justify-content-end">
-              <span (click)="commonService.goBack();">GO BACK</span>
-            </div>
-          </div>
+      <div class="profile-page__hero-row">
+        <div>
+          <h2 class="profile-page__title">My Profile</h2>
+          <p class="profile-page__subtitle">Manage your personal details, shipping addresses, and security settings.</p>
         </div>
-
-        <div *ngIf="template_setting?.breadcrumb" class="col-md-12">
-          <div class="breadcrumb-navigation mt-3">
-            <ul class="collapsed">
-              <li><a routerLink="/">Home</a></li>
-              <li><a routerLink="/account">My Account</a></li>
-              <li><span class="active-page">My Profile</span></li>
-            </ul>
-          </div>
-        </div>
+        <button type="button" class="profile-page__back" (click)="commonService.goBack();">
+          GO BACK
+        </button>
       </div>
+      <nav class="profile-page__crumbs" aria-label="Breadcrumb">
+        <a routerLink="/">Home</a>
+        <span class="profile-page__crumb-sep">&rsaquo;</span>
+        <a routerLink="/account">My Account</a>
+        <span class="profile-page__crumb-sep">&rsaquo;</span>
+        <span>My Profile</span>
+      </nav>
     </div>
   </section>
-  <!--# breadcrumb #-->
 
-  <section class="common-site-section myaccount">
+  <section class="common-site-section profile-page__body">
     <div class="{{template_setting?.body_type}}">
-      <div class="row">
 
-        <div class="col-md-6 mb-2 mt-2">
-          <div class="d-sm-flex myaccount__card primary-card" routerLink="/account/profile/info">
-            <div class="myaccount-icon d-flex justify-content-center align-items-center xs-pd-l-20">
-              <i class="material-icons">info</i>
+      <!-- Profile card -->
+      <div class="profile-card" [class.profile-card--editing]="editMode">
+        <div class="profile-card__header">
+          <div class="profile-card__identity">
+            <div class="profile-card__avatar" aria-hidden="true">{{ profileInitials }}</div>
+            <div>
+              <h3 class="profile-card__name">{{ customer_details?.name || 'Customer' }}</h3>
+              <p class="profile-card__meta" *ngIf="memberSinceYear">Member since {{ memberSinceYear }}</p>
             </div>
-            <div class="myaccount__body m_flex m_text_center">
-              <div class="my_acc_card_head">
-                <h4 class="mb-3">Profile Info</h4>
-                <p class="text-muted">View and edit your personal details</p>
+          </div>
+
+          <ng-container *ngIf="!editMode && !showPasswordPanel">
+            <button type="button" class="primary-btn" (click)="startEditProfile();">
+              Edit Profile
+            </button>
+          </ng-container>
+
+          <div class="profile-card__header-actions" *ngIf="editMode">
+            <button type="button" class="secondary-btn" (click)="cancelEditProfile();">Cancel</button>
+            <button type="button" class="primary-btn"
+              [disabled]="profileSaving" (click)="saveProfile();">
+              Save Changes
+              <div class="box" *ngIf="profileSaving"><div class="spinner"></div></div>
+            </button>
+          </div>
+        </div>
+
+        <!-- View mode -->
+        <div class="profile-card__body" *ngIf="!editMode && !showPasswordPanel">
+          <div class="profile-row">
+            <div class="profile-row__main">
+              <span class="profile-row__label">Email</span>
+              <div class="profile-row__value-wrap">
+                <span class="profile-row__value">{{ customer_details?.email || '—' }}</span>
+                <span class="profile-google-badge" *ngIf="isSocialAccount">
+                  <img src="assets/images/icons/google.svg" alt="" width="12" height="12" />
+                  via Google
+                </span>
               </div>
+            </div>
+          </div>
+
+          <div class="profile-row">
+            <div class="profile-row__main">
+              <span class="profile-row__label">Name</span>
+              <span class="profile-row__value">{{ customer_details?.name || '—' }}</span>
+            </div>
+          </div>
+
+          <div class="profile-row">
+            <div class="profile-row__main">
+              <span class="profile-row__label">Phone</span>
+              <span class="profile-row__value">
+                <ng-container *ngIf="customer_details?.mobile; else noPhone">
+                  {{ customer_details?.dial_code }} {{ customer_details?.mobile }}
+                </ng-container>
+                <ng-template #noPhone>Not Available</ng-template>
+              </span>
+            </div>
+          </div>
+
+          <div class="profile-row profile-row--last" *ngIf="customer_details?.password">
+            <div class="profile-row__main">
+              <span class="profile-row__label">Password</span>
+              <span class="profile-row__value profile-row__value--mask">••••••••</span>
+            </div>
+            <button type="button" class="secondary-btn" (click)="openPasswordPanel();">
+              Change Password
+            </button>
+          </div>
+        </div>
+
+        <!-- Edit mode -->
+        <div class="profile-card__body profile-card__body--edit" *ngIf="editMode">
+          <div class="profile-field">
+            <label class="profile-field__label">Email</label>
+            <input class="profile-field__input profile-field__input--readonly" type="email"
+              [value]="customer_details?.email" readonly />
+            <p class="profile-field__hint" *ngIf="isSocialAccount">
+              Email is linked to your Google account and cannot be changed here.
+            </p>
+            <p class="profile-field__hint" *ngIf="!isSocialAccount">
+              Email cannot be changed here. Contact support if you need to update it.
+            </p>
+          </div>
+
+          <div class="profile-field">
+            <label class="profile-field__label" for="profile_full_name">Full Name</label>
+            <input id="profile_full_name" class="profile-field__input" type="text"
+              name="edit_name" [(ngModel)]="editForm.name" required />
+          </div>
+
+          <div class="profile-field">
+            <label class="profile-field__label">Phone Number</label>
+            <div class="profile-phone">
+              <select class="profile-phone__code" name="edit_dial_code"
+                [(ngModel)]="editForm.dial_code" (change)="onDialCodeChange(editForm.dial_code);" required>
+                <option *ngFor="let x of commonService.country_list | orderAsc: 'dial_code';" [ngValue]="x.dial_code">
+                  {{ x.dial_code }}
+                </option>
+              </select>
+              <input *ngIf="!mobile_pattern" class="profile-phone__number" type="tel"
+                name="edit_mobile" [(ngModel)]="editForm.mobile" appNumberOnly required />
+              <input *ngIf="mobile_pattern" class="profile-phone__number" type="tel"
+                name="edit_mobile" [(ngModel)]="editForm.mobile" [pattern]="mobile_pattern"
+                maxlength="{{ mobileno_length }}"
+                title="Please fill {{ mobileno_length }} digit mobile number"
+                appNumberOnly required />
+            </div>
+          </div>
+
+          <div class="profile-field" *ngIf="customer_details?.password">
+            <label class="profile-field__label">Password</label>
+            <input class="profile-field__input profile-field__input--readonly" type="password"
+              value="********" readonly />
+            <p class="profile-field__hint">
+              To update password, exit profile edit mode and click Change Password.
+            </p>
+          </div>
+
+          <div class="danger-alert" *ngIf="editForm.errorMsg">
+            <div class="alert-msg d-flex align-items-center justify-content-center p-2">
+              <span class="material-icons"></span>
+              <p class="m-0">{{ editForm.errorMsg }}</p>
             </div>
           </div>
         </div>
 
-        <div class="col-md-6 mb-2 mt-2">
-          <div class="d-sm-flex myaccount__card primary-card" routerLink="/account/profile/address">
-            <div class="myaccount-icon d-flex justify-content-center align-items-center xs-pd-l-20">
-              <i class="material-icons">location_on</i>
+        <!-- Change password panel -->
+        <div class="profile-card__body profile-password" *ngIf="showPasswordPanel">
+          <h4 class="profile-password__title">Change Password</h4>
+          <form autocomplete="off" (ngSubmit)="onChangePwd();" ngNativeValidate>
+            <div class="profile-field">
+              <label class="profile-field__label" for="current_pwd">Current Password</label>
+              <input id="current_pwd" class="profile-field__input" type="password"
+                name="current_pwd" placeholder="Enter current password"
+                [(ngModel)]="pwdForm.current_pwd" required />
             </div>
-            <div class="myaccount__body pr-2 m_flex m_text_center">
-              <div class="my_acc_card_head">
-                <h4 class="mb-3">Addresses</h4>
-                <p class="text-muted">Add and edit delivery locations</p>
+            <div class="profile-field">
+              <label class="profile-field__label" for="new_pwd">New Password</label>
+              <input id="new_pwd" class="profile-field__input"
+                [type]="pwdForm.input_txt ? 'text' : 'password'"
+                name="new_pwd" placeholder="Enter new password (min. 8 characters)"
+                [(ngModel)]="pwdForm.new_pwd" pattern=".{8,}"
+                title="Eight or more characters" required />
+            </div>
+            <div class="profile-field">
+              <label class="profile-field__label" for="confirm_new_pwd">Confirm New Password</label>
+              <input id="confirm_new_pwd" class="profile-field__input" type="password"
+                name="confirm_new_pwd" placeholder="Confirm new password"
+                [(ngModel)]="pwdForm.confirm_new_pwd" required />
+            </div>
+
+            <div class="danger-alert" *ngIf="pwdForm.errorMsg">
+              <div class="alert-msg d-flex align-items-center justify-content-center p-2">
+                <span class="material-icons"></span>
+                <p class="m-0">{{ pwdForm.errorMsg }}</p>
               </div>
             </div>
-          </div>
-        </div>
 
-        <div class="col-md-6 mb-2 mt-2" *ngIf="commonService.store_details.additional_features?.custom_model">
-          <div class="d-sm-flex myaccount__card primary-card" routerLink="/account/profile/models">
-            <div class="myaccount-icon d-flex justify-content-center align-items-center xs-pd-l-20">
-              <i class="material-icons">format_shapes</i>
+            <div class="profile-password__actions">
+              <button type="button" class="secondary-btn" (click)="cancelPasswordPanel();">
+                Cancel
+              </button>
+              <button type="submit" class="primary-btn"
+                [disabled]="pwdForm.new_pwd != pwdForm.confirm_new_pwd || pwdForm.submit">
+                Update Password
+                <div class="box" *ngIf="pwdForm.submit"><div class="spinner"></div></div>
+              </button>
             </div>
-            <div class="myaccount__body m_flex m_text_center">
-              <div class="my_acc_card_head">
-                <h4 class="mb-3">Custom Model</h4>
-                <p class="text-muted">View and edit your personalized addons</p>
-              </div>
-            </div>
-          </div>
+          </form>
         </div>
-
       </div>
+
+      <!-- Saved addresses -->
+      <div class="profile-panel">
+        <h4 class="profile-panel__title">Saved Addresses</h4>
+
+        <div class="profile-address"
+          *ngFor="let x of address_list"
+          [class.profile-address--default]="x.billing_address || x.shipping_address">
+          <div class="profile-address__main">
+            <span class="profile-address__type">{{ addressTypeLabel(x) }}</span>
+            <p class="profile-address__name">{{ x.name }}</p>
+            <p class="profile-address__line">{{ addressLine(x) }}</p>
+            <p class="profile-address__phone" *ngIf="x.mobile">{{ x.dial_code }} {{ x.mobile }}</p>
+            <span class="profile-address__badge" *ngIf="addressDefaultLabel(x) as badge">
+              • {{ badge }}
+            </span>
+          </div>
+          <div class="profile-address__actions">
+            <button type="button" class="profile-address__icon-btn" aria-label="Remove address" title="Remove"
+              (click)="confirmDeleteAddress(x, removeModal);">
+              <span class="material-icons" aria-hidden="true">delete_outline</span>
+            </button>
+            <button type="button" class="profile-address__icon-btn" aria-label="Edit address"
+              title="Edit" (click)="onEditAddress(x, addressModal);">
+              <span class="material-icons" aria-hidden="true">edit</span>
+            </button>
+          </div>
+        </div>
+
+        <button type="button" class="profile-address-add" (click)="onAddAddress(addressModal);">
+          + Add New Address
+        </button>
+      </div>
+
+      <!-- Account actions -->
+      <div class="profile-panel profile-panel--actions">
+        <h4 class="profile-panel__title">Account Actions</h4>
+        <button type="button" class="profile-logout-link" (click)="logoutModal.show();">Log Out</button>
+      </div>
+
     </div>
   </section>
 </section>
+
+<!-- Address modal -->
+<div bsModal #addressModal="bs-modal" class="modal fade profile-address-modal"
+  [config]="{backdrop: 'static'}" tabindex="-1" role="dialog" aria-labelledby="dialog-addr">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header profile-modal__header">
+        <h5 class="profile-modal__title">
+          {{ addressFormType === 'add' ? 'Add New Address' : 'Update Address' }}
+        </h5>
+        <button type="button" class="profile-modal__close" aria-label="Close" (click)="addressModal.hide();">
+          &times;
+        </button>
+      </div>
+
+      <form autocomplete="off" (ngSubmit)="onSubmitAddress(addressFormType, addressModal);" ngNativeValidate>
+        <div class="modal-body modal-scroll slim-scroll profile-modal__body">
+
+          <div class="profile-modal__section profile-modal__section--compact">
+            <div class="profile-type-row">
+              <span class="profile-type-row__label">Address Type</span>
+              <div class="profile-type-options" role="radiogroup" aria-label="Address type">
+                <button type="button" class="profile-type-option"
+                  [class.is-active]="addressForm.type === 'home'"
+                  (click)="setAddressType('home')"
+                  [attr.aria-pressed]="addressForm.type === 'home'">Home</button>
+                <button type="button" class="profile-type-option"
+                  [class.is-active]="addressForm.type === 'office'"
+                  (click)="setAddressType('office')"
+                  [attr.aria-pressed]="addressForm.type === 'office'">Office</button>
+                <button type="button" class="profile-type-option"
+                  [class.is-active]="addressForm.type === 'other'"
+                  (click)="setAddressType('other')"
+                  [attr.aria-pressed]="addressForm.type === 'other'">Other</button>
+              </div>
+            </div>
+            <input type="hidden" name="type" [(ngModel)]="addressForm.type" />
+            <div class="profile-field profile-field--tight" *ngIf="addressForm.type === 'other'">
+              <label class="profile-field__label">
+                Address Title <span class="profile-field__req" aria-hidden="true">*</span>
+              </label>
+              <input class="profile-field__input" type="text" name="other_place"
+                placeholder="e.g. Parents Home"
+                [(ngModel)]="addressForm.other_place" required />
+            </div>
+          </div>
+
+          <ng-container *ngIf="address_list?.length">
+            <div class="profile-modal__section">
+              <div class="profile-modal__section-head">
+                <span>Default Address</span>
+              </div>
+              <div class="profile-modal__defaults">
+                <label class="profile-default-card"
+                  [class.is-checked]="addressForm.billing_address"
+                  [class.is-locked]="addressForm.exist_billing">
+                  <input type="checkbox" name="billing_address"
+                    [(ngModel)]="addressForm.billing_address"
+                    [disabled]="addressForm.exist_billing" />
+                  <span class="profile-default-card__box" aria-hidden="true">
+                    <span class="material-icons">check</span>
+                  </span>
+                  <span class="profile-default-card__copy">
+                    <span class="profile-default-card__title">Default Billing Address</span>
+                    <span class="profile-default-card__hint">
+                      {{ addressForm.exist_billing
+                        ? 'This address is already your default billing address'
+                        : 'Mark this as your default billing address' }}
+                    </span>
+                  </span>
+                </label>
+                <label class="profile-default-card"
+                  [class.is-checked]="addressForm.shipping_address"
+                  [class.is-locked]="addressForm.exist_shipping">
+                  <input type="checkbox" name="shipping_address"
+                    [(ngModel)]="addressForm.shipping_address"
+                    [disabled]="addressForm.exist_shipping" />
+                  <span class="profile-default-card__box" aria-hidden="true">
+                    <span class="material-icons">check</span>
+                  </span>
+                  <span class="profile-default-card__copy">
+                    <span class="profile-default-card__title">Default Shipping Address</span>
+                    <span class="profile-default-card__hint">
+                      {{ addressForm.exist_shipping
+                        ? 'This address is already your default shipping address'
+                        : 'Mark this as your default shipping address' }}
+                    </span>
+                  </span>
+                </label>
+              </div>
+            </div>
+          </ng-container>
+
+          <div class="profile-modal__section">
+            <div class="profile-modal__section-head">
+              <span>Personal Details</span>
+            </div>
+            <div class="profile-field">
+              <label class="profile-field__label">
+                Full Name <span class="profile-field__req" aria-hidden="true">*</span>
+              </label>
+              <input class="profile-field__input" type="text" name="name"
+                placeholder="e.g. Chethan Choyal"
+                [(ngModel)]="addressForm.name" required />
+            </div>
+            <div class="profile-field">
+              <label class="profile-field__label">
+                Mobile Number <span class="profile-field__req" aria-hidden="true">*</span>
+              </label>
+              <div class="profile-phone">
+                <select class="profile-phone__code" name="dial_code"
+                  [(ngModel)]="addressForm.dial_code" required>
+                  <option *ngFor="let x of commonService.country_list | orderAsc: 'dial_code';" [ngValue]="x.dial_code">
+                    {{ x.dial_code }}
+                  </option>
+                </select>
+                <input *ngIf="!mobile_pattern" class="profile-phone__number" type="tel"
+                  name="mobile" placeholder="90808 00049"
+                  [(ngModel)]="addressForm.mobile" appNumberOnly required />
+                <input *ngIf="mobile_pattern" class="profile-phone__number" type="tel"
+                  name="mobile" placeholder="90808 00049"
+                  [(ngModel)]="addressForm.mobile" [pattern]="mobile_pattern"
+                  maxlength="{{ country_details?.mobileno_length }}"
+                  title="Please fill {{ country_details?.mobileno_length }} digit mobile number"
+                  appNumberOnly required />
+              </div>
+            </div>
+          </div>
+
+          <div class="profile-modal__section">
+            <div class="profile-modal__section-head">
+              <span>Address Details</span>
+            </div>
+
+            <div class="profile-field">
+              <label class="profile-field__label">
+                Address <span class="profile-field__req" aria-hidden="true">*</span>
+              </label>
+              <textarea class="profile-field__input profile-field__textarea" name="address"
+                placeholder="Flat / House No., Building, Street Name"
+                [(ngModel)]="addressForm.address" required></textarea>
+            </div>
+
+            <div class="profile-field">
+              <label class="profile-field__label">Landmark (Optional)</label>
+              <input class="profile-field__input" type="text" name="landmark"
+                placeholder="e.g. Near Palavakkam Beach"
+                [(ngModel)]="addressForm.landmark" />
+            </div>
+
+            <div class="profile-field-grid">
+              <ng-container *ngFor="let field of address_fields; let j = index">
+                <div class="profile-field" *ngIf="field.keyword === 'state' && state_list?.length">
+                  <label class="profile-field__label">
+                    {{ field.label }} <span class="profile-field__req" aria-hidden="true">*</span>
+                  </label>
+                  <select class="profile-field__input profile-field__select" name="field{{ j }}" [(ngModel)]="field.value" required>
+                    <option *ngFor="let x of state_list | orderAsc: 'name'" [ngValue]="x.name">{{ x.name }}</option>
+                  </select>
+                </div>
+                <div class="profile-field" *ngIf="field.keyword === 'state' && !state_list?.length">
+                  <label class="profile-field__label">
+                    {{ field.label }} <span class="profile-field__req" aria-hidden="true">*</span>
+                  </label>
+                  <input class="profile-field__input" type="text" name="field{{ j }}"
+                    [(ngModel)]="field.value" required />
+                </div>
+                <div class="profile-field" *ngIf="field.keyword !== 'state'">
+                  <label class="profile-field__label">
+                    {{ field.label }} <span class="profile-field__req" aria-hidden="true">*</span>
+                  </label>
+                  <input class="profile-field__input" type="text" name="field{{ j }}"
+                    [(ngModel)]="field.value" (input)="addressForm.error_msg = null;" required />
+                </div>
+              </ng-container>
+
+              <div class="profile-field">
+                <label class="profile-field__label">
+                  Country <span class="profile-field__req" aria-hidden="true">*</span>
+                </label>
+                <select class="profile-field__input profile-field__select" name="country"
+                  [(ngModel)]="addressForm.country"
+                  (change)="addressForm.state = null; onCountryChange(addressForm.country);"
+                  [disabled]="commonService?.application_setting?.ship_only_in_domestic"
+                  required>
+                  <option *ngFor="let x of commonService.country_list | orderAsc: 'name'" [ngValue]="x.name">
+                    {{ x.name }}
+                  </option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer profile-modal__footer">
+          <div *ngIf="addressForm?.error_msg" class="w-100 danger-alert mb-2">
+            <div class="alert-msg d-flex align-items-center justify-content-center p-2">
+              <span class="material-icons"></span>
+              <p class="m-0">{{ addressForm.error_msg }}</p>
+            </div>
+          </div>
+          <button type="button" class="secondary-btn" (click)="addressModal.hide();">Cancel</button>
+          <button type="submit" class="primary-btn" [disabled]="addressForm.submit">
+            {{ addressFormType === 'add' ? 'Save Address' : 'Save Changes' }}
+            <div class="box" *ngIf="addressForm.submit"><div class="spinner"></div></div>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Remove address modal -->
+<div bsModal #removeModal="bs-modal" class="modal fade" [config]="{backdrop: 'static'}"
+  tabindex="-1" role="dialog" aria-labelledby="dialog-remo">
+  <div class="modal-dialog modal-md modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-body">
+        <p class="mb-0">Are you sure you want to remove this address?</p>
+      </div>
+      <div class="modal-footer">
+        <button class="secondary-btn" type="button" (click)="removeModal.hide();">No</button>
+        <button class="primary-btn" type="button"
+          (click)="onDeleteAddress(removeModal);" [disabled]="deleteForm.submit">
+          Yes
+          <div class="box" *ngIf="deleteForm.submit"><div class="spinner"></div></div>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Logout modal -->
+<div bsModal #logoutModal="bs-modal" class="modal fade modal-position1 logout-modal"
+  tabindex="-1" role="dialog" aria-labelledby="dialog-logout">
+  <div class="modal-dialog modal-md modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-body">
+        <h6 class="m-0">Are you sure you want to log out?</h6>
+      </div>
+      <div class="modal-footer">
+        <button class="secondary-btn" type="button" (click)="logoutModal.hide();">No</button>
+        <button class="primary-btn" type="button" (click)="onLogout(logoutModal);">Yes</button>
+      </div>
+    </div>
+  </div>
+</div>

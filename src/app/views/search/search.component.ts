@@ -92,6 +92,7 @@ export class SearchComponent implements OnInit, OnDestroy {
 
   private pendingQuery: string | null = null;
   private pendingTextQuery: string | null = null;
+  private pendingHomeImageFile: File | null = null;
   private restorePending = false;
   private sessionRestorePending = false;
   private cachedImageFingerprint: string | null = null;
@@ -120,7 +121,6 @@ export class SearchComponent implements OnInit, OnDestroy {
   private readonly searchPlaceholderPhrases = [
     "Type 'pink floral linen'...",
     'Or upload a photo to match style...',
-    'Or select filters on the left...',
     "Type 'traditional temple border'..."
   ];
   private readonly searchPlaceholderActive = 'Describe style, fabric, color, or upload a saree photo...';
@@ -149,6 +149,11 @@ export class SearchComponent implements OnInit, OnDestroy {
     this.restorePending = !!this.commonService.search_page_attr.search_form;
     if(isPlatformBrowser(this.platformId) && !this.restorePending) {
       this.sessionRestorePending = !!readSearchSession()?.classify;
+    }
+    if (isPlatformBrowser(this.platformId) && this.commonService.pendingSearchImageFile) {
+      this.pendingHomeImageFile = this.commonService.pendingSearchImageFile;
+      this.commonService.pendingSearchImageFile = null;
+      this.sessionRestorePending = false;
     }
     this.activeRoute.queryParams.subscribe((params: Params) => {
       this.pendingQuery = params['q'] ? String(params['q']) : null;
@@ -245,6 +250,11 @@ export class SearchComponent implements OnInit, OnDestroy {
 
   get showAiResponsePills(): boolean {
     return false;
+  }
+
+  /** Text search needs at least 3 characters before submit is allowed. */
+  get canSubmitTextSearch(): boolean {
+    return (this.searchQuery || '').trim().length >= 3;
   }
 
   onSearchInputFocus() {
@@ -372,6 +382,7 @@ export class SearchComponent implements OnInit, OnDestroy {
     if(this.selectedImageFile) {
       this.onAnalyseClick();
     } else {
+      if (!this.canSubmitTextSearch) return;
       this.onSearch();
     }
   }
@@ -419,6 +430,7 @@ export class SearchComponent implements OnInit, OnDestroy {
 
   onSearch() {
     if (this.hasUploadedImage) return;
+    if (!this.canSubmitTextSearch && !this.hasActiveFilters) return;
     if(this.searchQuery.trim() || this.hasActiveFilters) {
       this.runCatalogSearch();
     } else {
@@ -612,6 +624,13 @@ export class SearchComponent implements OnInit, OnDestroy {
   private handleRouteState() {
     if(!this.tag_list.length) return;
 
+    if (this.pendingHomeImageFile) {
+      const file = this.pendingHomeImageFile;
+      this.pendingHomeImageFile = null;
+      this.processImageFile(file, { autoAnalyse: true });
+      return;
+    }
+
     if(this.restorePending) {
       this.restorePending = false;
       this.restoreSearchState();
@@ -662,7 +681,7 @@ export class SearchComponent implements OnInit, OnDestroy {
     this.classifyAndSearch();
   }
 
-  private processImageFile(file: File) {
+  private processImageFile(file: File, options?: { autoAnalyse?: boolean }) {
     if(!this.allowedImageTypes.includes(file.type)) {
       this.imageError = 'Please upload a JPG, PNG, or WebP image.';
       return;
@@ -692,7 +711,9 @@ export class SearchComponent implements OnInit, OnDestroy {
         this.applyClassification(this.cachedClassification);
         this.imageDetected = true;
       }
-      // else: user must click Analyse button
+      if (options?.autoAnalyse) {
+        this.onAnalyseClick();
+      }
     });
   }
 

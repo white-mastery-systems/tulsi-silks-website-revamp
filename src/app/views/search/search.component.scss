@@ -398,28 +398,17 @@ $mob-bar-h:  54px;
 }
 
 .search-analyse-btn {
+  /* Layout / visibility only — chrome comes from `.primary-btn` */
   display: none;
   width: 100%;
-  min-height: 52px;
   margin: 0 0 1rem;
-  border: none;
-  background: $ink;
-  color: $white;
-  font-family: inherit;
-  font-size: 0.8125rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  cursor: pointer;
   opacity: 0;
   max-height: 0;
   overflow: hidden;
   transform: translateY(8px);
   transition: opacity 0.28s ease, transform 0.28s ease, max-height 0.28s ease;
-
-  span { color: $white !important; }
+  gap: 8px;
+  box-sizing: border-box;
 
   &--inline {
     display: none;
@@ -439,7 +428,7 @@ $mob-bar-h:  54px;
     white-space: nowrap;
     letter-spacing: 0.04em;
     text-transform: none;
-    font-size: 0.72rem;
+    font-size: 0.75rem;
     font-weight: 500;
   }
 }
@@ -527,8 +516,6 @@ $mob-bar-h:  54px;
 
 .search-btn.search-submit-btn {
   width: 100%;
-  min-height: 52px;
-  font-size: 1rem;
 }
 
 // Upload zone
@@ -647,36 +634,20 @@ $mob-bar-h:  54px;
   }
 }
 
-// Search button
+// Search submit — layout only; chrome from `.primary-btn`
 .search-btn {
-  background: $ink;
-  color: $white;
-  border: none;
-  padding: 0 24px;
-  font-size: 0.68rem;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  font-family: inherit;
-  cursor: pointer;
+  width: 100%;
   flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 7px;
-  min-height: 52px;
-  transition: background 0.18s;
-
-  &:hover:not(:disabled) { background: #000; }
-  &:disabled { opacity: 0.5; cursor: not-allowed; }
+  gap: 8px;
+  box-sizing: border-box;
 
   &__status {
     white-space: nowrap;
-    letter-spacing: 0.08em;
+    letter-spacing: 0.04em;
     text-transform: none;
-    font-size: 0.72rem;
+    font-size: 0.75rem;
+    font-weight: 500;
   }
-
-  span { color: $white !important; }
 }
 
 // ─── Error ─────────────────────────────────────────────────────────────────────
@@ -1667,7 +1638,7 @@ $mob-bar-h:  54px;
   }
 
   .search-command--image-active:not(.search-command--analysed) .search-analyse-btn--inline {
-    display: flex !important;
+    display: inline-flex !important;
     opacity: 1 !important;
     max-height: none !important;
     margin: 0 !important;
@@ -1788,22 +1759,24 @@ $mob-bar-h:  54px;
 
   .search-command--image-active {
     .search-analyse-btn--hero {
-      display: flex;
+      display: inline-flex;
       opacity: 1;
-      max-height: 52px;
+      max-height: 48px;
       margin-bottom: 0;
       transform: translateY(0);
+      overflow: visible;
     }
   }
 
   .search-command--scanning {
     .search-analyse-btn--hero {
-      display: flex !important;
+      display: inline-flex !important;
       opacity: 1 !important;
-      max-height: 52px !important;
+      max-height: 48px !important;
       margin-bottom: 0;
       transform: translateY(0) !important;
       pointer-events: none;
+      overflow: visible;
     }
   }
 

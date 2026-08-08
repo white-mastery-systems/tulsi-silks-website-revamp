@@ -2,147 +2,81 @@
   <app-loading-spinner></app-loading-spinner>
 </section>
 
-<!-- SEO h1 tag -->
-<h1 *ngIf="seoDetails?.h1_tag" [hidden]="true">{{seoDetails.h1_tag}}</h1>
-<!-- #SEO h1 tag -->
+<h1 *ngIf="seoDetails?.h1_tag" [hidden]="true">{{ seoDetails.h1_tag }}</h1>
 
-<section class="over-all smooth-fadein" *ngIf="!pageLoader">
-
-  <!-- breadcrumb -->
-  <section class="head-breadcrumb">
-    <div class="{{template_setting?.body_type}}">
-      <div class="row">
-        <div class="col-md-12">
-          <div class="head-breadcrumb-inner border-btm d-flex justify-content-between">
-            <div>
-              <h2>My Wishlist</h2>
-              <p>This is your wishlist</p>
-            </div>
-            <div *ngIf="template_setting?.display_goback && commonService?.desktop_device" class="d-flex align-items-center justify-content-end">
-              <span (click)="commonService.goBack();">GO BACK</span>
-            </div>
-          </div>
+<section class="over-all smooth-fadein wishlist-page" *ngIf="!pageLoader">
+  <section class="wishlist-page__hero">
+    <div class="{{ template_setting?.body_type }}">
+      <div class="wishlist-page__hero-row">
+        <div>
+          <h2 class="wishlist-page__title">My Wishlist</h2>
+          <p class="wishlist-page__subtitle">Sarees you've saved from our boutique collections</p>
         </div>
-
-        <div *ngIf="template_setting?.breadcrumb" class="col-md-12">
-          <div class="breadcrumb-navigation mt-3">
-            <ul class="collapsed">
-              <li><a routerLink="/">Home</a></li>
-              <li *ngIf="commonService?.previous_route=='/account'"><a routerLink="/account">My Account</a></li>
-              <li><span class="active-page">My Wishlist</span></li>
-            </ul>
-          </div>
-        </div>
+        <button type="button" class="wishlist-page__back" (click)="commonService.goBack();">
+          GO BACK
+        </button>
       </div>
+      <nav class="wishlist-page__crumbs" aria-label="Breadcrumb">
+        <a routerLink="/">Home</a>
+        <span class="wishlist-page__crumb-sep">&rsaquo;</span>
+        <a routerLink="/account">My Account</a>
+        <span class="wishlist-page__crumb-sep">&rsaquo;</span>
+        <span>My Wishlist</span>
+      </nav>
     </div>
   </section>
-  <!--# breadcrumb #-->
 
-  <section class="common-site-section shopping-cart">
+  <section class="common-site-section wishlist-page__body">
+    <div class="{{ template_setting?.body_type }}">
 
-    <div *ngIf="list?.length" class="{{template_setting?.body_type}}">
-      <div class="row">
-        <div class="col-12">
-          <!-- for mobile -->
-          <div *ngIf="commonService?.screen_width<992" class="mobile-cart">
-            <div class="gray-card primary-card p-3">
-              <div class="row">
-                <div class="col-md-12">
-                  <h6 class="m-0">PRODUCT</h6>
-                </div>
-                <ng-container *ngFor="let x of list; let i=index;">
-                  <div class="col-md-12">
-                    <div class="product border-top border-btm pt-3 pb-3 mt-3 mb-3">
-                      <div class="product-img">
-                        <figure class="cursor" routerLink="{{ x.seo_status ? '/product/'+x.seo_details.page_url+'/1' : '/product/'+x.product_id+'/1' }}">
-                          <img width="100%" height="100%" appImgLazyLoad [ImagelazyLoad]="imgBaseUrl+x.image" alt="thum">
-                        </figure>
-                      </div>
-                      <div class="d-flex flex-column w-100">
-                        <div class="product-name mt-2 mb-2">
-                          <h4 class="cursor" routerLink="{{ x.seo_status ? '/product/'+x.seo_details.page_url+'/1' : '/product/'+x.product_id+'/1' }}">
-                            {{x.name}}</h4>
-                        </div>
-                        <div class="mt-2 mb-2">
-                          <span class="cursor" routerLink="{{ x.seo_status ? '/product/'+x.seo_details.page_url+'/1' : '/product/'+x.product_id+'/1' }}">
-                            {{ x.temp_discounted_price | currency:cc.pipeCurrencyCode:'symbol-narrow':cc.format:cc.pipeLocale }}
-                          </span>
-                        </div>
-                        <div class="mt-2 mb-2">
-                          <button class="primary-btn w-100" routerLink="{{ x.seo_status ? '/product/'+x.seo_details.page_url+'/1' : '/product/'+x.product_id+'/1' }}">Purchase</button>
-                        </div>
-                        <div class="d-flex justify-content-end mt-2 mb-2" (click)="removeFromWishList(i);">
-                          <i class="material-icons delete-icon">delete</i>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </ng-container>
-              </div>
-            </div>
+      <ng-container *ngIf="list?.length; else emptyWishlist">
+        <article class="wishlist-card" *ngFor="let x of list; let i = index">
+          <a class="wishlist-card__media" [routerLink]="productLink(x)">
+            <img
+              width="160"
+              height="160"
+              appImgLazyLoad
+              [ImagelazyLoad]="imgBaseUrl + x.image"
+              [alt]="x.name" />
+          </a>
+
+          <div class="wishlist-card__details">
+            <p class="wishlist-card__sku" *ngIf="x.sku">SKU: {{ x.sku }}</p>
+            <h3 class="wishlist-card__name">
+              <a [routerLink]="productLink(x)">{{ x.name }}</a>
+            </h3>
+            <p class="wishlist-card__meta" *ngIf="productSubtitle(x) as subtitle">{{ subtitle }}</p>
+            <p class="wishlist-card__price">
+              {{ x.temp_discounted_price | currency:cc.pipeCurrencyCode:'symbol-narrow':cc.format:cc.pipeLocale }}
+            </p>
+            <p class="wishlist-card__stock"
+              *ngIf="stockLabel(x) as stock"
+              [class.wishlist-card__stock--low]="stock.low">
+              <span class="wishlist-card__stock-dot" *ngIf="stock.low" aria-hidden="true"></span>
+              {{ stock.text }}
+            </p>
           </div>
-          <!-- #for mobile# -->
 
-          <!-- for desktop -->
-          <div *ngIf="commonService?.screen_width>=992">
-            <table class="table">
-              <thead class="wishlist-head">
-                <tr>
-                  <td colspan="2"><h6>PRODUCT</h6></td>
-                  <td><h6>PRICE</h6></td>
-                  <td></td>
-                  <td></td>
-                </tr>
-              </thead>
-              <tbody>
-                <tr *ngFor="let x of list; let i=index;">
-                  <td>
-                    <figure class="cursor" routerLink="{{ x.seo_status ? '/product/'+x.seo_details.page_url+'/1' : '/product/'+x.product_id+'/1' }}">
-                      <img width="100%" height="100%" appImgLazyLoad [ImagelazyLoad]="imgBaseUrl+x.image" alt="thum">
-                    </figure>
-                  </td>
-                  <td>
-                    <h4 class="cursor" routerLink="{{ x.seo_status ? '/product/'+x.seo_details.page_url+'/1' : '/product/'+x.product_id+'/1' }}">
-                      {{x.name}}
-                    </h4>
-                  </td>
-                  <td>
-                    <span class="cursor" routerLink="{{ x.seo_status ? '/product/'+x.seo_details.page_url+'/1' : '/product/'+x.product_id+'/1' }}">
-                      {{ x.temp_discounted_price | currency:cc.pipeCurrencyCode:'symbol-narrow':cc.format:cc.pipeLocale }}
-                    </span>
-                  </td>
-                  <td>
-                    <button class="primary-btn" routerLink="{{ x.seo_status ? '/product/'+x.seo_details.page_url+'/1' : '/product/'+x.product_id+'/1' }}">Purchase</button>
-                  </td>
-                  <td class="text-center">
-                    <a (click)="removeFromWishList(i);">
-                      <i class="material-icons delete-icon">delete</i>
-                    </a>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+          <div class="wishlist-card__actions">
+            <button type="button" class="wishlist-card__remove" aria-label="Remove from wishlist"
+              title="Remove" (click)="removeFromWishList(i);">
+              <i class="material-icons" aria-hidden="true">delete_outline</i>
+            </button>
+            <a class="primary-btn" [routerLink]="productLink(x)">Purchase Saree</a>
           </div>
-          <!-- #for desktop# -->
+        </article>
+      </ng-container>
+
+      <ng-template #emptyWishlist>
+        <div class="wishlist-empty">
+          <div class="wishlist-empty__media">
+            <img width="100%" height="100%" imgBroken src="assets/images/no_items_found.svg" alt="not-found" />
+          </div>
+          <p class="wishlist-empty__text">No items to show</p>
+          <a routerLink="/" class="primary-btn">Continue Shopping</a>
         </div>
-      </div>
+      </ng-template>
+
     </div>
-
-    <div *ngIf="!list?.length" class="{{template_setting?.body_type}}">
-      <div class="row">
-        <div class="col-12">
-          <div class="no-items d-flex align-items-center justify-content-center">
-            <img width="100%" height="100%" imgBroken src="assets/images/no_items_found.svg" alt="not-found">
-          </div>
-        </div>
-        <div class="col-12" align="center">
-          <div class="no-items-letter">
-            <p>No items to show</p>
-          </div>
-        </div>
-      </div>
-    </div>
-
   </section>
-
 </section>

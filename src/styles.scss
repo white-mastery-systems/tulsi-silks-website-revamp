@@ -20,6 +20,14 @@
 // swiper.css and quill-core.css are loaded on-demand via DynamicAssetLoaderService
 // to avoid blocking first paint on every page.
 
+/* Home section titles: must load AFTER bootstrap-grid (.px-0/.pl-0 use !important).
+   Without this, mobile heading left padding is forced back to 0 in production CSS order. */
+@media screen and (max-width: 767px) {
+  .home-section .titles:not(.pl-0) {
+    padding-left: 15px !important;
+  }
+}
+
 /* === Below-the-fold section deferral ===========================================
    `content-visibility: auto` lets the browser skip layout + paint for elements
    that are off-screen, dramatically reducing initial-render main-thread time.

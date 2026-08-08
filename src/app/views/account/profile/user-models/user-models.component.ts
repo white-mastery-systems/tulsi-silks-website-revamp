@@ -1,31 +1,36 @@
-import { Component, OnInit, Inject, DOCUMENT } from '@angular/core';
+import { Component, OnInit, Inject, DOCUMENT, ViewChild } from '@angular/core';
 
 import { ApiService } from '../../../../services/api.service';
 import { StoreApiService } from '../../../../services/store-api.service';
 import { CommonService } from '../../../../services/common.service';
 import { CurrencyConversionService } from '../../../../services/currency-conversion.service';
+import { FitCreateProfileComponent } from '../../../../shared/modules/fit-profile/fit-create-profile.component';
 import { environment } from './../../../../../environments/environment';
 
 @Component({
     selector: 'app-user-models',
     templateUrl: './user-models.component.html',
-    styleUrls: ['./user-models.component.scss'],
+    styleUrls: ['./user-models.component.scss', '../../../../shared/modules/fit-profile/fit-profile-modal.scss'],
     standalone: false
 })
 export class UserModelsComponent implements OnInit {
 
-  pageLoader: boolean; selected_unit: any = {};
+  @ViewChild('fitCreateProfile') fitCreateProfile: FitCreateProfileComponent;
+
+  pageLoader = true; selected_unit: any = {};
   list: any = []; parent_mm_list: any = [];
   custom_list: any = []; addonForm: any = {}; deleteForm: any = {};
-  customIndex: number; mmIndex: number = 0;
+  customIndex: number = 0; mmIndex: number = 0;
   imgBaseUrl: string = environment.img_baseurl;
   template_setting: any = environment.template_setting;
   page: number = 1; pageSize: number = 10;
+  selectedAddon: any = null;
+  editTarget: any = null;
+  editingModelId: string | null = null;
   bcList: any = [
     { name: "Home", position: 1, link: "/" },
     { name: "My Account", position: 2, link: "/account" },
-    { name: "My Profile", position: 3, link: "/account/profile" },
-    { name: "Custom Model", position: 4, link: "/account/profile/models" }
+    { name: "Measurements & Fits", position: 3, link: "/account/models" }
   ];
 
   constructor(
@@ -33,21 +38,48 @@ export class UserModelsComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    if(this.commonService.store_details.additional_features && this.commonService.store_details.additional_features.custom_model) {
-      this.pageLoader = true;
-      this.api.USER_DETAILS().subscribe(result => {
-        if(result.status) {
-          this.list = result.data.model_list;
-          this.list.forEach((obj, index) => {
-            obj.index = index+1;
-          });
-        }
-        else console.log("response", result);
-        setTimeout(() => { this.pageLoader = false; }, 500);
-      });
-    }
-    // schema
+    this.pageLoader = true;
     this.commonService.breadCrumbList(this.bcList);
+    this.loadModelList();
+  }
+
+  private loadModelList(): void {
+    const finish = () => {
+      setTimeout(() => { this.pageLoader = false; }, 300);
+    };
+
+    this.api.USER_DETAILS().subscribe({
+      next: (result) => {
+        if (result?.status) {
+          this.setModelList(result.data?.model_list);
+        } else {
+          this.setModelList([]);
+          console.log('response', result);
+        }
+        finish();
+      },
+      error: (err) => {
+        this.setModelList([]);
+        console.log('USER_DETAILS error', err);
+        finish();
+      }
+    });
+  }
+
+  private setModelList(modelList: any): void {
+    // API returns oldest → newest; show newest first so a newly added model appears at the top.
+    this.list = Array.isArray(modelList) ? [...modelList].reverse() : [];
+    this.list.forEach((obj: any, index: number) => {
+      obj.index = index + 1;
+      try {
+        obj._previewSlots = this.getModelPreviewSlots(obj);
+        obj._measurements = this.getModelMeasurements(obj);
+      } catch (e) {
+        console.log('model card map error', e);
+        obj._previewSlots = [];
+        obj._measurements = { unit: null, unitSymbol: '', items: [] };
+      }
+    });
   }
 
   onEdit(type, modelId, modalName) {
@@ -127,13 +159,263 @@ export class UserModelsComponent implements OnInit {
   onDelete(modalName) {
     this.deleteForm.submit = true;
     this.api.DELETE_MODEL(this.deleteForm).subscribe(result => {
+      this.deleteForm.submit = false;
       if(result.status) {
         modalName.hide();
-        this.list = result.data.model_list;
+        this.setModelList(result.data?.model_list);
         this.page = 1;
       }
       else console.log("response", result);
     });
+  }
+
+  getModelPreviewSlots(model: any): Array<{ label: string; value: string; image?: string }> {
+    return [
+      this.getModelCustomSlot(model, ['front'], 0, 'Front Neck'),
+      this.getModelCustomSlot(model, ['rear', 'back'], 1, 'Back Neck'),
+      this.getModelCustomSlot(model, ['lining', 'clos', 'extra'], 2, 'Lining')
+    ].filter(Boolean) as Array<{ label: string; value: string; image?: string }>;
+  }
+
+  getModelMeasurements(model: any): {
+    unit: string | null;
+    unitSymbol: string;
+    items: Array<{ name: string; value: string }>;
+  } {
+    const sets = model?.mm_sets || [];
+    const allItems = [];
+    const highlightKeys = ['shoulder', 'chest', 'waist', 'length'];
+    const highlightOrder = { shoulder: 0, chest: 1, waist: 2, length: 3 };
+
+    sets.forEach((set: any) => {
+      (set?.list || []).forEach((entry: any) => {
+        if (!entry?.name) return;
+        const raw = entry.value;
+        if (raw === undefined || raw === null || String(raw).trim() === '') return;
+        allItems.push({ name: entry.name, value: String(raw) });
+      });
+    });
+
+    const items = allItems
+      .filter(item => highlightKeys.some(key => String(item.name || '').toLowerCase().includes(key)))
+      .sort((a, b) => {
+        const aKey = highlightKeys.find(key => String(a.name || '').toLowerCase().includes(key)) || '';
+        const bKey = highlightKeys.find(key => String(b.name || '').toLowerCase().includes(key)) || '';
+        return (highlightOrder[aKey] ?? 99) - (highlightOrder[bKey] ?? 99);
+      })
+      .filter((item, index, list) => {
+        const key = highlightKeys.find(k => String(item.name || '').toLowerCase().includes(k));
+        return list.findIndex(other => String(other.name || '').toLowerCase().includes(key)) === index;
+      });
+
+    const unit = model?.mm_unit
+      || sets[0]?.unit
+      || sets[0]?.units?.[0]?.name
+      || sets[0]?.list?.[0]?.unit
+      || null;
+    const unitLower = String(unit || '').toLowerCase();
+    const unitSymbol = unitLower.includes('inch') || unitLower === 'in' || unitLower === 'inches'
+      ? '"'
+      : (unitLower.includes('cm') ? ' cm' : (unit ? ' ' + unit : ''));
+
+    return { unit, unitSymbol, items };
+  }
+
+  openEditChoice(model: any, editChoiceModal: any): void {
+    this.editTarget = model;
+    editChoiceModal.show();
+  }
+
+  openEditModel(model: any): void {
+    if (!model?.addon_id || !this.fitCreateProfile) return;
+    this.editingModelId = model._id;
+    this.editTarget = model;
+
+    this.storeApi.ADDON_DETAILS(model.addon_id).subscribe(result => {
+      if (!result.status) {
+        console.log('response', result);
+        return;
+      }
+      const addonDetails = result.data[0];
+      this.selectedAddon = addonDetails;
+      const custom_list = JSON.parse(JSON.stringify(addonDetails.custom_list || []));
+      const notes_list = JSON.parse(JSON.stringify(
+        model.notes_list?.length ? model.notes_list : (addonDetails.notes_list || [])
+      ));
+
+      custom_list.forEach((step, stepIndex) => {
+        const saved = (model.custom_list || [])[stepIndex];
+        step.filtered_option_list = step.option_list || [];
+        if (step.type === 'either_or') {
+          const selectedName = saved?.value?.[0]?.name;
+          step.selected_option = selectedName || step.filtered_option_list[0]?.name;
+        } else if (saved?.value?.length) {
+          step.filtered_option_list.forEach((opt) => {
+            opt.custom_option_checked = saved.value.some((v) => v.name === opt.name);
+          });
+        }
+      });
+
+      const openShared = (measurement_sets) => {
+        this.fitCreateProfile.open({
+          addon_id: model.addon_id,
+          custom_list,
+          measurement_sets,
+          notes_list,
+          notesTitle: addonDetails.notes_title || '',
+          name: model.name || '',
+          mm_unit: model.mm_unit || null,
+          editingModelId: model._id,
+          modalTitle: 'Edit Measurement Profile',
+          saveLabel: 'Update Fit Profile',
+          showPrices: false
+        });
+      };
+
+      if (addonDetails.mm_list?.length || model.mm_sets?.length) {
+        this.storeApi.PRODUCT_FEATURES().subscribe(featRes => {
+          if (featRes.status) {
+            const features = typeof featRes.data === 'string' ? JSON.parse(featRes.data) : featRes.data;
+            const measurement_set = (features.measurement_set || [])
+              .filter((obj) => obj.status === 'active')
+              .sort((a, b) => 0 - (a.rank > b.rank ? -1 : 1));
+            this.buildMmList(addonDetails.mm_list || [], measurement_set).then((resp) => {
+              const measurement_sets = JSON.parse(JSON.stringify(resp || []));
+              (model.mm_sets || []).forEach((savedSet) => {
+                const target = measurement_sets.find((set) => set.name === savedSet.name || set._id === savedSet._id);
+                if (!target) return;
+                (savedSet.list || []).forEach((savedRow) => {
+                  const row = (target.list || []).find((r) => r.name === savedRow.name);
+                  if (row) row.value = savedRow.value;
+                });
+              });
+              openShared(measurement_sets);
+            });
+          } else {
+            openShared(JSON.parse(JSON.stringify(model.mm_sets || [])));
+          }
+        });
+      } else {
+        openShared([]);
+      }
+    });
+  }
+
+  startCreate(): void {
+    this.editingModelId = null;
+    this.storeApi.PRODUCT_FEATURES().subscribe(result => {
+      if (!result.status) {
+        console.log('response', result);
+        return;
+      }
+      const features = typeof result.data === 'string' ? JSON.parse(result.data) : result.data;
+      const addons = (features?.addon_list || []).filter((addon) =>
+        (addon?.custom_list?.length || addon?.mm_list?.length || addon?.notes_list?.length)
+      );
+      if (!addons.length) {
+        console.log('No customization templates available.');
+        return;
+      }
+      const blouseOnly = addons.find((addon) => {
+        const name = String(addon?.name || '').toLowerCase();
+        return name.includes('blouse') && !name.includes('falls');
+      });
+      this.selectAddonForCreate(blouseOnly || addons[0]);
+    });
+  }
+
+  selectAddonForCreate(addon): void {
+    this.selectedAddon = addon;
+    this.storeApi.ADDON_DETAILS(addon._id).subscribe(result => {
+      if (!result.status) {
+        console.log('response', result);
+        return;
+      }
+      const addonDetails = result.data[0] || addon;
+      this.selectedAddon = addonDetails;
+      const custom_list = JSON.parse(JSON.stringify(addonDetails.custom_list || []));
+      const notes_list = (addonDetails.notes_list || []).map((obj) => ({
+        name: obj.name,
+        required: obj.required
+      }));
+
+      const openShared = (measurement_sets) => {
+        this.fitCreateProfile.open({
+          addon_id: addonDetails._id,
+          custom_list,
+          measurement_sets,
+          notes_list,
+          notesTitle: addonDetails.notes_title || '',
+          modalTitle: 'Create Measurement Profile',
+          saveLabel: 'Save Fit Profile',
+          showPrices: false
+        });
+      };
+
+      if (addonDetails.mm_list?.length) {
+        this.storeApi.PRODUCT_FEATURES().subscribe(featRes => {
+          if (featRes.status) {
+            const features = typeof featRes.data === 'string' ? JSON.parse(featRes.data) : featRes.data;
+            const measurement_set = (features.measurement_set || [])
+              .filter((obj) => obj.status === 'active')
+              .sort((a, b) => 0 - (a.rank > b.rank ? -1 : 1));
+            this.buildMmList(addonDetails.mm_list, measurement_set).then((resp) => {
+              const measurement_sets = JSON.parse(JSON.stringify(resp || []));
+              measurement_sets.forEach((set) => {
+                (set.list || []).forEach((row) => { row.value = ''; });
+              });
+              openShared(measurement_sets);
+            });
+          } else {
+            openShared([]);
+          }
+        });
+      } else {
+        openShared([]);
+      }
+    });
+  }
+
+  onFitProfileSaved(payload): void {
+    if (!this.fitCreateProfile) return;
+    this.fitCreateProfile.setSubmitting(true);
+    const request$ = payload._id ? this.api.UPDATE_MODEL(payload) : this.api.ADD_MODEL(payload);
+    request$.subscribe(result => {
+      this.fitCreateProfile.setSubmitting(false);
+      if (result.status) {
+        this.fitCreateProfile.hide();
+        this.editingModelId = null;
+        this.setModelList(result.data?.model_list);
+        this.page = 1;
+      } else {
+        this.fitCreateProfile.setAlert(result.message);
+        console.log('response', result);
+      }
+    });
+  }
+
+  onFitProfileCancelled(): void {
+    this.editingModelId = null;
+  }
+
+  private getModelCustomSlot(model: any, keys: string[], fallbackIndex: number, displayLabel: string) {
+    const list = model?.custom_list || [];
+    if (!list.length) return null;
+
+    let item = list.find((entry: any) => {
+      const name = String(entry?.name || '').toLowerCase();
+      return keys.some(key => name.includes(key));
+    });
+    if (!item) item = list[fallbackIndex];
+    if (!item) return null;
+
+    const values = item.value || [];
+    const valueNames = values.map((v: any) => v?.name).filter(Boolean);
+    return {
+      label: displayLabel,
+      value: valueNames.length ? valueNames.join(', ') : '—',
+      image: values[0]?.image || null
+    };
   }
 
   // custom section
@@ -233,10 +515,10 @@ export class UserModelsComponent implements OnInit {
           }
         });
         this.api.UPDATE_MODEL(this.addonForm).subscribe(result => {
-          this.addonForm.submit = true;
+          this.addonForm.submit = false;
           if(result.status) {
             modalName.hide();
-            this.list = result.data.model_list;
+            this.setModelList(result.data?.model_list);
           }
           else {
             this.addonForm.alert_msg = result.message;
@@ -376,7 +658,7 @@ export class UserModelsComponent implements OnInit {
         this.addonForm.submit = false;
         if(result.status) {
           modalName.hide();
-          this.list = result.data.model_list;
+          this.setModelList(result.data?.model_list);
         }
         else {
           this.addonForm.alert_msg = result.message;
@@ -399,7 +681,7 @@ export class UserModelsComponent implements OnInit {
         this.addonForm.submit = false;
         if(result.status) {
           modalName.hide();
-          this.list = result.data.model_list;
+          this.setModelList(result.data?.model_list);
         }
         else {
           this.addonForm.alert_msg = result.message;

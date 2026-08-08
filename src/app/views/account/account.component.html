@@ -12,180 +12,192 @@
     <div class="{{template_setting?.body_type}}">
       <div class="row">
         <div class="col-md-12 d-flex justify-content-center smooth-fadein">
-          <div class="account-card primary-card p-5 mb-3">
-            <!-- Social Login -->
-            <div class="d-flex flex-column align-items-center">
-              <h4 align="center">{{ (formType=='signup')? 'Sign up': 'Sign in' }}</h4>
-              <ng-container *ngIf="commonService.ys_features.indexOf('social_login')!=-1">
-                <ng-container *ngIf="commonService.application_setting.facebook_id || commonService.application_setting.google_id">
-                  <p>with your social network</p>
-                  <div class="social-login">
-                    <!-- facebook -->
-                    <div *ngIf="commonService.application_setting.facebook_id" class="social-login-icon" (click)="socialSignIn('facebook');">
-                      <a>
-                        <img width="100%" height="100%" src="assets/images/icons/facebook.svg" alt="facebook">
-                        <span>FACEBOOK</span>
-                      </a>
-                    </div>
-                    <!-- google -->
-                    <div *ngIf="commonService.application_setting.google_id" class="social-login-icon" (click)="socialSignIn('google');">
-                      <a>
-                        <img width="100%" height="100%" src="assets/images/icons/google.svg" alt="google">
-                        <span>GOOGLE</span>
-                      </a>
-                    </div>
-                  </div>
-                  <div class="socaial-or-sec pt-3">
-                    <h2><span>Or</span></h2>
-                  </div>
-                </ng-container>
-              </ng-container>
+          <div class="account-card auth-card">
+            <!-- Tabs -->
+            <div class="auth-tabs" role="tablist">
+              <button type="button" class="auth-tab" role="tab"
+                [class.active]="formType=='signin'"
+                [attr.aria-selected]="formType=='signin'"
+                (click)="switchFormType('signin')">
+                Sign In
+              </button>
+              <button type="button" class="auth-tab" role="tab"
+                [class.active]="formType=='signup'"
+                [attr.aria-selected]="formType=='signup'"
+                (click)="switchFormType('signup')">
+                Create Account
+              </button>
             </div>
 
+            <!-- Social Login -->
+            <ng-container *ngIf="commonService.ys_features.indexOf('social_login')!=-1">
+              <ng-container *ngIf="commonService.application_setting.facebook_id || commonService.application_setting.google_id">
+                <div class="social-login auth-social">
+                  <div *ngIf="commonService.application_setting.facebook_id" class="social-login-icon" (click)="socialSignIn('facebook');">
+                    <a>
+                      <img width="100%" height="100%" src="assets/images/icons/facebook.svg" alt="facebook">
+                      <span>Facebook</span>
+                    </a>
+                  </div>
+                  <div *ngIf="commonService.application_setting.google_id" class="social-login-icon" (click)="socialSignIn('google');">
+                    <a>
+                      <img width="100%" height="100%" src="assets/images/icons/google.svg" alt="google">
+                      <span>Google</span>
+                    </a>
+                  </div>
+                </div>
+                <div class="socaial-or-sec auth-divider">
+                  <h2>
+                    <span>{{ formType=='signup' ? 'or create with email' : 'or sign in with email' }}</span>
+                  </h2>
+                </div>
+              </ng-container>
+            </ng-container>
+
             <!-- Register -->
-            <form *ngIf="formType=='signup'" autocomplete="off" (ngSubmit)="onRegister();" ngNativeValidate>
-              <div class="border-btm pb-3">
-                <div class="row">
-                  <div class="form-group col-12">
-                    <label for="name">Name</label>
-                    <input type="text" name="name" id="name" [(ngModel)]="registerForm.name" #name="ngModel"
-                      (input)="registerForm.errorMsg=null;" required />
+            <form *ngIf="formType=='signup'" class="auth-form" autocomplete="off" (ngSubmit)="onRegister();" ngNativeValidate>
+              <div class="form-group">
+                <label for="name">Full Name</label>
+                <input type="text" name="name" id="name" placeholder="Your full name"
+                  [(ngModel)]="registerForm.name" #name="ngModel"
+                  (input)="registerForm.errorMsg=null;" required />
+              </div>
+
+              <div class="form-group">
+                <label for="reg_email">Email</label>
+                <input type="email" name="email" id="reg_email" placeholder="your@email.com"
+                  [(ngModel)]="registerForm.email" #email="ngModel"
+                  (input)="registerForm.errorMsg=null;"
+                  pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
+                  title="Please enter a valid Email ID" appLowercase required />
+              </div>
+
+              <div class="form-group">
+                <label for="mobile">Phone Number</label>
+                <div class="input-group modal-phone-no auth-phone-field">
+                  <div class="input-group-prepend">
+                    <select name="dial_code" id="dial_code" [(ngModel)]="registerForm.dial_code"
+                      (change)="onDialCodeChange(registerForm.dial_code)"
+                      required class="form-control h-auto">
+                      <option *ngFor="let x of commonService.country_list | orderAsc: 'dial_code'" [ngValue]="x.dial_code">{{x.dial_code}}</option>
+                    </select>
                   </div>
-                  <div class="form-group col-12">
-                    <label for="email">E-mail</label>
-                    <input type="email" name="email" id="email" [(ngModel)]="registerForm.email" #email="ngModel" (input)="registerForm.errorMsg=null;"
-                    pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" title="Please enter a valid Email ID" appLowercase required />
-                  </div>
-                  <div class="col-sm-6">
-                    <div class="input-group icon-input-group mb-3">
-                      <label for="password">Password</label>
-                      <input class="form-control" [type]="registerForm.input_txt? 'text': 'password'" name="password"
-                        id="password" [(ngModel)]="registerForm.password" #password="ngModel" pattern=".{6,}"
-                        title="Six or more characters" (input)="registerForm.errorMsg=null;" required />
-                      <div class="input-group-append icon-append">
-                        <span class="input-group-text">
-                          <i class="material-icons" *ngIf="!registerForm.input_txt"
-                            (click)="registerForm.input_txt = !registerForm.input_txt" aria-hidden="true">visibility</i>
-                          <i class="material-icons" *ngIf="registerForm.input_txt"
-                            (click)="registerForm.input_txt = !registerForm.input_txt"
-                            aria-hidden="true">visibility_off</i>
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="col-sm-6">
-                    <div class="input-group icon-input-group mb-3">
-                      <label for="confirm_pwd">Re-Type Password</label>
-                      <input class="form-control" type="password" name="confirm_pwd" id="confirm_pwd"
-                        [(ngModel)]="registerForm.confirm_pwd" #confirm_pwd="ngModel"
-                        (input)="registerForm.errorMsg=null;" required />
-                      <div class="input-group-append icon-append">
-                        <span class="input-group-text">
-                          <i *ngIf="registerForm.confirm_pwd && registerForm.password==registerForm.confirm_pwd"
-                            class="material-icons verified" aria-hidden="true">check_circle</i>
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="col-md-12">
-                    <div class="forgot_register-sec mt-3 mb-3">
-                      <div class="row">
-                        <div class="col-md-12">
-                          <div class="reset-password mb-3">
-                            <span>Already a member?</span>
-                            <a class="register-link" (click)="formType='signin'; scrollTop();"> Sign in</a>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <!-- alert -->
-                  <div class="col-md-12 smooth-fadein" *ngIf="registerForm.errorMsg">
-                    <div class="danger-alert">
-                      <div class="alert-msg d-flex align-items-center justify-content-center p-2">
-                        <span class="material-icons"></span>
-                        <p class="m-0">{{registerForm.errorMsg}}</p>
-                      </div>
-                    </div>
-                  </div>
-                  <!-- # alert #-->
-                  <div class="form-group col-12">
-                    <button class="primary-btn d-flex justify-content-center align-items-center w-100" type="submit" 
-                      [disabled]="registerForm.confirm_pwd && registerForm.password!=registerForm.confirm_pwd || registerForm.submit">
-                      Sign Up
-                      <div class="box" *ngIf="registerForm.submit">
-                        <div class="spinner"></div>
-                      </div>
-                      <em></em>
-                    </button>
+                  <input *ngIf="!mobile_pattern" type="tel" class="form-control border-radius-0" name="mobile" id="mobile"
+                    placeholder="Enter mobile number"
+                    [(ngModel)]="registerForm.mobile" #mobile="ngModel"
+                    (input)="registerForm.errorMsg=null;" appNumberOnly required />
+                  <input *ngIf="mobile_pattern" type="tel" class="form-control border-radius-0" name="mobile" id="mobile"
+                    placeholder="Enter mobile number"
+                    [(ngModel)]="registerForm.mobile" #mobile="ngModel"
+                    (input)="registerForm.errorMsg=null;"
+                    [pattern]="mobile_pattern"
+                    maxlength="{{country_details?.mobileno_length}}"
+                    title="Please fill {{country_details?.mobileno_length}} digit mobile number"
+                    appNumberOnly required />
+                </div>
+                <p class="auth-field-hint">Used for order updates and delivery notifications</p>
+              </div>
+
+              <div class="form-group">
+                <label for="reg_password">Password</label>
+                <div class="input-group icon-input-group auth-password-group">
+                  <input class="form-control" [type]="registerForm.input_txt? 'text': 'password'"
+                    name="password" id="reg_password" placeholder="Min. 8 characters"
+                    [(ngModel)]="registerForm.password" #password="ngModel" pattern=".{8,}"
+                    title="Eight or more characters" (input)="registerForm.errorMsg=null;" required />
+                  <div class="input-group-append icon-append">
+                    <span class="input-group-text">
+                      <i class="material-icons" *ngIf="!registerForm.input_txt"
+                        (click)="registerForm.input_txt = !registerForm.input_txt" aria-hidden="true">visibility</i>
+                      <i class="material-icons" *ngIf="registerForm.input_txt"
+                        (click)="registerForm.input_txt = !registerForm.input_txt"
+                        aria-hidden="true">visibility_off</i>
+                    </span>
                   </div>
                 </div>
               </div>
+
+              <div class="smooth-fadein" *ngIf="registerForm.errorMsg">
+                <div class="danger-alert">
+                  <div class="alert-msg d-flex align-items-center justify-content-center p-2">
+                    <span class="material-icons"></span>
+                    <p class="m-0">{{registerForm.errorMsg}}</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-group auth-submit">
+                <button class="primary-btn d-flex justify-content-center align-items-center w-100" type="submit"
+                  [disabled]="registerForm.submit">
+                  Create Account
+                  <div class="box" *ngIf="registerForm.submit">
+                    <div class="spinner"></div>
+                  </div>
+                  <em></em>
+                </button>
+              </div>
+
+              <p class="auth-footer-switch">
+                Already a member?
+                <a (click)="switchFormType('signin')">Sign in →</a>
+              </p>
             </form>
 
             <!-- Login -->
-            <form *ngIf="formType=='signin'" autocomplete="off" (ngSubmit)="onLogin();" ngNativeValidate>
-              <div class="border-btm pb-3">
-                <div class="row">
-                  <div class="form-group col-md-12">
-                    <label for="email">E-mail</label>
-                    <input type="email" name="email" id="email" [(ngModel)]="loginForm.email" #email="ngModel" (input)="loginForm.errorMsg=null;"
-                    pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" title="Please enter a valid Email ID" appLowercase required />
+            <form *ngIf="formType=='signin'" class="auth-form" autocomplete="off" (ngSubmit)="onLogin();" ngNativeValidate>
+              <div class="form-group">
+                <label for="login_email">Email</label>
+                <input type="email" name="email" id="login_email" placeholder="your@email.com"
+                  [(ngModel)]="loginForm.email" #email="ngModel"
+                  (input)="loginForm.errorMsg=null;"
+                  pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
+                  title="Please enter a valid Email ID" appLowercase required />
+              </div>
+
+              <div class="form-group">
+                <label for="login_password">Password</label>
+                <div class="input-group icon-input-group auth-password-group">
+                  <input class="form-control" [type]="loginForm.input_txt? 'text': 'password'"
+                    name="password" id="login_password" placeholder="Enter your password"
+                    [(ngModel)]="loginForm.password" #password="ngModel"
+                    (input)="loginForm.errorMsg=null;" required />
+                  <div class="input-group-append icon-append">
+                    <span class="input-group-text">
+                      <i class="material-icons" *ngIf="!loginForm.input_txt"
+                        (click)="loginForm.input_txt = !loginForm.input_txt" aria-hidden="true">visibility</i>
+                      <i class="material-icons" *ngIf="loginForm.input_txt"
+                        (click)="loginForm.input_txt = !loginForm.input_txt" aria-hidden="true">visibility_off</i>
+                    </span>
                   </div>
-                  <div class="col-md-12">
-                    <div class="input-group icon-input-group mb-3">
-                      <label for="password">Password</label>
-                      <input class="form-control" [type]="loginForm.input_txt? 'text': 'password'" name="password"
-                        id="password" [(ngModel)]="loginForm.password" #password="ngModel"
-                        (input)="loginForm.errorMsg=null;" required />
-                      <div class="input-group-append icon-append">
-                        <span class="input-group-text">
-                          <i class="material-icons" *ngIf="!loginForm.input_txt"
-                            (click)="loginForm.input_txt = !loginForm.input_txt" aria-hidden="true">visibility</i>
-                          <i class="material-icons" *ngIf="loginForm.input_txt"
-                            (click)="loginForm.input_txt = !loginForm.input_txt" aria-hidden="true">visibility_off</i>
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="col-md-12">
-                    <div class="forgot_register-sec mt-3 mb-3">
-                      <div class="row">
-                        <div class="col-md-6">
-                          <div class="reset-password mb-3">
-                            <a (click)="forgotForm={}; forgotModal.show();">Reset password?</a>
-                          </div>
-                        </div>
-                        <div class="col-md-6">
-                          <div class="switch-register mb-3">
-                            <span>New here?</span>
-                            <a class="register-link" (click)="formType='signup'; scrollTop();"> Sign up</a>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <!-- alert -->
-                  <div class="col-md-12" *ngIf="loginForm.errorMsg">
-                    <div class="danger-alert">
-                      <div class="alert-msg d-flex align-items-center justify-content-center p-2">
-                        <span class="material-icons"></span>
-                        <p class="m-0">{{loginForm.errorMsg}}</p>
-                      </div>
-                    </div>
-                  </div>
-                  <!-- #alert# -->
-                  <div class="form-group col-12">
-                    <button class="primary-btn d-flex justify-content-center align-items-center w-100" type="submit" [disabled]="loginForm.submit">
-                      Sign In
-                      <div class="box" *ngIf="loginForm.submit">
-                        <div class="spinner"></div>
-                      </div>
-                      <em></em>
-                    </button>
+                </div>
+                <div class="auth-forgot">
+                  <a (click)="forgotForm={}; forgotModal.show();">Forgot password?</a>
+                </div>
+              </div>
+
+              <div *ngIf="loginForm.errorMsg">
+                <div class="danger-alert">
+                  <div class="alert-msg d-flex align-items-center justify-content-center p-2">
+                    <span class="material-icons"></span>
+                    <p class="m-0">{{loginForm.errorMsg}}</p>
                   </div>
                 </div>
               </div>
+
+              <div class="form-group auth-submit">
+                <button class="primary-btn d-flex justify-content-center align-items-center w-100" type="submit" [disabled]="loginForm.submit">
+                  Sign In
+                  <div class="box" *ngIf="loginForm.submit">
+                    <div class="spinner"></div>
+                  </div>
+                  <em></em>
+                </button>
+              </div>
+
+              <p class="auth-footer-switch">
+                New to Tulsi Silks?
+                <a (click)="switchFormType('signup')">Create an account →</a>
+              </p>
             </form>
           </div>
         </div>
@@ -195,138 +207,92 @@
 </section>
 
 <!-- After login -->
-<section class="over-all smooth-fadein" *ngIf="commonService?.customer_token && !pageLoader">
-  <!-- breadcrumb -->
-  <section class="head-breadcrumb">
+<section class="over-all smooth-fadein account-dashboard" *ngIf="commonService?.customer_token && !pageLoader">
+  <section class="account-dashboard__hero">
     <div class="{{template_setting?.body_type}}">
-      <div class="row">
-        <div class="col-md-12">
-          <div class="head-breadcrumb-inner border-btm d-flex justify-content-between">
-            <div>
-              <h2>My Account</h2>
-              <p>Manage your info and orders here</p>
-            </div>
-            <div *ngIf="template_setting?.display_goback && commonService?.desktop_device"
-              class="d-flex align-items-center justify-content-end">
-              <span (click)="commonService.goBack();">GO BACK</span>
-            </div>
-          </div>
-        </div>
-
-        <div *ngIf="template_setting?.breadcrumb" class="col-md-12">
-          <div class="breadcrumb-navigation mt-3">
-            <ul class="collapsed">
-              <li><a routerLink="/">Home</a></li>
-              <li><span class="active-page">My Account</span></li>
-            </ul>
-          </div>
-        </div>
-      </div>
+      <h2 class="account-dashboard__title">My Account</h2>
+      <p class="account-dashboard__subtitle">Everything you need, in one place</p>
+      <nav class="account-dashboard__crumbs" aria-label="Breadcrumb">
+        <a routerLink="/">Home</a>
+        <span class="account-dashboard__crumb-sep">&rsaquo;</span>
+        <span>My Account</span>
+      </nav>
     </div>
   </section>
-  <!-- # breadcrumb #-->
-  <section class="common-site-section myaccount">
+
+  <section class="common-site-section account-dashboard__body">
     <div class="{{template_setting?.body_type}}">
-      <div class="row">
-        <!-- orders -->
-        <div class="col-md-6 mb-2 mt-2 d-flex">
-          <div class="col-md-12 d-sm-flex myaccount__card primary-card" routerLink="/account/my-orders">
-            <div class="myaccount-icon d-flex justify-content-center align-items-center xs-pd-l-20">
-              <i class="material-icons">view_list</i>
-            </div>
-            <div class="myaccount__body pr-2 m_flex m_text_center">
-              <div class="my_acc_card_head">
-                <h4 class="mb-3">My Orders</h4>
-                <p class="text-muted">Track your orders</p>
-              </div>
-            </div>
+      <div class="account-profile-card">
+        <div class="account-profile-card__identity">
+          <div class="account-profile-card__avatar" aria-hidden="true">{{ getAccountInitials() }}</div>
+          <div class="account-profile-card__copy">
+            <h3 class="account-profile-card__name">{{ commonService.user_details?.name || 'Customer' }}</h3>
+            <p class="account-profile-card__meta">
+              <span *ngIf="commonService.user_details?.email">{{ commonService.user_details.email }}</span>
+              <ng-container *ngIf="commonService.user_details?.email && accountJoinedYear"> · </ng-container>
+              <span *ngIf="accountJoinedYear">Joined {{ accountJoinedYear }}</span>
+            </p>
           </div>
         </div>
-
-        <!-- appointment -->
-        <div *ngIf="commonService.ys_features.indexOf('appointment_scheduler')!=-1" class="col-md-6 mb-2 mt-2 d-flex">
-          <div class="col-md-12 d-sm-flex myaccount__card primary-card" routerLink="/account/my-appointments">
-            <div class="myaccount-icon d-flex justify-content-center align-items-center xs-pd-l-20">
-              <i class="material-icons">event</i>
-            </div>
-            <div class="myaccount__body pr-2 m_flex m_text_center">
-              <div class="my_acc_card_head">
-                <h4 class="mb-3">My Appointments</h4>
-                <p class="text-muted">Check your booked appointments</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- feedback -->
-        <ng-container *ngIf="commonService.ys_features.indexOf('appointment_scheduler')==-1">
-          <div *ngIf="commonService.ys_features.indexOf('customer_feedback')!=-1 && commonService.application_setting?.feedback" class="col-md-6 mb-2 mt-2 d-flex">
-            <div class="col-md-12 d-sm-flex myaccount__card primary-card" routerLink="/account/feedback">
-              <div class="myaccount-icon d-flex justify-content-center align-items-center xs-pd-l-20">
-                <i class="material-icons">sentiment_satisfied_alt</i>
-              </div>
-              <div class="myaccount__body pr-2 m_flex m_text_center">
-                <div class="my_acc_card_head">
-                  <h4 class="mb-3">Give Feedback</h4>
-                  <p class="text-muted">Rate the quality of our products and services</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </ng-container>
-
-        <!-- profile -->
-        <div class="col-md-6 mb-2 mt-2 d-flex">
-          <div class="col-md-12 d-sm-flex myaccount__card primary-card" routerLink="/account/profile">
-            <div class="myaccount-icon d-flex justify-content-center align-items-center xs-pd-l-20">
-              <i class="material-icons">folder_shared</i>
-            </div>
-            <div class="myaccount__body pr-2 m_flex m_text_center">
-              <div class="my_acc_card_head">
-                <h4 class="mb-3">My Profile</h4>
-                <p class="text-muted">Edit you personal info and addresses</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- wishlist -->
-        <div class="col-md-6 mb-2 mt-2 d-flex">
-          <div class="col-md-12 d-sm-flex myaccount__card primary-card" routerLink="/wishlist">
-            <div class="myaccount-icon d-flex justify-content-center align-items-center xs-pd-l-20">
-              <i class="material-icons">favorite</i>
-            </div>
-            <div class="myaccount__body pr-2 m_flex m_text_center">
-              <div class="my_acc_card_head">
-                <h4 class="mb-3">My Wishlist</h4>
-                <p class="text-muted">Keep track of all your favourite products</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- feedback -->
-        <div *ngIf="commonService.ys_features.indexOf('appointment_scheduler')!=-1 && commonService.ys_features.indexOf('customer_feedback')!=-1 && commonService.application_setting?.feedback" class="col-md-6 mb-2 mt-2 d-flex">
-          <div class="col-md-12 d-sm-flex myaccount__card primary-card" routerLink="/account/feedback">
-            <div class="myaccount-icon d-flex justify-content-center align-items-center xs-pd-l-20">
-              <i class="material-icons">sentiment_satisfied_alt</i>
-            </div>
-            <div class="myaccount__body pr-2 m_flex m_text_center">
-              <div class="my_acc_card_head">
-                <h4 class="mb-3">Give Feedback</h4>
-                <p class="text-muted">Rate the quality of our products and services</p>
-              </div>
-            </div>
-          </div>
-        </div>
+        <a routerLink="/account/profile" class="primary-btn account-profile-card__cta">Manage Profile</a>
       </div>
 
-      <div class="row mt-5">
-        <div class="col-md-12">
-          <div class="acoount_logout">
-            <button (click)="logoutModal.show();" class="primary-btn">Logout</button>
-          </div>
-        </div>
+      <div class="account-nav-grid">
+        <a routerLink="/account/my-orders" class="account-nav-card">
+          <span class="account-nav-card__icon" aria-hidden="true">
+            <i class="material-icons">assignment_turned_in</i>
+          </span>
+          <span class="account-nav-card__content">
+            <span class="account-nav-card__title">My Orders</span>
+            <span class="account-nav-card__desc">Track deliveries, view past purchases, and manage returns.</span>
+            <span class="account-nav-card__badge" *ngIf="accountOrderCount > 0">{{ accountOrderCount }} order{{ accountOrderCount === 1 ? '' : 's' }}</span>
+          </span>
+        </a>
+
+        <a routerLink="/wishlist" class="account-nav-card">
+          <span class="account-nav-card__icon" aria-hidden="true">
+            <i class="material-icons">favorite_border</i>
+          </span>
+          <span class="account-nav-card__content">
+            <span class="account-nav-card__title">My Wishlist</span>
+            <span class="account-nav-card__desc">Sarees you've saved — pick up where you left off.</span>
+            <span class="account-nav-card__badge" *ngIf="wishlistCount > 0">{{ wishlistCount }} item{{ wishlistCount === 1 ? '' : 's' }}</span>
+          </span>
+        </a>
+
+        <a *ngIf="commonService.store_details?.additional_features?.custom_model"
+          routerLink="/account/models" class="account-nav-card">
+          <span class="account-nav-card__icon" aria-hidden="true">
+            <i class="material-icons">straighten</i>
+          </span>
+          <span class="account-nav-card__content">
+            <span class="account-nav-card__title">Measurements &amp; Fits</span>
+            <span class="account-nav-card__desc">Manage saved blouse measurements, necklines &amp; custom fits.</span>
+            <span class="account-nav-card__badge" *ngIf="accountModelCount > 0">{{ accountModelCount }} fit{{ accountModelCount === 1 ? '' : 's' }}</span>
+          </span>
+        </a>
+
+        <a *ngIf="commonService.ys_features.indexOf('customer_feedback')!=-1 && commonService.application_setting?.feedback"
+          routerLink="/account/feedback" class="account-nav-card">
+          <span class="account-nav-card__icon" aria-hidden="true">
+            <i class="material-icons">sentiment_satisfied_alt</i>
+          </span>
+          <span class="account-nav-card__content">
+            <span class="account-nav-card__title">Give Feedback</span>
+            <span class="account-nav-card__desc">Share your experience with our team to help support handloom weavers.</span>
+          </span>
+        </a>
+
+        <a *ngIf="commonService.ys_features.indexOf('appointment_scheduler')!=-1"
+          routerLink="/account/my-appointments" class="account-nav-card">
+          <span class="account-nav-card__icon" aria-hidden="true">
+            <i class="material-icons">event</i>
+          </span>
+          <span class="account-nav-card__content">
+            <span class="account-nav-card__title">My Appointments</span>
+            <span class="account-nav-card__desc">Check and manage your booked store appointments.</span>
+          </span>
+        </a>
       </div>
     </div>
   </section>
@@ -372,18 +338,3 @@
   </div>
 </div>
 
-<!-- logout modal -->
-<div bsModal #logoutModal="bs-modal" class="modal fade modal-position1 logout-modal" tabindex="-1" role="dialog"
-  aria-labelledby="dialog-waiter">
-  <div class="modal-dialog modal-md" role="document">
-    <div class="modal-content">
-      <div class="modal-body">
-        <h6 class="m-0">Are you sure, you want to logout?</h6>
-      </div>
-      <div class="modal-footer">
-        <button class="secondary-btn" type="button" (click)="logoutModal.hide();">No</button>
-        <button class="primary-btn" type="button" (click)="onLogout(logoutModal);">Yes</button>
-      </div>
-    </div>
-  </div>
-</div>

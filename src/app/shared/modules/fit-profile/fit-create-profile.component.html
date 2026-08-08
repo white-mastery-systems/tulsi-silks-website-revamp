@@ -1,0 +1,216 @@
+<div bsModal #createNewModal="bs-modal" class="modal fade fit-profile-modal" [config]="{backdrop: 'static'}"
+  tabindex="-1" role="dialog" aria-labelledby="dialog-fit-create">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content fit-profile-modal__content">
+
+      <div class="modal-header fit-profile-modal__header">
+        <div>
+          <h5 class="modal-title fit-profile-modal__title">{{ modalTitle }}</h5>
+          <p class="m-0 fit-profile-modal__step">
+            Step {{ getCustomizationStepMeta().current }} of {{ getCustomizationStepMeta().total }} — {{ getCustomizationStepMeta().label }}
+          </p>
+        </div>
+        <button type="button" class="fit-profile-modal__close" (click)="onCancel();" aria-label="Close">
+          <i class="material-icons">close</i>
+        </button>
+      </div>
+
+      <div class="fit-profile-modal__progress" aria-hidden="true">
+        <span class="fit-profile-modal__progress-fill" [style.width.%]="getCustomizationStepMeta().percent"></span>
+      </div>
+
+      <div class="modal-body slim-scroll fit-profile-modal__body">
+        <form id="fit-create-form" name="fit-create-form" autocomplete="off">
+
+          <ng-container *ngIf="customSection">
+            <p class="fit-profile-modal__section-label">Select {{ custom_list[customIndex]?.name }}</p>
+
+            <div class="fit-option-grid" *ngIf="!isCustomListStyle()">
+              <button type="button" class="fit-option-card"
+                *ngFor="let x of custom_list[customIndex]?.filtered_option_list; let i=index;"
+                [class.is-selected]="isCustomOptionSelected(x)"
+                [disabled]="x.disabled"
+                (click)="selectCustomOption(x)">
+                <span class="fit-option-card__check" *ngIf="isCustomOptionSelected(x)" aria-hidden="true">
+                  <i class="material-icons">check</i>
+                </span>
+                <div class="fit-option-card__media">
+                  <img width="100%" height="100%" imgBroken *ngIf="x.image" [src]="imgBaseUrl+x.image" alt="{{x.name}}">
+                  <img width="100%" height="100%" imgBroken *ngIf="!x.image" class="addon-icon opacity6" src="assets/images/addon.svg" alt="{{x.name}}">
+                </div>
+                <span class="fit-option-card__name">{{x.name}}</span>
+                <span class="fit-option-card__price" *ngIf="showPrices && x.price>0">
+                  + {{ cc.CALC(x.price) | currency:cc.pipeCurrencyCode:'symbol-narrow':cc.format:cc.pipeLocale }}
+                </span>
+              </button>
+            </div>
+
+            <div class="fit-option-list" *ngIf="isCustomListStyle()">
+              <button type="button" class="fit-option-row"
+                *ngFor="let x of custom_list[customIndex]?.filtered_option_list; let i=index;"
+                [class.is-selected]="isCustomOptionSelected(x)"
+                [disabled]="x.disabled"
+                (click)="selectCustomOption(x)">
+                <div class="fit-option-row__copy">
+                  <span class="fit-option-row__name">{{x.name}}</span>
+                  <span class="fit-option-row__desc" *ngIf="x.description">{{x.description}}</span>
+                  <span class="fit-option-row__price" *ngIf="showPrices && x.price>0">
+                    + {{ cc.CALC(x.price) | currency:cc.pipeCurrencyCode:'symbol-narrow':cc.format:cc.pipeLocale }}
+                  </span>
+                </div>
+                <span class="fit-option-row__radio" aria-hidden="true">
+                  <i class="material-icons" *ngIf="isCustomOptionSelected(x)">check</i>
+                </span>
+              </button>
+            </div>
+          </ng-container>
+
+          <ng-container *ngIf="mmSection">
+            <div class="fit-mm">
+              <div class="fit-mm__top">
+                <div>
+                  <p class="fit-profile-modal__section-label mb-1">Body Measurements</p>
+                  <p class="fit-mm__hint">Focus or hover on fields to highlight coordinates on the blueprint guide.</p>
+                  <p class="fit-mm__required-note">All measurement fields are required</p>
+                </div>
+                <div class="fit-mm__units" *ngIf="measurement_sets[0]?.units?.length">
+                  <button type="button" class="fit-mm__unit-btn"
+                    *ngFor="let unit of measurement_sets[0].units;"
+                    [class.is-active]="addonForm.mm_unit==unit.name"
+                    (click)="addonForm.mm_unit=unit.name; addonForm.alert_msg=null; onChangeUnit();">
+                    {{ unit.name }}
+                  </button>
+                </div>
+              </div>
+
+              <div class="fit-mm__panel" *ngFor="let set of measurement_sets; let sIndex = index" [attr.id]="'fit-mm-set-' + sIndex">
+                <div class="fit-mm__layout">
+                  <div class="fit-mm__guide" *ngIf="set.image">
+                    <div class="fit-mm__guide-frame">
+                      <img imgBroken [src]="imgBaseUrl+set.image" alt="{{ set.name }} guide">
+                    </div>
+                    <p class="fit-mm__guide-hint">Select a measurement field to highlight it on the diagram.</p>
+                  </div>
+                  <div class="fit-mm__fields" [class.fit-mm__fields--full]="!set.image">
+                    <p class="fit-mm__fields-title">{{ set.name || 'Measurements' }}</p>
+                    <div class="fit-mm__fields-grid">
+                      <div class="fit-mm__field" *ngFor="let x of set.list; let i=index;">
+                        <label class="fit-mm__label" for="fit_value{{sIndex}}{{i}}">{{x.name}}</label>
+                        <div class="fit-mm__input-wrap">
+                          <input type="tel" name="fit_value{{sIndex}}{{i}}" id="fit_value{{sIndex}}{{i}}"
+                            (input)="addonForm.alert_msg=null; x.alert_msg='';"
+                            [(ngModel)]="x.value" (focusout)="mmFocusOut(x);" appNumberOnly required/>
+                          <span class="fit-mm__unit-suffix">{{addonForm.mm_unit}}</span>
+                        </div>
+                        <p class="fit-mm__error" *ngIf="x.alert_msg">{{x.alert_msg}}</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </ng-container>
+
+          <ng-container *ngIf="noteSection">
+            <div class="fit-review">
+              <p class="fit-profile-modal__section-label">Review Profile Details</p>
+              <p class="fit-review__intro">Please review your customizations and measurements before saving</p>
+
+              <div class="fit-review__name">
+                <label for="fit_model_name">
+                  Model Profile Name <span class="req-star" aria-hidden="true">*</span>
+                </label>
+                <input class="w-100" type="text" name="name" placeholder="Enter a name for your model" id="fit_model_name"
+                  (input)="addonForm.alert_msg=null;" [(ngModel)]="addonForm.name"/>
+                <div class="fit-review__tags">
+                  <button type="button" class="fit-review__tag" *ngFor="let tag of fitProfileNameSuggestions"
+                    (click)="addonForm.name=tag; addonForm.alert_msg=null;">{{ tag }}</button>
+                </div>
+              </div>
+
+              <div class="fit-review__summary" *ngIf="reviewHalfCards.length">
+                <div class="fit-review__item" *ngFor="let item of reviewHalfCards; trackBy: trackReviewCard">
+                  <div class="fit-review__item-head">
+                    <div class="fit-review__item-main">
+                      <img class="fit-review__thumb" *ngIf="item.image" [src]="imgBaseUrl+item.image" alt="{{ item.value }}" imgBroken>
+                      <div class="fit-review__item-copy">
+                        <span class="fit-review__item-label">{{ item.label }}</span>
+                        <span class="fit-review__item-value">{{ item.value }}</span>
+                      </div>
+                    </div>
+                    <button type="button" class="fit-review__edit"
+                      (click)="onReviewEditClick(item.type, item.index)">Edit</button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="fit-review__full" *ngIf="reviewFullCards.length">
+                <div class="fit-review__item fit-review__item--full" *ngFor="let item of reviewFullCards; trackBy: trackReviewCard">
+                  <div class="fit-review__item-head">
+                    <div class="fit-review__item-copy">
+                      <span class="fit-review__item-label">{{ item.label }}</span>
+                      <span class="fit-review__item-value">{{ item.value }}</span>
+                    </div>
+                    <button type="button" class="fit-review__edit"
+                      (click)="onReviewEditClick(item.type, item.index)">Edit</button>
+                  </div>
+                </div>
+              </div>
+
+              <h6 class="fit-review__notes-title" *ngIf="notesTitle">{{ notesTitle }}</h6>
+              <div class="fit-review__note" *ngFor="let x of notes_list; let i=index;">
+                <label for="fit_notes_name{{i}}">
+                  {{x.name}} <span *ngIf="x.required" class="req-star" aria-hidden="true">*</span>
+                </label>
+                <input class="w-100" type="text" id="fit_notes_name{{i}}" name="fit_notes_name{{i}}" [(ngModel)]="x.value" [required]="x.required">
+              </div>
+            </div>
+          </ng-container>
+
+        </form>
+      </div>
+
+      <div class="modal-footer fit-profile-modal__footer">
+        <div class="danger-alert w-100 mb-2" *ngIf="addonForm?.alert_msg">
+          <div class="alert-msg d-flex align-items-center justify-content-center p-2">
+            <span class="material-icons"></span>
+            <p class="m-0">{{addonForm?.alert_msg}}</p>
+          </div>
+        </div>
+
+        <div class="fit-profile-modal__actions">
+          <div class="fit-profile-modal__actions-left">
+            <ng-container *ngIf="customSection">
+              <button *ngIf="customIndex==0" type="button" (click)="onCancel();" class="fit-btn fit-btn--ghost">Cancel</button>
+              <button *ngIf="customIndex>0" type="button" (click)="customPrev();" class="fit-btn fit-btn--ghost">Previous</button>
+            </ng-container>
+            <ng-container *ngIf="mmSection">
+              <button *ngIf="!custom_list?.length" type="button" (click)="onCancel();" class="fit-btn fit-btn--ghost">Cancel</button>
+              <button *ngIf="custom_list?.length" type="button" (click)="customPrev();" class="fit-btn fit-btn--ghost">Previous</button>
+            </ng-container>
+            <ng-container *ngIf="noteSection">
+              <button *ngIf="!custom_list?.length && !measurement_sets?.length" type="button" (click)="onCancel();" class="fit-btn fit-btn--ghost">Cancel</button>
+              <button *ngIf="custom_list?.length || measurement_sets?.length" type="button" (click)="customPrev();" class="fit-btn fit-btn--ghost">Previous</button>
+            </ng-container>
+          </div>
+
+          <div class="fit-profile-modal__actions-right">
+            <ng-container *ngIf="customSection">
+              <button type="button"
+                (click)="(custom_list[customIndex+1]?.filtered_option_list?.length)? onCustomNext(false): onCustomNext(true);"
+                class="fit-btn fit-btn--primary">Next</button>
+            </ng-container>
+            <ng-container *ngIf="mmSection">
+              <button type="button" (click)="onMmNext();" class="fit-btn fit-btn--primary">Next</button>
+            </ng-container>
+            <button *ngIf="noteSection" type="button" (click)="onSave();" [disabled]="addonForm.submit"
+              class="fit-btn fit-btn--primary d-flex justify-content-center align-items-center">
+              {{ saveLabel }}
+              <div class="box" *ngIf="addonForm.submit"><div class="spinner"></div></div>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,4 +1,4 @@
-import { Component, OnInit, Inject, PLATFORM_ID, Renderer2, DOCUMENT } from '@angular/core';
+import { Component, OnInit, Inject, PLATFORM_ID, Renderer2, DOCUMENT, ViewChild } from '@angular/core';
 import { Router, ActivatedRoute, Params } from '@angular/router';
 import { isPlatformBrowser } from '@angular/common';
 import { Meta, DomSanitizer } from '@angular/platform-browser';
@@ -12,6 +12,7 @@ import { CartlistService } from '../../services/cartlist.service';
 import { CommonService } from '../../services/common.service';
 import { SwiperService } from '../../services/swiper.service';
 import { CurrencyConversionService } from '../../services/currency-conversion.service';
+import { FitCreateProfileComponent } from '../../shared/modules/fit-profile/fit-create-profile.component';
 import { DynamicAssetLoaderService } from '../../services/dynamic-asset-loader.service';
 import * as PhotoSwipe from 'photoswipe';
 import PhotoSwipeUI_Default from 'photoswipe/dist/photoswipe-ui-default';
@@ -25,12 +26,15 @@ export function getAccordionConfig(): AccordionConfig {
 @Component({
     selector: 'app-product',
     templateUrl: './product.component.html',
-    styleUrls: ['./product.component.scss'],
+    styleUrls: ['./product.component.scss', '../../shared/modules/fit-profile/fit-profile-modal.scss'],
     providers: [{ provide: AccordionConfig, useFactory: getAccordionConfig }],
     standalone: false
 })
 
 export class ProductComponent implements OnInit {
+
+  @ViewChild('fitCreateProfile') fitCreateProfile: FitCreateProfileComponent;
+  private pendingFitCreateConfig: any = null;
 
   imgBaseUrl: string = environment.img_baseurl;
   pageLoader: boolean; params: any;
@@ -48,6 +52,11 @@ export class ProductComponent implements OnInit {
   customIndex: number;  mmIndex: number;
   customSection: boolean; mmSection: boolean; noteSection: boolean;
   custom_list: any = []; measurement_sets: any = []; notes_list: any = [];
+  fitProfileNameSuggestions: string[] = ['Standard Blouse Fit', 'Summer Cotton Fit', 'Wedding Silk Fit'];
+  returnToReviewAfterEdit = false;
+  reviewHalfCards: Array<{ label: string; value: string; type: string; index: number; image?: string; fullWidth?: boolean }> = [];
+  reviewFullCards: Array<{ label: string; value: string; type: string; index: number; image?: string; fullWidth?: boolean }> = [];
+  expandedModelMm: { [key: string]: boolean } = {};
   
   template_setting: any = environment.template_setting;
   exist_in_wishlist: boolean; cartCloseTimer: any;
@@ -273,7 +282,7 @@ export class ProductComponent implements OnInit {
   loadBlogAndProducts() {
     // random blogs
     this.blogList = [];
-    this.storeApi.RANDOM_BLOG_LIST({ limit: 3 }).subscribe(result => {
+    this.storeApi.RANDOM_BLOG_LIST({ limit: 4 }).subscribe(result => {
       if(result.status) this.blogList = result.list;
       else console.log("p2-response", result, this.router.url);
     });
@@ -544,29 +553,93 @@ export class ProductComponent implements OnInit {
     }
   }
 
-  chooseAddonNew(x, existingListModal, createNewModal, mmOptionsModal) {
-    this.productDetails.selected_addon = x;
-    if(this.productDetails?.selected_addon?.custom_list?.length || this.productDetails?.selected_addon?.updated_mm_list?.length || this.productDetails?.selected_addon?.notes_list?.length) {
-      if(!this.customized_model) {
-        this.onSelectAddon(x, existingListModal, createNewModal, mmOptionsModal, 0);
-      }
-    }
-    this.onChangeAddon();
+  blouseStitchingCalloutOpen = false;
+  editingExistingAddon = false;
+  addonEditBackup: { selected_addon: any; customized_model: any } | null = null;
+
+  isBlouseStitchingAddon(addon: any): boolean {
+    if(!addon?.name) return false;
+    const name = addon.name.toLowerCase().trim().replace(/\s+/g, ' ').replace(/\s*&\s*/g, ' and ');
+    return name.includes('blouse stitching');
   }
 
-  chooseAddon(mmOptionsModal, addonTypesModal, addonListModal, existingListModal, createNewModal) {
+  toggleBlouseStitchingCallout(event?: Event) {
+    event?.stopPropagation();
+    this.blouseStitchingCalloutOpen = !this.blouseStitchingCalloutOpen;
+  }
+
+  closeBlouseStitchingCallout() {
+    this.blouseStitchingCalloutOpen = false;
+  }
+
+  applyAddonSelection(x, existingListModal, mmOptionsModal) {
+    this.productDetails.selected_addon = x;
+    this.productDetails.external_addon_status = true;
+    if(!this.editingExistingAddon) {
+      this.blouseStitchingCalloutOpen = false;
+    }
+    if(this.productDetails?.selected_addon?.custom_list?.length || this.productDetails?.selected_addon?.updated_mm_list?.length || this.productDetails?.selected_addon?.notes_list?.length) {
+      if(!this.customized_model) {
+        this.onSelectAddon(x, existingListModal, mmOptionsModal, 0);
+      }
+    }
+    if(!this.editingExistingAddon) {
+      this.onChangeAddon();
+    }
+  }
+
+  editAddon(existingListModal, mmOptionsModal) {
+    if(!this.productDetails?.selected_addon) return;
+    this.addonEditBackup = {
+      selected_addon: this.productDetails.selected_addon,
+      customized_model: this.customized_model
+    };
+    this.editingExistingAddon = true;
+    this.customized_model = null;
+    this.chooseAddonNew(this.productDetails.selected_addon, existingListModal, mmOptionsModal);
+  }
+
+  cancelAddonModal(modal?: { hide?: () => void }) {
+    if (modal?.hide) modal.hide();
+    else this.fitCreateProfile?.hide();
+    if(this.editingExistingAddon && this.addonEditBackup) {
+      this.productDetails.selected_addon = this.addonEditBackup.selected_addon;
+      this.customized_model = this.addonEditBackup.customized_model;
+      this.clearAddonEditState();
+      this.calcAddonPrice();
+    }
+    else {
+      this.clearAddon();
+    }
+  }
+
+  clearAddonEditState() {
+    this.editingExistingAddon = false;
+    this.addonEditBackup = null;
+  }
+
+  commitAddonEdit() {
+    this.clearAddonEditState();
+  }
+
+  chooseAddonNew(x, existingListModal, mmOptionsModal) {
+    this.applyAddonSelection(x, existingListModal, mmOptionsModal);
+  }
+
+  chooseAddon(mmOptionsModal, addonTypesModal, addonListModal, existingListModal) {
     this.productDetails.temp_addon_list = this.productDetails.addon_list;
     this.productDetails.external_addon_status = this.productDetails.addon_status;
     this.productDetails.quantity = this.commonService.min_qty[this.productDetails.unit];
     if(this.productDetails.addon_list.length==1) {
-      if(!this.productDetails.addon_list[0].custom_list.length && this.productDetails.addon_list[0].updated_mm_list.length && this.productDetails.addon_list[0].sizing_assistant_id) {
-        this.productDetails.temp_selected_addon = this.productDetails.addon_list[0];
+      const addon = this.productDetails.addon_list[0];
+      if(!addon.custom_list.length && addon.updated_mm_list.length && addon.sizing_assistant_id) {
+        this.productDetails.temp_selected_addon = addon;
         mmOptionsModal.show();
       }
       else {
-        this.productDetails.selected_addon=this.productDetails.addon_list[0];
+        this.productDetails.selected_addon = addon;
         this.onChangeAddon();
-        this.onCreateCustomization(existingListModal, createNewModal);
+        this.onCreateCustomization(existingListModal);
       }
     }
     else {
@@ -582,13 +655,13 @@ export class ProductComponent implements OnInit {
       else addonListModal.show();
     }
   }
-  selectAddonType(filteredAddonList, addonListModal, existingListModal, createNewModal) {
+  selectAddonType(filteredAddonList, addonListModal, existingListModal) {
     this.productDetails.external_addon_status = this.productDetails.addon_status;
     this.productDetails.quantity = this.commonService.min_qty[this.productDetails.unit];
     if(filteredAddonList.length==1) {
       this.productDetails.selected_addon = filteredAddonList[0];
       this.onChangeAddon();
-      this.onCreateCustomization(existingListModal, createNewModal);
+      this.onCreateCustomization(existingListModal);
     }
     else {
       this.productDetails.temp_addon_list = filteredAddonList;
@@ -612,7 +685,7 @@ export class ProductComponent implements OnInit {
     }
   }
 
-  onSelectAddon(addonDetails, existingListModal, createNewModal, mmOptionsModal, delay) {
+  onSelectAddon(addonDetails, existingListModal, mmOptionsModal, delay) {
     setTimeout(() => {
       if(addonDetails.sizing_assistant_id) {
         this.productDetails.temp_selected_addon = addonDetails;
@@ -621,7 +694,7 @@ export class ProductComponent implements OnInit {
       else {
         this.productDetails.selected_addon = addonDetails;
         this.onChangeAddon();
-        this.onCreateCustomization(existingListModal, createNewModal);
+        this.onCreateCustomization(existingListModal);
       }
     }, delay);
   }
@@ -744,19 +817,21 @@ export class ProductComponent implements OnInit {
   calcAddonPrice() {
     let customizedPrice = 0; this.productDetails.additional_qty = 0;
     if(this.productDetails.selected_addon && this.customized_model && this.customized_model.addon_id==this.productDetails.selected_addon._id) {
-      // custom list
-      this.customized_model.custom_list.forEach(obj => {
-        obj.value.forEach(element => {
-          customizedPrice += element.price;
-          this.productDetails.additional_qty += element.additional_qty;
+      if(this.customized_model.custom_list?.length) {
+        this.customized_model.custom_list.forEach(obj => {
+          obj.value.forEach(element => {
+            customizedPrice += element.price;
+            this.productDetails.additional_qty += element.additional_qty;
+          });
         });
-      });
-      // mm sets
-      this.customized_model.mm_sets.forEach(obj => {
-        obj.list.forEach(element => {
-          this.productDetails.additional_qty += element.additional_qty;
+      }
+      if(this.customized_model.mm_sets?.length) {
+        this.customized_model.mm_sets.forEach(obj => {
+          obj.list.forEach(element => {
+            this.productDetails.additional_qty += element.additional_qty;
+          });
         });
-      });
+      }
     }
     this.productDetails.addon_price = 0;
     if(this.productDetails.selected_addon) this.productDetails.addon_price = this.productDetails.selected_addon.price+customizedPrice;
@@ -764,49 +839,55 @@ export class ProductComponent implements OnInit {
     this.findCurrency();
   }
 
-  getRadioNextList(optionName) {
-    // if next option list exist
-    if(this.custom_list[this.customIndex+1]) {
-      this.custom_list[this.customIndex+1].filtered_option_list = this.custom_list[this.customIndex+1].option_list.filter(obj => obj.link_to=='all' || obj.link_to==optionName);
-    }
-  }
-  getCheckboxNextList() {
-    // if next option list exist
-    if(this.custom_list[this.customIndex+1])
-    {
-      let selectedItems = [];
-      this.custom_list[this.customIndex].filtered_option_list.forEach(obj => {
-        if(obj.custom_option_checked) selectedItems.push(obj.name);
-      });
-      this.custom_list[this.customIndex+1].filtered_option_list = this.custom_list[this.customIndex+1].option_list.filter(obj => obj.link_to=='all' || selectedItems.indexOf(obj.link_to)!=-1);
-    }
-  }
-  disableOption() {
-    // for mandatory or limited options
-    if(this.custom_list[this.customIndex].limit > 0) {
-      // for disable unchecked checkbox
-      let checkedLen = this.custom_list[this.customIndex].filtered_option_list.filter(obj => obj.custom_option_checked).length;
-      if(this.custom_list[this.customIndex].limit==checkedLen) {
-        this.custom_list[this.customIndex].filtered_option_list.forEach(obj => {
-          obj.disabled = true;
-          if(obj.custom_option_checked) obj.disabled = false;
-        });
-      }
-      else this.custom_list[this.customIndex].filtered_option_list.forEach(obj => { obj.disabled = false; });
-    }
-  }
-
-  addtoCart(openPopup) {
-    this.productDetails.final_price = parseFloat(this.productDetails.discounted_price);
-    if(this.productDetails.unit=="Pcs") {
-      this.productDetails.final_price = parseFloat(this.productDetails.discounted_price)+parseFloat(this.productDetails.addon_price);
-    }
+  prepareAddonForCheckout() {
     this.productDetails.customized_model = this.customized_model;
     this.productDetails.customization_status = false;
     if(this.productDetails.customized_model) {
       this.productDetails.customization_status = true;
       this.productDetails.customized_model.model_id = this.productDetails.customized_model._id;
     }
+    if(this.productDetails.selected_addon) {
+      this.productDetails.external_addon_status = true;
+      this.calcAddonPrice();
+    }
+    this.productDetails.final_price = parseFloat(this.productDetails.discounted_price);
+    if(this.productDetails.unit=="Pcs") {
+      this.productDetails.final_price = parseFloat(this.productDetails.discounted_price)+parseFloat(this.productDetails.addon_price || 0);
+    }
+  }
+
+  getRadioNextList(optionName) {
+    const nextStep = this.custom_list[this.customIndex + 1];
+    if(!nextStep?.option_list?.length) return;
+    nextStep.filtered_option_list = nextStep.option_list.filter(obj => obj.link_to=='all' || obj.link_to==optionName);
+  }
+  getCheckboxNextList() {
+    const currentStep = this.custom_list[this.customIndex];
+    const nextStep = this.custom_list[this.customIndex + 1];
+    if(!currentStep?.filtered_option_list || !nextStep?.option_list?.length) return;
+
+    let selectedItems = [];
+    currentStep.filtered_option_list.forEach(obj => {
+      if(obj.custom_option_checked) selectedItems.push(obj.name);
+    });
+    nextStep.filtered_option_list = nextStep.option_list.filter(obj => obj.link_to=='all' || selectedItems.indexOf(obj.link_to)!=-1);
+  }
+  disableOption() {
+    const step = this.custom_list[this.customIndex];
+    if(!step?.filtered_option_list?.length || !(step.limit > 0)) return;
+
+    let checkedLen = step.filtered_option_list.filter(obj => obj.custom_option_checked).length;
+    if(step.limit==checkedLen) {
+      step.filtered_option_list.forEach(obj => {
+        obj.disabled = true;
+        if(obj.custom_option_checked) obj.disabled = false;
+      });
+    }
+    else step.filtered_option_list.forEach(obj => { obj.disabled = false; });
+  }
+
+  addtoCart(openPopup) {
+    this.prepareAddonForCheckout();
     // addon section
     if(this.productDetails.selected_addon && this.productDetails.selected_addon!=undefined) {
       if(this.productDetails.selected_addon.custom_list.length || this.productDetails.selected_addon.updated_mm_list.length) {
@@ -864,16 +945,7 @@ export class ProductComponent implements OnInit {
 
   buyNow() {
     if(isPlatformBrowser(this.platformId)) sessionStorage.removeItem("qo-cd");
-    this.productDetails.final_price = parseFloat(this.productDetails.discounted_price);
-    if(this.productDetails.unit=="Pcs") {
-      this.productDetails.final_price = parseFloat(this.productDetails.discounted_price)+parseFloat(this.productDetails.addon_price);
-    }
-    this.productDetails.customized_model = this.customized_model;
-    this.productDetails.customization_status = false;
-    if(this.productDetails.customized_model) {
-      this.productDetails.customization_status = true;
-      this.productDetails.customized_model.model_id = this.productDetails.customized_model._id;
-    }
+    this.prepareAddonForCheckout();
     // addon section
     if(this.productDetails.selected_addon && this.productDetails.selected_addon!=undefined) {
       if(this.productDetails.selected_addon.custom_list.length || this.productDetails.selected_addon.updated_mm_list.length) {
@@ -1034,13 +1106,66 @@ export class ProductComponent implements OnInit {
     });
   }
 
+  private buildFitCreateConfig() {
+    return {
+      addon_id: this.productDetails.selected_addon._id,
+      custom_list: this.custom_list,
+      measurement_sets: this.measurement_sets,
+      notes_list: this.notes_list,
+      notesTitle: this.productDetails.selected_addon?.notes_title || '',
+      showPrices: true,
+      modalTitle: 'Create Measurement Profile',
+      saveLabel: 'Save Fit Profile'
+    };
+  }
+
+  private openPreparedFitCreate() {
+    const config = this.pendingFitCreateConfig || this.buildFitCreateConfig();
+    this.pendingFitCreateConfig = config;
+    this.fitCreateProfile?.open(config);
+  }
+
+  /** Show all saved models for selection on the product page (newest first). */
+  private getExistingModelsForAddon(modelList: any, _addonId?: any): any[] {
+    // API returns oldest → newest; reverse so a newly added model appears first in Model Details.
+    return Array.isArray(modelList) ? [...modelList].reverse() : [];
+  }
+
+  onFitProfileSaved(payload: any) {
+    if (!this.fitCreateProfile) return;
+    this.fitCreateProfile.setSubmitting(true);
+    payload.addon_id = this.productDetails.selected_addon?._id || payload.addon_id;
+    this.api.ADD_MODEL(payload).subscribe(result => {
+      this.fitCreateProfile.setSubmitting(false);
+      if (result.status) {
+        this.customized_model = result.data.model_list[result.data.model_list.length - 1];
+        this.commitAddonEdit();
+        this.productDetails.added_to_cart = false;
+        this.productDetails.buynow_alert = '';
+        this.productDetails.customization_alert = false;
+        this.calcAddonPrice();
+        this.fitCreateProfile.hide();
+        this.pendingFitCreateConfig = null;
+      } else {
+        this.fitCreateProfile.setAlert(result.message);
+        console.log('p7-response', result, this.router.url);
+      }
+    });
+  }
+
+  onFitProfileCancelled() {
+    this.pendingFitCreateConfig = null;
+    this.cancelAddonModal(null);
+  }
+
   // CUSTOMIZATION SECTION
-  onCreateCustomization(existingListModal, createNewModal) {
+  onCreateCustomization(existingListModal) {
     if(this.productDetails.selected_addon) {
       if(this.productDetails.selected_addon.custom_list.length || this.productDetails.selected_addon.updated_mm_list.length ||  this.productDetails.selected_addon.notes_list.length) {
         if(this.productDetails.quantity > this.productDetails.stock) this.productDetails.quantity = this.productDetails.stock;
         if(this.productDetails.quantity < this.commonService.min_qty[this.productDetails.unit]) this.productDetails.quantity = this.commonService.min_qty[this.productDetails.unit];
         this.customIndex = 0; this.mmIndex = 0; this.addonForm = {};
+        this.returnToReviewAfterEdit = false;
         this.custom_list = this.productDetails.selected_addon.custom_list;
         this.measurement_sets = this.productDetails.selected_addon.updated_mm_list;
         this.measurement_sets.forEach(mm => {
@@ -1070,17 +1195,27 @@ export class ProductComponent implements OnInit {
           this.selected_unit = this.measurement_sets[this.mmIndex].units[0];
           this.addonForm.mm_unit = this.selected_unit.name;
         }
-        // notes
-        else this.noteSection = true;
+        // notes / review only
+        else {
+          this.noteSection = true;
+          this.rebuildReviewCards();
+        }
+        this.pendingFitCreateConfig = this.buildFitCreateConfig();
         if(this.commonService.store_details.additional_features && this.commonService.store_details.additional_features.custom_model) {
           if(this.commonService.customer_token) {
             this.productDetails.custom_loader = true;
             this.api.USER_DETAILS().subscribe(result => {
               this.productDetails.custom_loader = false;
               if(result.status) {
-                this.existing_model_list = result.data.model_list.filter(obj => obj.addon_id==this.productDetails.selected_addon._id);
-                if(this.existing_model_list.length) existingListModal.show();
-                else createNewModal.show();
+                this.existing_model_list = this.getExistingModelsForAddon(
+                  result.data?.model_list,
+                  this.productDetails.selected_addon?._id
+                );
+                if(this.existing_model_list.length) {
+                  existingListModal.show();
+                } else {
+                  this.openPreparedFitCreate();
+                }
                 this.commonService.scrollModalTop(500);
               }
               else console.log("p6-response", result, this.router.url);
@@ -1097,8 +1232,7 @@ export class ProductComponent implements OnInit {
           }
         }
         else {
-          createNewModal.show();
-          this.commonService.scrollModalTop(500);
+          this.openPreparedFitCreate();
         }
       }
     }
@@ -1137,29 +1271,271 @@ export class ProductComponent implements OnInit {
   }
 
   customPrev() {
+    if(this.returnToReviewAfterEdit && (this.customSection || this.mmSection)) {
+      this.goToReviewStep();
+      return;
+    }
     if(this.customSection) {
       this.customIndex -= 1;
     }
     else if(this.mmSection) {
-      if(this.mmIndex>0) this.mmIndex -= 1;
-      else if(this.custom_list.length) {
+      if(this.custom_list.length) {
         this.mmSection = false;
         this.customSection = true;
       }
     }
     else if(this.noteSection) {
       this.noteSection = false;
-      if(this.measurement_sets.length) this.mmSection = true;
+      if(this.measurement_sets.length) {
+        this.mmSection = true;
+        this.mmIndex = 0;
+      }
       else this.customSection = true;
     }
     this.addonForm.alert_msg = null;
     this.commonService.scrollModalTop(0);
   }
+
+  getCustomizationStepMeta() {
+    const customSteps = this.custom_list?.length || 0;
+    // All measurement sets are shown as one wizard step
+    const mmSteps = this.measurement_sets?.length ? 1 : 0;
+    const reviewSteps = 1;
+    const total = Math.max(1, customSteps + mmSteps + reviewSteps);
+    let current = 1;
+    let label = 'Customization';
+    if(this.customSection) {
+      current = (this.customIndex || 0) + 1;
+      label = this.custom_list[this.customIndex]?.name || 'Customization';
+    }
+    else if(this.mmSection) {
+      current = customSteps + 1;
+      label = 'Body Measurements';
+    }
+    else if(this.noteSection) {
+      current = customSteps + mmSteps + 1;
+      label = 'Review & Save';
+    }
+    return {
+      current,
+      total,
+      label,
+      percent: Math.min(100, Math.round((current / total) * 100))
+    };
+  }
+
+  isCustomizationNameStep(): boolean {
+    return false;
+  }
+
+  isCustomListStyle(): boolean {
+    const opts = this.custom_list?.[this.customIndex]?.filtered_option_list || [];
+    if(!opts.length) return false;
+    const withImage = opts.filter(o => !!o.image).length;
+    return withImage < Math.ceil(opts.length / 2);
+  }
+
+  isCustomOptionSelected(option: any): boolean {
+    const step = this.custom_list?.[this.customIndex];
+    if(!step || !option) return false;
+    if(step.type === 'either_or') return step.selected_option === option.name;
+    return !!option.custom_option_checked;
+  }
+
+  selectCustomOption(option: any) {
+    if(!option || option.disabled) return;
+    const step = this.custom_list?.[this.customIndex];
+    if(!step) return;
+    this.addonForm.alert_msg = null;
+    if(step.type === 'either_or') {
+      step.selected_option = option.name;
+      this.getRadioNextList(option.name);
+      return;
+    }
+    option.custom_option_checked = !option.custom_option_checked;
+    this.getCheckboxNextList();
+    this.disableOption();
+  }
+
+  getCustomizationSummary(): Array<{ label: string; value: string; type: string; index: number; image?: string; fullWidth?: boolean; lines?: Array<{ label: string; value: string }> }> {
+    const summary = [];
+    (this.custom_list || []).forEach((step, index) => {
+      if(step.type === 'either_or' && step.selected_option) {
+        const selectedOpt = (step.filtered_option_list || step.option_list || [])
+          .find(opt => opt.name === step.selected_option);
+        summary.push({
+          label: step.name,
+          value: step.selected_option,
+          type: 'custom',
+          index,
+          image: selectedOpt?.image || null,
+          fullWidth: false
+        });
+      }
+      else if(step.filtered_option_list || step.option_list) {
+        const selected = (step.filtered_option_list || step.option_list || [])
+          .filter(opt => opt.custom_option_checked);
+        if(selected.length) {
+          summary.push({
+            label: step.name,
+            value: selected.map(opt => opt.name).join(', '),
+            type: 'custom',
+            index,
+            image: selected.length === 1 ? (selected[0].image || null) : null,
+            fullWidth: selected.length > 1 || !selected[0]?.image,
+            lines: selected.length > 1 ? selected.map(opt => ({ label: 'Selected', value: opt.name })) : null
+          });
+        }
+      }
+    });
+    const mmCount = (this.measurement_sets || []).reduce((count, set) => {
+      return count + (set.list || []).filter(item => item.value !== undefined && item.value !== null && item.value !== '').length;
+    }, 0);
+    if(mmCount) {
+      summary.push({
+        label: 'Measurements Summary',
+        value: mmCount + ' Measurements Added' + (this.addonForm?.mm_unit ? ' • Unit: ' + this.addonForm.mm_unit : ''),
+        type: 'mm',
+        index: 0,
+        fullWidth: true
+      });
+    }
+    return summary;
+  }
+
+  rebuildReviewCards() {
+    const summary = this.getCustomizationSummary();
+    this.reviewHalfCards = summary.filter(item => !item.fullWidth);
+    this.reviewFullCards = summary.filter(item => item.fullWidth);
+  }
+
+  trackReviewCard(_index: number, item: { type: string; index: number }) {
+    return (item?.type || 'x') + '-' + (item?.index ?? _index);
+  }
+
+  /** Jump from Review & Save back to a specific wizard step. */
+  onReviewEditClick(type: string, stepIndex: number) {
+    if(!type) return;
+
+    this.addonForm.alert_msg = null;
+    this.returnToReviewAfterEdit = true;
+    this.customSection = false;
+    this.mmSection = false;
+    this.noteSection = false;
+
+    if(type === 'mm') {
+      if(!this.measurement_sets?.length) {
+        this.goToReviewStep();
+        return;
+      }
+      this.mmSection = true;
+      this.mmIndex = Math.min(Math.max(Number(stepIndex) || 0, 0), this.measurement_sets.length - 1);
+      if(!this.addonForm.mm_unit && this.measurement_sets[0]?.units?.length) {
+        this.selected_unit = this.measurement_sets[0].units[0];
+        this.addonForm.mm_unit = this.selected_unit.name;
+      }
+      this.scrollFitModalBody();
+      setTimeout(() => {
+        const target = this.document.getElementById('fit-mm-set-' + this.mmIndex);
+        if(target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 50);
+      return;
+    }
+
+    if(type === 'custom') {
+      if(!this.custom_list?.length) {
+        this.goToReviewStep();
+        return;
+      }
+      try {
+        this.prepareCustomStepsForEdit(Number(stepIndex) || 0);
+      }
+      catch(err) {
+        console.error('prepareCustomStepsForEdit failed', err);
+        const safeIndex = Math.min(Math.max(Number(stepIndex) || 0, 0), this.custom_list.length - 1);
+        this.customIndex = safeIndex;
+        const step = this.custom_list[safeIndex];
+        if(step && !step.filtered_option_list?.length) {
+          step.filtered_option_list = step.option_list || [];
+        }
+      }
+      this.customSection = true;
+      this.scrollFitModalBody();
+    }
+  }
+
+  private prepareCustomStepsForEdit(targetIndex: number) {
+    const maxIndex = this.custom_list.length - 1;
+    const safeIndex = Math.min(Math.max(targetIndex, 0), maxIndex);
+
+    if(this.custom_list[0]) {
+      this.custom_list[0].filtered_option_list = this.custom_list[0].option_list || [];
+    }
+
+    for(let i = 0; i < safeIndex; i++) {
+      this.customIndex = i;
+      const step = this.custom_list[i];
+      if(!step) continue;
+
+      if(!step.filtered_option_list?.length) {
+        step.filtered_option_list = step.option_list || [];
+      }
+
+      if(step.type === 'either_or') {
+        if(!step.selected_option && step.filtered_option_list?.length) {
+          step.selected_option = step.filtered_option_list[0].name;
+        }
+        if(step.selected_option) this.getRadioNextList(step.selected_option);
+      }
+      else {
+        this.getCheckboxNextList();
+      }
+    }
+
+    this.customIndex = safeIndex;
+    const targetStep = this.custom_list[safeIndex];
+    if(!targetStep) return;
+
+    if(!targetStep.filtered_option_list?.length) {
+      targetStep.filtered_option_list = targetStep.option_list || [];
+    }
+    if(targetStep.type === 'either_or') {
+      if(!targetStep.selected_option && targetStep.filtered_option_list?.length) {
+        targetStep.selected_option = targetStep.filtered_option_list[0].name;
+      }
+    }
+    else {
+      this.disableOption();
+    }
+  }
+
+  private scrollFitModalBody() {
+    this.commonService.scrollModalTop(0);
+    setTimeout(() => {
+      const body = this.document.querySelector('.fit-profile-modal .fit-profile-modal__body') as HTMLElement;
+      if(body) body.scrollTop = 0;
+    }, 0);
+  }
+
+  private goToReviewStep() {
+    this.customSection = false;
+    this.mmSection = false;
+    this.noteSection = true;
+    this.returnToReviewAfterEdit = false;
+    this.addonForm.alert_msg = null;
+    this.rebuildReviewCards();
+    this.scrollFitModalBody();
+  }
+
   onCustomNext(gotoNext) {
     let reqInput = this.validateForm();
     if(reqInput===undefined) {
       let customAlert = this.checkCustomSelection();
       if(!customAlert) {
+        if(this.returnToReviewAfterEdit) {
+          this.goToReviewStep();
+          return;
+        }
         // customization next level
         if(!gotoNext) {
           this.mmSection = false; this.noteSection = false;
@@ -1177,7 +1553,7 @@ export class ProductComponent implements OnInit {
           }
           else this.disableOption();
         }
-        // measurement or custom note
+        // measurement or review
         else {
           this.customSection = false; this.mmSection = false; this.noteSection = false;
           // measurement
@@ -1186,8 +1562,8 @@ export class ProductComponent implements OnInit {
             this.selected_unit = this.measurement_sets[this.mmIndex].units[0];
             this.addonForm.mm_unit = this.selected_unit.name;
           }
-          // custom note
-          else this.noteSection = true;
+          // dedicated review & save step
+          else this.goToReviewStep();
         }
         this.commonService.scrollModalTop(0);
       }
@@ -1199,31 +1575,40 @@ export class ProductComponent implements OnInit {
     }
   }
   onMmNext() {
+    // Ensure every measurement set has values before moving to review
+    for(let s = 0; s < (this.measurement_sets?.length || 0); s++) {
+      const set = this.measurement_sets[s];
+      const missing = (set?.list || []).findIndex(item => item?.value === undefined || item?.value === null || String(item.value).trim() === '');
+      if(missing !== -1) {
+        this.addonForm.alert_msg = 'Please complete ' + (set?.name || 'all') + ' measurements';
+        const el = this.document.getElementById('value' + s + missing);
+        if(el) {
+          el.focus();
+          el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+        return;
+      }
+    }
     let reqInput = this.validateForm();
     if(reqInput===undefined) {
-      // for find additional qty
-      for(let elem of this.measurement_sets[this.mmIndex].list) {
-        elem.additional_qty = 0;
-        if(elem.conditions.length) {
-          for(let cond of elem.conditions) {
-            let filteredList = cond.list.filter(obj => obj.unit==this.addonForm.mm_unit);
-            if(filteredList.length) {
-              elem.additional_qty = filteredList[0].additional_qty;
-              if(parseFloat(elem.value)>filteredList[0].mm_from && filteredList[0].mm_to>=parseFloat(elem.value)) {
+      (this.measurement_sets || []).forEach(set => {
+        (set.list || []).forEach(elem => {
+          elem.additional_qty = 0;
+          if(elem.conditions?.length) {
+            for(let cond of elem.conditions) {
+              let filteredList = cond.list.filter(obj => obj.unit==this.addonForm.mm_unit);
+              if(filteredList.length) {
                 elem.additional_qty = filteredList[0].additional_qty;
-                break;
+                if(parseFloat(elem.value)>filteredList[0].mm_from && filteredList[0].mm_to>=parseFloat(elem.value)) {
+                  elem.additional_qty = filteredList[0].additional_qty;
+                  break;
+                }
               }
             }
           }
-        }
-      }
-      if((this.measurement_sets.length-1) > this.mmIndex) this.mmIndex = this.mmIndex+1;
-      else {
-        this.customSection = false;
-        this.mmSection = false;
-        this.noteSection = true;
-      }
-      this.commonService.scrollModalTop(0);
+        });
+      });
+      this.goToReviewStep();
     }
     else {
       this.addonForm.alert_msg = "Please fill out the mandatory fields";
@@ -1232,8 +1617,9 @@ export class ProductComponent implements OnInit {
   }
   
   onChangeUnit() {
-    let unitIndex = this.measurement_sets[this.mmIndex].units.findIndex(obj => obj.name==this.addonForm.mm_unit);
-    if(unitIndex!=-1) this.selected_unit = this.measurement_sets[this.mmIndex].units[unitIndex];
+    const unitSource = this.measurement_sets[this.mmIndex] || this.measurement_sets[0];
+    let unitIndex = unitSource?.units?.findIndex(obj => obj.name==this.addonForm.mm_unit);
+    if(unitIndex!=-1) this.selected_unit = unitSource.units[unitIndex];
     if(this.addonForm.mm_unit=='cms') {
       // convert inch -> cm
       this.measurement_sets.forEach(set => {
@@ -1259,6 +1645,12 @@ export class ProductComponent implements OnInit {
   }
 
   onSaveNewModal(modalName, customDetailsModal) {
+    if(!this.addonForm?.name || !String(this.addonForm.name).trim()) {
+      this.addonForm.alert_msg = "Please enter a model profile name";
+      const nameEl = this.document.getElementById('model_name') || this.document.getElementById('model_name_final');
+      if(nameEl) nameEl.focus();
+      return;
+    }
     let reqInput = this.validateForm();
     if(reqInput===undefined) {
       let customAlert = this.checkCustomSelection();
@@ -1279,21 +1671,23 @@ export class ProductComponent implements OnInit {
         });
         // measurement section (for find additional qty)
         if(this.measurement_sets.length) {
-          for(let elem of this.measurement_sets[this.mmIndex].list) {
-            elem.additional_qty = 0;
-            if(elem.conditions.length) {
-              for(let cond of elem.conditions) {
-                let filteredList = cond.list.filter(obj => obj.unit==this.addonForm.mm_unit);
-                if(filteredList.length) {
-                  elem.additional_qty = filteredList[0].additional_qty;
-                  if(parseFloat(elem.value)>filteredList[0].mm_from && filteredList[0].mm_to>=parseFloat(elem.value)) {
+          this.measurement_sets.forEach(set => {
+            (set.list || []).forEach(elem => {
+              elem.additional_qty = 0;
+              if(elem.conditions?.length) {
+                for(let cond of elem.conditions) {
+                  let filteredList = cond.list.filter(obj => obj.unit==this.addonForm.mm_unit);
+                  if(filteredList.length) {
                     elem.additional_qty = filteredList[0].additional_qty;
-                    break;
+                    if(parseFloat(elem.value)>filteredList[0].mm_from && filteredList[0].mm_to>=parseFloat(elem.value)) {
+                      elem.additional_qty = filteredList[0].additional_qty;
+                      break;
+                    }
                   }
                 }
               }
-            }
-          }
+            });
+          });
         }
         this.productDetails.customization_alert = false;
         this.addonForm.mm_sets = this.measurement_sets;
@@ -1305,6 +1699,7 @@ export class ProductComponent implements OnInit {
           this.addonForm.submit = false;
           if(result.status) {
             this.customized_model = result.data.model_list[result.data.model_list.length-1];
+            this.commitAddonEdit();
             this.productDetails.added_to_cart=false;
             this.productDetails.buynow_alert = "";
             this.calcAddonPrice();
@@ -1327,6 +1722,8 @@ export class ProductComponent implements OnInit {
 
   clearAddon() {
     this.productDetails.selected_addon = null;
+    this.blouseStitchingCalloutOpen = false;
+    this.clearAddonEditState();
     this.onChangeAddon();
   }
 
@@ -1345,10 +1742,132 @@ export class ProductComponent implements OnInit {
 
   onSelectModal(x, modalName) {
     this.customized_model = x;
+    this.commitAddonEdit();
     this.calcAddonPrice();
     this.productDetails.added_to_cart = false;
     this.productDetails.customization_alert = false;
     // if(modalName) setTimeout(() => { this.openCustomDetailsModal(modalName); }, 500);
+  }
+
+  getModelPreviewSlots(model: any): Array<{ label: string; value: string; image?: string }> {
+    return [
+      this.getModelCustomSlot(model, ['front'], 0, 'Front Neck'),
+      this.getModelCustomSlot(model, ['rear', 'back'], 1, 'Back Neck'),
+      this.getModelCustomSlot(model, ['lining', 'clos', 'extra'], 2, 'Lining')
+    ].filter(Boolean) as Array<{ label: string; value: string; image?: string }>;
+  }
+
+  editExistingModel(model: any, existingModal?: any) {
+    if(existingModal?.hide) existingModal.hide();
+    this.clearAddon();
+    this.router.navigate(['/account/models']);
+  }
+
+  getModelMeasurements(model: any): {
+    unit: string | null;
+    unitSymbol: string;
+    count: number;
+    summary: string;
+    items: Array<{ name: string; value: string }>;
+    groups: Array<{ name: string; items: Array<{ name: string; value: string }> }>;
+  } {
+    const sets = model?.mm_sets || [];
+    const groups = [];
+    const allItems = [];
+    let count = 0;
+    const highlightKeys = ['shoulder', 'chest', 'waist', 'length'];
+    const highlightOrder = { shoulder: 0, chest: 1, waist: 2, length: 3 };
+
+    sets.forEach((set: any, index: number) => {
+      const groupItems = [];
+      (set?.list || []).forEach((entry: any) => {
+        if(!entry?.name) return;
+        const raw = entry.value;
+        if(raw === undefined || raw === null || String(raw).trim() === '') return;
+        const row = { name: entry.name, value: String(raw) };
+        groupItems.push(row);
+        allItems.push(row);
+      });
+      if(!groupItems.length) return;
+
+      const setName = String(set?.name || '').trim();
+      const lower = setName.toLowerCase();
+      let groupName = setName || ('Set ' + (index + 1));
+      if(lower.includes('front')) groupName = 'Front';
+      else if(lower.includes('rear') || lower.includes('back')) groupName = 'Rear';
+
+      groups.push({ name: groupName, items: groupItems });
+      count += groupItems.length;
+    });
+
+    const items = allItems
+      .filter(item => {
+        const name = String(item.name || '').toLowerCase();
+        return highlightKeys.some(key => name.includes(key));
+      })
+      .sort((a, b) => {
+        const aKey = highlightKeys.find(key => String(a.name || '').toLowerCase().includes(key)) || '';
+        const bKey = highlightKeys.find(key => String(b.name || '').toLowerCase().includes(key)) || '';
+        return (highlightOrder[aKey] ?? 99) - (highlightOrder[bKey] ?? 99);
+      })
+      // Keep first match per key (avoid duplicates across Front/Rear sets)
+      .filter((item, index, list) => {
+        const key = highlightKeys.find(k => String(item.name || '').toLowerCase().includes(k));
+        return list.findIndex(other => String(other.name || '').toLowerCase().includes(key)) === index;
+      });
+
+    const unit = model?.mm_unit
+      || sets[0]?.unit
+      || sets[0]?.units?.[0]?.name
+      || sets[0]?.list?.[0]?.unit
+      || null;
+
+    const unitLower = String(unit || '').toLowerCase();
+    const unitSymbol = unitLower.includes('inch') || unitLower === 'in' || unitLower === 'inches'
+      ? '"'
+      : (unitLower.includes('cm') ? ' cm' : (unit ? ' ' + unit : ''));
+
+    const summaryParts = groups.map(g => g.name + ' (' + g.items.length + ')');
+    const summary = summaryParts.length
+      ? summaryParts.join(' · ')
+      : 'No measurements saved';
+
+    return { unit, unitSymbol, count, summary, items, groups };
+  }
+
+  isModelMmExpanded(model: any, index: number): boolean {
+    return !!this.expandedModelMm[this.getModelMmKey(model, index)];
+  }
+
+  toggleModelMm(model: any, index: number, event?: Event) {
+    event?.preventDefault();
+    event?.stopPropagation();
+    const key = this.getModelMmKey(model, index);
+    this.expandedModelMm[key] = !this.expandedModelMm[key];
+  }
+
+  private getModelMmKey(model: any, index: number): string {
+    return String(model?._id || model?.id || ('model-' + index));
+  }
+
+  private getModelCustomSlot(model: any, keys: string[], fallbackIndex: number, displayLabel: string) {
+    const list = model?.custom_list || [];
+    if(!list.length) return null;
+
+    let item = list.find((entry: any) => {
+      const name = String(entry?.name || '').toLowerCase();
+      return keys.some(key => name.includes(key));
+    });
+    if(!item) item = list[fallbackIndex];
+    if(!item) return null;
+
+    const values = item.value || [];
+    const valueNames = values.map((v: any) => v?.name).filter(Boolean);
+    return {
+      label: displayLabel,
+      value: valueNames.length ? valueNames.join(', ') : '—',
+      image: values[0]?.image || null
+    };
   }
 
   validateForm() {
@@ -1393,9 +1912,9 @@ export class ProductComponent implements OnInit {
     }
   }
 
-  closeExistingAndOpenNewModal(existingModal, newModal) {
+  closeExistingAndOpenNewModal(existingModal) {
     existingModal.hide();
-    setTimeout(() => { newModal.show(); this.commonService.scrollModalTop(500); }, 500);
+    setTimeout(() => { this.openPreparedFitCreate(); }, 500);
   }
 
   incQty() {

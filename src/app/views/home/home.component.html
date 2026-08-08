@@ -1,4 +1,4 @@
-﻿<section class="home-section" aria-label="Homepage content">
+<section class="home-section" aria-label="Homepage content">
   <!-- Single template for product card prices on home (featured + multi-tab sliders/grids). -->
   <ng-template #homeProductCardPrices let-p>
     <span *ngIf="p.disc_status" class="strike">{{
@@ -178,7 +178,7 @@
           <div class="home-visual-search__content">
             <div class="home-visual-search__copy">
               <h2 id="home-visual-search-title" class="home-visual-search__title">
-                Saree Search, <em>Inspired</em> by Your <em>Inspiration</em>.
+                Saree Search, Inspired by Your Inspiration.
               </h2>
               <p class="home-visual-search__desc">
                 Upload an inspiration photo or describe the saree you have in mind. Our AI reads weave,
@@ -221,9 +221,24 @@
           </div>
 
           <div class="home-visual-search__panel">
-            <button type="button" class="home-visual-search__dropzone" (click)="goToSearchPage()">
+            <input
+              #visualSearchFileInput
+              type="file"
+              accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
+              (change)="onVisualSearchImageSelected($event)"
+              hidden
+            >
+
+            <button
+              type="button"
+              class="home-visual-search__dropzone"
+              (click)="openVisualSearchFilePicker(visualSearchFileInput)"
+              (dragover)="onVisualSearchDragOver($event)"
+              (dragleave)="onVisualSearchDragLeave($event)"
+              (drop)="onVisualSearchDrop($event)"
+            >
               <span class="home-visual-search__dropzone-icon" aria-hidden="true">
-                <lucide-icon name="cloud-upload" [size]="22" stroke="2"></lucide-icon>
+                <lucide-icon name="cloud-upload" [size]="30" stroke="2"></lucide-icon>
               </span>
               <span class="home-visual-search__dropzone-title">Upload Image</span>
               <span class="home-visual-search__dropzone-hint">Drop an image here or click to browse</span>
@@ -251,7 +266,7 @@
 
             <p class="home-visual-search__footer">
               Type to search or
-              <button type="button" class="home-visual-search__footer-link" (click)="goToSearchPage()">upload a photo</button>
+              <button type="button" class="home-visual-search__footer-link" (click)="openVisualSearchFilePicker(visualSearchFileInput)">upload a photo</button>
               to discover
             </p>
           </div>

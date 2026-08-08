@@ -454,6 +454,9 @@ $visual-search-tan: #c4a574;
 }
 
 .home-visual-search {
+  // TEMP: hide until client approval — remove this line to re-enable
+  display: none !important;
+
   // Design tokens
   --vs-section-bg: #faf6f0;
   --vs-white: #ffffff;
@@ -532,11 +535,12 @@ $visual-search-tan: #c4a574;
     border: 1px solid var(--vs-gray-200);
     border-radius: var(--vs-radius);
     box-shadow: 0 14px 44px rgba(26, 24, 30, 0.07);
-    padding: clamp(1.125rem, 2.2vw, 1.375rem);
+    padding: clamp(1.5rem, 2.8vw, 2rem);
     display: flex;
     flex-direction: column;
-    gap: 1.125rem;
+    gap: 1.35rem;
     margin-top: 0.25rem;
+    min-height: 28rem;
   }
 
   &__dropzone {
@@ -544,10 +548,11 @@ $visual-search-tan: #c4a574;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 0.45rem;
+    gap: 0.55rem;
     width: 100%;
-    min-height: 12.5rem;
-    padding: 1.5rem 1rem;
+    min-height: 16rem;
+    flex: 1 1 auto;
+    padding: 2rem 1.25rem;
     border: 1.5px dashed #d4d4d4;
     border-radius: var(--vs-radius-sm);
     background: #fafafa;
@@ -564,15 +569,17 @@ $visual-search-tan: #c4a574;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 52px;
-    height: 52px;
-    margin-bottom: 0.35rem;
+    width: 68px;
+    height: 68px;
+    margin-bottom: 0.45rem;
     border-radius: 50%;
     background: var(--vs-text);
     color: var(--vs-white);
 
     lucide-icon,
     svg {
+      width: 30px;
+      height: 30px;
       color: var(--vs-white) !important;
       stroke: var(--vs-white) !important;
     }
@@ -644,6 +651,7 @@ $visual-search-tan: #c4a574;
     font-family: var(--vs-ui-font);
     font-size: 0.9rem;
     font-weight: 400;
+    font-style: normal;
     color: $secondary-text-color;
     // padding: 8px 0 !important;
     height: auto !important;
@@ -651,6 +659,17 @@ $visual-search-tan: #c4a574;
 
     &::placeholder {
       color: rgba(26, 24, 30, 0.42);
+      font-style: normal;
+      opacity: 1;
+    }
+
+    &::-webkit-input-placeholder {
+      font-style: normal;
+    }
+
+    &::-moz-placeholder {
+      font-style: normal;
+      opacity: 1;
     }
   }
 
@@ -1051,18 +1070,25 @@ $visual-search-tan: #c4a574;
     }
 
     &__panel {
-      padding: 1.125rem;
-      gap: 1rem;
+      padding: 1.35rem;
+      gap: 1.15rem;
+      min-height: 0;
     }
 
     &__dropzone {
-      min-height: 9.5rem;
-      padding: 1.15rem 0.85rem;
+      min-height: 12.5rem;
+      padding: 1.5rem 1rem;
     }
 
     &__dropzone-icon {
-      width: 46px;
-      height: 46px;
+      width: 58px;
+      height: 58px;
+
+      lucide-icon,
+      svg {
+        width: 26px;
+        height: 26px;
+      }
     }
 
     &__dropzone-title {
@@ -1082,6 +1108,8 @@ $visual-search-tan: #c4a574;
     --vs-result-w: 10rem;
     --vs-result-h: 13.25rem;
     --vs-frame: 8px;
+    --vs-corner-size: 14px;
+    --vs-corner-inset: 0.5rem;
 
     &__card {
       &--result {
@@ -1095,9 +1123,6 @@ $visual-search-tan: #c4a574;
       font-size: 0.6rem;
       padding: 0.32rem 0.55rem;
     }
-
-    --vs-corner-size: 14px;
-    --vs-corner-inset: 0.5rem;
 
     &__match-badge {
       left: -0.8rem;
