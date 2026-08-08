@@ -22,7 +22,7 @@
           <!-- Occasion cards with CTA -->
           <div class="row catalog-icon-cards__grid" *ngIf="hasIconCardCta(segment)">
             <div *ngFor="let card of segment.icon_card_list | orderAsc: 'rank'"
-              class="col-md-6 col-lg-3 mb-4"
+              class="col-6 col-md-6 col-lg-3 mb-3 mb-md-4"
               [class.d-none]="!card.active_status && card.active_status === false">
               <div class="catalog-icon-card h-100">
                 <div class="catalog-icon-card__icon" *ngIf="card.icon_name">
@@ -367,7 +367,6 @@
           <h2 *ngIf="segment.heading" [attr.id]="'cat-seg-' + i + '-title'">{{ segment.heading }}</h2>
           <p *ngIf="segment.sub_heading" class="story-body">{{ segment.sub_heading }}</p>
         </div>
-        <span class="catalog-cta-banner__divider" aria-hidden="true">+</span>
         <div class="catalog-cta-banner__actions">
           <a *ngFor="let cta of catalogCtaButtons(segment)"
             class="catalog-cta-banner__btn"
@@ -382,7 +381,7 @@
     </div>
   </section>
 
-  <!-- blogs (home news section pattern) -->
+  <!-- blogs (home news section pattern: grid desktop, carousel mobile) -->
   <section
     *ngIf="segment.type === 'blogs' && segmentBlogList?.length"
     class="primary-section news"
@@ -390,7 +389,7 @@
     <div class="container-fluid">
       <div class="row">
         <div class="col-12 px-0 d-flex justify-content-between align-items-end">
-          <div class="titles custom-title w-auto pl-0">
+          <div class="titles custom-title w-auto">
             <h2 *ngIf="segment.heading" [attr.id]="'cat-seg-' + i + '-title'">{{ segment.heading }}</h2>
             <p *ngIf="segment.sub_heading" [innerHTML]="segment.sub_heading"></p>
           </div>
@@ -398,9 +397,20 @@
             <a class="primary-btn outline-btn" routerLink="/blogs" aria-label="View all blog posts">View All</a>
           </div>
         </div>
-        <div class="row d-flex flex-wrap align-items-stretch home-blog-grid">
+
+        <div *ngIf="commonService.desktop_device" class="row d-flex flex-wrap align-items-stretch home-blog-grid">
           <div class="col-12 col-md-6 col-lg-3 d-flex mb-4" *ngFor="let blog of segmentBlogList">
             <app-blog-card [item]="blog" [imgBaseUrl]="imgBaseUrl"></app-blog-card>
+          </div>
+        </div>
+
+        <div *ngIf="!commonService.desktop_device" class="col-12 px-0">
+          <div class="swiper-container blogslider_cat px-max" appCategoryHighlights>
+            <div class="swiper-wrapper">
+              <div class="swiper-slide d-flex" *ngFor="let blog of segmentBlogList">
+                <app-blog-card [item]="blog" [imgBaseUrl]="imgBaseUrl"></app-blog-card>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -421,7 +431,7 @@
           </div>
         </div>
         <div class="col-md-12">
-          <accordion [closeOthers]="true" [isAnimated]="true" class="catalog-collections__accordion">
+          <accordion [closeOthers]="true" [isAnimated]="false" class="catalog-collections__accordion">
             <accordion-group *ngFor="let group of segment.group_list | orderAsc: 'rank'; let gi = index"
               [isOpen]="gi === 0">
               <div accordion-heading class="catalog-collections__heading">
@@ -433,12 +443,12 @@
                 <lucide-icon class="catalog-collections__chevron" name="chevron-down" [size]="18" stroke="1.5"></lucide-icon>
               </div>
               <div class="row catalog-collections__links">
-                <div class="col-md-4 col-sm-6"
-                  *ngFor="let column of internalLinksColumns(groupLinks(group))">
+                <div class="col-6 col-md-4"
+                  *ngFor="let column of (group | internalLinksColumns: (commonService.screen_width < 768 ? 2 : 3))">
                   <ul class="catalog-collections__link-list pl-0">
-                    <li *ngFor="let link of column">
+                    <li *ngFor="let link of column; trackBy: trackSegmentLink">
                       <a class="collect-list"
-                        [routerLink]="segmentBtnLink(link)"
+                        [attr.href]="segmentBtnLink(link) || '#'"
                         (click)="onSegmentBtnClick(link, $event)">
                         {{ link.btn_text }}
                       </a>

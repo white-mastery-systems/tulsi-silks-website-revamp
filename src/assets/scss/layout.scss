@@ -2066,8 +2066,8 @@ $fab-gap: 12px;
   }
   }
   .titles{
-    margin-bottom: 18px !important;
-    padding: 0 0 0 15px !important;
+    margin-bottom: 10px !important;
+    padding: 0 0 0 0px !important;
     text-align: left !important;
     h2{
       font-size: 24px;
@@ -2179,14 +2179,26 @@ $fab-gap: 12px;
     margin-top: 0 !important;
     padding-left: 10px !important;
   }
+/* Mobile drawer only — desktop mega menu must not inherit slide transforms */
+@media only screen and (max-width: 991px) {
   .nav-active {
-  animation: nav-slide-in 0.5s forwards;
-  -webkit-animation: nav-slide-in 0.5s forwards;
+    animation: nav-slide-in 0.5s forwards;
+    -webkit-animation: nav-slide-in 0.5s forwards;
+  }
+
+  .nav-dismiss {
+    animation: nav-slide-out 0.5s forwards;
+    -webkit-animation: nav-slide-out 0.5s forwards;
+  }
 }
 
-.nav-dismiss {
-  animation: nav-slide-out 0.5s forwards;
-  -webkit-animation: nav-slide-out 0.5s forwards;
+@media only screen and (min-width: 992px) {
+  .nav-active,
+  .nav-dismiss {
+    animation: none !important;
+    -webkit-animation: none !important;
+    transform: none !important;
+  }
 }
 
 

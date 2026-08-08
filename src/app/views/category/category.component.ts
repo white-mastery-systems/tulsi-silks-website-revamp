@@ -17,6 +17,8 @@ import {
   buildListV4Payload,
   hasCheckedFilters,
   activeFilterChips,
+  buildFilterQueryParamsFromTagList,
+  filterParamName,
   categoryRobotsContent,
   isPriceRangeFiltered,
   shouldEmitCategoryItemListSchema
@@ -39,6 +41,8 @@ export class CategoryComponent implements OnInit, OnDestroy, AfterViewChecked {
   sort_value: string; current_url: string;
   template_setting: any = environment.template_setting;
   collapseIndex: number; showMore: boolean;
+  heroDescExpanded = false;
+  heroDescNeedsToggle = false;
   sort_list: any = [
     { name: "Latest", value: "latest" },
     // { name: "Discounted", value: "discounted" },
@@ -109,10 +113,12 @@ export class CategoryComponent implements OnInit, OnDestroy, AfterViewChecked {
   @ViewChild('catalogToolbarBlock') catalogToolbarBlock?: ElementRef<HTMLElement>;
   @ViewChild('catalogToolbarSentinel') catalogToolbarSentinel?: ElementRef<HTMLElement>;
   @ViewChild('catalogPagination') catalogPagination?: ElementRef<HTMLElement>;
+  @ViewChild('heroDescEl') heroDescEl?: ElementRef<HTMLElement>;
   private catalogToolbarScrollHandler?: () => void;
   private catalogToolbarResizeHandler?: () => void;
   private catalogToolbarRafId = 0;
   private catalogToolbarPinInitialized = false;
+  private readonly catalogToolbarPinReleaseBufferPx = 12;
   private filterDraftSnapshot: {
     tagList: any[];
     selectedOptions: Record<string, string[]>;
@@ -179,10 +185,11 @@ export class CategoryComponent implements OnInit, OnDestroy, AfterViewChecked {
       this.priceRangeDirty = false;
     }
 
-    const tempParams: Record<string, string> = {};
-    for (const key in this.selectedOptions) {
-      if (this.selectedOptions.hasOwnProperty(key)) {
-        tempParams[key] = this.selectedOptions[key].join('-');
+    const tempParams = buildFilterQueryParamsFromTagList(this.tag_list);
+    this.selectedOptions = {};
+    for (const key in tempParams) {
+      if (Object.prototype.hasOwnProperty.call(tempParams, key)) {
+        this.selectedOptions[key] = tempParams[key].split('-');
       }
     }
 
@@ -214,17 +221,55 @@ export class CategoryComponent implements OnInit, OnDestroy, AfterViewChecked {
   }
 
   /** Update URL filters without Angular's scroll-to-top restoration. */
-  private navigateCatalogQuery(queryParams: Record<string, string>): void {
+  private navigateCatalogQuery(queryParams: Record<string, string>): Promise<boolean> {
+    const path = this.router.url.split('?')[0];
+    const merged: Record<string, string | null> = { ...queryParams };
+    const currentParams = this.activeRoute.snapshot.queryParams;
+    const filterKeys = new Set((this.tag_list || []).map(tag => filterParamName(tag.name)));
+
+    for (const key of Object.keys(currentParams)) {
+      if (filterKeys.has(key) && !(key in queryParams)) {
+        merged[key] = null;
+      }
+    }
+
+    this.qParams = Object.fromEntries(
+      Object.entries(merged).filter(([, value]) => value != null && value !== '')
+    ) as Record<string, string>;
+
     const scrollY = this.getWindowScrollY();
-    this.router.navigate([this.router.url.split('?')[0]], {
-      queryParams,
-      replaceUrl: true
-    }).then(() => {
+    return this.router.navigate([path], {
+      queryParams: merged,
+      replaceUrl: true,
+      queryParamsHandling: ''
+    }).then((success) => {
       this.restoreWindowScrollY(scrollY);
-      // Router scroll restoration + list re-render can race; re-apply shortly after.
       setTimeout(() => this.restoreWindowScrollY(scrollY), 50);
       setTimeout(() => this.restoreWindowScrollY(scrollY), 200);
+      return success;
     });
+  }
+
+  trackFilterChip(_index: number, chip: { tagId: string; name: string; value: string }): string {
+    return `${chip.tagId}|${chip.name}|${chip.value}`;
+  }
+
+  private uncheckFilterOption(
+    chip: { tagId: string; name: string; value: string },
+    tagLists: any[][]
+  ): boolean {
+    let changed = false;
+    for (const list of tagLists) {
+      if (!list?.length) continue;
+      const tag = list.find((t: any) => String(t._id) === String(chip.tagId))
+        ?? list.find((t: any) => t.name === chip.name);
+      const opt = tag?.option_list?.find((o: any) => o.name === chip.value);
+      if (opt) {
+        opt.checked = false;
+        changed = true;
+      }
+    }
+    return changed;
   }
 
   private getWindowScrollY(): number {
@@ -496,6 +541,8 @@ export class CategoryComponent implements OnInit, OnDestroy, AfterViewChecked {
   isImageAtStart: boolean = true;
   isImageAtEnd: boolean = false;
   activeSlideIndex: number = 0;
+  /** Bumped on tab change so navigation Swiper re-inits with fresh slides. */
+  navSwiperKey = 0;
   expiryData: string = new Date().getFullYear()+1+"-06-30";
 
   constructor(
@@ -542,11 +589,13 @@ export class CategoryComponent implements OnInit, OnDestroy, AfterViewChecked {
         window.addEventListener('resize', () => {
           this.checkNavigationOverflow();
           this.updateNavigationButtonVisibility();
+          this.scheduleHeroDescOverflowCheck();
         });
       }
 
       this.scheduleCatalogToolbarSticky();
       this.initScrollTopButton();
+      this.scheduleHeroDescOverflowCheck();
     }, 100);
   }
 
@@ -605,8 +654,9 @@ export class CategoryComponent implements OnInit, OnDestroy, AfterViewChecked {
     const block = this.catalogToolbarBlock?.nativeElement;
     if (!anchor || !block) return;
 
-    this.catalogHeaderOffset = this.document.getElementById('headroom-head')?.offsetHeight
-      ?? (this.commonService.screen_width < 992 ? 129 : 168);
+    const nextOffset = this.getCatalogHeaderOffsetPx();
+    const offsetChanged = this.catalogHeaderOffset !== nextOffset;
+    this.catalogHeaderOffset = nextOffset;
 
     const blockHeight = block.offsetHeight || this.catalogToolbarHeight || 0;
     const pagination = this.catalogPagination?.nativeElement;
@@ -614,15 +664,27 @@ export class CategoryComponent implements OnInit, OnDestroy, AfterViewChecked {
     const nearPagination = !!pagination &&
       pagination.getBoundingClientRect().top <= this.catalogHeaderOffset + blockHeight + 16;
 
-    const shouldPin = !nearPagination &&
-      anchor.getBoundingClientRect().top <= this.catalogHeaderOffset;
+    const anchorTop = anchor.getBoundingClientRect().top;
+    const pinThreshold = this.catalogHeaderOffset;
+    const releaseThreshold = pinThreshold + this.catalogToolbarPinReleaseBufferPx;
+    const shouldPin = !nearPagination && (
+      this.catalogToolbarPinned
+        ? anchorTop <= releaseThreshold
+        : anchorTop <= pinThreshold
+    );
 
     if (shouldPin) {
       const anchorRect = anchor.getBoundingClientRect();
-      const leftInset = Math.max(0, Math.round(anchorRect.left));
-      const rightInset = Math.max(0, Math.round(window.innerWidth - anchorRect.right));
+      // Match unpinned content insets (Bootstrap col padding), not the column border box.
+      const anchorStyles = window.getComputedStyle(anchor);
+      const padLeft = parseFloat(anchorStyles.paddingLeft) || 0;
+      const padRight = parseFloat(anchorStyles.paddingRight) || 0;
+      const leftInset = Math.max(0, Math.round(anchorRect.left + padLeft));
+      const rightInset = Math.max(0, Math.round(window.innerWidth - anchorRect.right + padRight));
+      const heightChanged = Math.abs(this.catalogToolbarHeight - blockHeight) > 1;
       const changed = !this.catalogToolbarPinned
-        || this.catalogToolbarHeight !== blockHeight
+        || heightChanged
+        || offsetChanged
         || this.catalogToolbarLeft !== leftInset
         || this.catalogToolbarRightInset !== rightInset;
       this.catalogToolbarPinned = true;
@@ -640,7 +702,21 @@ export class CategoryComponent implements OnInit, OnDestroy, AfterViewChecked {
       this.catalogToolbarLeft = 0;
       this.catalogToolbarRightInset = 0;
       this.cdr.markForCheck();
+    } else if (offsetChanged) {
+      this.cdr.markForCheck();
     }
+  }
+
+  /**
+   * Visible bottom of the site header for sticky catalog toolbar placement.
+   * On catalog pages headroom is frozen so the header stays in view.
+   */
+  private getCatalogHeaderOffsetPx(): number {
+    const head = this.document.getElementById('headroom-head') as HTMLElement | null;
+    if (!head) {
+      return this.commonService.screen_width < 992 ? 129 : 168;
+    }
+    return Math.max(0, Math.round(head.getBoundingClientRect().bottom));
   }
 
   private teardownCatalogToolbarScrollListener(): void {
@@ -718,7 +794,12 @@ export class CategoryComponent implements OnInit, OnDestroy, AfterViewChecked {
       const organzaList: any = [
         "Organza Sarees"
       ];
-      this.showMore = false; this.params = params; this.tag_list = []; this.randomProducts = [];
+      this.showMore = false;
+      this.heroDescExpanded = false;
+      this.heroDescNeedsToggle = false;
+      this.params = params; this.tag_list = []; this.randomProducts = [];
+      this.navigationImageList = [];
+      this.activeSlideIndex = 0;
       if (this.pageUrl == '/recommended-products' || this.pageUrl == '/all-products' || this.pageUrl == '/new-arrivals' || this.pageUrl == '/on-sale' || this.pageUrl == '/featured-products' || this.pageUrl == '/best-sellers') {
         this.params = { category_id: this.pageUrl };
         if (this.commonService.category_page_attr.category_id == this.pageUrl) {
@@ -875,6 +956,9 @@ export class CategoryComponent implements OnInit, OnDestroy, AfterViewChecked {
             this.onTagFilter(false);
           }
           let scrollPos = this.commonService.category_page_attr.scroll_y_pos;
+          if (this.category_details.navigationList?.length) {
+            this.onSelectNav(this.activeSlideIndex);
+          }
           if(isPlatformBrowser(this.platformId)) {
             setTimeout(() => { window.scrollTo({ top: scrollPos, behavior: 'smooth' }); }, 500);
           }
@@ -885,30 +969,110 @@ export class CategoryComponent implements OnInit, OnDestroy, AfterViewChecked {
         }
       }
     });
-    if (this.category_details.navigationList?.length) this.onSelectNav(0);
+  }
+
+  /** Resolve navigation card image — API may use `image` or nested `images[0].image`. */
+  navigationImageSrc(item: any): string {
+    if (!item) return '';
+    const path =
+      item.image ||
+      item.images?.[0]?.image ||
+      this.lookupCatalogListImage(item) ||
+      '';
+    if (!path) return '';
+    if (/^https?:\/\//i.test(path)) return path;
+    if (path.startsWith('/')) return path;
+    return this.imgBaseUrl + path;
+  }
+
+  private lookupCatalogListImage(item: any): string | null {
+    const id = item?.category_id || item?._id;
+    const cat = this.commonService.catalog_list?.find((c: any) =>
+      (id && c._id === id) ||
+      (item?.page_url && c.seo_details?.page_url === item.page_url)
+    );
+    return cat?.image || null;
+  }
+
+  /** True when tab uses the avatar/group layout (explicit flag or items carry `images[]`). */
+  navigationTabIsMultiImages(index: number): boolean {
+    const navList = [...(this.category_details?.navigationList || [])].sort(
+      (a, b) => (a.rank ?? 0) - (b.rank ?? 0)
+    );
+    return this.navigationTabIsMultiImagesForTab(navList[index]);
+  }
+
+  /** Card layout for the active navigation tab — driven by tab name, not tab index. */
+  navigationTabLayout(index: number): 'group' | 'material' | 'card' | 'pair' {
+    const navList = [...(this.category_details?.navigationList || [])].sort(
+      (a, b) => (a.rank ?? 0) - (b.rank ?? 0)
+    );
+    const tab = navList[index];
+    if (!tab) return 'card';
+    if (this.navigationTabIsMultiImagesForTab(tab)) return 'group';
+    const count = this.navigationTabImageCount(tab);
+    if (count >= 2 && count <= 4) return 'pair';
+    const name = (tab.name || '').toLowerCase();
+    if (name.includes('material')) return 'material';
+    // Weave / Region / Occasion / Colour etc. use the standard image + heading card
+    return 'card';
+  }
+
+  private navigationTabImageCount(tab: any): number {
+    return (tab?.image_list || []).filter((el: any) => el.isActive !== false).length;
+  }
+
+  navigationSectionStyle(): Record<string, string> {
+    const layout = this.navigationTabLayout(this.activeSlideIndex);
+    if (layout === 'pair') {
+      return {
+        'min-height': this.commonService.desktop_device ? '300px' : '220px',
+        'max-height': this.commonService.desktop_device ? '300px' : 'none'
+      };
+    }
+    return {
+      'min-height': this.commonService.desktop_device ? '350px' : '240px',
+      'max-height': this.commonService.desktop_device ? '350px' : 'none'
+    };
+  }
+
+  private navigationTabIsMultiImagesForTab(tab: any): boolean {
+    if (!tab) return false;
+    if (tab.isMultiImages) return true;
+    const list = tab.image_list || [];
+    return list.some((item: any) => item?.isActive !== false && !item?.image && item?.images?.length);
+  }
+
+  navigationSwiperClass(index: number): string {
+    const layout = this.navigationTabLayout(index);
+    const desktop = this.commonService.desktop_device;
+    switch (layout) {
+      case 'group': return desktop ? 'desktop_ghls' : 'ghls';
+      case 'material': return desktop ? 'desktop_mhls' : 'mhls';
+      case 'pair': return 'pair_hls';
+      default: return desktop ? 'desktop_phls' : 'phls';
+    }
   }
 
   onSelectNav(index: number) {
     this.activeSlideIndex = index;
-    // Clear first so *ngIf destroys the swiper element, giving the directive a
-    // fresh instance when items are set — prevents stale Swiper state after tabs switch.
-    this.navigationImageList = [];
+    const navList = [...(this.category_details?.navigationList || [])].sort(
+      (a, b) => (a.rank ?? 0) - (b.rank ?? 0)
+    );
+    const tab = navList[index];
+    if (!tab?.image_list?.length) {
+      this.navigationImageList = [];
+      return;
+    }
+    this.navigationImageList = tab.image_list.filter((el: any) => el.isActive !== false);
+    this.navSwiperKey++;
+    this.cdr.markForCheck();
 
     setTimeout(() => {
       this.checkNavigationOverflow();
-    }, 0);
-
-    setTimeout(() => {
-      this.navigationImageList = this.category_details.navigationList[index].image_list.filter(el => el.isActive);
       this.scrollToSelectedNav(index);
-      this.checkNavigationOverflow();
       this.updateNavigationButtonVisibility();
-    }, 50);
-
-    setTimeout(() => {
-      this.checkNavigationOverflow();
-      this.updateNavigationButtonVisibility();
-    }, 200);
+    }, 0);
   }
 
   // Add these new methods
@@ -1001,6 +1165,25 @@ export class CategoryComponent implements OnInit, OnDestroy, AfterViewChecked {
     return columns;
   }
 
+  onInternalLinkClick(item: any, event: Event) {
+    event.preventDefault();
+    event.stopPropagation();
+    if (!item) return;
+    if (item.link_type === 'internal' && item.link) {
+      const path = item.link.startsWith('/') ? item.link : '/' + item.link;
+      this.router.navigateByUrl(path);
+      return;
+    }
+    this.commonService.onPageRedirect({
+      ...item,
+      link_status: item.link_status !== false
+    });
+  }
+
+  trackInternalLink(index: number, item: any): string {
+    return `${item?.link || item?.name || index}`;
+  }
+
   categoryHeroImage(): string | null {
     const d = this.category_details;
     if (!d) return null;
@@ -1009,6 +1192,49 @@ export class CategoryComponent implements OnInit, OnDestroy, AfterViewChecked {
 
   hasCategoryHero(): boolean {
     return !!this.categoryHeroImage();
+  }
+
+  toggleHeroDesc(): void {
+    this.heroDescExpanded = !this.heroDescExpanded;
+    this.cdr.markForCheck();
+  }
+
+  private evaluateHeroDescToggle(fromDom = false): void {
+    const html = this.category_details?.description || '';
+    if (!html) {
+      this.heroDescNeedsToggle = false;
+      return;
+    }
+
+    const text = html.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+    // Mobile ~4 lines; show toggle when description is longer than a short blurb.
+    let needs = text.length > 140;
+
+    if (fromDom && isPlatformBrowser(this.platformId) && !this.heroDescExpanded) {
+      const el = this.heroDescEl?.nativeElement;
+      if (el) {
+        needs = el.scrollHeight > el.clientHeight + 2 || text.length > 140;
+      }
+    }
+
+    if (needs !== this.heroDescNeedsToggle) {
+      this.heroDescNeedsToggle = needs;
+      this.cdr.markForCheck();
+    }
+  }
+
+  private scheduleHeroDescOverflowCheck(): void {
+    this.evaluateHeroDescToggle(false);
+    if (!isPlatformBrowser(this.platformId)) return;
+    // Hero is inside *ngIf="!pageLoader" — re-check after it mounts.
+    setTimeout(() => this.evaluateHeroDescToggle(true), 0);
+    setTimeout(() => this.evaluateHeroDescToggle(true), 200);
+    setTimeout(() => this.evaluateHeroDescToggle(true), 600);
+    setTimeout(() => this.evaluateHeroDescToggle(true), 900);
+  }
+
+  private updateHeroDescToggleNeed(): void {
+    this.evaluateHeroDescToggle(true);
   }
 
   productGridColClass(): Record<string, boolean> {
@@ -1108,7 +1334,10 @@ export class CategoryComponent implements OnInit, OnDestroy, AfterViewChecked {
     });
 
     this.storeApi.PRODUCT_LIST_V4(payload).subscribe(result => {
-      if (initialLoad) setTimeout(() => { this.pageLoader = false; }, 500);
+      if (initialLoad) setTimeout(() => {
+        this.pageLoader = false;
+        this.scheduleHeroDescOverflowCheck();
+      }, 500);
       this.listLoader = false;
       this.scheduleCatalogToolbarSticky();
       if (result.status) {
@@ -1142,10 +1371,13 @@ export class CategoryComponent implements OnInit, OnDestroy, AfterViewChecked {
 
       if (this.category_details.navigationList?.length) {
         this.category_details.navigationList = this.category_details.navigationList.sort((a, b) => 0 - (a.rank > b.rank ? -1 : 1));
-        if (!this.navigationImageList.length) this.onSelectNav(0);
+        this.onSelectNav(0);
+      } else {
+        this.navigationImageList = [];
       }
       if (this.category_details?.faqs?.length) this.buildFAQSchema();
       this.updateMetaData();
+      this.scheduleHeroDescOverflowCheck();
     }
 
     this.parent_list = this.processRawProducts(result.list || []);
@@ -1205,8 +1437,7 @@ export class CategoryComponent implements OnInit, OnDestroy, AfterViewChecked {
       this.commonService.pageScrollTop();
       return;
     }
-    const headerOffset = this.document.getElementById('headroom-head')?.offsetHeight
-      ?? (this.commonService.screen_width < 992 ? 129 : 168);
+    const headerOffset = this.getCatalogHeaderOffsetPx();
     const top = Math.max(0, anchor.getBoundingClientRect().top + window.scrollY - headerOffset - 8);
     try {
       window.scrollTo({ top, behavior: 'smooth' });
@@ -1242,12 +1473,45 @@ export class CategoryComponent implements OnInit, OnDestroy, AfterViewChecked {
     if (!this.filtersFromApi) this.onCreateTagList(this.list, true);
   }
 
-  removeFilterChip(chip: { tagId: string; value: string }) {
-    const tag = this.tag_list.find((t: any) => t._id === chip.tagId);
+  removeFilterChip(chip: { tagId: string; name: string; value: string }) {
+    const tagLists = [this.tag_list];
+    if (this.appliedTagListSnapshot?.length) tagLists.push(this.appliedTagListSnapshot);
+    if (this.filterDraftSnapshot?.tagList?.length) tagLists.push(this.filterDraftSnapshot.tagList);
+
+    if (!this.uncheckFilterOption(chip, tagLists)) {
+      return;
+    }
+
+    const tag = this.tag_list.find((t: any) => String(t._id) === String(chip.tagId))
+      ?? this.tag_list.find((t: any) => t.name === chip.name);
     const opt = tag?.option_list?.find((o: any) => o.name === chip.value);
-    if (opt) {
-      opt.checked = false;
+
+    this.selectedOptions = {};
+    const tempParams = buildFilterQueryParamsFromTagList(this.tag_list);
+    for (const key in tempParams) {
+      if (Object.prototype.hasOwnProperty.call(tempParams, key)) {
+        this.selectedOptions[key] = tempParams[key].split('-');
+      }
+    }
+
+    this.page = 1;
+    this.tagSelected = hasCheckedFilters(this.tag_list);
+    this.appliedTagListSnapshot = null;
+    this.filterDraftSnapshot = null;
+    this.cdr.markForCheck();
+
+    if (this.useV4Catalog) {
+      this.applyCategoryIndexing();
+      if (!this.filtersDrawerOpen) {
+        this.navigateCatalogQuery(tempParams).then(() => this.fetchProductList(1));
+      } else {
+        this.fetchProductList(1);
+      }
+    } else if (tag && opt) {
       this.onTagNewFilter(tag, opt);
+    } else {
+      this.onTagFilter(true);
+      this.navigateCatalogQuery(tempParams);
     }
   }
 

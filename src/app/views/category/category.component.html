@@ -28,9 +28,18 @@
             </ol>
           </nav>
           <h1 class="category-atf-hero__title">{{ category_details.seo_details.h1_tag }}</h1>
-          <div *ngIf="category_details.description"
-            class="category-atf-hero__desc"
-            [innerHtml]="category_details.description"></div>
+          <div *ngIf="category_details.description" class="category-atf-hero__desc-wrap">
+            <div #heroDescEl
+              class="category-atf-hero__desc"
+              [class.category-atf-hero__desc--clamped]="!heroDescExpanded"
+              [innerHtml]="category_details.description"></div>
+            <button *ngIf="heroDescNeedsToggle"
+              type="button"
+              class="category-atf-hero__read-more"
+              (click)="toggleHeroDesc()">
+              {{ heroDescExpanded ? 'Read less' : 'Read more' }}
+            </button>
+          </div>
         </div>
       </div>
       <div class="category-atf-hero__media">
@@ -76,23 +85,29 @@
     <!-- navigation sections -->
     <section class="primary-section category-filter-section category-atf-grid">
       <div class="container-fluid">
-        <div class="row section-height-big" [ngStyle]="{
-          'min-height': commonService.desktop_device ? '350px' : '340px',
-          'max-height': commonService.desktop_device ? '350px' : '340px'
-        }">
+        <div class="row section-height-big" [ngStyle]="navigationSectionStyle()">
           <div *ngIf="navigationImageList.length" class="col-12 px-0">
-            <!-- single image slider -->
-            <ng-container *ngIf="!category_details?.navigationList[activeSlideIndex]?.isMultiImages">
-              <!-- Design & Occasion -->
-              <div *ngIf="(activeSlideIndex==0 || activeSlideIndex==1 || activeSlideIndex==2 || category_details?.navigationList?.length===1) && navigationImageList.length" class="swiper-container multi-slider product-slider featured-sections px-max"
-                id="navigationHighlights" [ngClass]="commonService.desktop_device? 'desktop_phls': 'phls'" appCategoryHighlights>
+            <ng-container [ngSwitch]="navigationTabLayout(activeSlideIndex)">
+
+              <!-- Standard card (Design, Colour, Region, Occasion, …) -->
+              <div *ngSwitchCase="'card'"
+                class="swiper-container multi-slider product-slider featured-sections px-max"
+                id="navigationHighlights"
+                [attr.data-nav-revision]="activeSlideIndex + '-' + navSwiperKey"
+                [ngClass]="navigationSwiperClass(activeSlideIndex)"
+                appCategoryHighlights>
                 <div class="swiper-wrapper">
                   <div *ngFor="let x of navigationImageList | orderAsc: 'rank'; let i=index;" class="swiper-slide">
                     <a [routerLink]="commonService.getRedirectPath(x)"
                        (click)="$event.preventDefault(); commonService.onPageRedirect(x)"
                        class="category-card cursor">
-                      <img width="100%" height="100%" appImgLazyLoad [ImagelazyLoad]="imgBaseUrl+x.image" alt="Image">
-                      <p class="card-text">{{ x.heading }}</p>
+                      <img *ngIf="navigationImageSrc(x) as navImg"
+                        width="100%" height="100%"
+                        [src]="navImg"
+                        [alt]="x.heading || 'Image'"
+                        loading="eager"
+                        decoding="async">
+                      <h2 class="card-text">{{ x.heading }}</h2>
                     </a>
                   </div>
                 </div>
@@ -105,19 +120,28 @@
                   </div>
                 </ng-container>
               </div>
-              <!-- Material -->
-              <div *ngIf="activeSlideIndex==3 && navigationImageList.length" class="swiper-container multi-slider product-slider featured-sections px-max"
-                id="navigationHighlights" [ngClass]="commonService.desktop_device? 'desktop_mhls': 'mhls'" appCategoryHighlights>
+
+              <!-- Material (image + title + description) -->
+              <div *ngSwitchCase="'material'"
+                class="swiper-container multi-slider product-slider featured-sections px-max"
+                id="navigationHighlights"
+                [attr.data-nav-revision]="activeSlideIndex + '-' + navSwiperKey"
+                [ngClass]="navigationSwiperClass(activeSlideIndex)"
+                appCategoryHighlights>
                 <div class="swiper-wrapper">
                   <div *ngFor="let x of navigationImageList | orderAsc: 'rank'; let i=index;" class="swiper-slide">
                     <a [routerLink]="commonService.getRedirectPath(x)"
                        (click)="$event.preventDefault(); commonService.onPageRedirect(x)"
                        class="category-second-card cursor">
-                      <img width="100%" height="100%" appImgLazyLoad [ImagelazyLoad]="imgBaseUrl+x.image" alt="Image">
+                      <img *ngIf="navigationImageSrc(x) as navImg"
+                        width="100%" height="100%"
+                        [src]="navImg"
+                        [alt]="x.heading || 'Image'"
+                        loading="eager"
+                        decoding="async">
                       <div class="card-body">
-                        <h3>{{ x.heading }}</h3>
-                        <p *ngIf="x.sub_heading">{{x.sub_heading}}</p>
-                        <span class="view-all">View All</span>
+                        <h2>{{ x.heading }}</h2>
+                        <p *ngIf="x.sub_heading">{{ x.sub_heading }}</p>
                       </div>
                     </a>
                   </div>
@@ -131,74 +155,97 @@
                   </div>
                 </ng-container>
               </div>
-              <!-- Weave -->
-              <div *ngIf="activeSlideIndex==4 && navigationImageList.length" class="swiper-container multi-slider product-slider featured-sections px-max"
-                id="navigationHighlights" [ngClass]="commonService.desktop_device? 'desktop_whls': 'whls'" appCategoryHighlights>
+
+              <!-- 2–4 items: desktop split cards + mobile swiper 1.5 -->
+              <ng-container *ngSwitchCase="'pair'">
+                <div *ngIf="commonService?.desktop_device"
+                  class="category-pair-grid px-max"
+                  [attr.data-count]="navigationImageList.length">
+                  <a *ngFor="let x of navigationImageList | orderAsc: 'rank'"
+                    [routerLink]="commonService.getRedirectPath(x)"
+                    (click)="$event.preventDefault(); commonService.onPageRedirect(x)"
+                    class="category-third-card cursor">
+                    <div class="category-third-card__media">
+                      <img *ngIf="navigationImageSrc(x) as navImg"
+                        width="100%" height="100%"
+                        [src]="navImg"
+                        [alt]="x.heading || 'Image'"
+                        loading="eager"
+                        decoding="async">
+                    </div>
+                    <div class="category-third-card__content">
+                      <div class="card-body">
+                        <h2>{{ x.heading }}</h2>
+                        <p *ngIf="x.sub_heading">{{ x.sub_heading }}</p>
+                        <span class="category-pair-view-all">View All</span>
+                      </div>
+                    </div>
+                  </a>
+                </div>
+
+                <div *ngIf="!commonService?.desktop_device"
+                  class="swiper-container multi-slider product-slider featured-sections px-max pair_hls"
+                  id="navigationHighlights"
+                  [attr.data-nav-revision]="activeSlideIndex + '-' + navSwiperKey"
+                  [attr.data-slide-count]="navigationImageList.length"
+                  appCategoryHighlights>
+                  <div class="swiper-wrapper">
+                    <div *ngFor="let x of navigationImageList | orderAsc: 'rank'; let i=index;" class="swiper-slide">
+                      <a [routerLink]="commonService.getRedirectPath(x)"
+                         (click)="$event.preventDefault(); commonService.onPageRedirect(x)"
+                         class="category-card cursor">
+                        <img *ngIf="navigationImageSrc(x) as navImg"
+                          width="100%" height="100%"
+                          [src]="navImg"
+                          [alt]="x.heading || 'Image'"
+                          loading="eager"
+                          decoding="async">
+                        <h2 class="card-text">{{ x.heading }}</h2>
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </ng-container>
+
+              <!-- Group / multi-image (By Colour clusters) -->
+              <div *ngSwitchCase="'group'"
+                class="swiper-container multi-slider product-slider featured-sections px-max"
+                id="navigationHighlights"
+                [attr.data-nav-revision]="activeSlideIndex + '-' + navSwiperKey"
+                [ngClass]="navigationSwiperClass(activeSlideIndex)"
+                appCategoryHighlights>
                 <div class="swiper-wrapper">
                   <div *ngFor="let x of navigationImageList | orderAsc: 'rank'; let i=index;" class="swiper-slide">
                     <a [routerLink]="commonService.getRedirectPath(x)"
                        (click)="$event.preventDefault(); commonService.onPageRedirect(x)"
-                       class="category-third-card row m-0 cursor">
-                      <div class="col-6 px-0 h-100">
-                        <img width="100%" height="100%" appImgLazyLoad [ImagelazyLoad]="imgBaseUrl+x.image" alt="Image">
-                      </div>
-                      <div class="col-6 px-0">
-                        <div class="card-body">
-                          <h3>{{ x.heading }}</h3>
-                          <p *ngIf="x.sub_heading">{{x.sub_heading}}</p>
-                          <span class="view-all">View All</span>
+                       class="category-card-two">
+                      <div>
+                        <h2>{{ x.heading }}</h2>
+                        <div *ngIf="x.images?.length" class="avatars">
+                          <ng-container *ngFor="let y of x.images;">
+                            <img *ngIf="navigationImageSrc(y) as avatarImg"
+                              width="100%" height="100%"
+                              [src]="avatarImg"
+                              [alt]="x.heading || 'Image'">
+                          </ng-container>
+                          <span *ngIf="x.totalSections" class="more">+{{ x.totalSections }}</span>
                         </div>
+                        <p *ngIf="x.sub_heading">{{ x.sub_heading }}</p>
                       </div>
                     </a>
                   </div>
                 </div>
                 <ng-container *ngIf="commonService?.desktop_device">
-                  <div id="highlight_next" class="swiper-button swiper-button-next">
+                  <div id="group_highlight_next" class="swiper-button swiper-button-next">
                     <lucide-icon name="chevron-right" [size]="20" stroke="1" color="white"></lucide-icon>
                   </div>
-                  <div id="highlight_prev" class="swiper-button swiper-button-prev">
+                  <div id="group_highlight_prev" class="swiper-button swiper-button-prev">
                     <lucide-icon name="chevron-left" [size]="20" stroke="1" color="white"></lucide-icon>
                   </div>
                 </ng-container>
               </div>
-            </ng-container>
 
-            <!-- group-image slider -->
-            <div *ngIf="category_details?.navigationList[activeSlideIndex]?.isMultiImages && navigationImageList.length"
-               class="swiper-container multi-slider product-slider featured-sections px-max"
-               id="navigationHighlights" 
-               [ngClass]="commonService.desktop_device? 'desktop_ghls': 'ghls'"
-               appCategoryHighlights>
-              <div class="swiper-wrapper">
-                <div *ngFor="let x of navigationImageList | orderAsc: 'rank'; let i=index;" class="swiper-slide">
-                  <a [routerLink]="commonService.getRedirectPath(x)"
-                     (click)="$event.preventDefault(); commonService.onPageRedirect(x)"
-                     class="category-card-two">
-                    <div>
-                      <h3>{{ x.heading }}</h3>
-                      <div *ngIf="x.images?.length" class="avatars">
-                        <ng-container *ngFor="let y of x.images;">
-                          <img width="100%" height="100%" [src]="imgBaseUrl+y.image" alt="Image">
-                        </ng-container>
-                        <span *ngIf="x.totalSections" class="more">+{{x.totalSections}}</span>
-                      </div>
-                      <p *ngIf="x.sub_heading">{{x.sub_heading}}</p>
-                    </div>
-                    <div class="pt-2">
-                      <span class="view-all" style="margin-top:auto">View All</span>
-                    </div>
-                  </a>
-                </div>
-              </div>
-              <ng-container *ngIf="commonService?.desktop_device">
-                <div id="group_highlight_next" class="swiper-button swiper-button-next">
-                  <lucide-icon name="chevron-right" [size]="20" stroke="1" color="white"></lucide-icon>
-                </div>
-                <div id="group_highlight_prev" class="swiper-button swiper-button-prev">
-                  <lucide-icon name="chevron-left" [size]="20" stroke="1" color="white"></lucide-icon>
-                </div>
-              </ng-container>
-            </div>
+            </ng-container>
           </div>
         </div>
       </div>
@@ -399,12 +446,12 @@
                 </div>
 
                 <div *ngIf="filterChips.length" class="catalog-active-filters">
-                  <span *ngFor="let chip of filterChips" class="catalog-filter-chip">
+                  <span *ngFor="let chip of filterChips; trackBy: trackFilterChip" class="catalog-filter-chip">
                     <span class="catalog-filter-chip__label">{{ chip.name }}:</span>
                     <span class="catalog-filter-chip__value">{{ chip.value }}</span>
                     <button type="button" class="catalog-filter-chip__remove" aria-label="Remove filter"
-                      (click)="removeFilterChip(chip)">
-                      <i class="material-icons">close</i>
+                      (mousedown)="$event.preventDefault(); $event.stopPropagation(); removeFilterChip(chip)">
+                      <span class="catalog-filter-chip__remove-icon" aria-hidden="true">&times;</span>
                     </button>
                   </span>
                   <button type="button" class="catalog-filter-chip__clear" (click)="clearTagFilter()">Clear all</button>
@@ -669,7 +716,7 @@
     <div class="container-fluid">
       <div class="row">
         <div class="col-12 px-0 d-flex justify-content-between align-items-end">
-          <div class="titles custom-title w-auto pl-0">
+          <div class="titles custom-title w-auto">
             <h2 class="mb-0">Articles</h2>
             <p class="mt-2 mb-0">Stories woven in silk and tradition</p>
           </div>
@@ -677,9 +724,20 @@
             <a class="primary-btn outline-btn" routerLink="/blogs" aria-label="View all blog posts">View All</a>
           </div>
         </div>
-        <div class="row d-flex flex-wrap align-items-stretch home-blog-grid">
+
+        <div *ngIf="commonService.desktop_device" class="row d-flex flex-wrap align-items-stretch home-blog-grid">
           <div class="col-12 col-md-6 col-lg-3 d-flex mb-4" *ngFor="let blog of blog_list">
             <app-blog-card [item]="blog" [imgBaseUrl]="imgBaseUrl"></app-blog-card>
+          </div>
+        </div>
+
+        <div *ngIf="!commonService.desktop_device" class="col-12 px-0">
+          <div class="swiper-container blogslider_cat px-max" appCategoryHighlights>
+            <div class="swiper-wrapper">
+              <div class="swiper-slide d-flex" *ngFor="let blog of blog_list">
+                <app-blog-card [item]="blog" [imgBaseUrl]="imgBaseUrl"></app-blog-card>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -765,7 +823,7 @@
           </div>
         </div>
         <div class="col-md-12">
-          <accordion [closeOthers]="true" [isAnimated]="true" class="catalog-collections__accordion">
+          <accordion [closeOthers]="true" [isAnimated]="false" class="catalog-collections__accordion">
             <ng-container *ngFor="let x of commonService.footer_seo_links | slice:0: (pageUrl.indexOf('kanjivaram')==-1)? 2: commonService.footer_seo_links.length | orderAsc: 'rank'; let i=index;">
               <accordion-group [isOpen]="i===0">
                 <div accordion-heading class="catalog-collections__heading">
@@ -777,11 +835,12 @@
                   <lucide-icon class="catalog-collections__chevron" name="chevron-down" [size]="18" stroke="1.5"></lucide-icon>
                 </div>
                 <div class="row catalog-collections__links">
-                  <div class="col-md-4 col-sm-6" *ngFor="let column of internalLinksColumns(x.links)">
+                  <div class="col-6 col-md-4" *ngFor="let column of (x.links | internalLinksColumns: (commonService.screen_width < 768 ? 2 : 3))">
                     <ul class="catalog-collections__link-list pl-0">
-                      <li *ngFor="let y of column">
-                        <a class="collect-list" [routerLink]="(y.link_type=='internal')? y.link: null"
-                          (click)="(y.link_type!='internal')? commonService.onPageRedirect(y): null;">
+                      <li *ngFor="let y of column; trackBy: trackInternalLink">
+                        <a class="collect-list"
+                          [attr.href]="(y.link_type=='internal' && y.link) ? y.link : '#'"
+                          (click)="onInternalLinkClick(y, $event)">
                           {{y.name}}
                         </a>
                       </li>

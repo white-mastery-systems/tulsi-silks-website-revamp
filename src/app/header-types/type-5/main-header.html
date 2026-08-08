@@ -1,4 +1,4 @@
-﻿<a href="#main-content" class="skip-link">Skip to main content</a>
+<a href="#main-content" class="skip-link">Skip to main content</a>
 
 <!-- header -->
 <header class="sticky-header" id="headroom-head">
@@ -23,28 +23,11 @@
           <!-- navbar -->
           <nav class="cd-nav">
             <ul id="cd-primary-nav" class="cd-primary-nav is-fixed">
-              <!-- currency variation -->
-              <ng-container *ngIf="commonService.ys_features.indexOf('currency_variation')!=-1 && !commonService.application_setting?.hide_currency && commonService?.screen_width<=991">
-                <!-- currency drop-down -->
-                <li *ngIf="!commonService.ipBasedCurrency && commonService.currency_types.length>1">
-                  <label class="sr-only" for="header-currency-select-mobile">Currency</label>
-                  <select
-                    id="header-currency-select-mobile"
-                    class="currency-select"
-                    name="temp_currency"
-                    aria-label="Select currency"
-                    (change)="onCurrencyChange()"
-                    [(ngModel)]="commonService.temp_currency"
-                    [disabled]="router.url.indexOf('/gift-cards/')!=-1"
-                  >
-                    <option *ngFor="let x of commonService.currency_types; let i=index;" [ngValue]="x">{{x.country_code}}</option>
-                  </select>
-                </li>
-                <!-- ip based -->
-                <li *ngIf="commonService.ipBasedCurrency || commonService.currency_types.length===1">
-                  <a>{{commonService.temp_currency?.country_code}}</a>
-                </li>
-              </ng-container>
+              <li class="mobile-nav-toolbar">
+                <button type="button" class="mobile-nav-close" id="reset-menu" aria-label="Close navigation menu">
+                  <lucide-icon name="x" [size]="22" stroke="1.5" color="black" aria-hidden="true"></lucide-icon>
+                </button>
+              </li>
 
               <!-- mobile menu list -->
               <li *ngFor="let menu of commonService.menu_list | orderAsc: 'rank'; let i=index; trackBy: trackByMenuId" [ngClass]="{ 'has-children mega-menu slim-scroll': menu?.sec_count, 'pos-relative': menu?.sec_count<=2 }">
@@ -187,22 +170,46 @@
                 <li>
                   <a routerLink="/wishlist">My Wishlist</a>
                 </li>
-                <li>
-                  <a routerLink="/cart">Shopping Bag</a>
+              </ng-container>
+
+              <!-- currency at bottom of mobile sidebar -->
+              <ng-container *ngIf="commonService.ys_features.indexOf('currency_variation')!=-1 && !commonService.application_setting?.hide_currency && commonService?.screen_width<=991">
+                <li class="mobile-nav-currency" *ngIf="!commonService.ipBasedCurrency && commonService.currency_types.length>1">
+                  <label class="sr-only" for="header-currency-select-mobile">Currency</label>
+                  <select
+                    id="header-currency-select-mobile"
+                    class="currency-select"
+                    name="temp_currency"
+                    aria-label="Select currency"
+                    (change)="onCurrencyChange()"
+                    [(ngModel)]="commonService.temp_currency"
+                    [disabled]="router.url.indexOf('/gift-cards/')!=-1"
+                  >
+                    <option *ngFor="let x of commonService.currency_types; let i=index;" [ngValue]="x">{{x.country_code}}</option>
+                  </select>
+                </li>
+                <li class="mobile-nav-currency" *ngIf="commonService.ipBasedCurrency || commonService.currency_types.length===1">
+                  <a>{{commonService.temp_currency?.country_code}}</a>
                 </li>
               </ng-container>
             </ul>
           </nav>
           <!-- #navbar -->
 
-          <ul class="cd-header-buttons">
-            <!-- for mobile screen -->
-            <li *ngIf="commonService?.screen_width<=991">
-              <a aria-label="Open navigation menu" class="cd-nav-trigger" href="#cd-primary-nav">
-                <span></span>
-              </a>
-            </li>
-          </ul>
+          <div class="mobile-header-controls">
+            <ul class="cd-header-buttons">
+              <!-- for mobile screen -->
+              <li *ngIf="commonService?.screen_width<=991">
+                <button type="button" aria-label="Open navigation menu" class="cd-nav-trigger">
+                  <span></span>
+                </button>
+              </li>
+            </ul>
+            <!-- search beside hamburger -->
+            <ng-container *ngIf="commonService.ys_features.indexOf('product_search')!=-1">
+              <ng-template [ngTemplateOutlet]="headerSearchIcon"></ng-template>
+            </ng-container>
+          </div>
         </div>
 
         <div class="col-xl-3 col-4 header-left-sec order-2">
@@ -348,9 +355,6 @@
                   <li>
                     <a routerLink="/wishlist">My Wishlist</a>
                   </li>
-                  <li>
-                    <a routerLink="/cart">Shopping Bag</a>
-                  </li>
                 </ng-container>
               </ul>
             </nav>
@@ -359,9 +363,9 @@
             <ul class="cd-header-buttons">
               <!-- for mobile screen -->
               <li *ngIf="commonService?.screen_width<=991">
-                <a aria-label="Open navigation menu" class="cd-nav-trigger" href="#cd-primary-nav">
+                <button type="button" aria-label="Open navigation menu" class="cd-nav-trigger">
                   <span></span>
-                </a>
+                </button>
               </li>
             </ul>
           </div>
@@ -376,11 +380,36 @@
   </header>
 </header>
 
+<!-- Dim page content while mobile sidebar is open (click closes menu) -->
+<div class="cd-overlay" aria-hidden="true"></div>
+
 <!-- header logo -->
 <ng-template #headerLogo>
   <div class="cd-logo logo">
     <a (click)="commonService.resetMegaMenu();" routerLink="/">
       <img fetchpriority="high" width="100%" height="100%" class="logo-img" decoding="async" [src]="imgBaseUrl+commonService.store_logo" alt="{{commonService.store_details?.name}}">
+    </a>
+  </div>
+</ng-template>
+
+<ng-template #headerSearchIcon>
+  <div class="header-search-cluster header-icon-container">
+    <a
+      routerLink="/search"
+      class="btn-search header-s-icon"
+      aria-label="Search"
+    >
+      <div class="tooltip-wrapper">
+        <img
+          src="assets/images/icons/search-custom.svg"
+          alt=""
+          width="20"
+          height="22"
+          class="header-search-icon"
+          aria-hidden="true"
+        >
+        <div class="custom-tooltip" aria-hidden="true">Search</div>
+      </div>
     </a>
   </div>
 </ng-template>
@@ -410,32 +439,12 @@
       </div>
     </div>
   </ng-container>
-  <!-- search + visual search -->
-  <div *ngIf="commonService.ys_features.indexOf('product_search')!=-1" class="header-search-cluster header-icon-container">
-    <a
-      routerLink="/search"
-      class="btn-search header-s-icon"
-      aria-label="Search"
-    >
-      <div class="tooltip-wrapper">
-        <lucide-icon name="search" [size]="20" stroke="1" color="black" aria-hidden="true"></lucide-icon>
-        <div class="custom-tooltip" aria-hidden="true">Search</div>
-      </div>
-    </a>
-    <a
-      routerLink="/search"
-      class="btn-search-camera header-s-icon"
-      aria-label="Visual image search"
-      title="Search by image"
-    >
-      <div class="tooltip-wrapper">
-        <lucide-icon name="camera" [size]="20" stroke="1" color="black" aria-hidden="true"></lucide-icon>
-        <div class="custom-tooltip" aria-hidden="true">Image search</div>
-      </div>
-    </a>
-  </div>
+  <!-- search (desktop toolbar only; mobile search sits beside hamburger) -->
+  <ng-container *ngIf="commonService.ys_features.indexOf('product_search')!=-1 && commonService.desktop_device">
+    <ng-container *ngTemplateOutlet="headerSearchIcon"></ng-container>
+  </ng-container>
   <!-- wishlist -->
-  <div *ngIf="commonService?.screen_width>=991" class="header-icon-container">
+  <div class="header-icon-container">
     <a
       class="header-s-icon"
       [hidden]="!commonService?.window_loaded"
@@ -456,7 +465,7 @@
     </a>
   </div>
   <!-- my account -->
-  <div *ngIf="commonService?.screen_width>=991" class="header-icon-container">
+  <div class="header-icon-container">
     <a class="header-s-icon" routerLink="/account" aria-label="My account">
       <div class="tooltip-wrapper">
         <lucide-icon name="user" [size]="20" stroke="1" color="black" aria-hidden="true"></lucide-icon>

@@ -1,5 +1,6 @@
 import { Component, Input, OnInit, OnChanges, SimpleChanges, Inject, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
+import { Router } from '@angular/router';
 import { environment } from '../../../../environments/environment';
 import { CommonService } from '../../../services/common.service';
 import { StoreApiService } from '../../../services/store-api.service';
@@ -24,6 +25,7 @@ export class CatalogSegmentsComponent implements OnInit, OnChanges {
   constructor(
     public commonService: CommonService,
     private storeApi: StoreApiService,
+    private router: Router,
     @Inject(PLATFORM_ID) private platformId: object
   ) {}
 
@@ -53,14 +55,33 @@ export class CatalogSegmentsComponent implements OnInit, OnChanges {
   }
 
   segmentBtnLink(item: any): string | null {
-    if (!item?.btn_link || item.btn_link_type !== 'internal') return null;
-    return item.btn_link;
+    const linkType = item?.btn_link_type || item?.link_type;
+    const link = item?.btn_link || item?.link;
+    if (!link || linkType !== 'internal') return null;
+    return link.startsWith('/') || link.startsWith('http') ? link : '/' + link;
   }
 
   onSegmentBtnClick(item: any, event: Event) {
-    if (item?.btn_link_type === 'internal' && item?.btn_link) return;
     event.preventDefault();
-    this.commonService.onPageRedirect(item);
+    event.stopPropagation();
+    const linkType = item?.btn_link_type || item?.link_type;
+    const link = item?.btn_link || item?.link;
+    if (linkType === 'internal' && link) {
+      if (link.startsWith('http://') || link.startsWith('https://')) {
+        if (isPlatformBrowser(this.platformId)) window.open(link, '_self');
+        return;
+      }
+      const path = link.startsWith('/') ? link : '/' + link;
+      this.router.navigateByUrl(path);
+      return;
+    }
+    this.commonService.onPageRedirect({
+      link_status: true,
+      link_type: linkType,
+      link,
+      category_id: item?.category_id,
+      product_id: item?.product_id
+    });
   }
 
   hasIconCardCta(segment: CatalogPageSegment): boolean {
@@ -103,6 +124,10 @@ export class CatalogSegmentsComponent implements OnInit, OnChanges {
       if (chunk.length) columns.push(chunk);
     }
     return columns;
+  }
+
+  trackSegmentLink(index: number, link: any): string {
+    return `${link?.link || link?.btn_text || index}`;
   }
 
   secondaryFeaturesLayout(features: any[]): 'grid' | 'stack' {

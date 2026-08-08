@@ -31,6 +31,7 @@ export class AppComponent implements AfterViewInit, OnDestroy {
   imgBaseUrl: string = environment.img_baseurl;
   isConnected = true; chatLoaded: boolean;
   headroomInit: boolean; intracted: boolean;
+  private headerScriptsPromise: Promise<void> | null = null;
   /** Desktop `/category/*` disables sticky hide/show — header stays unobstructed for filters. */
   private vanillaHeadroomRouteFrozen = false;
   /** Last scroll Y sampled when applying vanilla Headroom logic (outside tolerance). */
@@ -237,6 +238,9 @@ export class AppComponent implements AfterViewInit, OnDestroy {
   ngAfterViewInit() {
     if (!isPlatformBrowser(this.platformId)) return;
 
+    // Capture hamburger before lazy scripts exist so first tap opens the drawer
+    this.document.addEventListener('click', this.onHamburgerCapture, true);
+
     // Passive + rAF-throttled scroll listener: replaces @HostListener('window:scroll').
     // `passive: true` tells the browser we won't preventDefault(), so it can scroll
     // without waiting for our JS — critical for INP on touch devices.
@@ -265,7 +269,7 @@ export class AppComponent implements AfterViewInit, OnDestroy {
       fromEvent(document, 'mousemove').subscribe(() => this.onInteract());
       fromEvent(document, 'touchmove').subscribe(() => this.onInteract());
       fromEvent(document, 'scroll').subscribe(() => this.onInteract());
-      fromEvent(document, 'click').subscribe(() => this.onInteract());
+      fromEvent(document, 'click').subscribe((event: Event) => this.onInteract(event));
       // check guest address
       if (sessionStorage.getItem("checkout_address")) {
         const checkoutAddress = this.commonService.decryptData(sessionStorage.getItem("checkout_address"));
@@ -279,6 +283,7 @@ export class AppComponent implements AfterViewInit, OnDestroy {
 
   ngOnDestroy() {
     if (!isPlatformBrowser(this.platformId)) return;
+    this.document.removeEventListener('click', this.onHamburgerCapture, true);
     this.detachPendingNewsletterAutoOpen();
     window.removeEventListener('scroll', this.boundScrollHandler);
     window.removeEventListener('resize', this.boundResizeHandler);
@@ -304,16 +309,56 @@ export class AppComponent implements AfterViewInit, OnDestroy {
     this.newsletterOnFirstInteraction = null;
   }
 
-  onInteract() {
+  onInteract(event?: Event) {
     if (this.commonService.storeDataLoaded && !this.intracted) {
       this.intracted = true;
-      // script
-      this.assetLoader.load('jquery').then(() => {
-        this.commonService.jsLoaded = true;
-        this.assetLoader.load('script-js').then(() => { }).catch(error => console.log("err", error));
-      }).catch(error => console.log("err", error));
+      this.ensureHeaderScripts().catch(error => console.log("err", error));
     }
   }
+
+  /** Lazy-load header/nav scripts once; shared by general interact + first hamburger tap. */
+  private ensureHeaderScripts(): Promise<void> {
+    if (!this.headerScriptsPromise) {
+      this.headerScriptsPromise = this.assetLoader
+        .load('jquery')
+        .then(() => {
+          this.commonService.jsLoaded = true;
+          this.intracted = true;
+          return this.assetLoader.load('script-js');
+        })
+        .then(() => undefined);
+    }
+    return this.headerScriptsPromise;
+  }
+
+  /**
+   * First hamburger tap often happens before jquery/script.js are loaded.
+   * Capture it, load scripts, then open the drawer so the user doesn't need a 2nd tap.
+   */
+  private onHamburgerCapture = (event: Event): void => {
+    const trigger = (event.target as Element | null)?.closest?.('.cd-nav-trigger') as HTMLElement | null;
+    if (!trigger) {
+      return;
+    }
+
+    // Scripts already bound — allow the jQuery handler to run normally
+    if (typeof (window as any).__ysOpenMobileNav === 'function') {
+      return;
+    }
+
+    event.preventDefault();
+    event.stopPropagation();
+    event.stopImmediatePropagation();
+
+    this.ensureHeaderScripts()
+      .then(() => {
+        const open = (window as any).__ysOpenMobileNav;
+        if (typeof open === 'function') {
+          open(trigger);
+        }
+      })
+      .catch(() => {});
+  };
 
   ngOnInit() {
     if (this.commonService.store_id) {
@@ -666,14 +711,21 @@ export class AppComponent implements AfterViewInit, OnDestroy {
       this.router.events.subscribe(event => {
         if (event instanceof NavigationEnd) {
 
-          const isCategoryPage = event.url.includes('/category/');
-
           if (isPlatformBrowser(this.platformId)) {
             const navPath = (event.urlAfterRedirects || event.url || '').split(/[?#]/)[0];
             if (navPath !== '/' && navPath !== '') {
               this.detachPendingNewsletterAutoOpen();
             }
-            if (this.commonService.desktop_device && isCategoryPage) {
+            const isCatalogListingPage = navPath.startsWith('/category/')
+              || [
+                '/all-products',
+                '/new-arrivals',
+                '/on-sale',
+                '/featured-products',
+                '/best-sellers',
+                '/recommended-products'
+              ].includes(navPath);
+            if (this.commonService.desktop_device && isCatalogListingPage) {
               this.vanillaHeadroomRouteFrozen = true;
               this.clearVanillaHeadroomAnimationClasses();
             } else {

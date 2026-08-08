@@ -12,46 +12,68 @@ declare const $: any;
 export class CategoryHighlightsDirective {
 
   private observer: any;
-  loadedElements: any = [];
+  private navRevision = '';
 
   groupHighlights: any = {
     auto_play: false,
     loop: true,
     break_points: {
-      1024: { slidesPerView: 5.5, spaceBetween: 15 },
-      768: { slidesPerView: 2.15, spaceBetween: 15 },
-      640: { slidesPerView: 1.15, spaceBetween: 15 },
-      320: { slidesPerView: 1.15, spaceBetween: 15 }
+      1024: { slidesPerView: 6, spaceBetween: 8 },
+      768: { slidesPerView: 4, spaceBetween: 8 },
+      640: { slidesPerView: 3, spaceBetween: 8 },
+      320: { slidesPerView: 2.5, spaceBetween: 8 }
     }
   };
   highlights: any = {
     auto_play: false,
     loop: true,
     break_points: {
-      1024: { slidesPerView: 5.5, spaceBetween: 15 },
-      768: { slidesPerView: 2.15, spaceBetween: 15 },
-      640: { slidesPerView: 1.15, spaceBetween: 15 },
-      320: { slidesPerView: 1.15, spaceBetween: 15 }
+      1024: { slidesPerView: 6, spaceBetween: 8 },
+      768: { slidesPerView: 4, spaceBetween: 8 },
+      640: { slidesPerView: 3, spaceBetween: 8 },
+      320: { slidesPerView: 2.5, spaceBetween: 8 }
     }
   };
   materialHighlights: any = {
     auto_play: false,
     loop: true,
     break_points: {
-      1024: { slidesPerView: 5.5, spaceBetween: 15 },
-      768: { slidesPerView: 2.15, spaceBetween: 15 },
-      640: { slidesPerView: 1.15, spaceBetween: 15 },
-      320: { slidesPerView: 1.15, spaceBetween: 15 }
+      1024: { slidesPerView: 6, spaceBetween: 8 },
+      768: { slidesPerView: 4, spaceBetween: 8 },
+      640: { slidesPerView: 3, spaceBetween: 8 },
+      320: { slidesPerView: 2.5, spaceBetween: 8 }
     }
   };
   weaveHighlights: any = {
     auto_play: false,
     loop: true,
     break_points: {
-      1024: { slidesPerView: 3, spaceBetween: 15 },
-      768: { slidesPerView: 2.15, spaceBetween: 15 },
-      640: { slidesPerView: 1.15, spaceBetween: 15 },
-      320: { slidesPerView: 1.15, spaceBetween: 15 }
+      1024: { slidesPerView: 3, spaceBetween: 12 },
+      768: { slidesPerView: 2, spaceBetween: 8 },
+      640: { slidesPerView: 2.5, spaceBetween: 8 },
+      320: { slidesPerView: 2.5, spaceBetween: 8 }
+    }
+  };
+  /** 2–4 item tabs on mobile — show ~2.5 slides. */
+  pairHighlights: any = {
+    auto_play: false,
+    loop: false,
+    break_points: {
+      768: { slidesPerView: 2.5, spaceBetween: 8 },
+      640: { slidesPerView: 2.5, spaceBetween: 8 },
+      320: { slidesPerView: 2.5, spaceBetween: 8 }
+    }
+  };
+
+  /** Category blogs — match home mobile blog slider peek. */
+  blogHighlights: any = {
+    auto_play: false,
+    loop: false,
+    break_points: {
+      1024: { slidesPerView: 4, spaceBetween: 15 },
+      768: { slidesPerView: 2, spaceBetween: 15 },
+      640: { slidesPerView: 2, spaceBetween: 15 },
+      320: { slidesPerView: 1.5, spaceBetween: 15 }
     }
   };
 
@@ -88,171 +110,115 @@ export class CategoryHighlightsDirective {
     }
   }
 
-  /** Caps each breakpoint's slidesPerView to the actual slide count so a single
-   *  item fills the full container width instead of leaving 3+ empty slots. */
-  private adaptBreakpoints(base: any): any {
-    const count = this._element.nativeElement.querySelectorAll('.swiper-slide').length;
-    if (!count) return base;
-    const out: any = {};
-    for (const bp of Object.keys(base)) {
-      out[bp] = { ...base[bp], slidesPerView: Math.min(base[bp].slidesPerView, count) };
-    }
-    return out;
-  }
-
   fetchSwipeElements() {
-    let classList: any = this._element.nativeElement.classList;
-    for(let i=0; i<classList.length; i++) {
-      if(classList[i].includes("phls") || classList[i].includes("whls") || classList[i].includes("mhls") || classList[i].includes("ghls") || classList[i].includes("color_slider") || classList[i].includes("section_slider")) {
-        let swipeElement = classList[i];
-        if(classList[i].includes("phls") && isPlatformBrowser(this.platformId)) {
-          if(this.loadedElements.indexOf(swipeElement) == -1) {
-            this.loadedElements.push(swipeElement);
-            // swiper config
-            let swipeConfig: any = {
-              speed: 700,
-              loop: false,
-              breakpoints: this.adaptBreakpoints(this.highlights.break_points),
-              navigation: {
-                nextEl: '#highlight_next',
-                prevEl: '#highlight_prev'
-              }
-            }
-            let autoPlay = this.highlights.auto_play;
-            if(autoPlay) {
-              swipeConfig.autoplay = {
-                delay: 1000,
-                disableOnInteraction: false
-              }
-            }
-            // initialize swiper
-            new Swiper('.'+swipeElement, swipeConfig);
-            if(autoPlay && swipeElement.includes("desktop")) {
-              $('.'+swipeElement).hover(
-                function(this: any) { this.swiper.autoplay.stop(); },
-                function(this: any) { this.swiper.autoplay.start(); }
-              );
-            }
+    if (!isPlatformBrowser(this.platformId)) return;
+
+    const el = this._element.nativeElement;
+    const slideCount = el.querySelectorAll('.swiper-slide').length;
+    if (!slideCount) return;
+
+    const revision = el.getAttribute('data-nav-revision') || '';
+    const isNavSwiper = !!revision;
+    if (isNavSwiper && revision === this.navRevision && (el as any).swiper) {
+      (el as any).swiper.update();
+      return;
+    }
+    if (isNavSwiper) {
+      this.navRevision = revision;
+    }
+
+    const classList: any = el.classList;
+    for (let i = 0; i < classList.length; i++) {
+      if (classList[i].includes('pair_hls') || classList[i].includes('phls') || classList[i].includes('whls') || classList[i].includes('mhls') || classList[i].includes('ghls') || classList[i].includes('blogslider') || classList[i].includes('color_slider') || classList[i].includes('section_slider')) {
+        const swipeElement = classList[i];
+        if (classList[i].includes('blogslider')) {
+          this.initOrRefreshSwiper(el, {
+            speed: 500,
+            loop: false,
+            slidesPerView: 1.5,
+            spaceBetween: 15,
+            breakpoints: this.blogHighlights.break_points,
+            navigation: { nextEl: '#cat_blog_next', prevEl: '#cat_blog_prev' }
+          }, this.blogHighlights.auto_play, swipeElement);
+        } else if (classList[i].includes('pair_hls')) {
+          const slideCountAttr = parseInt(el.getAttribute('data-slide-count') || '', 10);
+          const count = Number.isFinite(slideCountAttr) && slideCountAttr > 0
+            ? slideCountAttr
+            : el.querySelectorAll('.swiper-slide').length;
+          const perView = count <= 2 ? 2 : 2.5;
+          const pairBreakpoints = {
+            768: { slidesPerView: perView, spaceBetween: 8 },
+            640: { slidesPerView: perView, spaceBetween: 8 },
+            320: { slidesPerView: perView, spaceBetween: 8 }
+          };
+          this.initOrRefreshSwiper(el, {
+            speed: 700,
+            loop: false,
+            slidesPerView: perView,
+            spaceBetween: 8,
+            breakpoints: pairBreakpoints,
+            navigation: { nextEl: '#highlight_next', prevEl: '#highlight_prev' }
+          }, this.pairHighlights.auto_play, swipeElement);
+        } else if (classList[i].includes('phls')) {
+          this.initOrRefreshSwiper(el, {
+            speed: 700,
+            loop: false,
+            breakpoints: this.highlights.break_points,
+            navigation: { nextEl: '#highlight_next', prevEl: '#highlight_prev' }
+          }, this.highlights.auto_play, swipeElement);
+        } else if (classList[i].includes('whls')) {
+          this.initOrRefreshSwiper(el, {
+            speed: 700,
+            loop: false,
+            breakpoints: this.weaveHighlights.break_points,
+            navigation: { nextEl: '#highlight_next', prevEl: '#highlight_prev' }
+          }, this.weaveHighlights.auto_play, swipeElement);
+        } else if (classList[i].includes('mhls')) {
+          this.initOrRefreshSwiper(el, {
+            speed: 700,
+            loop: false,
+            breakpoints: this.materialHighlights.break_points,
+            navigation: { nextEl: '#highlight_next', prevEl: '#highlight_prev' }
+          }, this.materialHighlights.auto_play, swipeElement);
+        } else if (classList[i].includes('ghls')) {
+          this.initOrRefreshSwiper(el, {
+            speed: 700,
+            loop: false,
+            breakpoints: this.groupHighlights.break_points,
+            navigation: { nextEl: '#group_highlight_next', prevEl: '#group_highlight_prev' }
+          }, this.groupHighlights.auto_play, swipeElement);
+        } else if (classList[i].includes('section_slider')) {
+          const swipeConfig: any = {
+            speed: 500,
+            breakpoints: this.swiperInfo.break_points,
+            navigation: { nextEl: '#section_next', prevEl: '#section_prev' }
+          };
+          const autoPlay = this.swiperInfo.auto_play;
+          if (autoPlay) {
+            swipeConfig.autoplay = { delay: 3000, disableOnInteraction: false };
           }
-        }
-        else if(classList[i].includes("whls") && isPlatformBrowser(this.platformId)) {
-          if(this.loadedElements.indexOf(swipeElement) == -1) {
-            this.loadedElements.push(swipeElement);
-            // swiper config
-            let swipeConfig: any = {
-              speed: 700,
-              loop: false,
-              breakpoints: this.adaptBreakpoints(this.weaveHighlights.break_points),
-              navigation: {
-                nextEl: '#highlight_next',
-                prevEl: '#highlight_prev'
-              }
-            }
-            let autoPlay = this.weaveHighlights.auto_play;
-            if(autoPlay) {
-              swipeConfig.autoplay = {
-                delay: 1000,
-                disableOnInteraction: false
-              }
-            }
-            // initialize swiper
-            new Swiper('.'+swipeElement, swipeConfig);
-            if(autoPlay && swipeElement.includes("desktop")) {
-              $('.'+swipeElement).hover(
-                function(this: any) { this.swiper.autoplay.stop(); },
-                function(this: any) { this.swiper.autoplay.start(); }
-              );
-            }
-          }
-        }
-        else if(classList[i].includes("mhls") && isPlatformBrowser(this.platformId)) {
-          if(this.loadedElements.indexOf(swipeElement) == -1) {
-            this.loadedElements.push(swipeElement);
-            // swiper config
-            let swipeConfig: any = {
-              speed: 700,
-              loop: false,
-              breakpoints: this.adaptBreakpoints(this.materialHighlights.break_points),
-              navigation: {
-                nextEl: '#highlight_next',
-                prevEl: '#highlight_prev'
-              }
-            }
-            let autoPlay = this.materialHighlights.auto_play;
-            if(autoPlay) {
-              swipeConfig.autoplay = {
-                delay: 1000,
-                disableOnInteraction: false
-              }
-            }
-            // initialize swiper
-            new Swiper('.'+swipeElement, swipeConfig);
-            if(autoPlay && swipeElement.includes("desktop")) {
-              $('.'+swipeElement).hover(
-                function(this: any) { this.swiper.autoplay.stop(); },
-                function(this: any) { this.swiper.autoplay.start(); }
-              );
-            }
-          }
-        }
-        else if(classList[i].includes("ghls") && isPlatformBrowser(this.platformId)) {
-          if(this.loadedElements.indexOf(swipeElement) == -1) {
-            this.loadedElements.push(swipeElement);
-            // swiper config
-            let swipeConfig: any = {
-              speed: 700,
-              loop: false,
-              breakpoints: this.adaptBreakpoints(this.groupHighlights.break_points),
-              navigation: {
-                nextEl: '#group_highlight_next',
-                prevEl: '#group_highlight_prev'
-              }
-            }
-            let autoPlay = this.groupHighlights.auto_play;
-            if(autoPlay) {
-              swipeConfig.autoplay = {
-                delay: 2000,
-                disableOnInteraction: false
-              }
-            }
-            // initialize swiper
-            new Swiper('.'+swipeElement, swipeConfig);
-            if(autoPlay && swipeElement.includes("desktop")) {
-              $('.'+swipeElement).hover(
-                function(this: any) { this.swiper.autoplay.stop(); },
-                function(this: any) { this.swiper.autoplay.start(); }
-              );
-            }
-          }
-        }
-        else if(classList[i].includes("section_slider") && isPlatformBrowser(this.platformId)) {
-          if(this.loadedElements.indexOf(swipeElement) == -1) {
-            this.loadedElements.push(swipeElement);
-            // swiper config
-            let swipeConfig: any = {
-              speed: 500,
-              breakpoints: this.swiperInfo.break_points,
-              navigation: {
-                nextEl: '#section_next',
-                prevEl: '#section_prev'
-              }
-            }
-            let autoPlay = this.swiperInfo.auto_play;
-            if(autoPlay) {
-              swipeConfig.autoplay = {
-                delay: 3000,
-                disableOnInteraction: false
-              }
-            }
-            // initialize swiper
-            let swipeInit = new Swiper('.'+swipeElement, swipeConfig);
-            // hover event
-            if(autoPlay && swipeElement.includes("desktop")) this.autoPlayEvt(swipeInit);
-          }
+          const swipeInit = this.initOrRefreshSwiper(el, swipeConfig, autoPlay, swipeElement);
+          if (autoPlay && swipeElement.includes('desktop')) this.autoPlayEvt(swipeInit);
         }
         break;
       }
     }
+  }
+
+  /** Init on this host element; destroy any prior instance when slides/revision change. */
+  private initOrRefreshSwiper(el: HTMLElement, config: any, autoPlay: boolean, swipeElement: string): any {
+    const host = el as any;
+    if (host.swiper) {
+      host.swiper.destroy(true, true);
+    }
+    const swipeInit = new Swiper(el, config);
+    if (autoPlay && swipeElement.includes('desktop') && typeof $ !== 'undefined') {
+      $(el).hover(
+        function(this: any) { this.swiper.autoplay.stop(); },
+        function(this: any) { this.swiper.autoplay.start(); }
+      );
+    }
+    return swipeInit;
   }
 
   autoPlayEvt(swipeInit: any) {

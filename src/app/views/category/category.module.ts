@@ -10,13 +10,14 @@ import { CategoryComponent } from './category.component';
 import { CatalogSegmentsComponent } from './catalog-segments/catalog-segments.component';
 import { RangeFilterPipe } from './pipes/range-filter.pipe';
 import { ProductSortPipe } from './pipes/product-sort.pipe';
+import { InternalLinksColumnsPipe } from './pipes/internal-links-columns.pipe';
 import { AccordionModule } from 'ngx-bootstrap/accordion';
 import { CategoryHighlightsDirective } from './directives/category-highlights.directive';
 import { SharedBlogUiModule } from '../features/blogs/shared/shared-blog-ui.module';
 import { LucideAngularModule, ChevronLeft, ChevronRight, ChevronUp, ChevronDown, Diamond, Sun, CheckSquare, Gem, Church, Gift, ArrowRight, PartyPopper, Flower, Sparkles, Flower2, CircleCheck, Award, CalendarHeart, Check, ShoppingBag, Heart, Plus, Minus, ArrowUp } from 'lucide-angular';
 
 @NgModule({
-  declarations: [CategoryComponent, CatalogSegmentsComponent, RangeFilterPipe, ProductSortPipe, CategoryHighlightsDirective],
+  declarations: [CategoryComponent, CatalogSegmentsComponent, RangeFilterPipe, ProductSortPipe, InternalLinksColumnsPipe, CategoryHighlightsDirective],
   imports: [
     SharedModule,
     CategoryRoutingModule,

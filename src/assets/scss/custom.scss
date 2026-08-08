@@ -1944,8 +1944,8 @@ $catalog-filter-accent: #9a7d4a;
 
       .product-title {
         min-height: 2.6rem;
-        line-height: 1.35;
-        font-size: 0.9375rem;
+        line-height: 1.5;
+        font-size: 1rem;
         margin-bottom: 0;
         opacity: 1;
         color: #3d3d3d;
@@ -1976,7 +1976,7 @@ $catalog-filter-accent: #9a7d4a;
         }
 
         &__now {
-          font-size: 1rem;
+          font-size: 18px;
           font-weight: 500;
           color: #000 !important;
           opacity: 1 !important;
@@ -2113,7 +2113,7 @@ $catalog-filter-accent: #9a7d4a;
     max-height: none !important;
     min-height: 0 !important;
     object-fit: cover;
-    object-position: center center;
+    object-position: center 25%;
     display: block;
   }
 
@@ -2204,6 +2204,9 @@ $catalog-filter-accent: #9a7d4a;
       color: rgba(255, 255, 255, 0.92) !important;
       margin: 0 0 0.8rem;
       text-align: left;
+      span{
+        color: #ccc !important;
+      }
 
       &:last-child {
         margin-bottom: 0;
@@ -2222,6 +2225,14 @@ $catalog-filter-accent: #9a7d4a;
       }
     }
   }
+
+  .category-atf-hero__desc-wrap {
+    max-width: 32rem;
+  }
+
+  .category-atf-hero__read-more {
+    display: none;
+  }
 }
 
 @media only screen and (max-width: 991px) {
@@ -2234,12 +2245,12 @@ $catalog-filter-accent: #9a7d4a;
 
     .category-atf-hero__media {
       order: 1;
-      height: 320px;
+      height: 250px;
     }
 
     .category-atf-hero__bg {
       height: 100% !important;
-      object-position: center center;
+      object-position: center 20%;
     }
 
     .category-atf-hero__shade {
@@ -2262,6 +2273,51 @@ $catalog-filter-accent: #9a7d4a;
 
     .category-atf-hero__desc {
       max-width: none;
+
+      &--clamped {
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 4;
+        line-clamp: 4;
+        max-height: calc(1.6em * 4);
+        overflow: hidden;
+
+        p {
+          display: inline;
+          margin: 0;
+
+          &::after {
+            content: ' ';
+          }
+        }
+      }
+    }
+
+    .category-atf-hero__desc-wrap {
+      max-width: none;
+    }
+
+    .category-atf-hero__read-more {
+      display: inline-block !important;
+      margin-top: 0.65rem;
+      padding: 0;
+      border: 0;
+      background: none;
+      font-family: $primary-font;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: #fff !important;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+      cursor: pointer;
+      line-height: 1.4;
+      position: relative;
+      z-index: 2;
+
+      &:hover,
+      &:focus {
+        color: rgba(255, 255, 255, 0.85) !important;
+      }
     }
   }
 }
@@ -2269,7 +2325,7 @@ $catalog-filter-accent: #9a7d4a;
 @media only screen and (max-width: 767px) {
   .category-banner-sec.category-atf-hero {
     .category-atf-hero__media {
-      height: 280px;
+      height: 250px;
     }
   }
 }
@@ -2365,6 +2421,14 @@ $catalog-filter-accent: #9a7d4a;
 
 /* Catalog internal links + FAQ accordions */
 .catalog-collections {
+  margin-top: 60px;
+  margin-bottom: 60px;
+
+  @media only screen and (max-width: 767px) {
+    margin-top: 40px;
+    margin-bottom: 40px;
+  }
+
   .catalog-collections__header {
     text-align: center;
     margin-bottom: 2rem;
@@ -2440,6 +2504,8 @@ $catalog-filter-accent: #9a7d4a;
     padding: 1rem 0.25rem !important;
     border: none !important;
     border-radius: 0 !important;
+    position: relative;
+    z-index: 1;
   }
 
   accordion-group.panel.panel-open .panel-heading {
@@ -2465,9 +2531,18 @@ $catalog-filter-accent: #9a7d4a;
     display: none !important;
   }
 
+  accordion-group .panel .panel-collapse {
+    position: relative;
+    z-index: 2;
+    overflow: visible !important;
+  }
+
   accordion-group .panel .panel-collapse .panel-body {
     padding: 0.35rem 0.25rem 1.5rem !important;
     border: none !important;
+    position: relative;
+    z-index: 2;
+    pointer-events: auto;
   }
 
   accordion-group.panel-open .catalog-collections__chevron {
@@ -2551,6 +2626,8 @@ $catalog-filter-accent: #9a7d4a;
 
 .catalog-collections__links {
   row-gap: 0.5rem;
+  position: relative;
+  z-index: 2;
 }
 
 .catalog-collections__link-list {
@@ -2561,6 +2638,7 @@ $catalog-filter-accent: #9a7d4a;
   li {
     position: relative;
     padding: 0.2rem 0 0.2rem 0.85rem;
+    z-index: 1;
 
     &::before {
       content: '';
@@ -2571,21 +2649,47 @@ $catalog-filter-accent: #9a7d4a;
       height: 4px;
       border-radius: 50%;
       background: #8a8a8a;
+      pointer-events: none;
     }
   }
 }
 
 .catalog-collections .collect-list {
-  display: inline;
+  display: inline-block;
   font-size: 0.9375rem;
-  color: #4a4a4a !important;
-  text-decoration: none;
+  color: #7a2e38 !important;
+  text-decoration: underline;
+  text-underline-offset: 0.18em;
+  text-decoration-thickness: 1px;
+  text-decoration-color: rgba(122, 46, 56, 0.4);
   line-height: 1.5;
+  cursor: pointer;
+  pointer-events: auto;
+  position: relative;
+  z-index: 3;
 
   &:hover,
   &:focus {
-    color: #7a2e38 !important;
-    text-decoration: underline;
+    color: #5c2229 !important;
+    text-decoration-color: #5c2229;
+  }
+}
+
+@media screen and (max-width: 767px) {
+  .catalog-collections__links {
+    > [class*='col-'] {
+      padding-left: 8px;
+      padding-right: 8px;
+    }
+  }
+
+  .catalog-collections__link-list li {
+    padding-top: 0.35rem;
+    padding-bottom: 0.35rem;
+  }
+
+  .catalog-collections .collect-list {
+    font-size: 0.875rem;
   }
 }
 
@@ -2811,7 +2915,7 @@ border-radius: 0 !important;
   }
 
   .product-addon {
-    margin-bottom: 20px;
+    // margin-bottom: 20px;
     .variants-title{
       font-size: 1.2rem;
     }
@@ -4071,6 +4175,13 @@ option {
   padding: 3rem;
   width: 600px;
 
+  &.auth-card {
+    width: 100%;
+    max-width: 560px;
+    padding: 32px 36px 36px;
+    box-shadow: none;
+  }
+
   .forgot_register-sec {
     .switch-register {
       display: flex;
@@ -4102,6 +4213,34 @@ option {
         display: flex;
         justify-content: flex-start;
       }
+    }
+
+    &.auth-card {
+      width: 100%;
+      max-width: 100%;
+      padding: 24px 18px 28px;
+    }
+  }
+}
+
+/* Auth card: neutralize legacy .account float layout from style.scss */
+.account {
+  .auth-card {
+    form.auth-form {
+      float: none;
+      width: 100%;
+      margin-top: 0;
+    }
+
+    .auth-form .form-group {
+      float: none;
+      width: 100%;
+    }
+
+    .auth-social.social-login {
+      float: none;
+      width: 100%;
+      margin-top: 0;
     }
   }
 }

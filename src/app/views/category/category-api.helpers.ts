@@ -95,6 +95,20 @@ export function activeFilterChips(tagList: CategoryTagGroup[]): Array<{ tagId: s
   return chips;
 }
 
+/** Build URL query params from checked filter options (design=traditional-foo). */
+export function buildFilterQueryParamsFromTagList(tagList: CategoryTagGroup[]): Record<string, string> {
+  const params: Record<string, string> = {};
+  (tagList || []).forEach(tag => {
+    const selected = (tag.option_list || [])
+      .filter(opt => opt.checked)
+      .map(opt => filterParamValue(opt.name));
+    if (selected.length) {
+      params[filterParamName(tag.name)] = selected.join('-');
+    }
+  });
+  return params;
+}
+
 export function countActiveFilterGroups(tagList: CategoryTagGroup[]): number {
   return (tagList || []).filter(tag => (tag.option_list || []).some(opt => opt.checked)).length;
 }

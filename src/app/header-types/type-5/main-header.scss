@@ -37,6 +37,18 @@
   border-color:  transparent transparent #000 transparent;
 }
 
+@media screen and (max-width: 991px) {
+  .custom-tooltip,
+  .custom-tooltip::after {
+    display: none !important;
+  }
+
+  .tooltip-wrapper:hover .custom-tooltip {
+    visibility: hidden;
+    opacity: 0;
+  }
+}
+
 .menu-scroll-hidden{
   overflow-y:hidden!important;
 }

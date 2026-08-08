@@ -77,6 +77,10 @@ export class ApiService {
   }
 
   // feedback
+  GET_FEEDBACK() {
+    let httpOptions = { headers: new HttpHeaders({ 'Content-Type': 'application/json', 'Authorization': 'Bearer '+localStorage.getItem('customer_token') }) };
+    return this.http.get<any>(environment.ws_url+'/user/feedback', httpOptions);
+  }
   FEEDBACK(x) {
     let httpOptions = { headers: new HttpHeaders({ 'Content-Type': 'application/json', 'Authorization': 'Bearer '+localStorage.getItem('customer_token') }) };
     return this.http.post<any>(environment.ws_url+'/user/feedback', x, httpOptions);

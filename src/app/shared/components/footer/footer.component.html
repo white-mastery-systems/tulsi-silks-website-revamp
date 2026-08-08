@@ -239,17 +239,20 @@
         </div>
         <div class="modal-body popup-padding">
           <div class="row justify-content-center align-items-center">
-            <div class="col-md-5 newsletter-image">
-              <img src="assets/images/newsletter1.jpg" class="img" alt="newsletter">
+            <div class="col-md-5 newsletter-image" *ngIf="commonService.application_setting.newsletter_config.image">
+              <img
+                width="100%"
+                height="100%"
+                class="img"
+                appImgLazyLoad
+                [ImagelazyLoad]="imgBaseUrl + commonService.application_setting.newsletter_config.image"
+                alt="newsletter">
             </div>
-            <div class="col-md-7">
+            <div [class.col-md-7]="!!commonService.application_setting.newsletter_config.image" [class.col-md-12]="!commonService.application_setting.newsletter_config.image">
               <div class="widget newsletter d-flex flex-column align-items-center justify-content-center newsletter-body" align="center">
                 <!-- <h4 class="widget-title">{{ commonService.application_setting.newsletter_config.heading }}</h4> -->
                 <img src="assets/images/logo.png" class="logo" alt="footer-logo">
                 <p id="newsletter-dialog-title" class="title h2">Join the Tulsi Family</p>
-                <figure *ngIf="commonService.application_setting.newsletter_config.image" class="w-100">
-                  <img width="100%" height="100%" class="w-100" appImgLazyLoad [ImagelazyLoad]="imgBaseUrl+commonService.application_setting.newsletter_config.image" alt="subscribe-banner">
-                </figure>
                 <p class="mb-4" [innerHtml]="commonService.application_setting?.newsletter_config.sub_heading"></p>
                 <form *ngIf="commonService.application_setting.newsletter_config.subscription_status" autocomplete="off" (ngSubmit)="onSubscribe(subscribeModal);" ngNativeValidate class="w-100">
                   <div>

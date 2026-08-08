@@ -150,13 +150,20 @@ $mobile-final-height: calc(74px + #{$mobile-announcement-bar-mh});
       margin: 0;
     }
 
-    .btn-search,
-    .btn-search-camera {
+    .btn-search {
       display: inline-flex;
       align-items: center;
       justify-content: center;
       text-decoration: none;
       color: inherit;
+      padding: 6px;
+    }
+
+    .header-search-icon {
+      display: block;
+      width: 20px;
+      height: 22px;
+      object-fit: contain;
     }
   }
   // .header-wrapper {
@@ -200,7 +207,26 @@ $mobile-final-height: calc(74px + #{$mobile-announcement-bar-mh});
       margin-right: 0px;
     }
     .header-icon-container{
-      margin-right: 10px;
+      margin-right: 6px;
+    }
+    .header-left-sec {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      flex-wrap: nowrap;
+      gap: 0;
+    }
+    .mobile-header-controls {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .mobile-header-controls .header-search-cluster {
+      margin-right: 0;
+    }
+    .mobile-header-controls .cd-header-buttons {
+      margin: 0;
+      padding: 0;
     }
     .cd-header-buttons {margin-bottom: 0;}
   }
@@ -286,16 +312,23 @@ $mobile-final-height: calc(74px + #{$mobile-announcement-bar-mh});
   }
   
   @media only screen and (max-width: 991px) {
+    /* Sidebar slides in on its own (nav-active). Do not also push the page —
+       that looked like the menu opening twice. */
     .cd-main-content.nav-is-visible,
     .cd-main-header.nav-is-visible {
-      -webkit-transform: translateX(280px);
-      transform: translateX(280px);
+      -webkit-transform: none;
+      transform: none;
     }
-  
+
+    .cd-main-content.nav-is-visible {
+      pointer-events: none;
+      touch-action: none;
+    }
+
     .nav-on-left .cd-main-content.nav-is-visible,
     .nav-on-left .cd-main-header.nav-is-visible {
-      -webkit-transform: translateX(280px);
-      transform: translateX(280px);
+      -webkit-transform: none;
+      transform: none;
     }
   }
   
@@ -420,6 +453,16 @@ $mobile-final-height: calc(74px + #{$mobile-announcement-bar-mh});
     /* hide text */
     color: transparent;
     z-index: 3;
+  }
+
+  button.cd-nav-trigger {
+    appearance: none;
+    -webkit-appearance: none;
+    border: none;
+    background: transparent;
+    padding: 0;
+    margin: 0;
+    cursor: pointer;
   }
   
   .cd-search-trigger::before,
@@ -745,15 +788,80 @@ $mobile-final-height: calc(74px + #{$mobile-announcement-bar-mh});
     .cd-primary-nav {
       /* by default .cd-primary-nav is hidden - trick for iOS devices where you can see the navigation if you pull down */
       visibility: hidden;
+      -webkit-transform: translateX(-100%);
+      transform: translateX(-100%);
       -webkit-transition: visibility 0s 0s;
       transition: visibility 0s 0s;
     }
   
     .cd-primary-nav.nav-is-visible {
       visibility: visible;
+      display: flex;
+      flex-direction: column;
       -webkit-transition: visibility 0s 0s;
       transition: visibility 0s 0s;
       overflow-x: hidden;
+      touch-action: pan-y;
+    }
+
+    /* Prefer CSS transition over restarting keyframe from mid-state (looked like a double open) */
+    .cd-primary-nav.nav-active {
+      -webkit-animation: none;
+      animation: none;
+      -webkit-transform: translateX(0);
+      transform: translateX(0);
+      -webkit-transition: -webkit-transform 0.35s ease, transform 0.35s ease;
+      transition: transform 0.35s ease;
+    }
+
+    .cd-primary-nav.nav-dismiss {
+      -webkit-animation: none;
+      animation: none;
+      -webkit-transform: translateX(-100%);
+      transform: translateX(-100%);
+      -webkit-transition: -webkit-transform 0.35s ease, transform 0.35s ease, visibility 0s 0.35s;
+      transition: transform 0.35s ease, visibility 0s 0.35s;
+    }
+
+    .mobile-nav-toolbar {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      width: 100%;
+      padding: 8px 0 4px;
+      margin: 0 0 8px;
+      list-style: none;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+    }
+
+    .mobile-nav-close {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      margin: 0;
+      padding: 0;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      color: #000;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .mobile-nav-currency {
+      margin-top: auto;
+      padding-top: 16px;
+      padding-bottom: 20px;
+      border-top: 1px solid rgba(0, 0, 0, 0.08);
+      width: 100%;
+
+      .currency-select,
+      a {
+        font-size: 1rem;
+        font-weight: 500;
+        letter-spacing: 0.04em;
+      }
     }
     .cd-primary-nav > li > a,
     .cd-primary-nav a,
@@ -1493,13 +1601,14 @@ $mobile-final-height: calc(74px + #{$mobile-announcement-bar-mh});
   .cd-overlay {
     /* shadow layer visible when navigation is active */
     position: fixed;
+    /* Keep below sticky header (z-index 99) so desktop mega menu stays hoverable */
     z-index: 2;
     height: 100%;
     width: 100%;
     top: 0;
     left: 0;
     cursor: pointer;
-    background-color: rgba(105, 170, 111, 0.8);
+    background-color: rgba(26, 24, 30, 0.5);
     visibility: hidden;
     opacity: 0;
     -webkit-backface-visibility: hidden;
@@ -1517,6 +1626,15 @@ $mobile-final-height: calc(74px + #{$mobile-announcement-bar-mh});
     transition: opacity 0.3s 0s, visibility 0s 0s, -webkit-transform 0.3s 0s;
     transition: opacity 0.3s 0s, visibility 0s 0s, transform 0.3s 0s;
     transition: opacity 0.3s 0s, visibility 0s 0s, transform 0.3s 0s, -webkit-transform 0.3s 0s;
+  }
+
+  /* Desktop: never dim the page under mega-menu hover */
+  @media only screen and (min-width: 992px) {
+    .cd-overlay.is-visible:not(.search-is-visible) {
+      opacity: 0 !important;
+      visibility: hidden !important;
+      pointer-events: none !important;
+    }
   }
   .nav-img-wrapper {
     .nav-img {
@@ -1537,20 +1655,33 @@ $mobile-final-height: calc(74px + #{$mobile-announcement-bar-mh});
     }
   }
   @media only screen and (max-width: 991px) {
+    /* Above page content, below mobile sidebar (z-index 999) */
+    .cd-overlay {
+      z-index: 100;
+    }
+
+    /* Cover only the page area beside the 280px sidebar */
     .cd-overlay.is-visible {
-      -webkit-transform: translateX(280px);
-      transform: translateX(280px);
+      left: 280px;
+      width: calc(100% - 280px);
+      -webkit-transform: none;
+      transform: none;
+      z-index: 100;
     }
   
     .nav-on-left .cd-overlay.is-visible {
-      -webkit-transform: translateX(280px);
-      transform: translateX(280px);
+      left: 280px;
+      width: calc(100% - 280px);
+      -webkit-transform: none;
+      transform: none;
     }
   
     .cd-overlay.is-visible.search-is-visible,
     .nav-on-left .cd-overlay.is-visible.search-is-visible {
-      -webkit-transform: translateX(0);
-      transform: translateX(0);
+      left: 0;
+      width: 100%;
+      -webkit-transform: none;
+      transform: none;
     }
     .nav-img-wrapper{
       margin-bottom: 20px;

@@ -1,4 +1,9 @@
 (function ($) {
+  // Prevent double-bind if script.js is injected more than once
+  if (window.__ysHeaderScriptBound) {
+    return;
+  }
+  window.__ysHeaderScriptBound = true;
 
   $(document).ready(function () {
     "use strict";
@@ -109,29 +114,91 @@
 
     //-----------------------------------------Mega Menu ------------------------------------------------------//
 
+    let navScrollY = 0;
+
+    function lockBodyScroll() {
+      if (checkWindowWidth()) {
+        return;
+      }
+      navScrollY = window.scrollY || window.pageYOffset || document.documentElement.scrollTop || 0;
+      $('html, body').addClass('overflow-hidden');
+      $('body').css('top', (-navScrollY) + 'px');
+    }
+
+    function unlockBodyScroll() {
+      if (!$('body').hasClass('overflow-hidden')) {
+        return;
+      }
+      $('html, body').removeClass('overflow-hidden');
+      $('body').css('top', '');
+      window.scrollTo(0, navScrollY);
+    }
+
     //mobile - open lateral menu clicking on the menu icon
-    $(document).on('click', '.cd-nav-trigger',  function (event) {
-      event.preventDefault();
-      if($('.cd-main-content').hasClass('nav-is-visible')) {
+    let navToggleBusy = false;
+
+    // Drop leftover hash from old <a href="#cd-primary-nav"> triggers
+    if (window.location.hash === '#cd-primary-nav') {
+      if (window.history && window.history.replaceState) {
+        window.history.replaceState(null, '', window.location.pathname + window.location.search);
+      } else {
+        window.location.hash = '';
+      }
+    }
+
+    function openMobileNav(triggerEl) {
+      if (checkWindowWidth()) {
+        return;
+      }
+      const $trigger = triggerEl ? $(triggerEl) : $('.cd-nav-trigger').first();
+      $trigger.addClass('nav-is-visible');
+      lockBodyScroll();
+      $('.cd-primary-nav').removeClass('nav-dismiss');
+      $('.cd-primary-nav').addClass('nav-active');
+      $('.cd-primary-nav').addClass('nav-is-visible');
+      $('.cd-main-header').addClass('nav-is-visible');
+      $('.cd-main-content').addClass('nav-is-visible');
+      toggleSearch('close');
+      $('.cd-overlay').addClass('is-visible');
+    }
+
+    function toggleMobileNav(triggerEl) {
+      if (navToggleBusy) {
+        return;
+      }
+      navToggleBusy = true;
+      window.setTimeout(function () { navToggleBusy = false; }, 400);
+
+      if ($('.cd-main-content').hasClass('nav-is-visible')) {
         closeNav();
         $('.cd-overlay').removeClass('is-visible');
-        $('body').removeClass('overflow-hidden');
       } else {
-        $(this).addClass('nav-is-visible');
-        $('body').addClass('overflow-hidden');
-        $('.cd-primary-nav').removeClass('nav-dismiss');
-      $('.cd-primary-nav').addClass('nav-active');
-        $('.cd-primary-nav').addClass('nav-is-visible');
-        $('.cd-main-header').addClass('nav-is-visible');
-        $('.cd-main-content').addClass('nav-is-visible').one('webkitTransitionEnd otransitionend oTransitionEnd msTransitionEnd transitionend', function () { });
-        toggleSearch('close');
-        $('.cd-overlay').addClass('is-visible');
+        openMobileNav(triggerEl);
       }
+    }
+
+    // Called from Angular after lazy-loading this script (first hamburger tap)
+    window.__ysToggleMobileNav = function (triggerEl) {
+      toggleMobileNav(triggerEl || null);
+    };
+    window.__ysOpenMobileNav = function (triggerEl) {
+      if (!$('.cd-main-content').hasClass('nav-is-visible')) {
+        openMobileNav(triggerEl || null);
+      }
+    };
+
+    $(document).on('click', '.cd-nav-trigger',  function (event) {
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      toggleMobileNav(this);
     });
 
-    // reset menu
-    $(document).on('click', '#reset-menu',  function () {
+    // reset menu / in-drawer close
+    $(document).on('click', '#reset-menu, .mobile-nav-close',  function (e) {
+      e.preventDefault();
+      e.stopPropagation();
       closeNav();
+      $('.cd-overlay').removeClass('is-visible');
       // close cart drop-down
       $('.cart-overlay-close').click();
       $('.cart-box').slideUp('400');
@@ -175,7 +242,8 @@
         setTimeout(() => {
           selected.parent('.has-children').siblings('.has-children').children('ul').addClass('is-hidden').end().children('a, button').removeClass('selected');
         }, 200);
-        $('.cd-overlay').addClass('is-visible');
+        // No dim overlay on desktop mega-menu hover
+        $('.cd-overlay').removeClass('is-visible');
         toggleSearch('close');
         $('.cart-box').slideUp('400');
       }
@@ -204,10 +272,15 @@
       if(selected.next('ul').hasClass('is-hidden')) {
         selected.addClass('selected').next('ul').removeClass('is-hidden').end().parent('.has-children').parent('ul').addClass('moves-out');
         selected.parent('.has-children').siblings('.has-children').children('ul').addClass('is-hidden').end().children('a, button').removeClass('selected');
-        $('.cd-overlay').addClass('is-visible');
+        // Overlay only for mobile drawer / nested panels
+        if (!checkWindowWidth()) {
+          $('.cd-overlay').addClass('is-visible');
+        }
       } else {
         selected.removeClass('selected').next('ul').addClass('is-hidden').end().parent('.has-children').parent('ul').removeClass('moves-out');
-        $('.cd-overlay').removeClass('is-visible');
+        if (!checkWindowWidth()) {
+          $('.cd-overlay').removeClass('is-visible');
+        }
       }
     }
 
@@ -218,20 +291,36 @@
     });
 
     function closeNav() {
+      const isDesktop = checkWindowWidth();
       $('.cd-nav-trigger').removeClass('nav-is-visible');
       $('.cd-main-header').removeClass('nav-is-visible');
       $('.cd-primary-nav').removeClass('nav-is-visible');
       $('.cd-primary-nav').removeClass('nav-active');
-      $('.cd-primary-nav').addClass('nav-dismiss');
+      // Slide animation is mobile-drawer only — on desktop it hides the top menu
+      if (!isDesktop) {
+        $('.cd-primary-nav').addClass('nav-dismiss');
+      } else {
+        $('.cd-primary-nav').removeClass('nav-dismiss');
+      }
       $('.has-children ul').addClass('is-hidden');
       $('.has-children a, .has-children button').removeClass('selected');
       $('.moves-out').removeClass('moves-out');
       $('.cd-main-content').removeClass('nav-is-visible').one('webkitTransitionEnd otransitionend oTransitionEnd msTransitionEnd transitionend', function () {
-        $('body').removeClass('overflow-hidden');
+        unlockBodyScroll();
       });
       $('.cd-overlay').removeClass('is-visible');
-      $('body').removeClass('overflow-hidden');
+      unlockBodyScroll();
     }
+
+    $(window).on('resize', function () {
+      if (checkWindowWidth()) {
+        // Leaving mobile drawer: clear slide classes so desktop mega menu works
+        $('.cd-primary-nav').removeClass('nav-active nav-dismiss nav-is-visible');
+        $('.cd-nav-trigger, .cd-main-header, .cd-main-content').removeClass('nav-is-visible');
+        $('.cd-overlay').removeClass('is-visible');
+        unlockBodyScroll();
+      }
+    });
 
     function toggleSearch(type) {
       if(type == "close") {

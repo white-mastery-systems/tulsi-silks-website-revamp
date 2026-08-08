@@ -440,6 +440,12 @@ article, aside, footer, header, nav, section { width: 100%; float: left; positio
 .product-list .listing-bar span select{ width: auto; height: 30px; padding-left: 10px; padding-right: 30px; margin-left: 5px;}
 .product-list .product-box{margin-bottom: 15px;}
 
+@media screen and (max-width: 991px) {
+  .product-list .product-box {
+    margin-bottom: 5px;
+  }
+}
+
 /* PRODUCT DETAIL */
 .product-detail{ width: 100%;}
 .product-detail .product-image{ width: 100%; float: left; position: relative; margin-bottom: 40px;}
@@ -560,10 +566,11 @@ article, aside, footer, header, nav, section { width: 100%; float: left; positio
 }
 .category-filter-section{
   .category-card img,
-  .category-card-two,
-  .category-second-card,
-  .category-third-card{
+  .category-card-two {
     height: 320px!important;
+  }
+  .category-third-card {
+    height: 280px !important;
   }
 }
 }

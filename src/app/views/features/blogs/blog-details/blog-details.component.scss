@@ -307,6 +307,13 @@
       // color: #ffffff !important;
     }
 
+    a.ej-pc-card__cta.primary-btn,
+    a.ej-pc-card__cta {
+      color: #ffffff !important;
+      background: #111111 !important;
+      text-decoration: none !important;
+    }
+
     h2 {
       font-family: $primary-font !important;
       font-size: 1.75rem !important;

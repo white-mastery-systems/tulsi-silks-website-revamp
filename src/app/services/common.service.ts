@@ -119,6 +119,8 @@ export class CommonService {
   previous_route: string; customer_token: string;
 
   search_page_attr: any = {};
+  /** File picked on home visual-search dropzone; consumed once on /search. */
+  pendingSearchImageFile: File | null = null;
   category_page_attr: any = {};
   product_page_attr: any;
   blog_page_attr: any = {};

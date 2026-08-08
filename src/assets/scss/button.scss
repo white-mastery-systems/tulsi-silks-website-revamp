@@ -149,7 +149,7 @@ button {
   font-weight: 400;
   background: $secondary-btn-bg;
   color: $secondary-btn-txt;
-  // text-transform: capitalize;
+  text-transform: uppercase;
   cursor: pointer;
   border-radius: $btn-radius;
   height: 48px;
@@ -217,6 +217,7 @@ button {
   border-radius: $btn-radius;
   height: 48px;
   font-size: 1rem;
+  text-transform: uppercase;
   
   &::before {
     content: "";

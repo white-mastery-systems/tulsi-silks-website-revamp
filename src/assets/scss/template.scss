@@ -5,7 +5,23 @@
 
 /* CUSTOM LINES */
 .prettyprint{margin-bottom: 50px;}
-.overflow-hidden{ overflow: hidden;}
+/* Mobile nav scroll lock — desktop must stay scrollable */
+@media only screen and (max-width: 991px) {
+  html.overflow-hidden {
+    overflow: hidden !important;
+    height: 100%;
+    overscroll-behavior: none;
+  }
+  body.overflow-hidden {
+    overflow: hidden !important;
+    position: fixed;
+    width: 100%;
+    left: 0;
+    right: 0;
+    overscroll-behavior: none;
+    touch-action: none;
+  }
+}
 
 /* SPACING */
 .no-margin{margin: 0 !important;}

@@ -24,7 +24,7 @@ import { SmallImgDirective } from './directives/small-img.directive';
 import { FooterComponent } from './components/footer/footer.component';
 import { MainHeaderComponent } from './components/headers/main-header/main-header.component';
 import { LoadingSpinnerComponent } from './components/loading-spinner/loading-spinner.component';
-import { LucideAngularModule, ChevronDown, ChevronUp, ChevronLeft, ChevronRight, Search, Camera, Heart, User, ShoppingCart } from 'lucide-angular';
+import { LucideAngularModule, ChevronDown, ChevronUp, ChevronLeft, ChevronRight, Search, Camera, Heart, User, ShoppingCart, X } from 'lucide-angular';
 
 
 @NgModule({
@@ -54,7 +54,7 @@ import { LucideAngularModule, ChevronDown, ChevronUp, ChevronLeft, ChevronRight,
     FormsModule,
     RouterModule,
     ModalModule.forRoot(),
-    LucideAngularModule.pick({ ChevronDown, ChevronUp, ChevronLeft, ChevronRight, Search, Camera, Heart, User, ShoppingCart })
+    LucideAngularModule.pick({ ChevronDown, ChevronUp, ChevronLeft, ChevronRight, Search, Camera, Heart, User, ShoppingCart, X })
   ],
   exports: [
     OrderSearchPipe,

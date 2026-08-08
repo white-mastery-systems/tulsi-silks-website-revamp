@@ -59,8 +59,12 @@ export class ImgLazyLoadDirective implements OnInit, AfterViewInit, OnDestroy {
           break;
         }
       }
-    }, { rootMargin: '0px 0px 500px 0px' });
+    }, { rootMargin: '200px 100px 500px 100px', threshold: 0 });
     this.observer.observe(this._element.nativeElement);
+
+    // Swiper (overflow:hidden) + late layout can miss the first IO callback.
+    // If the element is already near the viewport, promote immediately.
+    requestAnimationFrame(() => this.promoteIfNearViewport());
   }
 
   ngOnDestroy() {
@@ -87,6 +91,29 @@ export class ImgLazyLoadDirective implements OnInit, AfterViewInit, OnDestroy {
       this.renderer.setStyle(el, 'background-image', `url(${this.fullSrc})`);
       // Background images don't fire `load` on the element — clear blur immediately.
       this.renderer.addClass(el, 'lazyloaded');
+    }
+  }
+
+  /** Eager-promote when already in / near the viewport (ATF + Swiper slides). */
+  private promoteIfNearViewport() {
+    if (!this.observer || !this.fullSrc) return;
+    const el = this._element.nativeElement as HTMLElement;
+    const rect = el.getBoundingClientRect();
+    if (rect.width <= 0 || rect.height <= 0) {
+      // Layout not ready yet (common right after Swiper mounts) — retry once.
+      setTimeout(() => this.promoteIfNearViewport(), 120);
+      return;
+    }
+    const vh = window.innerHeight || document.documentElement.clientHeight || 0;
+    const vw = window.innerWidth || document.documentElement.clientWidth || 0;
+    const near =
+      rect.bottom > -200 &&
+      rect.top < vh + 500 &&
+      rect.right > -100 &&
+      rect.left < vw + 100;
+    if (near) {
+      this.swapToFull();
+      this.disconnect();
     }
   }
 
@@ -117,10 +144,25 @@ export class ImgLazyLoadDirective implements OnInit, AfterViewInit, OnDestroy {
     return false;
   }
 
+  /**
+   * If the `_s` LQIP 404s, try the full image once. Only fall back to the SVG
+   * placeholder when the full URL also fails (otherwise ATF cards stay broken).
+   */
   placeholder() {
-    this.lqip_img = "assets/images/placeholder.svg";
-    this.ImagelazyLoad = "assets/images/placeholder.svg";
-    this.fullSrc = this.ImagelazyLoad;
+    const el = this._element.nativeElement as HTMLImageElement;
+    const currentSrc = el.getAttribute('src') || '';
+    if (
+      this.fullSrc &&
+      currentSrc !== this.fullSrc &&
+      !currentSrc.includes('placeholder.svg')
+    ) {
+      this.renderer.setAttribute(el, 'src', this.fullSrc);
+      this.disconnect();
+      return;
+    }
+    this.lqip_img = 'assets/images/placeholder.svg';
+    this.ImagelazyLoad = this.lqip_img;
+    this.fullSrc = this.lqip_img;
     this.setInitialAttributes();
   }
 

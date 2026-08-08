@@ -28,15 +28,15 @@
    real measured height once the section comes near the viewport.
 
    Applied ONLY to sections that are reliably below the fold on the home page:
-   testimonials, blogs, flexible content, multi-tab featured. The hero
-   (`.home-slider`) and the first grid (`.section-grid`) are deliberately
-   omitted so LCP/FCP candidates always render eagerly.
+   testimonials, flexible content, multi-tab featured. The hero
+   (`.home-slider`), first grid (`.section-grid`), and blogs (`.news`) are
+   omitted — blogs use floated children, so content-visibility + a large
+   intrinsic size left a blank white block under the section.
 
    Browsers that don't support `content-visibility` ignore the property — no
    harm, no fallback path needed. Supported: Chrome 85+, Edge 85+, Safari 18+,
    Firefox 125+ (covers ~95% of mobile traffic as of late 2025). */
 .testimonial-sec,
-.primary-section.news,
 .flexible-section,
 .multi-tab-featured {
   content-visibility: auto;
@@ -48,7 +48,6 @@
 
 @media only screen and (max-width: 767px) {
   .testimonial-sec,
-  .primary-section.news,
   .flexible-section,
   .multi-tab-featured {
     contain-intrinsic-size: auto 600px;
