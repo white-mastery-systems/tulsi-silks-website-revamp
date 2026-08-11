@@ -269,7 +269,13 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   getMtfpTabs(segment: any): any[] {
     const list = Array.isArray(segment?.multitab_list) ? segment.multitab_list : [];
     const min = this.swiperService?.multi_tab_featured_products?.card_count ?? 0;
-    return list.filter((t: any) => (t?.product_list?.length ?? 0) >= min);
+    return list.filter((t: any) => {
+      const products = t?.product_list ?? [];
+      if (!this.hasRealProducts(products)) return false;
+      // Desktop keeps the filled-row requirement; mobile only needs real items.
+      if (!this.commonService?.desktop_device) return true;
+      return products.length >= min;
+    });
   }
 
   getMtfpTabId(sectionIndex: number, tabName: unknown): string {
@@ -365,9 +371,44 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   segmentProducts(segment: { product_list?: any[] }): any[] {
-    const products = segment?.product_list ?? [];
+    const products = this.visibleProductSlots(segment?.product_list);
     if (this.isBrowser) return products;
     return products.slice(0, SSR_HOME_MAX_PRODUCTS);
+  }
+
+  /**
+   * Desktop: keep padded 4-up row.
+   * Mobile: show at least 2 cards (1 real + 1 placeholder); 2+ real → no placeholders.
+   */
+  visibleProductSlots(list: any[] | undefined | null): any[] {
+    const products = list ?? [];
+    const real = products.filter((p) => p && !p._placeholder);
+    if (this.commonService?.desktop_device) return products;
+    if (real.length >= 2) return real;
+    if (real.length === 1) {
+      const placeholder = products.find((p) => p?._placeholder) ?? { _placeholder: true };
+      return [real[0], placeholder];
+    }
+    return real;
+  }
+
+  /** Section should render when at least one real product exists. */
+  hasRealProducts(list: any[] | undefined | null): boolean {
+    return (list ?? []).some((p) => p && !p._placeholder);
+  }
+
+  /**
+   * Fill empty slots with placeholders instead of cloning real products.
+   * Desktop → cardCount (4). Mobile → min 2 cards only.
+   */
+  private padProductSlots(list: any[], cardCount: number): void {
+    if (!list?.length) return;
+    const target = this.commonService?.desktop_device ? cardCount : 2;
+    if (!target || list.length >= target) return;
+    const need = target - list.length;
+    for (let i = 0; i < need; i++) {
+      list.push({ _placeholder: true });
+    }
   }
 
   /**
@@ -775,17 +816,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
             obj.stock = balanceStock;
           }
         });
-        if (!onServer && segment.product_list.length && cardCount > segment.product_list.length) {
-          let remaining = cardCount - segment.product_list.length;
-          for(let i=0; i<remaining; i++)
-          {
-            segment.product_list = segment.product_list.concat(segment.product_list);
-            if(segment.product_list.length >= cardCount) {
-              segment.product_list.length = cardCount;
-              break;
-            }
-          }
-        }
+        this.padProductSlots(segment.product_list, cardCount);
       }
       else if(segment.type=="featured_section") {
         let cardCount = this.swiperService.featured_section.card_count;
@@ -832,15 +863,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
               obj.stock = balanceStock;
             }
           });
-          let remaining = cardCount - tab.product_list.length;
-          for(let i=0; i<remaining; i++)
-          {
-            tab.product_list = tab.product_list.concat(tab.product_list);
-            if(tab.product_list.length >= cardCount) {
-              tab.product_list.length = cardCount;
-              break;
-            }
-          }
+          this.padProductSlots(tab.product_list, cardCount);
         }
       }
       else if(segment.type=="shopping_assistant") {
@@ -980,6 +1003,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
 
   /** Normalizes API prices then applies store currency (used by all home product sliders/grids). */
   private applyHomeProductCardCurrency(product: any): void {
+    if (!product || product._placeholder) return;
     const sell = Number(product?.selling_price);
     const disc = Number(product?.discounted_price);
     product.temp_selling_price = this.cc.CALC(Number.isFinite(sell) ? sell : 0);

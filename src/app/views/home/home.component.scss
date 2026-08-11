@@ -4,6 +4,18 @@
   margin-top: -10px;
 }
 
+/* Placeholder slot — inherits product-card styles; keep a clear side gap between tiles. */
+.product-placeholder {
+  pointer-events: none;
+  user-select: none;
+  padding: 0 8px !important;
+
+  .product-title,
+  .product-content span {
+    visibility: hidden;
+  }
+}
+
 .home-section {
   position: relative;
 }

@@ -317,6 +317,7 @@ export class HomeSwiperDirective {
       // swiper config
       let swipeConfig: any = {
         speed: 500,
+        spaceBetween: configData.spaceBetween ?? 0,
         breakpoints: configData.break_points,
         navigation: {
           nextEl: '#swipe_next_'+swipeElement.split("_")[1],

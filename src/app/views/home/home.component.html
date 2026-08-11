@@ -19,6 +19,33 @@
     }}</span>
   </ng-template>
 
+  <!-- Empty slot: same markup/classes as a real product card so size & style match. -->
+  <ng-template #homeProductPlaceholder let-sec2="sec2">
+    <div class="product-box product-placeholder cursor" aria-hidden="true">
+      <div class="prod-div">
+        <figure
+          class="product-image"
+          [ngClass]="sec2 ? 'product-image-sec2' : ''"
+        >
+          <img
+            src="assets/images/placeholder.svg"
+            alt=""
+            width="100%"
+            height="100%"
+            loading="lazy"
+            decoding="async"
+          />
+        </figure>
+        <div class="product-content">
+          <p class="product-title">&nbsp;</p>
+          <div>
+            <span>&nbsp;</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-template>
+
   <!-- Primary Highlights -->
   <!--<section *ngIf="commonService?.primary_highlights?.length>=swiperService.highlights?.card_count" class="primary-section primary-highlighted-sec wow fadeInUp">
     <div class="{{template_setting?.body_type}}">
@@ -932,8 +959,7 @@
     <section
       *ngIf="
         segment.type == 'featured_product' &&
-        segment.product_list?.length >=
-          swiperService.featured_products?.card_count
+        hasRealProducts(segment.product_list)
       "
       class="primary-section product__slider feature-sec-margin"
       [attr.aria-labelledby]="segment.heading ? 'home-' + segment.type + '-title-' + i : null"
@@ -1118,6 +1144,15 @@
                   *ngFor="let x of segmentProducts(segment); let j = index"
                   class="swiper-slide p-0"
                 >
+                  <ng-container *ngIf="x._placeholder; else featuredProductSlideCard">
+                    <ng-container
+                      *ngTemplateOutlet="
+                        homeProductPlaceholder;
+                        context: { sec2: segment.slider_type != 'one' }
+                      "
+                    ></ng-container>
+                  </ng-container>
+                  <ng-template #featuredProductSlideCard>
                   <div
                     appMouseHover
                     class="product-box cursor p-0"
@@ -1282,6 +1317,7 @@
                       </div>
                     </a>
                   </div>
+                  </ng-template>
                 </div>
                 <!-- explore all -->
                 <!-- <div class="swiper-slide">
@@ -1362,11 +1398,17 @@
           >
             <div
               *ngFor="
-                let x of segment.product_list | slice: 0 : 4;
+                let x of visibleProductSlots(segment.product_list) | slice: 0 : 4;
                 let j = index
               "
               class="col-md-3 px-0 col-6 feature-grid"
             >
+              <ng-container *ngIf="x._placeholder; else featuredProductGridCard">
+                <ng-container
+                  *ngTemplateOutlet="homeProductPlaceholder; context: { sec2: false }"
+                ></ng-container>
+              </ng-container>
+              <ng-template #featuredProductGridCard>
               <div
                 appMouseHover
                 class="product-box cursor h-100 d-flex flex-column"
@@ -1518,6 +1560,7 @@
                   </div>
                 </a>
               </div>
+              </ng-template>
             </div>
           </div>
           <!-- <div class="col-md-12 d-flex justify-content-center">
@@ -1624,9 +1667,15 @@
                   >
                     <div class="swiper-wrapper">
                       <div
-                        *ngFor="let x of tab.product_list; let k = index"
+                        *ngFor="let x of visibleProductSlots(tab.product_list); let k = index"
                         class="swiper-slide p-0"
                       >
+                        <ng-container *ngIf="x._placeholder; else mtfpSlideCard">
+                          <ng-container
+                            *ngTemplateOutlet="homeProductPlaceholder; context: { sec2: false }"
+                          ></ng-container>
+                        </ng-container>
+                        <ng-template #mtfpSlideCard>
                           <!--Wishlist icon-->
                           <div class="product_labellist wishlist-main">
                             <span
@@ -1787,6 +1836,7 @@
                               </div>
                             </div>
                           </a>
+                        </ng-template>
                         </div>
                         <div class="swiper-slide">
                           <div
@@ -1829,11 +1879,17 @@
                   >
                     <div
                       *ngFor="
-                        let x of tab.product_list | slice: 0 : 4;
+                        let x of visibleProductSlots(tab.product_list) | slice: 0 : 4;
                         let j = index
                       "
                       class="col-md-3 px-0 col-6 feature-grid"
                     >
+                      <ng-container *ngIf="x._placeholder; else mtfpGridCard">
+                        <ng-container
+                          *ngTemplateOutlet="homeProductPlaceholder; context: { sec2: false }"
+                        ></ng-container>
+                      </ng-container>
+                      <ng-template #mtfpGridCard>
                       <div
                         appMouseHover
                         class="product-box cursor h-100 d-flex flex-column"
@@ -1990,9 +2046,10 @@
                             </div>
                           </a>
                         </div>
+                      </ng-template>
                       </div>
                     </div>
-                </div>
+                  </div>
                 </ng-container>
               </div>
             </div>
