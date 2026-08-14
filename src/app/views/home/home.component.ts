@@ -1180,13 +1180,12 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     return (segment?.image_list ?? []).filter((item) => !!item?.content_details);
   }
 
-  /** Renders the visual-search promo immediately after the Summer Sarees Edit CMS block. */
-  showVisualSearchAfterSegment(segment: { heading?: string }): boolean {
-    if (this.commonService.ys_features.indexOf('product_search') === -1) {
+  /** Renders the visual-search promo after the 2nd layout segment (index 1). */
+  showVisualSearchAfterSegment(layoutIndex: number): boolean {
+    if (this.commonService.ys_features?.indexOf('product_search') === -1) {
       return false;
     }
-    const heading = (segment?.heading ?? '').trim().toLowerCase();
-    return heading.includes('summer sarees edit');
+    return layoutIndex === 1;
   }
 
   processAiStyles(list: any) {

@@ -1134,56 +1134,6 @@ export class CategoryComponent implements OnInit, OnDestroy, AfterViewChecked {
     }
   }
 
-  loadCategoryArticles() {
-    if (!isPlatformBrowser(this.platformId)) return;
-    if (!(this.commonService.ys_features?.indexOf('blogs') > -1)) return;
-    this.storeApi.HOME_PAGE_BLOG_LIST(4).subscribe(result => {
-      if (result.status) this.blog_list = (result.list || []).slice(0, 4);
-      else console.log('category blog list response', result);
-    });
-  }
-
-  hasCatalogBlogsSegment(): boolean {
-    return this.hasCatalogSegment('blogs');
-  }
-
-  hasCatalogSegment(type: string): boolean {
-    return (this.catalog_page_segments || []).some(
-      s => s.type === type && s.active_status !== false
-    );
-  }
-
-  internalLinksColumns(links: any[], columnCount = 3): any[][] {
-    const items = links || [];
-    if (!items.length) return [];
-    const perCol = Math.ceil(items.length / columnCount);
-    const columns: any[][] = [];
-    for (let i = 0; i < columnCount; i++) {
-      const chunk = items.slice(i * perCol, (i + 1) * perCol);
-      if (chunk.length) columns.push(chunk);
-    }
-    return columns;
-  }
-
-  onInternalLinkClick(item: any, event: Event) {
-    event.preventDefault();
-    event.stopPropagation();
-    if (!item) return;
-    if (item.link_type === 'internal' && item.link) {
-      const path = item.link.startsWith('/') ? item.link : '/' + item.link;
-      this.router.navigateByUrl(path);
-      return;
-    }
-    this.commonService.onPageRedirect({
-      ...item,
-      link_status: item.link_status !== false
-    });
-  }
-
-  trackInternalLink(index: number, item: any): string {
-    return `${item?.link || item?.name || index}`;
-  }
-
   categoryHeroImage(): string | null {
     const d = this.category_details;
     if (!d) return null;
@@ -1272,8 +1222,6 @@ export class CategoryComponent implements OnInit, OnDestroy, AfterViewChecked {
     const kanjivaramList = ['Kanjivaram Silk Sarees', 'Kanjivaram Tissue Silk Sarees', 'Kanjivaram Pure Silk Sarees'];
     const banarasiList = ['Banarasi Silk Sarees'];
     const organzaList = ['Organza Sarees'];
-
-    this.loadCategoryArticles();
 
     this.page = 1;
     this.sort_value = 'latest';
