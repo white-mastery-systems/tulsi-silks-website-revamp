@@ -235,8 +235,8 @@ export class CommonService {
         if (this.application_setting?.customize_name) this.customize_name = this.application_setting.customize_name;
       }
     }
-    if(localStorage.getItem('customer_token')) this.customer_token = localStorage.getItem('customer_token');
     if(isPlatformBrowser(this.platformId)) {
+      if(localStorage.getItem('customer_token')) this.customer_token = localStorage.getItem('customer_token');
       if(localStorage.getItem('user_details')) this.user_details = this.decryptData(localStorage.getItem("user_details"));
       // For each field below, only fall back to localStorage if the SSR snapshot
       // did NOT provide a value. This preserves hydration correctness on visits

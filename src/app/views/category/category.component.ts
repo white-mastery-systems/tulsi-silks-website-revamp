@@ -565,6 +565,7 @@ export class CategoryComponent implements OnInit, OnDestroy, AfterViewChecked {
 
   // Update your ngAfterViewInit method
   ngAfterViewInit() {
+    if (!isPlatformBrowser(this.platformId)) return;
     // Initialize button visibility
     setTimeout(() => {
       this.checkNavigationOverflow();
@@ -834,7 +835,7 @@ export class CategoryComponent implements OnInit, OnDestroy, AfterViewChecked {
             if (isPlatformBrowser(this.platformId) && sessionStorage.getItem("ai_styles")) {
               let filterList = this.commonService.decryptData(sessionStorage.getItem("ai_styles"));
               this.storeApi.AI_STYLES_FILTER({ styles: filterList }).subscribe(result => {
-                setTimeout(() => { this.pageLoader = false; }, 500);
+                this.finishPageLoader();
                 if (result.status) this.filterProducts(result.list);
                 else console.log("c1-response", result, this.pageUrl);
               });
@@ -899,7 +900,7 @@ export class CategoryComponent implements OnInit, OnDestroy, AfterViewChecked {
             // seo
             this.updateMetaData();
             this.storeApi.FILTERED_PRODUCT_LIST({ type: filterType }).subscribe(result => {
-              setTimeout(() => { this.pageLoader = false; }, 500);
+              this.finishPageLoader();
               if (result.status) this.filterProducts(result.list);
               else console.log("c2-response", result, this.pageUrl);
             });
@@ -1218,6 +1219,19 @@ export class CategoryComponent implements OnInit, OnDestroy, AfterViewChecked {
     if (this.isOrganza && this.category_details.name == 'Organza Sarees') this.isOrganza = false;
   }
 
+  /** Hide the loader without a 500 ms Zone timer on SSR (that delay is TTFB). */
+  private finishPageLoader(): void {
+    if (isPlatformBrowser(this.platformId)) {
+      setTimeout(() => {
+        this.pageLoader = false;
+        this.scheduleHeroDescOverflowCheck();
+      }, 500);
+    } else {
+      this.pageLoader = false;
+      this.scheduleHeroDescOverflowCheck();
+    }
+  }
+
   loadStandardCategoryPage() {
     const kanjivaramList = ['Kanjivaram Silk Sarees', 'Kanjivaram Tissue Silk Sarees', 'Kanjivaram Pure Silk Sarees'];
     const banarasiList = ['Banarasi Silk Sarees'];
@@ -1231,6 +1245,8 @@ export class CategoryComponent implements OnInit, OnDestroy, AfterViewChecked {
     this.useV4Catalog = true;
     this.catalog_page_segments = [];
 
+    const hasQueryFilters = Object.keys(this.qParams || {}).some((k) => !!this.qParams[k]);
+
     this.storeApi.AVAILABLE_FILTERS({ category_id: this.params.category_id }).subscribe(afResult => {
       if (afResult.status) {
         this.filtersFromApi = true;
@@ -1240,8 +1256,15 @@ export class CategoryComponent implements OnInit, OnDestroy, AfterViewChecked {
         this.tag_list = [];
         this.filtersFromApi = true;
       }
-      this.fetchProductList(1, true, kanjivaramList, banarasiList, organzaList, true);
+      // Query-string filters need tag_list before list_v4; default sitemap URLs do not.
+      if (hasQueryFilters) {
+        this.fetchProductList(1, true, kanjivaramList, banarasiList, organzaList, true);
+      }
     });
+
+    if (!hasQueryFilters) {
+      this.fetchProductList(1, true, kanjivaramList, banarasiList, organzaList, true);
+    }
   }
 
   applyAvailableFiltersResponse(result: any) {
@@ -1282,10 +1305,7 @@ export class CategoryComponent implements OnInit, OnDestroy, AfterViewChecked {
     });
 
     this.storeApi.PRODUCT_LIST_V4(payload).subscribe(result => {
-      if (initialLoad) setTimeout(() => {
-        this.pageLoader = false;
-        this.scheduleHeroDescOverflowCheck();
-      }, 500);
+      if (initialLoad) this.finishPageLoader();
       this.listLoader = false;
       this.scheduleCatalogToolbarSticky();
       if (result.status) {

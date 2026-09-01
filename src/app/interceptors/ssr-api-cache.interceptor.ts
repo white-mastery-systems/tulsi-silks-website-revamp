@@ -8,7 +8,7 @@ import {
 } from '@angular/common/http';
 import { isPlatformServer } from '@angular/common';
 import { Observable, of } from 'rxjs';
-import { tap } from 'rxjs/operators';
+import { finalize, shareReplay, tap } from 'rxjs/operators';
 
 /**
  * Cross-render SSR API response cache.
@@ -50,6 +50,20 @@ interface CacheEntry {
 }
 
 const _cache = new Map<string, CacheEntry>();
+/** In-flight GETs/POSTs shared across concurrent SSR renders (thundering-herd). */
+const _inflight = new Map<string, Observable<HttpEvent<unknown>>>();
+
+/**
+ * Catalog POSTs that are read-only. Without this, every product/category SSR
+ * misses the GET-only cache and fires a fresh HTTPS call — Googlebot crawling
+ * the sitemap then stampedes Node (10–18 s TTFB / 504).
+ */
+const CACHEABLE_POST_NEEDLES = [
+  '/store_details/product/details',
+  '/store_details/product/list_v4',
+  '/store_details/product/available_filters',
+  '/store_details/product/filter',
+];
 
 const CACHE_TTL_MS = (() => {
   const raw = (
@@ -85,6 +99,23 @@ export function seedSsrApiCache(url: string, body: unknown): void {
   cacheSet(url, body);
 }
 
+function requestCacheKey(req: HttpRequest<unknown>): string {
+  if (req.method === 'GET') {
+    return req.url;
+  }
+  return `${req.method}:${req.url}:${JSON.stringify(req.body ?? '')}`;
+}
+
+function shouldCacheRequest(req: HttpRequest<unknown>): boolean {
+  if (req.method === 'GET') {
+    return true;
+  }
+  if (req.method !== 'POST') {
+    return false;
+  }
+  return CACHEABLE_POST_NEEDLES.some((needle) => req.url.includes(needle));
+}
+
 // ── DI interceptor ────────────────────────────────────────────────────────
 
 @Injectable()
@@ -95,21 +126,25 @@ export class SsrApiCacheInterceptor implements HttpInterceptor {
     req: HttpRequest<unknown>,
     next: HttpHandler,
   ): Observable<HttpEvent<unknown>> {
-    // Only cache on the server; only cache GET requests.
-    if (!isPlatformServer(this.platformId) || req.method !== 'GET') {
+    if (!isPlatformServer(this.platformId) || !shouldCacheRequest(req)) {
       return next.handle(req);
     }
 
-    const url = req.url;
-    const hit = cacheGet(url);
+    const key = requestCacheKey(req);
+    const hit = cacheGet(key);
 
     if (hit !== null) {
       // Return immediately — zero network latency for all subsequent SSR renders.
-      return of(new HttpResponse({ status: 200, body: hit, url }));
+      return of(new HttpResponse({ status: 200, body: hit, url: req.url }));
     }
 
-    // Cache miss: let the request through and store the response.
-    return next.handle(req).pipe(
+    const pending = _inflight.get(key);
+    if (pending) {
+      return pending;
+    }
+
+    // Cache miss: one network call shared by every concurrent render of this URL.
+    const shared = next.handle(req).pipe(
       tap((event) => {
         if (
           event instanceof HttpResponse &&
@@ -121,9 +156,15 @@ export class SsrApiCacheInterceptor implements HttpInterceptor {
           // shell for up to 60 s even after the upstream API recovers.
           (event.body as any)?.status !== false
         ) {
-          cacheSet(url, event.body);
+          cacheSet(key, event.body);
         }
       }),
+      finalize(() => {
+        _inflight.delete(key);
+      }),
+      shareReplay({ bufferSize: 1, refCount: false }),
     );
+    _inflight.set(key, shared);
+    return shared;
   }
 }

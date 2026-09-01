@@ -462,19 +462,22 @@ export class AppComponent implements AfterViewInit, OnDestroy {
             if (storeProperties.footer_config) this.commonService.footer_config = storeProperties.footer_config;
             // giftcard config
             if (storeProperties.giftcard_config) this.commonService.giftcard_config = storeProperties.giftcard_config;
-            // Defer all CryptoJS-based localStorage writes to a separate task so they don't block
-            // rendering — these are purely cache updates for the next page load, data is in memory.
-            setTimeout(() => {
-              localStorage.setItem("ys_features", this.commonService.encryptData(this.commonService.ys_features));
-              localStorage.setItem("store_details", this.commonService.encryptData(this.commonService.store_details));
-              localStorage.setItem("seo_details", this.commonService.encryptData(this.commonService.seo_details));
-              localStorage.setItem("store_properties", this.commonService.encryptData(this.commonService.store_properties));
-              localStorage.setItem("payment_methods", this.commonService.encryptData(this.commonService.payment_methods));
-              localStorage.setItem("application_setting", this.commonService.encryptData(this.commonService.application_setting));
-              localStorage.setItem("checkout_setting", this.commonService.encryptData(this.commonService.checkout_setting));
-              localStorage.setItem("footer_config", this.commonService.encryptData(this.commonService.footer_config));
-              localStorage.setItem("giftcard_config", this.commonService.encryptData(this.commonService.giftcard_config));
-            }, 0);
+            // Defer CryptoJS localStorage writes so they don't block first paint.
+            // Skip on SSR: Zone.js would wait for the timer, and the Node localStorage
+            // polyfill is process-global (leaks across concurrent renders).
+            if (isPlatformBrowser(this.platformId)) {
+              setTimeout(() => {
+                localStorage.setItem("ys_features", this.commonService.encryptData(this.commonService.ys_features));
+                localStorage.setItem("store_details", this.commonService.encryptData(this.commonService.store_details));
+                localStorage.setItem("seo_details", this.commonService.encryptData(this.commonService.seo_details));
+                localStorage.setItem("store_properties", this.commonService.encryptData(this.commonService.store_properties));
+                localStorage.setItem("payment_methods", this.commonService.encryptData(this.commonService.payment_methods));
+                localStorage.setItem("application_setting", this.commonService.encryptData(this.commonService.application_setting));
+                localStorage.setItem("checkout_setting", this.commonService.encryptData(this.commonService.checkout_setting));
+                localStorage.setItem("footer_config", this.commonService.encryptData(this.commonService.footer_config));
+                localStorage.setItem("giftcard_config", this.commonService.encryptData(this.commonService.giftcard_config));
+              }, 0);
+            }
             this.commonService.storeDataLoaded = true;
             this.commonService.storeDataListener.next(true);
             // catalogs
@@ -793,8 +796,9 @@ export class AppComponent implements AfterViewInit, OnDestroy {
   updateCurrencyValue(currencyTypes, liveList) {
     let currencyIndex = currencyTypes.findIndex(obj => obj.default_currency);
     this.commonService.store_details.currency = currencyTypes[currencyIndex].country_code;
-    // defer cache write — data already in memory, localStorage is only for next-load caching
-    setTimeout(() => localStorage.setItem("store_details", this.commonService.encryptData(this.commonService.store_details)), 0);
+    if (isPlatformBrowser(this.platformId)) {
+      setTimeout(() => localStorage.setItem("store_details", this.commonService.encryptData(this.commonService.store_details)), 0);
+    }
     // run in browser side(for overcome ssr country_code unefined error)
     if (isPlatformBrowser(this.platformId)) {
       currencyTypes.forEach(element => {
@@ -857,7 +861,9 @@ export class AppComponent implements AfterViewInit, OnDestroy {
   setStoreCurrency(index) {
     this.commonService.temp_currency = this.commonService.currency_types[index];
     this.commonService.setCurrency(this.commonService.temp_currency);
-    setTimeout(() => localStorage.setItem("selected_currency", this.commonService.encryptData(this.commonService.temp_currency)), 0);
+    if (isPlatformBrowser(this.platformId)) {
+      setTimeout(() => localStorage.setItem("selected_currency", this.commonService.encryptData(this.commonService.temp_currency)), 0);
+    }
   }
   optString(str) {
     return str.replace(/[^A-Z0-9]/ig, "").toLowerCase();
@@ -913,8 +919,10 @@ export class AppComponent implements AfterViewInit, OnDestroy {
   // }
 
   setBodyMarginTop(timer: number) {
+    // Zone.js holds SSR until every timer fires. A 100–1100 ms delay here added
+    // that much TTFB on every product/category URL in the sitemap.
+    if (!isPlatformBrowser(this.platformId)) return;
     setTimeout(() => {
-      if (!isPlatformBrowser(this.platformId)) return;
       const mastHeight = this.document.getElementById('headroom-head')?.offsetHeight ?? 0;
       // Compare against computed style (picks up the CSS fallback in index.html) so
       // we skip the write — and avoid CLS — when the height hasn't actually changed.

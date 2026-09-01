@@ -212,9 +212,11 @@ export class BlogDetailsComponent implements OnInit, AfterViewInit, OnDestroy {
         // Article + TOC anchors exist only when `!pageLoader`; double rAF gives Angular
         // one render cycle after the spinner clears before trying to resolve #section-* ids.
         this.pageLoader = false;
-        requestAnimationFrame(() => {
-          requestAnimationFrame(() => this.scheduleScrollToUrlFragment());
-        });
+        if (isPlatformBrowser(this.platformId)) {
+          requestAnimationFrame(() => {
+            requestAnimationFrame(() => this.scheduleScrollToUrlFragment());
+          });
+        }
       });
     });
   }

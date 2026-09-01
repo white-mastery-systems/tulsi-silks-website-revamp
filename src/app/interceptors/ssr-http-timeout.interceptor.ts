@@ -23,6 +23,10 @@ const SSR_TIMEOUT_MS: Record<string, number> = {
   '/store_details/blogs':            5000,
   '/store_details/contact_page':     5000,
   '/store_details/ai_styles':        5000,
+  '/store_details/product/details':  3000,
+  '/store_details/product/list_v4':  3000,
+  '/store_details/product/available_filters': 3000,
+  '/store_details/product/filter':   3000,
 };
 
 const DEFAULT_SSR_TIMEOUT_MS = 5000;

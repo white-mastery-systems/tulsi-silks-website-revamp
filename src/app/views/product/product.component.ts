@@ -154,7 +154,7 @@ export class ProductComponent implements OnInit {
         }
         // product details
         this.storeApi.PRODUCT_DETAILS({ product_id: this.params.product_id }).subscribe(result => {
-          setTimeout(() => { this.pageLoader = false; }, 500);
+          this.finishPageLoader();
           if(result.status) {
             this.productDetails = result.data;
             if(this.productDetails.footnote_list?.find(el => el.name=='Shipping Time')) this.shippingExists = true;
@@ -193,7 +193,8 @@ export class ProductComponent implements OnInit {
               this.commonService.setSiteMetaData(this.productDetails.seo_details, seoImage);
             }
             else this.commonService.getStoreSeoDetails();
-            // add recently viewed prod localstorage
+            // add recently viewed prod localstorage (browser only — Node polyfill is process-global)
+            if (isPlatformBrowser(this.platformId)) {
             let viewedProds = [];
             if(localStorage.getItem('vps')) viewedProds = JSON.parse(localStorage.getItem('vps'));
             let cpData: any = {
@@ -215,6 +216,7 @@ export class ProductComponent implements OnInit {
               viewedProds = viewedProds.slice(0, 20);
             }
             localStorage.setItem('vps', JSON.stringify(viewedProds));
+            }
             // update stock
             if(this.productDetails.hold_till) {
               let balanceStock = this.productDetails.stock;
@@ -272,14 +274,28 @@ export class ProductComponent implements OnInit {
             this.router.navigate(["/"]);
           }
         }, () => {
-          setTimeout(() => { this.pageLoader = false; }, 500);
+          this.finishPageLoader();
           this.router.navigate(["/"]);
         });
       }
     });
   }
 
+  /** Hide the loader without a 500 ms Zone timer on SSR (that delay is TTFB). */
+  private finishPageLoader(): void {
+    if (isPlatformBrowser(this.platformId)) {
+      setTimeout(() => { this.pageLoader = false; }, 500);
+    } else {
+      this.pageLoader = false;
+    }
+  }
+
   loadBlogAndProducts() {
+    // Below-fold blogs + recently-viewed: client only. RANDOM_BLOG_LIST is a POST
+    // so it was never SSR-cached; Angular waited for it on every product URL.
+    if (!isPlatformBrowser(this.platformId)) {
+      return;
+    }
     // random blogs
     this.blogList = [];
     this.storeApi.RANDOM_BLOG_LIST({ limit: 4 }).subscribe(result => {
