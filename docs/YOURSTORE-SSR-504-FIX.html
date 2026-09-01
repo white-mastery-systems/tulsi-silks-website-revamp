@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>YourStore Angular SSR — 504 / Slow Catalog Playbook</title>
+  <style>
+    :root {
+      --bg: #faf9f7;
+      --card: #ffffff;
+      --text: #1a1a1a;
+      --muted: #5c5c5c;
+      --accent: #8b2942;
+      --accent-light: #f5e8ec;
+      --border: #e8e4df;
+      --success: #2d6a4f;
+      --warning: #b8860b;
+      --danger: #9b1c1c;
+      --code-bg: #f4f1ec;
+    }
+    * { box-sizing: border-box; }
+    body {
+      font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      margin: 0;
+      padding: 2rem 1rem 4rem;
+    }
+    .wrap { max-width: 960px; margin: 0 auto; }
+    header {
+      background: linear-gradient(135deg, var(--accent) 0%, #5c1a2e 100%);
+      color: #fff;
+      padding: 2.5rem 2rem;
+      border-radius: 12px;
+      margin-bottom: 2rem;
+    }
+    header h1 { margin: 0 0 0.5rem; font-size: 1.75rem; font-weight: 600; }
+    header p { margin: 0; opacity: 0.9; font-size: 0.95rem; }
+    .meta { display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 1.25rem; font-size: 0.85rem; }
+    .meta span { background: rgba(255,255,255,0.15); padding: 0.25rem 0.75rem; border-radius: 6px; }
+    nav.toc {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1.25rem 1.5rem;
+      margin-bottom: 2rem;
+    }
+    nav.toc h2 { margin: 0 0 0.75rem; font-size: 1rem; color: var(--accent); }
+    nav.toc ol { margin: 0; padding-left: 1.25rem; }
+    nav.toc li { margin: 0.35rem 0; }
+    nav.toc a { color: var(--accent); text-decoration: none; }
+    nav.toc a:hover { text-decoration: underline; }
+    section {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1.5rem 1.75rem;
+      margin-bottom: 1.5rem;
+    }
+    section h2 {
+      margin: 0 0 1rem;
+      font-size: 1.25rem;
+      color: var(--accent);
+      padding-bottom: 0.5rem;
+      border-bottom: 2px solid var(--accent-light);
+    }
+    section h3 { margin: 1.25rem 0 0.5rem; font-size: 1.05rem; }
+    p { margin: 0.5rem 0; }
+    ul, ol { margin: 0.5rem 0; padding-left: 1.5rem; }
+    li { margin: 0.35rem 0; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+      margin: 1rem 0;
+    }
+    th, td {
+      border: 1px solid var(--border);
+      padding: 0.6rem 0.75rem;
+      text-align: left;
+      vertical-align: top;
+    }
+    th { background: var(--accent-light); color: var(--accent); }
+    code, pre {
+      font-family: ui-monospace, "Cascadia Code", Consolas, monospace;
+      font-size: 0.82rem;
+    }
+    code { background: var(--code-bg); padding: 0.1rem 0.35rem; border-radius: 4px; }
+    pre {
+      background: #1e1a18;
+      color: #f4efe8;
+      padding: 1rem 1.15rem;
+      border-radius: 8px;
+      overflow-x: auto;
+      line-height: 1.45;
+    }
+    pre code { background: none; padding: 0; color: inherit; }
+    .callout {
+      border-left: 4px solid var(--accent);
+      background: var(--accent-light);
+      padding: 0.85rem 1rem;
+      border-radius: 0 8px 8px 0;
+      margin: 1rem 0;
+    }
+    .callout.warn { border-left-color: var(--warning); background: #fff8e8; }
+    .callout.danger { border-left-color: var(--danger); background: #fdecec; }
+    .callout.ok { border-left-color: var(--success); background: #eaf6ef; }
+    .prompt-box { position: relative; }
+    .copy-btn {
+      position: absolute;
+      top: 0.75rem;
+      right: 0.75rem;
+      background: var(--accent);
+      color: #fff;
+      border: 0;
+      border-radius: 6px;
+      padding: 0.35rem 0.7rem;
+      cursor: pointer;
+      font-size: 0.8rem;
+    }
+    .copy-btn:hover { opacity: 0.9; }
+    footer { text-align: center; color: var(--muted); font-size: 0.85rem; margin-top: 1rem; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>YourStore Angular SSR — 504 playbook</h1>
+      <p>Reuse this on any YourStore Angular SSR store when catalog pages are slow and sitemap URLs return 504. Backend API is not the problem.</p>
+      <div class="meta">
+        <span>First applied: Tulsi Silks · 1 Sep 2026</span>
+        <span>Also: docs/YOURSTORE-SSR-504-FIX.md</span>
+      </div>
+    </header>
+
+    <nav class="toc">
+      <h2>Contents</h2>
+      <ol>
+        <li><a href="#copy-prompt">Copy-paste Cursor prompt</a></li>
+        <li><a href="#issue">Exact issue</a></li>
+        <li><a href="#dont-copy">Do not copy files blindly</a></li>
+        <li><a href="#node">Node / Angular changes</a></li>
+        <li><a href="#nginx">Nginx changes</a></li>
+        <li><a href="#deploy">Deploy &amp; verify</a></li>
+      </ol>
+    </nav>
+
+    <section id="copy-prompt">
+      <h2>Copy-paste Cursor prompt</h2>
+      <p>Paste everything in the box into Cursor on the next YourStore SSR store. Copy this HTML or <code>YOURSTORE-SSR-504-FIX.md</code> into that repo first.</p>
+      <div class="prompt-box">
+        <button type="button" class="copy-btn" data-copy="promptTop">Copy prompt</button>
+        <pre id="promptTop"><code>You are fixing Angular SSR 504 / 10–18s catalog pages on a YourStore storefront.
+
+CONTEXT
+- Backend API is fast (~100ms). Do not blame or change the API.
+- Angular SSR (CommonEngine + Express server.ts) + nginx are the bottleneck.
+- Sitemap has thousands of unique /product and /category URLs. Googlebot crawls them in parallel.
+- Follow docs/YOURSTORE-SSR-504-FIX.md (and YOURSTORE-SSR-504-FIX.html) from YS-Tulsi-Silks as the reference implementation.
+- Do not affect existing shopper functionality (cart, checkout, filters, reviews, hydration).
+
+ROOT CAUSE TO LOOK FOR
+1. server.ts HTML cache only for `/` — catalog URLs always cold-render.
+2. Zone.js setTimeout on SSR (pageLoader 500ms, setBodyMarginTop 100–1100ms, ngAfterViewInit).
+3. SsrApiCacheInterceptor GET-only — PRODUCT_DETAILS / list_v4 / available_filters are POSTs.
+4. No SSR concurrency cap / no in-flight coalescing → crawl stampede.
+5. Nginx proxy_read_timeout 15s and proxy_cache_lock_timeout 2s → 504.
+6. /sitemap.xml proxied with no cache or timeout.
+7. Node localStorage polyfill is process-global — never write it on SSR.
+
+IMPLEMENT (merge, don’t rewrite the whole store)
+A. server.ts
+   - LRU HTML cache for all public GET pages (exclude cart, checkout, account, wishlist, search, vendor-*).
+   - Cache key: host|path|device (mobile vs desktop UA).
+   - In-flight render coalescing per cache key.
+   - Max 2 concurrent CommonEngine.render(); queue 12s then 503 Retry-After: 10 (never hang until nginx 504).
+   - Render timeout 15s → 503; let the render finish to populate cache.
+   - Pre-seed STORE_DETAILS + FOOTER_SEO_LINKS on EVERY page; LAYOUT_LIST only on home.
+   - Cache sitemap.xml in process (1h) with 8s upstream timeout. Do not use the deprecated `request` library without timeout.
+
+B. ssr-api-cache.interceptor.ts
+   - Cache GET + read-only catalog POSTs (details, list_v4, available_filters, filter).
+   - In-flight shareReplay coalescing.
+   - Do not cache { status: false }.
+
+C. ssr-http-timeout.interceptor.ts
+   - Product POST timeouts 3000ms.
+
+D. Components
+   - Skip SSR Zone timers (browser-only setTimeout for loaders / setBodyMarginTop / localStorage).
+   - Skip RANDOM_BLOG_LIST and recently-viewed on SSR.
+   - Category: parallel filters + list_v4 when no query-string filters.
+   - Keep product details, category grid, reviews, title/meta in SSR.
+
+E. nginx (MERGE into live conf — do not replace)
+   - Keep this store’s cache zone name, port, SSL, 301s.
+   - location /: proxy_read_timeout 60s, proxy_cache_lock_timeout 30s, proxy_cache_lock_age 30s.
+   - location = /sitemap.xml above location / (1h cache, 20s read timeout).
+   - Cache key MUST include $ts_device_type.
+   - nginx -t before reload.
+
+CONSTRAINTS
+- No new features. No markdown unless a playbook already exists to update.
+- Verify with curl -sI for /, a category URL (twice), and /sitemap.xml. Expect 200, X-Cache-Status, no 504.</code></pre>
+      </div>
+    </section>
+
+    <section id="issue">
+      <h2>1. Exact issue (for management)</h2>
+      <p>The sitemap lists thousands of unique <code>/product/…</code> and <code>/category/…</code> URLs. Googlebot requests many of them at once.</p>
+      <p>Only the <strong>homepage</strong> was HTML-cached in Node. Every other URL ran a full Angular <code>CommonEngine.render()</code>.</p>
+      <p>Each render also:</p>
+      <ol>
+        <li>Waited on <strong>Zone.js timers</strong> that do nothing on the server (<code>setTimeout</code> 500–1100ms).</li>
+        <li>Re-called store APIs. <strong>Product/category APIs are POSTs</strong>, so they missed the GET-only SSR cache.</li>
+        <li>Ran <strong>with no concurrency cap</strong>. Node is one CPU for Angular render. Crawls queued until TTFB hit 10–18s.</li>
+      </ol>
+      <p>Nginx then cut the request at <code>proxy_read_timeout 15s</code> and released the cache lock at <code>proxy_cache_lock_timeout 2s</code>. That is the 504.</p>
+      <table>
+        <thead>
+          <tr><th>Layer</th><th>What failed</th><th>Result</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Node SSR</td><td>Full render per unique sitemap URL, extra timers, uncached POSTs</td><td>10–18s TTFB</td></tr>
+          <tr><td>Nginx</td><td>Read timeout 15s, lock timeout 2s</td><td>504 to Googlebot / users</td></tr>
+          <tr><td>Sitemap</td><td>Proxied upstream with no cache/timeout</td><td>Sitemap itself can 504</td></tr>
+        </tbody>
+      </table>
+      <div class="callout">
+        Raising nginx timeouts alone does not fix the stall. Crawlers still wait 10–18s. Fix Node SSR first, then stop nginx cutting at 15s.
+      </div>
+    </section>
+
+    <section id="dont-copy">
+      <h2>2. Do not copy files blindly</h2>
+      <p>Each store has a different domain, SSL path, Node port, nginx cache <strong>zone name</strong> (<code>SSR</code> vs <code>tulsisilks_ssr</code>), and 301 redirects. <code>map</code> / <code>proxy_cache_path</code> often already live in <code>nginx.conf</code>.</p>
+      <div class="callout warn">
+        Merge the <em>settings</em> into the live <code>server {}</code> block. Do not replace the whole conf. Duplicate <code>map</code> or <code>proxy_cache_path</code> fails <code>nginx -t</code>.
+      </div>
+    </section>
+
+    <section id="node">
+      <h2>3. Node / Angular changes</h2>
+      <p>Do not change cart, checkout, account, or user-visible catalog behaviour. Below-fold blogs / recently-viewed still load after hydration.</p>
+
+      <h3>3.1 <code>server.ts</code></h3>
+      <p>Homepage-only HTML cache is not enough. Sitemap URLs never hit <code>/</code>.</p>
+      <table>
+        <thead><tr><th>Piece</th><th>Default</th><th>Purpose</th></tr></thead>
+        <tbody>
+          <tr><td>In-process HTML cache</td><td>TTL 120s, max 400 LRU</td><td>Repeat crawls skip Angular</td></tr>
+          <tr><td>Cache key</td><td><code>host + path + device</code></td><td>Avoid mobile HTML on desktop</td></tr>
+          <tr><td>Do not cache</td><td>cart, checkout, account, wishlist, search, vendor-*</td><td>Personalized</td></tr>
+          <tr><td>In-flight coalescing</td><td>one render per key</td><td>Two bots, same URL, one render</td></tr>
+          <tr><td>Concurrency cap</td><td><code>SSR_MAX_CONCURRENT=2</code></td><td>Stops event-loop melt</td></tr>
+          <tr><td>Queue / render timeout</td><td>12s / 15s</td><td>503 + Retry-After (not 504)</td></tr>
+          <tr><td>Pre-seed APIs</td><td>STORE_DETAILS + footer on <strong>every</strong> page</td><td>Not only home</td></tr>
+          <tr><td><code>/sitemap.xml</code></td><td>1h cache, 8s upstream timeout</td><td>Sitemap no longer 504s</td></tr>
+        </tbody>
+      </table>
+
+      <h3>3.2 API cache interceptor</h3>
+      <ul>
+        <li>Cache GET as before.</li>
+        <li>Also cache read-only catalog POSTs: <code>product/details</code>, <code>list_v4</code>, <code>available_filters</code>, <code>filter</code>.</li>
+        <li>Share in-flight requests (<code>shareReplay</code>).</li>
+        <li>Do not cache <code>{ status: false }</code>.</li>
+      </ul>
+
+      <h3>3.3 Skip Zone timers on the server</h3>
+      <p>Angular SSR waits until all Zone timers fire. A no-op <code>setTimeout(500)</code> still adds 500ms TTFB.</p>
+      <ul>
+        <li><code>setBodyMarginTop</code> — return immediately if not browser.</li>
+        <li>Loader <code>setTimeout(500)</code> — browser only; SSR clears loader immediately.</li>
+        <li>Skip <code>RANDOM_BLOG_LIST</code> and recently-viewed on SSR.</li>
+        <li>Never write <code>localStorage</code> on the server (Node polyfill is process-global).</li>
+        <li>Keep product details, category grid, reviews, title/meta in SSR.</li>
+      </ul>
+
+      <h3>Files typically touched</h3>
+      <pre><code>server.ts
+src/app/interceptors/ssr-api-cache.interceptor.ts
+src/app/interceptors/ssr-http-timeout.interceptor.ts
+src/app/app.component.ts
+src/app/services/common.service.ts
+src/app/views/product/product.component.ts
+src/app/views/category/category.component.ts
+src/app/views/features/blogs/blog-details/blog-details.component.ts</code></pre>
+    </section>
+
+    <section id="nginx">
+      <h2>4. Nginx — merge into live conf</h2>
+      <p>Keep this store’s cache zone name, port, SSL, and 301s.</p>
+      <div class="callout danger">
+        Live Tulsi had <code>proxy_read_timeout 15s</code> and <code>proxy_cache_lock_timeout 2s</code>. That combination is the 504.
+      </div>
+      <p>Target for <code>location /</code> (zone name <code>SSR</code> is an example — use the store’s existing <code>keys_zone</code>):</p>
+      <pre><code>proxy_connect_timeout 15s;
+proxy_send_timeout 60s;
+proxy_read_timeout 60s;
+
+proxy_cache SSR;
+proxy_cache_key "$scheme$request_method$host$uri$is_args$args$ts_device_type$ts_compress_bucket";
+proxy_cache_valid 200 1h;
+
+proxy_cache_lock on;
+proxy_cache_lock_timeout 30s;
+proxy_cache_lock_age 30s;
+proxy_cache_background_update on;
+proxy_cache_use_stale error timeout updating http_500 http_502 http_503 http_504;</code></pre>
+      <p>Add <code>location = /sitemap.xml</code> <strong>above</strong> <code>location /</code> (1h cache, 20s read timeout). Cache key for HTML <strong>must</strong> include <code>$ts_device_type</code> or desktop hydrates mobile menu HTML and throws.</p>
+    </section>
+
+    <section id="deploy">
+      <h2>5. Deploy and verify</h2>
+      <pre><code>npm run build:ssr
+pm2 restart &lt;store-ssr-process&gt;
+nginx -t &amp;&amp; nginx -s reload</code></pre>
+      <pre><code>curl -sI https://STORE_DOMAIN/ | grep -iE 'HTTP/|x-cache|x-ssr'
+curl -sI https://STORE_DOMAIN/category/SOME-SLUG | grep -iE 'HTTP/|x-cache|x-ssr'
+curl -sI https://STORE_DOMAIN/sitemap.xml | grep -iE 'HTTP/|x-cache'</code></pre>
+      <div class="callout ok">
+        Expect HTTP 200, not 504. Second hit on the same catalog URL should be a cache HIT. Cold catalog TTFB target &lt; 2s after Node deploy. GSC 504s clear on Google’s next crawl.
+      </div>
+    </section>
+
+    <footer>YourStore SSR playbook · copy HTML or Markdown into other store repos under docs/</footer>
+  </div>
+  <script>
+    document.querySelectorAll("[data-copy]").forEach((btn) => {
+      btn.addEventListener("click", async function () {
+        const el = document.getElementById(this.getAttribute("data-copy"));
+        if (!el) return;
+        try {
+          await navigator.clipboard.writeText(el.innerText);
+          this.textContent = "Copied";
+          setTimeout(() => { this.textContent = "Copy prompt"; }, 1600);
+        } catch (e) {
+          this.textContent = "Select the text and copy";
+        }
+      });
+    });
+  </script>
+</body>
+</html>
