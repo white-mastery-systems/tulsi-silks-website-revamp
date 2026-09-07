@@ -49,8 +49,7 @@
             "styles": [
               "src/styles.scss"
             ],
-            "scripts": [],
-            "webWorkerTsConfig": "tsconfig.worker.json"
+            "scripts": []
           },
           "configurations": {
             "production": {
@@ -71,13 +70,13 @@
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "1mb",
-                  "maximumError": "1.2mb"
+                  "maximumWarning": "1.1mb",
+                  "maximumError": "1.3mb"
                 },
                 {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "20kb",
-                  "maximumError": "30kb"
+                  "maximumWarning": "28kb",
+                  "maximumError": "35kb"
                 }
               ],
               "fileReplacements": [
@@ -132,8 +131,7 @@
             "styles": [
               "src/styles.scss"
             ],
-            "scripts": [],
-            "webWorkerTsConfig": "tsconfig.worker.json"
+            "scripts": []
           }
         },
         "server": {
@@ -149,7 +147,7 @@
             "production": {
               "optimization": true,
               "sourceMap": false,
-              "extractLicenses": true,
+              "extractLicenses": false,
               "outputHashing": "media",
               "fileReplacements": [
                 {

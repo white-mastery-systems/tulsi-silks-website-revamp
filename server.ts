@@ -114,18 +114,28 @@ function fetchFooterSeoLinks(): Promise<any> {
 /**
  * In-process SSR HTML cache for public pages.
  *
- * Homepage used to be the only cached path. Googlebot crawling thousands of
- * unique /product and /category sitemap URLs therefore always hit a cold
- * CommonEngine.render() — Node's event loop stacked 10–18 s TTFB and nginx
- * returned 504. Cache key still includes device bucket so mobile HTML is never
- * served to desktop (hydration mismatch).
+ * Googlebot crawling thousands of unique /product and /category sitemap URLs
+ * used to always hit cold CommonEngine.render() with only 2 SSR slots + a
+ * 400-entry / 2-minute cache — queue timeouts became "Service busy, retry shortly".
+ * Defaults below absorb normal crawl bursts; env vars still override.
+ * Cache key includes device bucket so mobile HTML is never served to desktop.
  */
 const ssrHtmlCache = new Map<string, { at: number; html: string }>();
-const SSR_HTML_CACHE_TTL_MS = Number(process.env['SSR_HTML_CACHE_TTL_MS'] ?? 120_000);
-const SSR_HTML_CACHE_MAX = Number(process.env['SSR_HTML_CACHE_MAX'] ?? 400);
-const MAX_CONCURRENT_SSR = Number(process.env['SSR_MAX_CONCURRENT'] ?? 2);
-const SSR_QUEUE_WAIT_MS = Number(process.env['SSR_QUEUE_WAIT_MS'] ?? 12_000);
-const SSR_RENDER_TIMEOUT_MS = Number(process.env['SSR_RENDER_TIMEOUT_MS'] ?? 15_000);
+/** Fresh TTL for most pages (15 min). Override with SSR_HTML_CACHE_TTL_MS. */
+const SSR_HTML_CACHE_TTL_MS = Number(process.env['SSR_HTML_CACHE_TTL_MS'] ?? 900_000);
+/** After fresh TTL expires, still serve on overload for up to this age (24 h). */
+const SSR_HTML_CACHE_STALE_MS = Number(process.env['SSR_HTML_CACHE_STALE_MS'] ?? 86_400_000);
+const SSR_HTML_CACHE_MAX = Number(process.env['SSR_HTML_CACHE_MAX'] ?? 5000);
+const MAX_CONCURRENT_SSR = Number(process.env['SSR_MAX_CONCURRENT'] ?? 6);
+const SSR_QUEUE_WAIT_MS = Number(process.env['SSR_QUEUE_WAIT_MS'] ?? 15_000);
+/** Time budget for Angular render AFTER a concurrency slot is acquired. */
+const SSR_RENDER_TIMEOUT_MS = Number(process.env['SSR_RENDER_TIMEOUT_MS'] ?? 25_000);
+/**
+ * Client-facing wait = queue + render. Previously a single 20s timer wrapped
+ * both, so waiting 12s for a slot + 9s render was logged as SSR_RENDER_TIMEOUT
+ * and returned 503 on cold product URLs (no stale HTML yet).
+ */
+const SSR_CLIENT_WAIT_MS = SSR_QUEUE_WAIT_MS + SSR_RENDER_TIMEOUT_MS;
 
 const SSR_NO_CACHE_PREFIXES = [
   '/cart',
@@ -144,11 +154,35 @@ function isSsrHtmlCacheable(pathOnly: string): boolean {
   return !SSR_NO_CACHE_PREFIXES.some((prefix) => p === prefix || p.startsWith(`${prefix}/`));
 }
 
-function ssrHtmlCacheGet(key: string, allowStale = false): { at: number; html: string } | undefined {
+/** Catalog URLs change slowly — keep them fresh longer so crawls hit memory cache. */
+function ssrHtmlCacheFreshTtlMs(pathOnly: string): number {
+  const p = (pathOnly || '/').toLowerCase();
+  if (p.startsWith('/product/') || p.startsWith('/category/') || p.startsWith('/sections/')) {
+    return Math.max(SSR_HTML_CACHE_TTL_MS, 1_800_000); // ≥ 30 min
+  }
+  if (p === '/' || p === '') {
+    return Math.min(SSR_HTML_CACHE_TTL_MS, 300_000); // home ≤ 5 min
+  }
+  if (p.startsWith('/blogs')) {
+    return Math.min(SSR_HTML_CACHE_TTL_MS, 600_000); // blogs ≤ 10 min
+  }
+  return SSR_HTML_CACHE_TTL_MS;
+}
+
+function ssrHtmlCacheGet(
+  key: string,
+  pathOnly: string,
+  allowStale = false,
+): { at: number; html: string } | undefined {
   const hit = ssrHtmlCache.get(key);
   if (!hit) return undefined;
-  const fresh = Date.now() - hit.at < SSR_HTML_CACHE_TTL_MS;
-  if (!fresh && !allowStale) return undefined;
+  const age = Date.now() - hit.at;
+  const fresh = age < ssrHtmlCacheFreshTtlMs(pathOnly);
+  if (!fresh) {
+    if (!allowStale || age >= SSR_HTML_CACHE_STALE_MS) {
+      return undefined;
+    }
+  }
   ssrHtmlCache.delete(key);
   ssrHtmlCache.set(key, hit);
   return hit;
@@ -474,6 +508,11 @@ export function app(): express.Express {
     ]),
   ];
   console.log('[SSR] allowedHosts:', commonEngineAllowedHosts);
+  console.log(
+    `[SSR] limits: concurrent=${MAX_CONCURRENT_SSR} queueWait=${SSR_QUEUE_WAIT_MS}ms ` +
+      `renderTimeout=${SSR_RENDER_TIMEOUT_MS}ms clientWait=${SSR_CLIENT_WAIT_MS}ms ` +
+      `cacheMax=${SSR_HTML_CACHE_MAX} freshTtl=${SSR_HTML_CACHE_TTL_MS}ms staleWindow=${SSR_HTML_CACHE_STALE_MS}ms`,
+  );
   const commonEngine = new CommonEngine({
     allowedHosts: commonEngineAllowedHosts,
   });
@@ -836,7 +875,7 @@ export function app(): express.Express {
     const cacheKey = `${headers.host}|${pathOnly}|${device}`;
 
     if (cacheable && SSR_HTML_CACHE_TTL_MS > 0) {
-      const hit = ssrHtmlCacheGet(cacheKey);
+      const hit = ssrHtmlCacheGet(cacheKey, pathOnly);
       if (hit) {
         const html = rewriteWebpOgImages(hit.html);
         console.log(
@@ -850,13 +889,15 @@ export function app(): express.Express {
     const existing = ssrInflight.get(cacheKey);
     if (existing) {
       try {
-        const html = await withTimeout(existing, SSR_RENDER_TIMEOUT_MS, 'SSR_RENDER_TIMEOUT');
+        // Inflight work may still be queued; allow full client budget.
+        const html = await withTimeout(existing, SSR_CLIENT_WAIT_MS, 'SSR_RENDER_TIMEOUT');
         sendCompressedHtml(req, res, html, 'HIT');
       } catch (err) {
         const message = (err as Error)?.message ?? String(err);
         if (message === 'SSR_RENDER_TIMEOUT') {
-          const stale = cacheable ? ssrHtmlCacheGet(cacheKey, true) : undefined;
+          const stale = cacheable ? ssrHtmlCacheGet(cacheKey, pathOnly, true) : undefined;
           if (stale) {
+            console.warn(`[SSR] SSR_RENDER_TIMEOUT — serving STALE (inflight) ${originalUrl}`);
             sendCompressedHtml(req, res, rewriteWebpOgImages(stale.html), 'STALE');
           } else {
             res.status(503).setHeader('Retry-After', '10').type('text/plain').send('Service busy, retry shortly');
@@ -874,53 +915,68 @@ export function app(): express.Express {
     // Register inflight BEFORE waiting for a concurrency slot so two Googlebot
     // hits on the same URL share one render instead of taking two slots.
     const renderPromise = (async (): Promise<string> => {
+      const queueStarted = Date.now();
       await acquireSsrSlot();
+      const queueMs = Date.now() - queueStarted;
+      const renderStarted = Date.now();
       try {
-        const seeds: Promise<unknown>[] = [
-          fetchStoreDetailsV3().then((json) => {
-            if (json?.store_details) {
-              const u = `${environment.ws_url}/store_details/details_v3?json=1&store_id=${environment.store_id}`;
-              seedSsrApiCache(u, json);
-            }
-          }),
-          fetchFooterSeoLinks().then((json) => {
-            if (json) {
-              const u = `${environment.ws_url}/store_details/footer_seo_links?store_id=${environment.store_id}`;
-              seedSsrApiCache(u, json);
-            }
-          }),
-        ];
-        if (isHomePath) {
-          seeds.push(
-            fetchLayoutList().then((json) => {
-              if (json) {
-                const u = `${environment.ws_url}/store_details/layouts?json=1&store_id=${environment.store_id}`;
+        // Render budget starts only after the slot is held — do not fold queue
+        // wait into SSR_RENDER_TIMEOUT (that caused false 503s on product crawls).
+        const out = await withTimeout((async () => {
+          const seeds: Promise<unknown>[] = [
+            fetchStoreDetailsV3().then((json) => {
+              if (json?.store_details) {
+                const u = `${environment.ws_url}/store_details/details_v3?json=1&store_id=${environment.store_id}`;
                 seedSsrApiCache(u, json);
               }
             }),
-          );
-        }
-        await Promise.allSettled(seeds);
-        const html = await commonEngine.render({
-          bootstrap,
-          documentFilePath: indexHtml,
-          url: `${protocol}://${headers.host}${originalUrl}`,
-          publicPath: distFolder,
-          providers: [{ provide: APP_BASE_HREF, useValue: baseUrl }],
-        });
-        let out = html;
-        if (isHomePath && storeDetailsCache && (htmlHasEmptyTitle(out) || metaDescriptionIsEmpty(out))) {
-          try {
-            const api = await fetchStoreDetailsV3();
-            out = injectStoreSeoIntoHtml(out, api);
-          } catch (e) {
-            const err = e as Error;
-            console.error('[SSR] store SEO inject failed:', err?.message ?? e);
+            fetchFooterSeoLinks().then((json) => {
+              if (json) {
+                const u = `${environment.ws_url}/store_details/footer_seo_links?store_id=${environment.store_id}`;
+                seedSsrApiCache(u, json);
+              }
+            }),
+          ];
+          if (isHomePath) {
+            seeds.push(
+              fetchLayoutList().then((json) => {
+                if (json) {
+                  const u = `${environment.ws_url}/store_details/layouts?json=1&store_id=${environment.store_id}`;
+                  seedSsrApiCache(u, json);
+                }
+              }),
+            );
           }
-        }
-        out = rewriteWebpOgImages(out);
-        if (cacheable && SSR_HTML_CACHE_TTL_MS > 0) {
-          ssrHtmlCacheSet(cacheKey, out);
+          await Promise.allSettled(seeds);
+          const html = await commonEngine.render({
+            bootstrap,
+            documentFilePath: indexHtml,
+            url: `${protocol}://${headers.host}${originalUrl}`,
+            publicPath: distFolder,
+            providers: [{ provide: APP_BASE_HREF, useValue: baseUrl }],
+          });
+          let rendered = html;
+          if (isHomePath && storeDetailsCache && (htmlHasEmptyTitle(rendered) || metaDescriptionIsEmpty(rendered))) {
+            try {
+              const api = await fetchStoreDetailsV3();
+              rendered = injectStoreSeoIntoHtml(rendered, api);
+            } catch (e) {
+              const err = e as Error;
+              console.error('[SSR] store SEO inject failed:', err?.message ?? e);
+            }
+          }
+          rendered = rewriteWebpOgImages(rendered);
+          if (cacheable && SSR_HTML_CACHE_TTL_MS > 0) {
+            ssrHtmlCacheSet(cacheKey, rendered);
+          }
+          return rendered;
+        })(), SSR_RENDER_TIMEOUT_MS, 'SSR_RENDER_TIMEOUT');
+
+        const renderMs = Date.now() - renderStarted;
+        if (queueMs > 1000 || renderMs > 3000) {
+          console.warn(
+            `[SSR] timing ${originalUrl} — queue=${queueMs}ms render=${renderMs}ms concurrent=${activeSsrRenders}`,
+          );
         }
         return out;
       } finally {
@@ -936,7 +992,7 @@ export function app(): express.Express {
     });
 
     try {
-      const out = await withTimeout(renderPromise, SSR_RENDER_TIMEOUT_MS, 'SSR_RENDER_TIMEOUT');
+      const out = await withTimeout(renderPromise, SSR_CLIENT_WAIT_MS, 'SSR_RENDER_TIMEOUT');
       const ssrMs = Date.now() - ssrStartMs;
       const ssrRawBytes = Buffer.byteLength(out, 'utf8');
       const level = ssrRawBytes > 250_000 || ssrMs > 800 ? 'WARN' : 'info';
@@ -950,7 +1006,7 @@ export function app(): express.Express {
     } catch (err) {
       const message = (err as Error)?.message ?? String(err);
       if (message === 'SSR_RENDER_TIMEOUT' || (err as { code?: string })?.code === 'SSR_QUEUE_TIMEOUT') {
-        const stale = cacheable ? ssrHtmlCacheGet(cacheKey, true) : undefined;
+        const stale = cacheable ? ssrHtmlCacheGet(cacheKey, pathOnly, true) : undefined;
         if (stale) {
           console.warn(`[SSR] ${message} — serving STALE ${originalUrl}`);
           sendCompressedHtml(req, res, rewriteWebpOgImages(stale.html), 'STALE');
