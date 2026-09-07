@@ -142,7 +142,8 @@
             "outputPath": "dist/ecommerce/server",
             "main": "server.ts",
             "tsConfig": "tsconfig.server.json",
-            "inlineStyleLanguage": "scss"
+            "inlineStyleLanguage": "scss",
+            "externalDependencies": ["sharp"]
           },
           "configurations": {
             "production": {

@@ -31,13 +31,19 @@ function patchHeadForSeo(doc: Document, seo: Record<string, unknown>, commonServ
   setContent('meta[property="og:title"]', title);
   setContent('meta[property="og:description"]', metaDesc);
 
-  const logo =
+  const logoRaw =
     commonService.social_logo != null && commonService.social_logo !== ''
       ? `${environment.img_baseurl}${commonService.social_logo}`
       : `${environment.img_baseurl}uploads/${commonService.store_id}/social_logo.jpg`;
-  setContent('meta[property="og:image"]', logo);
-  setContent('meta[property="og:image:width"]', '1200');
-  setContent('meta[property="og:image:height"]', '630');
+  const og = commonService.toShareOgImage(logoRaw);
+  setContent('meta[property="og:image"]', og.url);
+  setContent('meta[property="og:image:secure_url"]', og.url);
+  setContent('meta[property="og:image:type"]', og.type);
+  setContent('meta[name="twitter:image"]', og.url);
+  const w = doc.querySelector('meta[property="og:image:width"]');
+  if (w) w.remove();
+  const h = doc.querySelector('meta[property="og:image:height"]');
+  if (h) h.remove();
 }
 
 /**

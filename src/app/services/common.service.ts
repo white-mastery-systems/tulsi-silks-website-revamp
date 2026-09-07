@@ -690,6 +690,32 @@ export class CommonService {
       });
     }
   }
+  /**
+   * WhatsApp / Facebook crawlers do not render WebP (or AVIF) as og:image.
+   * JPEG and PNG work. Route WebP through the same-origin JPEG proxy.
+   */
+  toShareOgImage(image: string): { url: string; type: string } {
+    const raw = String(image ?? '').trim();
+    if (!raw) {
+      return { url: raw, type: 'image/jpeg' };
+    }
+    const pathOnly = raw.split('?')[0].toLowerCase();
+    if (pathOnly.endsWith('.jpg') || pathOnly.endsWith('.jpeg')) {
+      return { url: raw, type: 'image/jpeg' };
+    }
+    if (pathOnly.endsWith('.png')) {
+      return { url: raw, type: 'image/png' };
+    }
+    if (pathOnly.endsWith('.webp') || pathOnly.endsWith('.avif') || pathOnly.endsWith('.gif')) {
+      const origin = this.getCanonicalOrigin();
+      return {
+        url: `${origin}/og-image?src=${encodeURIComponent(raw)}`,
+        type: 'image/jpeg',
+      };
+    }
+    return { url: raw, type: 'image/jpeg' };
+  }
+
   setSiteMetaData(seoDetails, image) {
     if (!seoDetails) {
       return;
@@ -699,13 +725,18 @@ export class CommonService {
       this.meta.updateTag({ property: 'og:site_name', content: this.seo_details.page_title });
     }
     if(!image) image = environment.img_baseurl+this.social_logo;
+    const og = this.toShareOgImage(image);
     this.title.setTitle(seoDetails.page_title);
     this.meta.updateTag({ name: 'description', content: seoDetails.meta_desc ?? '' });
     this.meta.updateTag({ property: 'og:title', content: seoDetails.page_title });
     this.meta.updateTag({ property: 'og:description', content: seoDetails.meta_desc });
-    this.meta.updateTag({ property: 'og:image', content: image });
-    this.meta.updateTag({ property: 'og:image:width', content: '1200' });
-    this.meta.updateTag({ property: 'og:image:height', content: '630' });
+    this.meta.updateTag({ property: 'og:image', content: og.url });
+    this.meta.updateTag({ property: 'og:image:secure_url', content: og.url });
+    this.meta.updateTag({ property: 'og:image:type', content: og.type });
+    this.meta.removeTag('property="og:image:width"');
+    this.meta.removeTag('property="og:image:height"');
+    this.meta.updateTag({ name: 'twitter:card', content: 'summary_large_image' });
+    this.meta.updateTag({ name: 'twitter:image', content: og.url });
   }
 
   transformHtml(content) {

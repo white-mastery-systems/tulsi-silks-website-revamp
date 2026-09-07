@@ -350,10 +350,105 @@ function injectStoreSeoIntoHtml(html: string, apiJson: any): string {
   out = out.replace(/<meta property="og:title"[^>]*>/i, `<meta property="og:title" content="${title}">`);
   out = out.replace(/<meta property="og:description"[^>]*>/i, `<meta property="og:description" content="${desc}">`);
   out = out.replace(/<meta property="og:image"[^>]*>/i, `<meta property="og:image" content="${ogImg}">`);
-  out = out.replace(/<meta property="og:image:width"[^>]*>/i, `<meta property="og:image:width" content="1200">`);
-  out = out.replace(/<meta property="og:image:height"[^>]*>/i, `<meta property="og:image:height" content="630">`);
+  out = out.replace(/<meta property="og:image:secure_url"[^>]*>/i, `<meta property="og:image:secure_url" content="${ogImg}">`);
+  out = out.replace(/<meta property="og:image:type"[^>]*>/i, `<meta property="og:image:type" content="image/jpeg">`);
+  out = out.replace(/<meta name="twitter:image"[^>]*>/i, `<meta name="twitter:image" content="${ogImg}">`);
+  out = out.replace(/<meta property="og:image:width"[^>]*>/i, '');
+  out = out.replace(/<meta property="og:image:height"[^>]*>/i, '');
   return out;
 }
+
+const OG_IMAGE_PREFIX = `/api/uploads/${environment.store_id}/`;
+
+function isAllowedOgSource(raw: string): boolean {
+  try {
+    const u = new URL(raw);
+    if (u.protocol !== 'https:') return false;
+    if (u.hostname !== 'yourstore.io') return false;
+    return u.pathname.startsWith(OG_IMAGE_PREFIX);
+  } catch {
+    return false;
+  }
+}
+
+function toShareOgImageUrl(imageUrl: string): string {
+  const raw = String(imageUrl ?? '').trim();
+  if (!raw) return raw;
+  const pathOnly = raw.split('?')[0].toLowerCase();
+  if (pathOnly.endsWith('.webp') || pathOnly.endsWith('.avif') || pathOnly.endsWith('.gif')) {
+    return `https://${environment.domain}/og-image?src=${encodeURIComponent(raw)}`;
+  }
+  return raw;
+}
+
+/** WhatsApp cannot preview WebP og:image — rewrite to the JPEG proxy. */
+function rewriteWebpOgImages(html: string): string {
+  const attrRe = /(<(?:meta)[^>]*(?:property="og:image(?::secure_url)?"|name="twitter:image")[^>]*content=")([^"]+)(")/gi;
+  let out = html.replace(attrRe, (_m, pre: string, url: string, post: string) => {
+    const decoded = url.replace(/&amp;/g, '&');
+    return `${pre}${escapeHtmlAttr(toShareOgImageUrl(decoded))}${post}`;
+  });
+  if (/og-image\?src=/i.test(out)) {
+    out = out.replace(/<meta property="og:image:type"[^>]*>/i, '<meta property="og:image:type" content="image/jpeg">');
+    out = out.replace(/<meta property="og:image:width"[^>]*>/i, '');
+    out = out.replace(/<meta property="og:image:height"[^>]*>/i, '');
+  }
+  return out;
+}
+
+function httpsGetBuffer(url: string, hops = 0): Promise<{ status: number; buf: Buffer; contentType: string }> {
+  return new Promise((resolve, reject) => {
+    const req = https.get(url, { headers: { 'User-Agent': 'TulsiSilksOgImage/1.0' } }, (res) => {
+      if (res.statusCode && res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
+        res.resume();
+        if (hops >= 2) {
+          reject(new Error('og-image too many redirects'));
+          return;
+        }
+        const nextUrl = res.headers.location.startsWith('http')
+          ? res.headers.location
+          : new URL(res.headers.location, url).toString();
+        if (!isAllowedOgSource(nextUrl)) {
+          reject(new Error('og-image redirect blocked'));
+          return;
+        }
+        httpsGetBuffer(nextUrl, hops + 1).then(resolve, reject);
+        return;
+      }
+      const chunks: Buffer[] = [];
+      res.on('data', (ch: Buffer) => chunks.push(ch));
+      res.on('end', () => {
+        resolve({
+          status: res.statusCode ?? 0,
+          buf: Buffer.concat(chunks),
+          contentType: String(res.headers['content-type'] ?? ''),
+        });
+      });
+      res.on('error', reject);
+    });
+    req.on('error', reject);
+    req.setTimeout(8000, () => { req.destroy(); reject(new Error('og-image upstream timeout')); });
+  });
+}
+
+let sharpMod: any = null;
+let sharpTried = false;
+function getSharp(): any | null {
+  if (sharpTried) return sharpMod;
+  sharpTried = true;
+  try {
+    const reqFn = typeof __non_webpack_require__ === 'function' ? __non_webpack_require__ : require;
+    sharpMod = reqFn('sharp');
+  } catch (e) {
+    console.error('[og-image] sharp unavailable:', (e as Error)?.message ?? e);
+    sharpMod = null;
+  }
+  return sharpMod;
+}
+
+const ogJpegCache = new Map<string, { buf: Buffer; at: number }>();
+const OG_JPEG_TTL_MS = 24 * 60 * 60 * 1000;
+const OG_JPEG_CACHE_MAX = 40;
 
 export function app(): express.Express {
   const server = express();
@@ -647,6 +742,50 @@ export function app(): express.Express {
     res.type('text/html').send('google-site-verification: google9a3e8f0e11ae13bf.html');
   });
 
+  // JPEG proxy for WhatsApp / Facebook og:image (they do not show WebP).
+  server.get('/og-image', async (req, res) => {
+    const src = String(req.query['src'] ?? '');
+    if (!isAllowedOgSource(src)) {
+      res.status(400).type('text/plain').send('Invalid image');
+      return;
+    }
+    const cached = ogJpegCache.get(src);
+    if (cached && Date.now() - cached.at < OG_JPEG_TTL_MS) {
+      res.setHeader('Content-Type', 'image/jpeg');
+      res.setHeader('Cache-Control', 'public, max-age=86400');
+      res.send(cached.buf);
+      return;
+    }
+    try {
+      const upstream = await httpsGetBuffer(src);
+      if (upstream.status < 200 || upstream.status >= 300 || !upstream.buf.length) {
+        res.status(502).type('text/plain').send('Image unavailable');
+        return;
+      }
+      const sharp = getSharp();
+      if (!sharp) {
+        res.status(503).type('text/plain').send('Image converter unavailable');
+        return;
+      }
+      const jpeg: Buffer = await sharp(upstream.buf, { failOn: 'none' })
+        .rotate()
+        .resize({ width: 1200, height: 1200, fit: 'inside', withoutEnlargement: true })
+        .jpeg({ quality: 82, mozjpeg: true })
+        .toBuffer();
+      if (ogJpegCache.size >= OG_JPEG_CACHE_MAX) {
+        const first = ogJpegCache.keys().next().value;
+        if (first) ogJpegCache.delete(first);
+      }
+      ogJpegCache.set(src, { buf: jpeg, at: Date.now() });
+      res.setHeader('Content-Type', 'image/jpeg');
+      res.setHeader('Cache-Control', 'public, max-age=86400');
+      res.send(jpeg);
+    } catch (e) {
+      console.error('[og-image] convert failed:', (e as Error)?.message ?? e);
+      res.status(502).type('text/plain').send('Image convert failed');
+    }
+  });
+
   server.get('*.*', express.static(distFolder, {
     setHeaders(res, filePath) {
       const normalized = filePath.replace(/\\/g, '/');
@@ -699,10 +838,11 @@ export function app(): express.Express {
     if (cacheable && SSR_HTML_CACHE_TTL_MS > 0) {
       const hit = ssrHtmlCacheGet(cacheKey);
       if (hit) {
+        const html = rewriteWebpOgImages(hit.html);
         console.log(
-          `[SSR] cache HIT ${originalUrl} — 0 ms, ${Math.round(Buffer.byteLength(hit.html, 'utf8') / 1024)} KB raw`,
+          `[SSR] cache HIT ${originalUrl} — 0 ms, ${Math.round(Buffer.byteLength(html, 'utf8') / 1024)} KB raw`,
         );
-        sendCompressedHtml(req, res, hit.html, 'HIT');
+        sendCompressedHtml(req, res, html, 'HIT');
         return;
       }
     }
@@ -717,7 +857,7 @@ export function app(): express.Express {
         if (message === 'SSR_RENDER_TIMEOUT') {
           const stale = cacheable ? ssrHtmlCacheGet(cacheKey, true) : undefined;
           if (stale) {
-            sendCompressedHtml(req, res, stale.html, 'STALE');
+            sendCompressedHtml(req, res, rewriteWebpOgImages(stale.html), 'STALE');
           } else {
             res.status(503).setHeader('Retry-After', '10').type('text/plain').send('Service busy, retry shortly');
           }
@@ -778,6 +918,7 @@ export function app(): express.Express {
             console.error('[SSR] store SEO inject failed:', err?.message ?? e);
           }
         }
+        out = rewriteWebpOgImages(out);
         if (cacheable && SSR_HTML_CACHE_TTL_MS > 0) {
           ssrHtmlCacheSet(cacheKey, out);
         }
@@ -812,7 +953,7 @@ export function app(): express.Express {
         const stale = cacheable ? ssrHtmlCacheGet(cacheKey, true) : undefined;
         if (stale) {
           console.warn(`[SSR] ${message} — serving STALE ${originalUrl}`);
-          sendCompressedHtml(req, res, stale.html, 'STALE');
+          sendCompressedHtml(req, res, rewriteWebpOgImages(stale.html), 'STALE');
         } else {
           console.warn(`[SSR] ${message} ${originalUrl} — 503 (prevents 504)`);
           res.status(503).setHeader('Retry-After', '10').type('text/plain').send('Service busy, retry shortly');
