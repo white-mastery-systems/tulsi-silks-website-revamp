@@ -434,6 +434,14 @@
                       Edit
                     </button>
                   </div>
+                  <ng-container *ngIf="getModelPricedOptions(customized_model) as priced">
+                    <div class="addon-service-row" *ngFor="let item of priced.items">
+                      <span class="addon-service-name">{{ item.name }}</span>
+                      <span class="addon-service-price">
+                        + {{ cc.CALC(item.price) | currency:cc.pipeCurrencyCode:'symbol-narrow':cc.format:cc.pipeLocale }}
+                      </span>
+                    </div>
+                  </ng-container>
                 </div>
 
                 <div *ngIf="customized_model && isBlouseStitchingAddon(productDetails.selected_addon)" class="addon-card-section addon-card-section--note">
@@ -1173,6 +1181,15 @@
               <div class="fit-model-card__footer" *ngIf="mm.unit">
                 <span class="fit-model-card__unit">Unit: {{ mm.unit }}</span>
               </div>
+            </div>
+
+            <div class="fit-model-card__extras" *ngIf="getModelPricedOptions(x) as priced">
+              <ng-container *ngIf="priced.items.length">
+                <div class="fit-model-card__mm-row" *ngFor="let item of priced.items">
+                  <span class="fit-model-card__mm-label">{{ item.name }}</span>
+                  <span class="fit-model-card__mm-val">+ {{ cc.CALC(item.price) | currency:cc.pipeCurrencyCode:'symbol-narrow':cc.format:cc.pipeLocale }}</span>
+                </div>
+              </ng-container>
             </div>
           </article>
 

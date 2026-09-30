@@ -832,7 +832,8 @@ export class ProductComponent implements OnInit {
 
   calcAddonPrice() {
     let customizedPrice = 0; this.productDetails.additional_qty = 0;
-    if(this.productDetails.selected_addon && this.customized_model && this.customized_model.addon_id==this.productDetails.selected_addon._id) {
+    // Models from any addon can be selected (see getExistingModelsForAddon), so price their options regardless of addon_id.
+    if(this.productDetails.selected_addon && this.customized_model) {
       if(this.customized_model.custom_list?.length) {
         this.customized_model.custom_list.forEach(obj => {
           obj.value.forEach(element => {
@@ -1763,6 +1764,18 @@ export class ProductComponent implements OnInit {
     this.productDetails.added_to_cart = false;
     this.productDetails.customization_alert = false;
     // if(modalName) setTimeout(() => { this.openCustomDetailsModal(modalName); }, 500);
+  }
+
+  /** Priced options (e.g. Extras → Padding) saved on a model, plus their total. */
+  getModelPricedOptions(model: any): { items: Array<{ name: string; price: number }>; total: number } {
+    const items = [];
+    (model?.custom_list || []).forEach((group: any) => {
+      (group?.value || []).forEach((opt: any) => {
+        const price = Number(opt?.price) || 0;
+        if(price > 0) items.push({ name: opt.name, price });
+      });
+    });
+    return { items, total: items.reduce((sum, item) => sum + item.price, 0) };
   }
 
   getModelPreviewSlots(model: any): Array<{ label: string; value: string; image?: string }> {

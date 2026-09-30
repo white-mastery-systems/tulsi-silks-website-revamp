@@ -268,7 +268,7 @@ export class UserModelsComponent implements OnInit {
           editingModelId: model._id,
           modalTitle: 'Edit Measurement Profile',
           saveLabel: 'Update Fit Profile',
-          showPrices: false
+          showPrices: true
         });
       };
 
@@ -348,7 +348,7 @@ export class UserModelsComponent implements OnInit {
           notesTitle: addonDetails.notes_title || '',
           modalTitle: 'Create Measurement Profile',
           saveLabel: 'Save Fit Profile',
-          showPrices: false
+          showPrices: true
         });
       };
 

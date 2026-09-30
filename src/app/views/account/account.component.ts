@@ -189,6 +189,7 @@ export class AccountComponent implements OnInit {
     if(this.cartService.cart_list) this.registerForm.cart_list = this.cartService.cart_list;
     this.registerForm.store_id = this.commonService.store_id;
     if(!this.registerForm.dial_code) this.registerForm.dial_code = '+91';
+    this.registerForm.wa_marketing_opt_in = !!this.registerForm.wa_marketing_opt_in;
     this.api.REGISTER(this.registerForm).subscribe(result => {
       this.registerForm.submit = false;
       if(result.status) {

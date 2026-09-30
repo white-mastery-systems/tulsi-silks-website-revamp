@@ -117,6 +117,17 @@
                 </div>
               </div>
 
+              <div class="form-group">
+                <label class="auth-consent" for="wa_marketing_opt_in">
+                  <input type="checkbox" class="auth-consent__input" name="wa_marketing_opt_in" id="wa_marketing_opt_in"
+                    [(ngModel)]="registerForm.wa_marketing_opt_in" />
+                  <span class="auth-consent__box" aria-hidden="true">
+                    <i class="material-icons">check</i>
+                  </span>
+                  <span class="auth-consent__text">I'd like to receive order updates and offers from Tulsi Silks on WhatsApp.</span>
+                </label>
+              </div>
+
               <div class="smooth-fadein" *ngIf="registerForm.errorMsg">
                 <div class="danger-alert">
                   <div class="alert-msg d-flex align-items-center justify-content-center p-2">

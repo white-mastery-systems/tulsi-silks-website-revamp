@@ -205,6 +205,68 @@ $auth-text: #222;
       box-shadow: none !important;
     }
   }
+
+  // Opt-in checkbox: overrides the uppercase field-label style above.
+  label.auth-consent {
+    position: relative;
+    display: flex !important;
+    align-items: flex-start;
+    gap: 4px;
+    margin: 4px 0 0 !important;
+    color: $auth-text !important;
+    font-size: 0.85rem !important;
+    font-weight: 400 !important;
+    letter-spacing: normal !important;
+    text-transform: none !important;
+    line-height: 1.5;
+    cursor: pointer;
+  }
+}
+
+.auth-consent__input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.auth-consent__box {
+  flex: 0 0 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  margin-top: 1px;
+  border: 1px solid #c0c0c0;
+  border-radius: 2px;
+  background: #fff;
+  transition: background 0.15s ease, border-color 0.15s ease;
+
+  .material-icons {
+    font-size: 14px;
+    color: #fff;
+    opacity: 0;
+  }
+}
+
+.auth-consent__input:checked + .auth-consent__box {
+  border-color: $auth-accent;
+  background: $auth-accent;
+
+  .material-icons {
+    opacity: 1;
+  }
+}
+
+.auth-consent__input:focus-visible + .auth-consent__box {
+  outline: 2px solid rgba($auth-accent, 0.4);
+  outline-offset: 2px;
+}
+
+.auth-consent__text {
+  color: $auth-label;
 }
 
 .auth-password-group.icon-input-group {
