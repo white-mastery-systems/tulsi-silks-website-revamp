@@ -8,7 +8,6 @@ import { CommonService } from '../../../services/common.service';
 import { CurrencyConversionService } from '../../../services/currency-conversion.service';
 import { environment } from '../../../../environments/environment';
 declare const fbq: Function;
-declare var gtag;
 
 @Component({
     selector: 'app-order-summary',
@@ -98,14 +97,14 @@ export class OrderSummaryComponent implements OnInit {
                 if(!gtagOrderList.includes(this.params.order_id)) {
                   gtagOrderList.push(this.params.order_id);
                   localStorage.setItem("gtag_orders", this.commonService.encryptData(gtagOrderList));
-                  if(environment.gtag_conversion_id) gtag('event', 'conversion', gawData);
-                  if(environment.gtag_tracking) gtag('event', 'purchase', gtagData);
+                  if(environment.gtag_conversion_id) this.commonService.trackGtag('event', 'conversion', gawData);
+                  if(environment.gtag_tracking) this.commonService.trackGtag('event', 'purchase', gtagData);
                 }
               }
               else {
                 localStorage.setItem("gtag_orders", this.commonService.encryptData([this.params.order_id]));
-                if(environment.gtag_conversion_id) gtag('event', 'conversion', gawData);
-                if(environment.gtag_tracking) gtag('event', 'purchase', gtagData);
+                if(environment.gtag_conversion_id) this.commonService.trackGtag('event', 'conversion', gawData);
+                if(environment.gtag_tracking) this.commonService.trackGtag('event', 'purchase', gtagData);
               }
             }
             // fb pixel

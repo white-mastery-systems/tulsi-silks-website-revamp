@@ -5,7 +5,8 @@
   font-style: normal;
   font-weight: 400;
   font-display: swap;
-  src: url('../fonts/material-icons.woff2') format('woff2');
+  /* Root-absolute: critical-CSS inlining moves this rule into the page HTML, where '../fonts/' resolved to /fonts/ (404). */
+  src: url('/assets/fonts/material-icons.woff2') format('woff2');
 }
 
 .material-icons {

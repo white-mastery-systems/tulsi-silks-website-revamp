@@ -839,21 +839,36 @@ export class CommonService {
     let trackId = trackingIDs.split(", ");
     if(isPlatformBrowser(this.platformId) && !this.document.getElementById("gtm-1")) {
       setTimeout(() => {
+        if(this.document.getElementById("gtm-1")) return;
         let gaScript1 = this.document.createElement('script');
         gaScript1.id = "gtm-1";
         gaScript1.setAttribute('async', 'true');
         gaScript1.setAttribute('src', `https://www.googletagmanager.com/gtag/js?id=${ trackId[0] }`);
-
-        let gaScript2 = this.document.createElement('script');
-        gaScript2.id = "gtm-2";
-        gaScript2.innerText = "window.dataLayer = window.dataLayer || []; function gtag() { dataLayer.push(arguments); } gtag('js', new Date());";
-        for(let x of trackId) {
-          gaScript2.innerText += `gtag(\'config\', \'${ x }\');`;
-        }
         this.document.documentElement.firstChild.appendChild(gaScript1);
-        this.document.documentElement.firstChild.appendChild(gaScript2);
+
+        this.ensureGtag();
+        const w = window as any;
+        w.gtag('js', new Date());
+        for(let x of trackId) w.gtag('config', x);
       }, timer);
     }
+  }
+
+  /** Defines the standard gtag stub; calls queue in dataLayer until gtag.js loads. */
+  private ensureGtag(): void {
+    const w = window as any;
+    w.dataLayer = w.dataLayer || [];
+    if(typeof w.gtag !== 'function') {
+      // gtag.js requires the `arguments` object itself, not an array.
+      w.gtag = function() { w.dataLayer.push(arguments); };
+    }
+  }
+
+  /** Safe gtag call: never throws when the GA script is late, blocked, or not loaded yet. */
+  trackGtag(...args: any[]): void {
+    if(!isPlatformBrowser(this.platformId)) return;
+    this.ensureGtag();
+    (window as any).gtag(...args);
   }
 
   getIpInfo(ipIndex) {
