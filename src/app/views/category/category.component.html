@@ -52,6 +52,14 @@
   </section>
   <!-- #catalog hero -->
 
+  <!-- Hub L1: link chips under intro, above nav / product grid -->
+  <app-catalog-segments
+    *ngIf="useV4Catalog && catalog_page_segments?.length"
+    [segments]="catalog_page_segments"
+    [blogList]="blog_list"
+    placement="above">
+  </app-catalog-segments>
+
   <!-- navigations -->
   <ng-container *ngIf="category_details.navigationList?.length">
     <section class="primary-section primary-highlighted-sec color-slider-section category-atf-nav">
@@ -704,12 +712,37 @@
   </section>
   <!-- #no items -->
 
-  <!-- Below product list: only CMS catalog_page_segments from list_v4 -->
+  <!-- Below product list: CMS segments (H2 blocks, FAQ, guide rows, etc.) -->
   <app-catalog-segments
     *ngIf="catalog_page_segments?.length"
     [segments]="catalog_page_segments"
-    [blogList]="blog_list">
+    [blogList]="blog_list"
+    placement="below">
   </app-catalog-segments>
+
+  <!-- API FAQs when no CMS faq segment — visible copy matches FAQPage JSON-LD (hub E3) -->
+  <section
+    *ngIf="showCategoryFaqs()"
+    class="primary-section catalog-faq site-section"
+    [attr.aria-labelledby]="'category-api-faq-title'">
+    <div class="{{ template_setting?.body_type }}">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="titles">
+            <h2 id="category-api-faq-title">{{ categoryFaqHeading() }}</h2>
+          </div>
+          <div class="tulsi-blog-detail__faq-acc">
+            <accordion [closeOthers]="true" [isAnimated]="true">
+              <accordion-group *ngFor="let faq of categoryFaqItems(); trackBy: trackFaq"
+                heading="{{ faq.ques }}">
+                <div [innerHTML]="faq.answer"></div>
+              </accordion-group>
+            </accordion>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
 </section>
 
 <!-- shared filter panel -->

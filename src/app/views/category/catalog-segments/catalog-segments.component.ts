@@ -16,6 +16,8 @@ export class CatalogSegmentsComponent implements OnInit, OnChanges {
 
   @Input() segments: CatalogPageSegment[] = [];
   @Input() blogList: any[] = [];
+  /** `above` = under intro / above product grid (link chips). `below` = default below-fold blocks. */
+  @Input() placement: 'above' | 'below' = 'below';
 
   imgBaseUrl = environment.img_baseurl;
   template_setting: any = environment.template_setting;
@@ -51,7 +53,61 @@ export class CatalogSegmentsComponent implements OnInit, OnChanges {
   activeSegments(): CatalogPageSegment[] {
     return (this.segments || [])
       .filter(s => s.active_status !== false)
+      .filter(s => this.isSegmentInPlacement(s))
       .sort((a, b) => (a.rank || 0) - (b.rank || 0));
+  }
+
+  /**
+   * Same CMS shape as accordion blocks (group_list + link_list).
+   * Accordion = default (e.g. "Explore Our Weaves & Fabrics").
+   * Chips = theme `above_grid`, or layout / section_grid_type `chips`.
+   */
+  isChipsLayout(segment: CatalogPageSegment): boolean {
+    if (segment.type !== 'internal_links') return false;
+    const layout = String(segment.layout ?? '').toLowerCase();
+    const grid = String(segment.section_grid_type ?? '').toLowerCase();
+    const theme = String(segment.theme ?? '').toLowerCase();
+    if (layout === 'chips' || layout === 'chip_row') return true;
+    if (grid === 'chips' || grid === 'chip_row') return true;
+    if (theme === 'above_grid' || grid === 'above_grid') return true;
+    return false;
+  }
+
+  /** Under intro, above product grid (hub L1). */
+  isAboveGridSegment(segment: CatalogPageSegment): boolean {
+    if (segment.type !== 'internal_links') return false;
+    const theme = String(segment.theme ?? '').toLowerCase();
+    if (theme === 'above_grid') return true;
+    return String(segment.section_grid_type ?? '').toLowerCase() === 'above_grid';
+  }
+
+  private isSegmentInPlacement(segment: CatalogPageSegment): boolean {
+    const above = this.isAboveGridSegment(segment);
+    return this.placement === 'above' ? above : !above;
+  }
+
+  groupChipLinks(group: { link_list?: any[] }): any[] {
+    return (group?.link_list || [])
+      .filter((link) => link?.btn_status !== false && link?.btn_text)
+      .sort((a, b) => (a.rank || 0) - (b.rank || 0));
+  }
+
+  /** Flat chip row (single group or merged). */
+  segmentChipLinks(segment: CatalogPageSegment): any[] {
+    if (!this.isChipsLayout(segment)) return [];
+    const links: any[] = [];
+    for (const group of segment.group_list || []) {
+      links.push(...this.groupChipLinks(group));
+    }
+    return links;
+  }
+
+  segmentHasChipLinks(segment: CatalogPageSegment): boolean {
+    return this.segmentChipLinks(segment).length > 0;
+  }
+
+  useGroupedChipLayout(segment: CatalogPageSegment): boolean {
+    return (segment.group_list?.length ?? 0) > 1;
   }
 
   segmentBtnLink(item: any): string | null {

@@ -1,6 +1,46 @@
-<!-- Catalog below-fold segments — typography, buttons and spacing match home primary-section blocks -->
-<div class="home-section catalog-segments">
+<!-- Catalog page segments — typography, buttons and spacing match home primary-section blocks -->
+<div class="home-section catalog-segments" [class.catalog-segments--above-grid]="placement === 'above'">
 <ng-container *ngFor="let segment of activeSegments(); let i = index">
+
+  <!-- internal_links chip row (optional; default is accordion below) -->
+  <section
+    *ngIf="segment.type === 'internal_links' && isChipsLayout(segment) && segmentHasChipLinks(segment)"
+    class="primary-section catalog-link-chips"
+    [attr.aria-labelledby]="segment.heading ? 'cat-seg-' + i + '-title' : null">
+    <div class="{{ template_setting?.body_type }}">
+      <div class="row">
+        <div class="col-12" *ngIf="segment.heading || segment.sub_heading">
+          <div class="titles catalog-link-chips__header">
+            <h2 *ngIf="segment.heading" [attr.id]="'cat-seg-' + i + '-title'">{{ segment.heading }}</h2>
+            <p *ngIf="segment.sub_heading" [innerHTML]="segment.sub_heading"></p>
+          </div>
+        </div>
+        <div class="col-12" *ngIf="!useGroupedChipLayout(segment)">
+          <nav class="catalog-link-chips__nav" [attr.aria-label]="segment.heading || 'Related categories'">
+            <a *ngFor="let link of segmentChipLinks(segment); trackBy: trackSegmentLink"
+              class="catalog-link-chips__chip"
+              [attr.href]="segmentBtnLink(link) || '#'"
+              (click)="onSegmentBtnClick(link, $event)">
+              {{ link.btn_text }}
+            </a>
+          </nav>
+        </div>
+        <div class="col-12 catalog-link-chips__groups" *ngIf="useGroupedChipLayout(segment)">
+          <div *ngFor="let group of segment.group_list | orderAsc: 'rank'" class="catalog-link-chips__group">
+            <h3 *ngIf="group.heading" class="catalog-link-chips__group-title">{{ group.heading }}</h3>
+            <nav class="catalog-link-chips__nav" [attr.aria-label]="group.heading || segment.heading">
+              <a *ngFor="let link of groupChipLinks(group); trackBy: trackSegmentLink"
+                class="catalog-link-chips__chip"
+                [attr.href]="segmentBtnLink(link) || '#'"
+                (click)="onSegmentBtnClick(link, $event)">
+                {{ link.btn_text }}
+              </a>
+            </nav>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
 
   <!-- icon_card_grid -->
   <section
@@ -417,9 +457,9 @@
     </div>
   </section>
 
-  <!-- internal_links -->
+  <!-- internal_links accordion (default CMS shape — group_list + link_list) -->
   <section
-    *ngIf="segment.type === 'internal_links' && segment.group_list?.length"
+    *ngIf="segment.type === 'internal_links' && segment.group_list?.length && !isChipsLayout(segment)"
     class="primary-section catalog-collections"
     [attr.aria-labelledby]="segment.heading ? 'cat-seg-' + i + '-title' : null">
     <div class="{{ template_setting?.body_type }}">
@@ -479,7 +519,7 @@
             <accordion [closeOthers]="true" [isAnimated]="true">
               <accordion-group *ngFor="let faq of segment.faq_list | orderAsc: 'rank'"
                 heading="{{ faq.ques }}">
-                <p>{{ faq.answer }}</p>
+                <div [innerHTML]="faq.answer"></div>
               </accordion-group>
             </accordion>
           </div>

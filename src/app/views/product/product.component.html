@@ -637,36 +637,14 @@
               </p>
             </div>
             <!-- #size chart -->
-            <!-- timeline -->
-            <div *ngIf="productDetails.stock>0 && shippingExists" class="timeline">
+            <!-- Shipping Note -->
+            <div *ngIf="productDetails.stock>0 && shippingExists" class="timeline emi-note py-3">
               <div class="step">
-                <div class="circle">
-                  <!-- Lucide: Package -->
-                  <img src="assets/images/package-check 1.svg" alt="package">
-                </div>
-                <div class="title">Order Placed</div>
-                <div class="date">{{ commonService.currDate | date: 'MMM d' }}</div>
-              </div>
-
-              <div class="step">
-                <div class="circle">
-                  <!-- Lucide: Truck -->
-                  <img src="assets/images/truck 1.svg" alt="truck">
-                </div>
-                <div class="title">Shipping</div>
-                <div class="date">{{ shippingDuration.ship_start | date: 'MMM d' }} - {{ shippingDuration.ship_end | date: 'MMM d' }}</div>
-              </div>
-
-              <div class="step">
-                <div class="circle">
-                  <!-- Lucide: Lock -->
-                  <img src="assets/images/map-pin-house 1.svg" alt="map">
-                </div>
-                <div class="title">Delivered</div>
-                <div class="date">{{ shippingDuration.delivery_start | date: 'MMM d' }} - {{ shippingDuration.delivery_end | date: 'MMM d' }}</div>
+                <div class="title text-left mb-2">Dispatch time</div>
+                <div class="date text-left">Dispatched within 5 to 7 business days.</div>
               </div>
             </div>
-            <!-- #timeline -->
+            <!--#Shipping Note-->
             <!-- product-explanation -->
             <div *ngIf="productDetails.description" class="product-explanation pt-3 mb-3">
               <div class="ql-container">

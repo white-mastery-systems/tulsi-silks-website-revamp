@@ -1,4 +1,10 @@
 import { CategoryTagGroup, ListV4Payload } from './category-api.types';
+import {
+  categorySlugFromPageUrl,
+  isForceNoindexKanjivaramSlug,
+  isKanjivaramCategorySlug,
+  KANJIVARAM_MIN_PRODUCTS_TO_INDEX,
+} from './category-seo.constants';
 
 export const SPECIAL_CATEGORY_PATHS = [
   '/recommended-products',
@@ -127,6 +133,9 @@ export function categoryRobotsContent(params: {
   sortValue: string;
   tagList: CategoryTagGroup[];
   priceFiltered: boolean;
+  pageUrl?: string;
+  productTotal?: number | null;
+  forceNoindex?: boolean;
 }): string {
   if (params.page > 1) return 'noindex, follow';
   if (params.sortValue && params.sortValue !== 'latest') return 'noindex, follow';
@@ -134,6 +143,22 @@ export function categoryRobotsContent(params: {
   const groups = countActiveFilterGroups(params.tagList);
   const options = activeFilterChips(params.tagList).length;
   if (groups >= 2 || options >= 2) return 'noindex, follow';
+
+  if (params.forceNoindex === true) return 'noindex, follow';
+  if (params.pageUrl && isForceNoindexKanjivaramSlug(params.pageUrl)) return 'noindex, follow';
+
+  const slug = params.pageUrl ? categorySlugFromPageUrl(params.pageUrl) : '';
+  const total = params.productTotal;
+  if (
+    slug &&
+    isKanjivaramCategorySlug(slug) &&
+    total != null &&
+    total >= 0 &&
+    total < KANJIVARAM_MIN_PRODUCTS_TO_INDEX
+  ) {
+    return 'noindex, follow';
+  }
+
   return 'index, follow';
 }
 
@@ -142,6 +167,40 @@ export function shouldEmitCategoryItemListSchema(params: {
   sortValue: string;
   tagList: CategoryTagGroup[];
   priceFiltered: boolean;
+  pageUrl?: string;
+  productTotal?: number | null;
+  forceNoindex?: boolean;
 }): boolean {
   return categoryRobotsContent(params) === 'index, follow';
+}
+
+/** Shared robots params from category page state (SSR + browser). */
+/** Plain text for FAQPage JSON-LD (answers may contain HTML from CMS). */
+export function faqAnswerPlainText(html: string): string {
+  return String(html ?? '')
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+export function categoryRobotsParamsFromState(state: {
+  page: number;
+  sortValue: string;
+  tagList: CategoryTagGroup[];
+  priceFiltered: boolean;
+  pageUrl: string;
+  productTotal: number;
+  categoryDetails?: { seo_noindex?: boolean; robots_noindex?: boolean };
+}): Parameters<typeof categoryRobotsContent>[0] {
+  const forceNoindex =
+    state.categoryDetails?.seo_noindex === true || state.categoryDetails?.robots_noindex === true;
+  return {
+    page: state.page,
+    sortValue: state.sortValue,
+    tagList: state.tagList,
+    priceFiltered: state.priceFiltered,
+    pageUrl: state.pageUrl,
+    productTotal: state.productTotal,
+    forceNoindex,
+  };
 }

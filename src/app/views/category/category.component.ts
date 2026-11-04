@@ -1,6 +1,7 @@
 import { Component, OnInit, OnDestroy, AfterViewChecked, Inject, PLATFORM_ID, ViewChild, ElementRef, DOCUMENT, ChangeDetectorRef } from '@angular/core';
 import { Router, ActivatedRoute, Params } from '@angular/router';
 import { isPlatformBrowser, DecimalPipe, CurrencyPipe } from '@angular/common';
+import { Meta } from '@angular/platform-browser';
 import { Subscription, Subject } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 import { environment } from './../../../environments/environment';
@@ -20,9 +21,12 @@ import {
   buildFilterQueryParamsFromTagList,
   filterParamName,
   categoryRobotsContent,
+  categoryRobotsParamsFromState,
+  faqAnswerPlainText,
   isPriceRangeFiltered,
   shouldEmitCategoryItemListSchema
 } from './category-api.helpers';
+import { CatalogPageSegment } from './category-api.types';
 
 @Component({
     selector: 'app-category',
@@ -549,7 +553,7 @@ export class CategoryComponent implements OnInit, OnDestroy, AfterViewChecked {
     @Inject(PLATFORM_ID) private platformId: Object, private router: Router, private activeRoute: ActivatedRoute,
     private storeApi: StoreApiService, public cc: CurrencyConversionService, public commonService: CommonService,
     @Inject(DOCUMENT) private document, private decimalPipe: DecimalPipe, private currencyPipe: CurrencyPipe, public ws: WishlistService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef, private meta: Meta
   ) {
     this.subscription = this.commonService.currency_type.subscribe(currency => {
       this.findCurrency();
@@ -939,7 +943,7 @@ export class CategoryComponent implements OnInit, OnDestroy, AfterViewChecked {
           this.range_disp = this.commonService.category_page_attr.range_disp;
           this.syncSliderFromRange();
           this.randomProducts = this.commonService.category_page_attr.random_products;
-          if (this.category_details?.faqs?.length) this.buildFAQSchema();
+          if (this.categoryFaqItems().length) this.buildFAQSchema();
           // seo
           this.updateMetaData();
           this.parent_list = this.commonService.category_page_attr.parent_list;
@@ -1198,16 +1202,77 @@ export class CategoryComponent implements OnInit, OnDestroy, AfterViewChecked {
   }
 
   buildFAQSchema() {
+    this.commonService.removeElement('category-faq-jsonld');
+    const faqItems = this.categoryFaqItems();
+    if (!faqItems.length || !this.isCategoryIndexable()) {
+      return;
+    }
     this.categoryFAQSchema.mainEntity = [];
-    this.category_details.faqs.forEach(el => {
+    faqItems.forEach(el => {
       this.categoryFAQSchema.mainEntity.push({
         "@type": "Question",
         "name": el.ques,
-        "acceptedAnswer": { "@type": "Answer", "text": el.answer }
+        "acceptedAnswer": { "@type": "Answer", "text": faqAnswerPlainText(el.answer) }
       });
     });
-    this.commonService.removeElement('category-faq-jsonld');
     this.commonService.createJsonLD("category-faq-jsonld", this.categoryFAQSchema);
+  }
+
+  getCmsFaqSegment(): CatalogPageSegment | null {
+    const seg = (this.catalog_page_segments || []).find(
+      (s) => s?.type === 'faq' && s?.faq_list?.length
+    );
+    return seg ?? null;
+  }
+
+  /** Visible FAQ when CMS segments do not already include an faq block (hub E3). */
+  hasCmsFaqSegment(): boolean {
+    return !!this.getCmsFaqSegment();
+  }
+
+  categoryFaqItems(): Array<{ ques: string; answer: string }> {
+    const cms = this.getCmsFaqSegment();
+    if (cms?.faq_list?.length) {
+      return cms.faq_list.map((f: any) => ({ ques: f.ques, answer: f.answer }));
+    }
+    return (this.category_details?.faqs || []).map((f: any) => ({ ques: f.ques, answer: f.answer }));
+  }
+
+  /** categoryFaqItems() maps to new objects each CD pass; keep accordion-group views (and open state) stable. */
+  trackFaq(index: number, faq: { ques: string }): string {
+    return faq.ques;
+  }
+
+  categoryFaqHeading(): string {
+    const cms = this.getCmsFaqSegment();
+    return (
+      this.category_details?.faq_title ||
+      cms?.heading ||
+      'Questions We Hear on the Floor'
+    );
+  }
+
+  showCategoryFaqs(): boolean {
+    return !!this.categoryFaqItems().length && !this.hasCmsFaqSegment();
+  }
+
+  private categoryRobotsParams() {
+    const total = this.useV4Catalog
+      ? (this.total ?? this.category_details?.product_count ?? 0)
+      : (this.category_details?.product_count ?? this.parent_list?.length ?? 0);
+    return categoryRobotsParamsFromState({
+      page: this.page,
+      sortValue: this.sort_value,
+      tagList: this.tag_list,
+      priceFiltered: this.isPriceFiltered(),
+      pageUrl: this.pageUrl,
+      productTotal: total,
+      categoryDetails: this.category_details,
+    });
+  }
+
+  isCategoryIndexable(): boolean {
+    return categoryRobotsContent(this.categoryRobotsParams()) === 'index, follow';
   }
 
   private applyCategoryFlags(kanjivaramList: string[], banarasiList: string[], organzaList: string[]) {
@@ -1343,7 +1408,7 @@ export class CategoryComponent implements OnInit, OnDestroy, AfterViewChecked {
       } else {
         this.navigationImageList = [];
       }
-      if (this.category_details?.faqs?.length) this.buildFAQSchema();
+      if (this.categoryFaqItems().length) this.buildFAQSchema();
       this.updateMetaData();
       this.scheduleHeroDescOverflowCheck();
     }
@@ -1352,6 +1417,12 @@ export class CategoryComponent implements OnInit, OnDestroy, AfterViewChecked {
     this.list = this.parent_list;
     this.setCategorySchema();
     this.findCurrency();
+    if (this.useV4Catalog) {
+      this.applyCategoryIndexing();
+      if (this.categoryFaqItems().length) {
+        this.buildFAQSchema();
+      }
+    }
   }
 
   processRawProducts(rawList: any[]): any[] {
@@ -1885,17 +1956,11 @@ export class CategoryComponent implements OnInit, OnDestroy, AfterViewChecked {
   }
 
   private applyCategoryIndexing() {
-    if (!isPlatformBrowser(this.platformId)) return;
     const canonical = this.commonService.origin + this.pageUrl;
     const ccLink = this.document.getElementById('ccLink') as HTMLLinkElement | null;
     if (ccLink) ccLink.href = canonical;
 
-    const robots = categoryRobotsContent({
-      page: this.page,
-      sortValue: this.sort_value,
-      tagList: this.tag_list,
-      priceFiltered: this.isPriceFiltered()
-    });
+    const robots = categoryRobotsContent(this.categoryRobotsParams());
     let robotsMeta = this.document.querySelector('meta[name="robots"]') as HTMLMetaElement | null;
     if (!robotsMeta) {
       robotsMeta = this.document.createElement('meta');
@@ -1903,6 +1968,7 @@ export class CategoryComponent implements OnInit, OnDestroy, AfterViewChecked {
       this.document.head.appendChild(robotsMeta);
     }
     robotsMeta.setAttribute('content', robots);
+    this.meta.updateTag({ name: 'robots', content: robots });
   }
 
   ngOnDestroy() {
@@ -1977,12 +2043,7 @@ export class CategoryComponent implements OnInit, OnDestroy, AfterViewChecked {
     this.categorySchema['@graph'][2]['mainEntity']['itemListElement'] = [];
 
     const emitItemList = this.useV4Catalog
-      ? shouldEmitCategoryItemListSchema({
-          page: this.page,
-          sortValue: this.sort_value,
-          tagList: this.tag_list,
-          priceFiltered: this.isPriceFiltered()
-        })
+      ? shouldEmitCategoryItemListSchema(this.categoryRobotsParams())
       : this.page === 1;
 
     if (emitItemList) {

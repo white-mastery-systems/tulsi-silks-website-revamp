@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Kanjivaram SEO — Full Task Checklist by Team</title>
+  <style>
+    :root {
+      --bg: #f8f7f5;
+      --card: #fff;
+      --text: #1a1a1a;
+      --muted: #555;
+      --border: #e0dcd6;
+      --done: #1e6b4f;
+      --done-bg: #e8f5ef;
+      --pending: #8b4513;
+      --pending-bg: #f5ebe0;
+      --partial: #5c4d00;
+      --partial-bg: #faf6e8;
+      --accent: #3d2914;
+    }
+    * { box-sizing: border-box; }
+    body {
+      font-family: "Segoe UI", system-ui, sans-serif;
+      line-height: 1.5;
+      color: var(--text);
+      background: var(--bg);
+      margin: 0;
+      padding: 2rem 1rem 3rem;
+    }
+    .wrap { max-width: 960px; margin: 0 auto; }
+    header {
+      background: linear-gradient(135deg, #2c1810 0%, #5c4033 100%);
+      color: #fff;
+      padding: 2rem 1.75rem;
+      border-radius: 12px;
+      margin-bottom: 1.5rem;
+    }
+    header h1 { margin: 0 0 0.5rem; font-size: 1.45rem; font-weight: 600; }
+    header p { margin: 0.35rem 0; font-size: 0.9rem; opacity: 0.92; }
+    .legend {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1rem 1.25rem;
+      margin-bottom: 1.5rem;
+      font-size: 0.88rem;
+    }
+    .legend ul { margin: 0.5rem 0 0; padding-left: 1.25rem; }
+    h2 {
+      font-size: 1.15rem;
+      color: #fff;
+      background: var(--accent);
+      margin: 2rem 0 0;
+      padding: 0.55rem 1rem;
+      border-radius: 8px 8px 0 0;
+    }
+    h2 + .section { border-radius: 0 0 8px 8px; }
+    h3 {
+      font-size: 0.95rem;
+      margin: 1.25rem 0 0.5rem;
+      color: var(--accent);
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 0.25rem;
+    }
+    .section {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-top: none;
+      padding: 0.75rem 1rem 1.25rem;
+      border-radius: 0 0 8px 8px;
+    }
+    .task-list { list-style: none; margin: 0; padding: 0; }
+    .task-list > li {
+      display: grid;
+      grid-template-columns: 28px 72px 1fr auto;
+      gap: 0.5rem 0.65rem;
+      align-items: start;
+      padding: 0.65rem 0;
+      border-bottom: 1px solid #f0ebe4;
+      font-size: 0.88rem;
+    }
+    .task-list > li:last-child { border-bottom: none; }
+    .task-list input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      margin-top: 2px;
+    }
+    .task-id {
+      font-family: ui-monospace, Consolas, monospace;
+      font-size: 0.75rem;
+      color: var(--muted);
+      font-weight: 600;
+    }
+    .task-body strong { display: block; margin-bottom: 0.2rem; }
+    .task-meta {
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-top: 0.25rem;
+    }
+    .task-meta code {
+      font-size: 0.78rem;
+      background: #f5f2ee;
+      padding: 0.1rem 0.35rem;
+      border-radius: 3px;
+    }
+    .badge {
+      display: inline-block;
+      font-size: 0.68rem;
+      font-weight: 600;
+      padding: 0.2rem 0.45rem;
+      border-radius: 4px;
+      white-space: nowrap;
+      align-self: start;
+    }
+    .badge-done { background: var(--done-bg); color: var(--done); }
+    .badge-pending { background: var(--pending-bg); color: var(--pending); }
+    .badge-partial { background: var(--partial-bg); color: var(--partial); }
+    .note-box {
+      background: #faf6e8;
+      border: 1px solid #e8dfc4;
+      padding: 0.75rem 1rem;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      margin: 1rem 0;
+    }
+    footer {
+      margin-top: 2rem;
+      font-size: 0.82rem;
+      color: var(--muted);
+    }
+    @media print {
+      body { background: #fff; }
+      .task-list input { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    }
+    @media (max-width: 640px) {
+      .task-list > li {
+        grid-template-columns: 28px 1fr;
+        grid-template-rows: auto auto;
+      }
+      .task-id { grid-column: 2; }
+      .badge { grid-column: 2; justify-self: start; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>Kanjivaram SEO — Full task checklist</h1>
+      <p>One line = one task. Tick the box when complete. Share this HTML or print to PDF.</p>
+      <p>Hub (main page): <strong>/category/kanjivaram-silk-sarees</strong></p>
+    </header>
+
+    <div class="legend">
+      <strong>How to read each row</strong>
+      <ul>
+        <li><strong>ID</strong> — reference in stand-ups (e.g. FE-03).</li>
+        <li><strong>Title</strong> — what you must deliver.</li>
+        <li><strong>Meta</strong> — URL, plan code (A1, E2, D5…), or extra detail.</li>
+        <li><strong>Status</strong> — Done in code = built on dev branch; still verify on live after deploy.</li>
+      </ul>
+      <p style="margin:0.75rem 0 0;"><strong>Important:</strong> Only the hub needs new CMS <em>segments</em> (chips, H2 blocks, FAQ). Spoke pages need title + meta + intro text only. Redirect and noindex pages need no new content blocks.</p>
+    </div>
+
+    <!-- FRONTEND -->
+    <h2>Frontend / Dev (website repo)</h2>
+    <div class="section">
+      <h3>Deploy &amp; QA</h3>
+      <ul class="task-list">
+        <li>
+          <input type="checkbox" id="fe01" aria-label="FE-01">
+          <span class="task-id">FE-01</span>
+          <div class="task-body">
+            <strong>Merge and deploy SSR build to production</strong>
+            <div class="task-meta">Includes category SEO, segments UI, 301 rules in server.ts</div>
+          </div>
+          <span class="badge badge-pending">Pending</span>
+        </li>
+        <li>
+          <input type="checkbox" id="fe02" aria-label="FE-02">
+          <span class="task-id">FE-02</span>
+          <div class="task-body">
+            <strong>After deploy: open hub → View Page Source → confirm title, meta description, canonical</strong>
+            <div class="task-meta"><code>/category/kanjivaram-silk-sarees</code> · Plan E</div>
+          </div>
+          <span class="badge badge-pending">Pending</span>
+        </li>
+        <li>
+          <input type="checkbox" id="fe03" aria-label="FE-03">
+          <span class="task-id">FE-03</span>
+          <div class="task-body">
+            <strong>After deploy: confirm FAQ accordion visible when CMS has FAQ data</strong>
+            <div class="task-meta">Plan E3 · JSON-LD only when page is indexable</div>
+          </div>
+          <span class="badge badge-partial">Code ready</span>
+        </li>
+        <li>
+          <input type="checkbox" id="fe04" aria-label="FE-04">
+          <span class="task-id">FE-04</span>
+          <div class="task-body">
+            <strong>After deploy: confirm chip links show when segment has theme above_grid or layout chips</strong>
+            <div class="task-meta">Plan E4 · Same segment type as “Explore Our Weaves”</div>
+          </div>
+          <span class="badge badge-partial">Code ready</span>
+        </li>
+        <li>
+          <input type="checkbox" id="fe05" aria-label="FE-05">
+          <span class="task-id">FE-05</span>
+          <div class="task-body">
+            <strong>QA: product pagination appears above footer SEO blocks (not hidden below long content)</strong>
+            <div class="task-meta">Plan E2</div>
+          </div>
+          <span class="badge badge-pending">Pending</span>
+        </li>
+        <li>
+          <input type="checkbox" id="fe06" aria-label="FE-06">
+          <span class="task-id">FE-06</span>
+          <div class="task-body">
+            <strong>After backend price fix: spot-check category cards show real ₹ prices (not ₹0)</strong>
+            <div class="task-meta">Depends on BE-02</div>
+          </div>
+          <span class="badge badge-pending">Pending</span>
+        </li>
+      </ul>
+
+      <h3>301 redirects (verify on live)</h3>
+      <ul class="task-list">
+        <li>
+          <input type="checkbox" id="fe-a1" aria-label="FE-A1">
+          <span class="task-id">FE-A1</span>
+          <div class="task-body">
+            <strong>Verify 301: /category/kanjivaram-saree → /category/kanjivaram-silk-sarees</strong>
+            <div class="task-meta">Plan A1 · curl -sI or redirect checker</div>
+          </div>
+          <span class="badge badge-done">In code</span>
+        </li>
+        <li>
+          <input type="checkbox" id="fe-a2" aria-label="FE-A2">
+          <span class="task-id">FE-A2</span>
+          <div class="task-body">
+            <strong>Verify 301: /category/view-all-kanjivaram → /category/kanjivaram-silk-sarees</strong>
+            <div class="task-meta">Plan A2</div>
+          </div>
+          <span class="badge badge-done">In code</span>
+        </li>
+        <li>
+          <input type="checkbox" id="fe-a3" aria-label="FE-A3">
+          <span class="task-id">FE-A3</span>
+          <div class="task-body">
+            <strong>Verify 301: /category/bridal-kanjivaram → /category/bridal-kanjivaram-silk-sarees</strong>
+            <div class="task-meta">Plan A3</div>
+          </div>
+          <span class="badge badge-done">In code</span>
+        </li>
+        <li>
+          <input type="checkbox" id="fe-a4" aria-label="FE-A4">
+          <span class="task-id">FE-A4</span>
+          <div class="task-body">
+            <strong>Verify 301: /category/engagement-sarees → /category/engagement-kanjivaram-silk-sarees</strong>
+            <div class="task-meta">Plan A4</div>
+          </div>
+          <span class="badge badge-done">In code</span>
+        </li>
+        <li>
+          <input type="checkbox" id="fe-a5" aria-label="FE-A5">
+          <span class="task-id">FE-A5</span>
+          <div class="task-body">
+            <strong>ONLY AFTER SIGN-OFF: add 301 wedding-kanjivaram-silk-sarees → bridal-kanjivaram-silk-sarees</strong>
+            <div class="task-meta">Plan A5 · 29 products must be retagged first</div>
+          </div>
+          <span class="badge badge-pending">Blocked</span>
+        </li>
+        <li>
+          <input type="checkbox" id="fe-a6" aria-label="FE-A6">
+          <span class="task-id">FE-A6</span>
+          <div class="task-body">
+            <strong>ONLY AFTER SIGN-OFF: add 301 traditional-kanjivaram-silk-sarees → kanjivaram-classic-silk-sarees</strong>
+            <div class="task-meta">Plan A6 · 77 products must be retagged first</div>
+          </div>
+          <span class="badge badge-pending">Blocked</span>
+        </li>
+      </ul>
+
+      <h3>Robots / noindex (verify on live)</h3>
+      <ul class="task-list">
+        <li>
+          <input type="checkbox" id="fe-b0" aria-label="FE-B0">
+          <span class="task-id">FE-B0</span>
+          <div class="task-body">
+            <strong>Confirm Kanjivaram categories with fewer than 4 products get meta robots noindex</strong>
+            <div class="task-meta">Automatic rule in frontend</div>
+          </div>
+          <span class="badge badge-done">In code</span>
+        </li>
+        <li>
+          <input type="checkbox" id="fe-b1" aria-label="FE-B1">
+          <span class="task-id">FE-B1</span>
+          <div class="task-body">
+            <strong>Spot-check noindex on thin URLs (sample): daily-wear, office-wear, simple, designer, printed-kanjivaram</strong>
+            <div class="task-meta">Plans B4–B14 · Full list in BE sitemap task</div>
+          </div>
+          <span class="badge badge-done">In code</span>
+        </li>
+        <li>
+          <input type="checkbox" id="fe-b2" aria-label="FE-B2">
+          <span class="task-id">FE-B2</span>
+          <div class="task-body">
+            <strong>Verify filter/sort/pagination URLs on categories use noindex where planned</strong>
+            <div class="task-meta">Category listing query params</div>
+          </div>
+          <span class="badge badge-done">In code</span>
+        </li>
+      </ul>
+    </div>
+
+    <!-- BACKEND -->
+    <h2>Backend / API (yourstore.io)</h2>
+    <div class="section">
+      <h3>Sitemap &amp; indexing</h3>
+      <ul class="task-list">
+        <li>
+          <input type="checkbox" id="be01" aria-label="BE-01">
+          <span class="task-id">BE-01</span>
+          <div class="task-body">
+            <strong>Remove all redirect-source URLs from sitemap (A1–A4 slugs)</strong>
+            <div class="task-meta">kanjivaram-saree, view-all-kanjivaram, bridal-kanjivaram, engagement-sarees</div>
+          </div>
+          <span class="badge badge-pending">Pending</span>
+        </li>
+        <li>
+          <input type="checkbox" id="be02" aria-label="BE-02">
+          <span class="task-id">BE-02</span>
+          <div class="task-body">
+            <strong>Remove all B-plan noindex category URLs from sitemap (B4–B27 + mood colours B-M1–B-M4)</strong>
+            <div class="task-meta">See checklist CSV rows B4–B27, B-M1–B-M4</div>
+          </div>
+          <span class="badge badge-pending">Pending</span>
+        </li>
+        <li>
+          <input type="checkbox" id="be03" aria-label="BE-03">
+          <span class="task-id">BE-03</span>
+          <div class="task-body">
+            <strong>Verify slug counts for plan “verify” rows; exclude from sitemap if 0 products</strong>
+            <div class="task-meta">mustard, pastel, silver, khaki, fancy, handwoven, linen, kanjivaram silk-cotton slugs</div>
+          </div>
+          <span class="badge badge-pending">Pending</span>
+        </li>
+      </ul>
+
+      <h3>Product &amp; category API</h3>
+      <ul class="task-list">
+        <li>
+          <input type="checkbox" id="be04" aria-label="BE-04">
+          <span class="task-id">BE-04</span>
+          <div class="task-body">
+            <strong>Fix list_v4 (or equivalent) so product cards return correct sale/MRP — not ₹0</strong>
+            <div class="task-meta">Blocks price claims in copy (G2)</div>
+          </div>
+          <span class="badge badge-pending">Pending</span>
+        </li>
+        <li>
+          <input type="checkbox" id="be05" aria-label="BE-05">
+          <span class="task-id">BE-05</span>
+          <div class="task-body">
+            <strong>Ensure hub category API returns catalog_page_segments array for kanjivaram-silk-sarees</strong>
+            <div class="task-meta">Plan E</div>
+          </div>
+          <span class="badge badge-pending">Pending</span>
+        </li>
+        <li>
+          <input type="checkbox" id="be06" aria-label="BE-06">
+          <span class="task-id">BE-06</span>
+          <div class="task-body">
+            <strong>Confirm admin can save category seo_details (title, meta, H1) and long description</strong>
+            <div class="task-meta">Plans C, D, E</div>
+          </div>
+          <span class="badge badge-pending">Pending</span>
+        </li>
+        <li>
+          <input type="checkbox" id="be07" aria-label="BE-07">
+          <span class="task-id">BE-07</span>
+          <div class="task-body">
+            <strong>Confirm admin can save category-level faqs OR faq-type segment on hub</strong>
+            <div class="task-meta">Plan E3</div>
+          </div>
+          <span class="badge badge-pending">Pending</span>
+        </li>
+        <li>
+          <input type="checkbox" id="be08" aria-label="BE-08">
+          <span class="task-id">BE-08</span>
+          <div class="task-body">
+            <strong>Segment API: persist theme (e.g. above_grid) and layout / section_grid_type (e.g. chips) on internal_links segments</strong>
+            <div class="task-meta">Plan E4 L1, L3</div>
+          </div>
+          <span class="badge badge-pending">Pending</span>
+        </li>
+        <li>
+          <input type="checkbox" id="be09" aria-label="BE-09">
+          <span class="task-id">BE-09</span>
+          <div class="task-body">
+            <strong>Optional: add per-category robots_noindex flag for future CMS control</strong>
+            <div class="task-meta">Plan B · Frontend already reads if present</div>
+          </div>
+          <span class="badge badge-pending">Optional</span>
+        </li>
+      </ul>
+
+      <h3>Merges (after strategist approval)</h3>
+      <ul class="task-list">
+        <li>
+          <input type="checkbox" id="be10" aria-label="BE-10">
+          <span class="task-id">BE-10</span>
+          <div class="task-body">
+            <strong>Retag 29 products from wedding-kanjivaram-silk-sarees to bridal-kanjivaram-silk-sarees</strong>
+            <div class="task-meta">Plan A5 · Before FE-A5</div>
+          </div>
+          <span class="badge badge-pending">Blocked</span>
+        </li>
+        <li>
+          <input type="checkbox" id="be11" aria-label="BE-11">
+          <span class="task-id">BE-11</span>
+          <div class="task-body">
+            <strong>Retag 77 products from traditional-kanjivaram-silk-sarees to kanjivaram-classic-silk-sarees</strong>
+            <div class="task-meta">Plan A6 · Before FE-A6</div>
+          </div>
+          <span class="badge badge-pending">Blocked</span>
+        </li>
+      </ul>
+    </div>
+
+    <!-- ADMIN -->
+    <h2>Admin panel (CMS data entry)</h2>
+    <div class="section">
+      <div class="note-box">
+        <strong>Hub only — new segments:</strong> L1 chips under intro, 7× H2 blocks below grid, L3 blog chips, FAQ block. Do not add these segment types to spoke categories unless plan says so.
+      </div>
+
+      <h3>Hub — /category/kanjivaram-silk-sarees</h3>
+      <ul class="task-list">
+        <li>
+          <input type="checkbox" id="ad-e1" aria-label="ADM-E1">
+          <span class="task-id">ADM-E1</span>
+          <div class="task-body">
+            <strong>Enter SEO title, H1, and meta description from content doc</strong>
+            <div class="task-meta">Plan E · seo_details</div>
+          </div>
+          <span class="badge badge-pending">Pending</span>
+        </li>
+        <li>
+          <input type="checkbox" id="ad-e2" aria-label="ADM-E2">
+          <span class="task-id">ADM-E2</span>
+          <div class="task-body">
+            <strong>Enter hub intro (~192 words) in category description (shows under hero)</strong>
+            <div class="task-meta">Plan E1</div>
+          </div>
+          <span class="badge badge-pending">Pending</span>
+        </li>
+        <li>
+          <input type="checkbox" id="ad-l1" aria-label="ADM-L1">
+          <span class="task-id">ADM-L1</span>
+          <div class="task-body">
+            <strong>Add internal_links segment: 8 spoke URLs as chip row — set theme to above_grid</strong>
+            <div class="task-meta">Plan E4 L1 · Placement: above product grid</div>
+          </div>
+          <span class="badge badge-pending">Pending</span>
+        </li>
+        <li>
+          <input type="checkbox" id="ad-h2-1" aria-label="ADM-H2-1">
+          <span class="task-id">ADM-H2-1</span>
+          <div class="task-body">
+            <strong>Add H2 content block #1 below grid (copy from plan E2)</strong>
+          </div>
+          <span class="badge badge-pending">Pending</span>
+        </li>
+        <li>
+          <input type="checkbox" id="ad-h2-2" aria-label="ADM-H2-2">
+          <span class="task-id">ADM-H2-2</span>
+          <div class="task-body">
+            <strong>Add H2 content block #2 below grid</strong>
+          </div>
+          <span class="badge badge-pending">Pending</span>
+        </li>
+        <li>
+          <input type="checkbox" id="ad-h2-3" aria-label="ADM-H2-3">
+          <span class="task-id">ADM-H2-3</span>
+          <div class="task-body">
+            <strong>Add H2 content block #3 — include 6 colour category links (L2) inside this block</strong>
+            <div class="task-meta">Plan E4 L2</div>
+          </div>
+          <span class="badge badge-pending">Pending</span>
+        </li>
+        <li>
+          <input type="checkbox" id="ad-h2-4" aria-label="ADM-H2-4">
+          <span class="task-id">ADM-H2-4</span>
+          <div class="task-body">
+            <strong>Add H2 content block #4 below grid</strong>
+          </div>
+          <span class="badge badge-pending">Pending</span>
+        </li>
+        <li>
+          <input type="checkbox" id="ad-h2-5" aria-label="ADM-H2-5">
+          <span class="task-id">ADM-H2-5</span>
+          <div class="task-body">
+            <strong>Add H2 content block #5 below grid</strong>
+          </div>
+          <span class="badge badge-pending">Pending</span>
+        </li>
+        <li>
+          <input type="checkbox" id="ad-h2-6" aria-label="ADM-H2-6">
+          <span class="task-id">ADM-H2-6</span>
+          <div class="task-body">
+            <strong>Add H2 content block #6 below grid</strong>
+          </div>
+          <span class="badge badge-pending">Pending</span>
+        </li>
+        <li>
+          <input type="checkbox" id="ad-h2-7" aria-label="ADM-H2-7">
+          <span class="task-id">ADM-H2-7</span>
+          <div class="task-body">
+            <strong>Add H2 content block #7 below grid</strong>
+          </div>
+          <span class="badge badge-pending">Pending</span>
+        </li>
+        <li>
+          <input type="checkbox" id="ad-l3" aria-label="ADM-L3">
+          <span class="task-id">ADM-L3</span>
+          <div class="task-body">
+            <strong>Add internal_links segment: 4 blog guide URLs — set layout to chips (below grid)</strong>
+            <div class="task-meta">Plan E4 L3</div>
+          </div>
+          <span class="badge badge-pending">Pending</span>
+        </li>
+        <li>
+          <input type="checkbox" id="ad-faq" aria-label="ADM-FAQ">
+          <span class="task-id">ADM-FAQ</span>
+          <div class="task-body">
+            <strong>Add 8 FAQ Q&amp;As (faq segment or category faqs field) — text must match what users see on page</strong>
+            <div class="task-meta">Plan E3 · Required for FAQ rich results</div>
+          </div>
+          <span class="badge badge-pending">Pending</span>
+        </li>
+      </ul>
+
+      <h3>Navigation fix</h3>
+      <ul class="task-list">
+        <li>
+          <input type="checkbox" id="ad-a4" aria-label="ADM-A4">
+          <span class="task-id">ADM-A4</span>
+          <div class="task-body">
+            <strong>Update occasion / icon card: Engagement link points to /category/engagement-kanjivaram-silk-sarees</strong>
+            <div class="task-meta">Plan A4 · Not engagement-sarees (redirects)</div>
+          </div>
+          <span class="badge badge-pending">Pending</span>
+        </li>
+      </ul>
+
+      <h3>Spoke pages — SEO fields only (title, meta, intro — no new segments)</h3>
+      <ul class="task-list">
+        <li><input type="checkbox"><span class="task-id">ADM-C1</span><div class="task-body"><strong>brocade-kanjivaram-silk-sarees</strong><div class="task-meta">Title, H1, meta · noindex if 0 products</div></div><span class="badge badge-pending">Pending</span></li>
+        <li><input type="checkbox"><span class="task-id">ADM-C2</span><div class="task-body"><strong>burgundy-kanjivaram-silk-sarees</strong><div class="task-meta">Title, H1, meta</div></div><span class="badge badge-pending">Pending</span></li>
+        <li><input type="checkbox"><span class="task-id">ADM-C3</span><div class="task-body"><strong>black-raw-silk-sarees</strong><div class="task-meta">Title, H1, meta</div></div><span class="badge badge-pending">Pending</span></li>
+        <li><input type="checkbox"><span class="task-id">ADM-C4</span><div class="task-body"><strong>chanderi-silk</strong><div class="task-meta">Title, H1, meta</div></div><span class="badge badge-pending">Pending</span></li>
+        <li><input type="checkbox"><span class="task-id">ADM-C5</span><div class="task-body"><strong>daily-sarees</strong><div class="task-meta">Title, H1, meta</div></div><span class="badge badge-pending">Pending</span></li>
+        <li><input type="checkbox"><span class="task-id">ADM-D1</span><div class="task-body"><strong>bridal-kanjivaram-silk-sarees</strong><div class="task-meta">Title, meta, intro + link to hub</div></div><span class="badge badge-pending">Pending</span></li>
+        <li><input type="checkbox"><span class="task-id">ADM-D2</span><div class="task-body"><strong>kanjivaram-pattu-silk-sarees</strong><div class="task-meta">Title, meta, intro · restock to 12+ products (merch)</div></div><span class="badge badge-pending">Pending</span></li>
+        <li><input type="checkbox"><span class="task-id">ADM-D3</span><div class="task-body"><strong>kanjivaram-pure-silk-sarees</strong><div class="task-meta">Intro includes hub + blog links</div></div><span class="badge badge-pending">Pending</span></li>
+        <li><input type="checkbox"><span class="task-id">ADM-D4</span><div class="task-body"><strong>kanjivaram-classic-silk-sarees</strong><div class="task-meta">Merge target for traditional (A6)</div></div><span class="badge badge-pending">Pending</span></li>
+        <li><input type="checkbox"><span class="task-id">ADM-D5</span><div class="task-body"><strong>muhurtham-pattu-sarees</strong><div class="task-meta">Intro links to bridal (D1)</div></div><span class="badge badge-pending">Pending</span></li>
+        <li><input type="checkbox"><span class="task-id">ADM-D6</span><div class="task-body"><strong>checked-kanjivaram-silk-sarees</strong></div><span class="badge badge-pending">Pending</span></li>
+        <li><input type="checkbox"><span class="task-id">ADM-D7</span><div class="task-body"><strong>kanjivaram-tissue-silk-sarees</strong></div><span class="badge badge-pending">Pending</span></li>
+        <li><input type="checkbox"><span class="task-id">ADM-D8</span><div class="task-body"><strong>korvai-kanjivaram-silk-sarees</strong></div><span class="badge badge-pending">Pending</span></li>
+        <li><input type="checkbox"><span class="task-id">ADM-D9</span><div class="task-body"><strong>green-kanjivaram-silk-sarees</strong><div class="task-meta">Fix typo in old intro</div></div><span class="badge badge-pending">Pending</span></li>
+        <li><input type="checkbox"><span class="task-id">ADM-D10</span><div class="task-body"><strong>blue-kanjivaram-silk-sarees</strong></div><span class="badge badge-pending">Pending</span></li>
+        <li><input type="checkbox"><span class="task-id">ADM-D11</span><div class="task-body"><strong>pink-kanjivaram-silk-sarees</strong></div><span class="badge badge-pending">Pending</span></li>
+        <li><input type="checkbox"><span class="task-id">ADM-D12</span><div class="task-body"><strong>purple-kanjivaram-silk-sarees</strong></div><span class="badge badge-pending">Pending</span></li>
+        <li><input type="checkbox"><span class="task-id">ADM-D13</span><div class="task-body"><strong>yellow-kanjivaram-silk-sarees</strong></div><span class="badge badge-pending">Pending</span></li>
+        <li><input type="checkbox"><span class="task-id">ADM-D14</span><div class="task-body"><strong>soft-silk</strong><div class="task-meta">Intro + link to vs/blog article</div></div><span class="badge badge-pending">Pending</span></li>
+        <li><input type="checkbox"><span class="task-id">ADM-D15</span><div class="task-body"><strong>silk-cotton</strong><div class="task-meta">After strategist picks: retitle OR new kanchi-cotton category</div></div><span class="badge badge-pending">Blocked</span></li>
+      </ul>
+
+      <h3>Merchandising (admin / catalog)</h3>
+      <ul class="task-list">
+        <li>
+          <input type="checkbox" id="ad-b1">
+          <span class="task-id">ADM-B1</span>
+          <div class="task-body">
+            <strong>Restock kanjivaram-soft-silk-sarees to 4+ products by 22 Nov OR accept noindex</strong>
+          </div>
+          <span class="badge badge-pending">Pending</span>
+        </li>
+        <li>
+          <input type="checkbox" id="ad-b2">
+          <span class="task-id">ADM-B2</span>
+          <div class="task-body">
+            <strong>Restock kanjivaram-lightweight-silk-sarees to 4+ products by 22 Nov OR accept noindex</strong>
+          </div>
+          <span class="badge badge-pending">Pending</span>
+        </li>
+      </ul>
+    </div>
+
+    <!-- SEO / CONTENT -->
+    <h2>SEO &amp; content team</h2>
+    <div class="section">
+      <h3>Copy delivery (for admin to paste)</h3>
+      <ul class="task-list">
+        <li>
+          <input type="checkbox" id="seo-e">
+          <span class="task-id">SEO-E</span>
+          <div class="task-body">
+            <strong>Deliver final hub package: title, H1, meta, intro, 7 H2 bodies, 8 chip labels+URLs, 6 colour links, 4 blog links, 8 FAQs</strong>
+            <div class="task-meta">Plan E · One doc or spreadsheet for CMS team</div>
+          </div>
+          <span class="badge badge-pending">Pending</span>
+        </li>
+        <li>
+          <input type="checkbox" id="seo-c">
+          <span class="task-id">SEO-C</span>
+          <div class="task-body">
+            <strong>Deliver copy for 5 pages C1–C5 (brocade, burgundy, black-raw-silk, chanderi, daily-sarees)</strong>
+          </div>
+          <span class="badge badge-pending">Pending</span>
+        </li>
+        <li>
+          <input type="checkbox" id="seo-d">
+          <span class="task-id">SEO-D</span>
+          <div class="task-body">
+            <strong>Deliver copy for 15 spokes D1–D15 (each: title, meta, intro with hub link where required)</strong>
+          </div>
+          <span class="badge badge-pending">Pending</span>
+        </li>
+      </ul>
+
+      <h3>Blogs</h3>
+      <ul class="task-list">
+        <li>
+          <input type="checkbox" id="seo-g1">
+          <span class="task-id">SEO-G1</span>
+          <div class="task-body">
+            <strong>Edit existing blog #1 — add internal links per plan section G (no new CMS segments)</strong>
+          </div>
+          <span class="badge badge-pending">Pending</span>
+        </li>
+        <li>
+          <input type="checkbox" id="seo-g2">
+          <span class="task-id">SEO-G2</span>
+          <div class="task-body"><strong>Edit existing blog #2 — internal links</strong></div>
+          <span class="badge badge-pending">Pending</span>
+        </li>
+        <li>
+          <input type="checkbox" id="seo-g3">
+          <span class="task-id">SEO-G3</span>
+          <div class="task-body"><strong>Edit existing blog #3 — internal links</strong></div>
+          <span class="badge badge-pending">Pending</span>
+        </li>
+        <li>
+          <input type="checkbox" id="seo-g4">
+          <span class="task-id">SEO-G4</span>
+          <div class="task-body"><strong>Edit existing blog #4 — internal links</strong></div>
+          <span class="badge badge-pending">Pending</span>
+        </li>
+        <li>
+          <input type="checkbox" id="seo-g5">
+          <span class="task-id">SEO-G5</span>
+          <div class="task-body"><strong>Edit existing blog #5 — internal links</strong></div>
+          <span class="badge badge-pending">Pending</span>
+        </li>
+        <li>
+          <input type="checkbox" id="seo-g6">
+          <span class="task-id">SEO-G6</span>
+          <div class="task-body"><strong>Edit existing blog #6 — internal links</strong></div>
+          <span class="badge badge-pending">Pending</span>
+        </li>
+        <li>
+          <input type="checkbox" id="seo-g7">
+          <span class="task-id">SEO-G7</span>
+          <div class="task-body"><strong>Edit existing blog #7 — internal links</strong></div>
+          <span class="badge badge-pending">Pending</span>
+        </li>
+        <li>
+          <input type="checkbox" id="seo-g8">
+          <span class="task-id">SEO-G8</span>
+          <div class="task-body"><strong>Edit existing blog #8 — internal links</strong></div>
+          <span class="badge badge-pending">Pending</span>
+        </li>
+        <li>
+          <input type="checkbox" id="seo-g9">
+          <span class="task-id">SEO-G9</span>
+          <div class="task-body"><strong>Edit existing blog #9 — internal links</strong></div>
+          <span class="badge badge-pending">Pending</span>
+        </li>
+        <li>
+          <input type="checkbox" id="seo-g10">
+          <span class="task-id">SEO-G10</span>
+          <div class="task-body"><strong>Edit existing blog #10 — internal links</strong></div>
+          <span class="badge badge-pending">Pending</span>
+        </li>
+        <li>
+          <input type="checkbox" id="seo-g11">
+          <span class="task-id">SEO-G11</span>
+          <div class="task-body"><strong>Edit existing blog #11 — internal links</strong></div>
+          <span class="badge badge-pending">Pending</span>
+        </li>
+        <li>
+          <input type="checkbox" id="seo-g12">
+          <span class="task-id">SEO-G12</span>
+          <div class="task-body"><strong>Edit existing blog #12 — internal links</strong></div>
+          <span class="badge badge-pending">Pending</span>
+        </li>
+        <li>
+          <input type="checkbox" id="seo-h1">
+          <span class="task-id">SEO-H1</span>
+          <div class="task-body"><strong>Write and publish new guide G1 (link from hub L3 when live)</strong></div>
+          <span class="badge badge-pending">Pending</span>
+        </li>
+        <li>
+          <input type="checkbox" id="seo-h2">
+          <span class="task-id">SEO-H2</span>
+          <div class="task-body"><strong>Write and publish new guide G2</strong></div>
+          <span class="badge badge-pending">Pending</span>
+        </li>
+        <li>
+          <input type="checkbox" id="seo-h3">
+          <span class="task-id">SEO-H3</span>
+          <div class="task-body"><strong>Write and publish new guide G3</strong></div>
+          <span class="badge badge-pending">Pending</span>
+        </li>
+        <li>
+          <input type="checkbox" id="seo-h4">
+          <span class="task-id">SEO-H4</span>
+          <div class="task-body"><strong>Write and publish new guide G4</strong></div>
+          <span class="badge badge-pending">Pending</span>
+        </li>
+        <li>
+          <input type="checkbox" id="seo-h5">
+          <span class="task-id">SEO-H5</span>
+          <div class="task-body"><strong>Write and publish new guide G5</strong></div>
+          <span class="badge badge-pending">Pending</span>
+        </li>
+      </ul>
+
+      <h3>Sign-off &amp; monitoring</h3>
+      <ul class="task-list">
+        <li>
+          <input type="checkbox" id="seo-i1">
+          <span class="task-id">SEO-I1</span>
+          <div class="task-body">
+            <strong>Strategist sign-off: merge A5 (wedding → bridal)</strong>
+          </div>
+          <span class="badge badge-pending">Pending</span>
+        </li>
+        <li>
+          <input type="checkbox" id="seo-i2">
+          <span class="task-id">SEO-I2</span>
+          <div class="task-body">
+            <strong>Strategist sign-off: merge A6 (traditional → classic)</strong>
+          </div>
+          <span class="badge badge-pending">Pending</span>
+        </li>
+        <li>
+          <input type="checkbox" id="seo-i3">
+          <span class="task-id">SEO-I3</span>
+          <div class="task-body">
+            <strong>Strategist sign-off: B3 pure-silk-cotton noindex / merge to Kanchi cotton</strong>
+          </div>
+          <span class="badge badge-pending">Pending</span>
+        </li>
+        <li>
+          <input type="checkbox" id="seo-i4">
+          <span class="task-id">SEO-I4</span>
+          <div class="task-body">
+            <strong>Strategist decision: D15 silk-cotton retitle vs new kanchi-cotton category</strong>
+          </div>
+          <span class="badge badge-pending">Pending</span>
+        </li>
+        <li>
+          <input type="checkbox" id="seo-i5">
+          <span class="task-id">SEO-I5</span>
+          <div class="task-body">
+            <strong>After hub FAQ live: test FAQ in Google Rich Results Test</strong>
+          </div>
+          <span class="badge badge-pending">Pending</span>
+        </li>
+        <li>
+          <input type="checkbox" id="seo-i6">
+          <span class="task-id">SEO-I6</span>
+          <div class="task-body">
+            <strong>Ongoing: monitor GSC for hub — impressions, CTR, average position</strong>
+          </div>
+          <span class="badge badge-pending">Ongoing</span>
+        </li>
+        <li>
+          <input type="checkbox" id="seo-i7">
+          <span class="task-id">SEO-I7</span>
+          <div class="task-body">
+            <strong>Do not publish Silk Mark claims or specific rupee prices until product cards show real prices (BE-04)</strong>
+          </div>
+          <span class="badge badge-pending">Ongoing</span>
+        </li>
+      </ul>
+    </div>
+
+    <h2>Suggested order (first 10 tasks)</h2>
+    <div class="section">
+      <ol style="font-size:0.9rem; margin:0; padding-left:1.25rem;">
+        <li>SEO-E — content team delivers hub copy package</li>
+        <li>BE-06, BE-07, BE-08 — backend confirms CMS can save SEO + segments + theme/layout</li>
+        <li>ADM-E1 through ADM-FAQ — admin enters hub data</li>
+        <li>FE-01 — deploy frontend</li>
+        <li>FE-02, FE-03, FE-04, FE-A1–A4 — live QA</li>
+        <li>BE-01, BE-02 — clean sitemap</li>
+        <li>SEO-D + ADM-D1–D15 — spokes</li>
+        <li>BE-04 — fix prices</li>
+        <li>SEO-G1–G12 — blog link updates</li>
+        <li>SEO-I1–I4 — strategist decisions before merges</li>
+      </ol>
+    </div>
+
+    <footer>
+      <p>File: <code>docs/kanjivaram-task-list-by-team.html</code> · Detail URLs: <code>docs/kanjivaram-page-checklist.csv</code></p>
+    </footer>
+  </div>
+</body>
+</html>

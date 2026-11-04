@@ -639,10 +639,10 @@ export function app(): express.Express {
     res.redirect('/blogs/12-different-types-of-silk-sarees-made-for-every-indian-women');
   });
   server.use('/category/view-all-kanjivaram', function(req, res) {
-    res.redirect('/category/kanjivaram-silk-sarees');
+    res.redirect(301, '/category/kanjivaram-silk-sarees');
   });
   server.use('/category/kanjivaram-saree', function(req, res) {
-    res.redirect('/category/kanjivaram-silk-sarees');
+    res.redirect(301, '/category/kanjivaram-silk-sarees');
   });
   server.use('/category/pattupettu', function(req, res) {
     res.redirect('/category/kanjivaram-pattu-silk-sarees');
@@ -666,10 +666,10 @@ export function app(): express.Express {
     res.redirect('/category/kanjivaram-classic-silk-sarees');
   });
   server.use('/category/bridal-kanjivaram', function(req, res) {
-    res.redirect('/category/bridal-kanjivaram-silk-sarees');
+    res.redirect(301, '/category/bridal-kanjivaram-silk-sarees');
   });
   server.use('/category/engagement-sarees', function(req, res) {
-    res.redirect('/category/engagement-kanjivaram-silk-sarees');
+    res.redirect(301, '/category/engagement-kanjivaram-silk-sarees');
   });
   server.use('/category/embroidery', function(req, res) {
     res.redirect('/category/embroidery-kanjivaram-silk-sarees');

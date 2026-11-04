@@ -1,0 +1,452 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kanjivaram Plan Explained</title>
+<style>
+  :root {
+    --bg: #faf8f5;
+    --surface: #ffffff;
+    --text: #1f1b16;
+    --muted: #6b6259;
+    --border: #e6dfd6;
+    --accent: #8a1c2b;
+    --accent-soft: #f6e9eb;
+    --dev: #1d5fa8;
+    --dev-soft: #e7f0fa;
+    --content: #2f7a3a;
+    --content-soft: #e8f4ea;
+    --merch: #a3620a;
+    --merch-soft: #fbf0df;
+    --strat: #6b3fa0;
+    --strat-soft: #f1eafa;
+    --done: #2f7a3a;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #17140f;
+      --surface: #211d17;
+      --text: #f1ebe3;
+      --muted: #a89e92;
+      --border: #3a332a;
+      --accent: #e0707f;
+      --accent-soft: #3a2025;
+      --dev: #79aef0;
+      --dev-soft: #1c2a3b;
+      --content: #7cc788;
+      --content-soft: #1d2f20;
+      --merch: #e9a94f;
+      --merch-soft: #352816;
+      --strat: #b893e8;
+      --strat-soft: #2b2238;
+      --done: #7cc788;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #17140f; --surface: #211d17; --text: #f1ebe3; --muted: #a89e92; --border: #3a332a;
+    --accent: #e0707f; --accent-soft: #3a2025; --dev: #79aef0; --dev-soft: #1c2a3b;
+    --content: #7cc788; --content-soft: #1d2f20; --merch: #e9a94f; --merch-soft: #352816;
+    --strat: #b893e8; --strat-soft: #2b2238; --done: #7cc788;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font: 16px/1.6 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+  main { max-width: 920px; margin: 0 auto; padding: 32px 16px 64px; }
+  header h1 { font-size: 1.9rem; line-height: 1.25; margin: 0 0 8px; }
+  header p { color: var(--muted); margin: 0; }
+  nav.toc {
+    display: flex; flex-wrap: wrap; gap: 8px; margin: 24px 0 8px;
+  }
+  nav.toc a {
+    font-size: .875rem; text-decoration: none; color: var(--text);
+    border: 1px solid var(--border); background: var(--surface);
+    padding: 4px 12px; border-radius: 999px;
+  }
+  nav.toc a:hover { border-color: var(--accent); color: var(--accent); }
+  section { margin-top: 48px; }
+  h2 { font-size: 1.35rem; margin: 0 0 12px; padding-bottom: 6px; border-bottom: 2px solid var(--accent); display: inline-block; }
+  h3 { font-size: 1.05rem; margin: 24px 0 8px; }
+  p { margin: 0 0 12px; }
+  .card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; padding: 16px 20px; margin: 12px 0;
+  }
+  .callout { background: var(--accent-soft); border-color: transparent; }
+  .grid3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
+  .grid3 .card { margin: 0; }
+  .grid3 .num { font-size: 1.6rem; font-weight: 700; color: var(--accent); line-height: 1; }
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; }
+  .stat { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 12px 16px; }
+  .stat b { display: block; font-size: 1.4rem; }
+  .stat span { color: var(--muted); font-size: .85rem; }
+  .table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 12px; background: var(--surface); }
+  table { border-collapse: collapse; width: 100%; font-size: .93rem; }
+  th, td { text-align: left; padding: 10px 14px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  th { font-size: .8rem; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); }
+  tr:last-child td { border-bottom: 0; }
+  .tag {
+    display: inline-block; font-size: .75rem; font-weight: 600; padding: 2px 8px;
+    border-radius: 6px; margin: 2px 4px 2px 0; white-space: nowrap;
+  }
+  .dev { color: var(--dev); background: var(--dev-soft); }
+  .content { color: var(--content); background: var(--content-soft); }
+  .merch { color: var(--merch); background: var(--merch-soft); }
+  .strat { color: var(--strat); background: var(--strat-soft); }
+  code { font-family: ui-monospace, Consolas, monospace; font-size: .85em; background: var(--accent-soft); padding: 1px 5px; border-radius: 4px; word-break: break-word; }
+  .checklist { list-style: none; padding: 0; margin: 0; }
+  .checklist li { border-top: 1px solid var(--border); }
+  .checklist li:first-child { border-top: 0; }
+  .checklist label { display: flex; gap: 12px; padding: 12px 0; cursor: pointer; }
+  .checklist input { margin-top: 5px; width: 18px; height: 18px; accent-color: var(--done); flex-shrink: 0; }
+  .checklist .t { font-weight: 600; }
+  .checklist .d { color: var(--muted); font-size: .92rem; }
+  .checklist input:checked + div .t { text-decoration: line-through; color: var(--muted); }
+  .progress { height: 8px; background: var(--border); border-radius: 999px; overflow: hidden; margin: 8px 0 4px; }
+  .progress > div { height: 100%; width: 0; background: var(--done); transition: width .2s; }
+  .phase { color: var(--muted); font-size: .85rem; font-weight: 600; text-transform: uppercase; letter-spacing: .05em; margin: 20px 0 0; }
+  ul.plain { margin: 0; padding-left: 20px; }
+  ul.plain li { margin: 4px 0; }
+  .timeline { position: relative; padding-left: 20px; border-left: 2px solid var(--border); }
+  .tl { position: relative; margin: 0 0 18px; }
+  .tl::before { content: ""; position: absolute; left: -27px; top: 6px; width: 12px; height: 12px; border-radius: 50%; background: var(--accent); }
+  .tl .when { font-weight: 700; font-size: .9rem; }
+  .tl .what { margin: 2px 0; }
+  .week { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px 20px 6px; margin: 14px 0; }
+  .week.now { border: 2px solid var(--accent); }
+  .week.past { opacity: .7; }
+  .week-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 12px; }
+  .week-head .dates { font-weight: 700; font-size: 1.05rem; }
+  .week-head .label { color: var(--muted); font-size: .85rem; }
+  .now-badge { display: none; font-size: .72rem; font-weight: 700; color: #fff; background: var(--accent); padding: 2px 8px; border-radius: 999px; }
+  .week.now .now-badge { display: inline-block; }
+  .kpi { color: var(--muted); font-size: .85rem; border-top: 1px dashed var(--border); padding: 8px 0; margin: 0; }
+  .deadline { color: var(--accent); font-weight: 600; font-size: .8rem; white-space: nowrap; }
+  footer { margin-top: 56px; color: var(--muted); font-size: .85rem; }
+</style>
+</head>
+<body>
+<main>
+
+<header>
+  <h1>Kanjivaram Plan, Explained Simply</h1>
+  <p>A plain-language version of the Kanjivaram domination plan: what's wrong, what changes, and who does what.<br>
+  Hub page: <code>tulsisilks.co.in/category/kanjivaram-silk-sarees</code> · Plan starts Mon 26 Oct 2026</p>
+</header>
+
+<nav class="toc">
+  <a href="#goal">1. The goal</a>
+  <a href="#problems">2. The problems</a>
+  <a href="#sections">3. Sections A–I</a>
+  <a href="#dev">4. Developer checklist</a>
+  <a href="#others">5. Other teams</a>
+  <a href="#timeline">6. Date-wise tasks</a>
+  <a href="#verify">7. How to verify</a>
+</nav>
+
+<section id="goal">
+  <h2>1. The goal</h2>
+  <p>Get the Kanjivaram hub page back up Google's rankings for all three spellings people search:
+  <b>Kanjivaram</b>, <b>Kanchipuram</b> and <b>Kanjeevaram</b>.</p>
+  <div class="stats">
+    <div class="stat"><b>11.2</b><span>Position in March 2026 (peak)</span></div>
+    <div class="stat"><b>31.9</b><span>Position in September 2026</span></div>
+    <div class="stat"><b>26.4</b><span>Position, October so far</span></div>
+    <div class="stat"><b>0.21%</b><span>CTR for "kanjivaram saree" (7,152 impressions)</span></div>
+  </div>
+  <div class="card callout" style="margin-top:16px">
+    <b>In one sentence:</b> remove the junk pages, make the hub page much stronger, and make every related page and blog link back to the hub.
+  </div>
+</section>
+
+<section id="problems">
+  <h2>2. Why rankings dropped</h2>
+  <div class="grid3">
+    <div class="card"><div class="num">1</div><h3>Too many weak pages</h3>
+      <p>About 30 Kanjivaram categories have 0 products or duplicate each other. They compete with the hub and make the site look thin.</p></div>
+    <div class="card"><div class="num">2</div><h3>Broken SEO basics</h3>
+      <p>Temporary 302 redirects, 5 pages with the default site title, product cards showing ₹0, and an FAQ that exists only in hidden JSON-LD.</p></div>
+    <div class="card"><div class="num">3</div><h3>Weak internal links</h3>
+      <p>The hub doesn't link to its sub-pages or to blogs, and blogs don't link back to the hub.</p></div>
+  </div>
+</section>
+
+<section id="sections">
+  <h2>3. What each section of the plan means</h2>
+  <p>
+    <span class="tag dev">Dev</span>
+    <span class="tag content">Content</span>
+    <span class="tag merch">Merchandising</span>
+    <span class="tag strat">Strategist</span>
+  </p>
+  <div class="table-wrap">
+  <table>
+    <thead><tr><th>Section</th><th>In plain words</th><th>Who</th></tr></thead>
+    <tbody>
+      <tr><td><b>A. Redirects</b></td>
+        <td>Change 4 old URLs to <b>permanent 301</b> redirects (now 302). Two more merges (wedding → bridal, traditional → classic) wait for approval.</td>
+        <td><span class="tag dev">Dev</span><span class="tag strat">Sign-off A5/A6</span></td></tr>
+      <tr><td><b>B. Empty pages</b></td>
+        <td>About 30 pages with 0 products or no search demand get <code>noindex, follow</code> and are removed from the sitemap. New rule: under 4 products means noindex; 8 or more brings it back.</td>
+        <td><span class="tag dev">Dev</span><span class="tag merch">Restock B1, B2</span></td></tr>
+      <tr><td><b>C. Default-title pages</b></td>
+        <td>5 pages (brocade, burgundy, black raw silk, chanderi, daily) show the generic site title. Give each its own title, H1 and meta. Copy is already written.</td>
+        <td><span class="tag dev">Make editable</span><span class="tag content">Enter copy</span></td></tr>
+      <tr><td><b>D. 15 sub-pages</b></td>
+        <td>New title, H1, meta and short intro for bridal, pattu, pure, classic, muhurtham, checked, tissue, korvai, 5 colours, soft silk and silk cotton. Each intro links up to the hub.</td>
+        <td><span class="tag content">Content</span><span class="tag dev">Check SSR</span></td></tr>
+      <tr><td><b>E. Hub page</b></td>
+        <td>New title, a 192-word intro, 7 H2 sections below the grid, 8 FAQs <b>visible on the page</b> and identical to the JSON-LD, plus 3 link rows (chips, colours, guides).</td>
+        <td><span class="tag dev">Build blocks</span><span class="tag content">Fill copy</span></td></tr>
+      <tr><td><b>F. Anchor text</b></td>
+        <td>The exact link wording sub-pages use to point at the hub. No wording used more than twice.</td>
+        <td><span class="tag content">Content</span></td></tr>
+      <tr><td><b>G. Existing blogs</b></td>
+        <td>Add category links inside 12 existing blog posts. Slugs stay the same.</td>
+        <td><span class="tag content">Content</span></td></tr>
+      <tr><td><b>H. New blogs</b></td>
+        <td>Write 5 new guides between 7 Dec and 18 Jan.</td>
+        <td><span class="tag content">Content</span></td></tr>
+      <tr><td><b>I. Timeline</b></td>
+        <td>Dates and target numbers (KPIs) for every step. See section 6 below.</td>
+        <td>Everyone</td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<section id="dev">
+  <h2>4. Developer checklist</h2>
+  <p>Tick items as you finish them. Ticks are saved in this browser only.</p>
+  <div class="progress"><div data-bar="dev"></div></div>
+  <p data-count="dev" style="color:var(--muted);font-size:.85rem"></p>
+
+  <div class="card" data-group="dev">
+  <p class="phase">This week · 26–30 Oct</p>
+  <ul class="checklist">
+    <li><label><input type="checkbox" data-id="a1"><div><div class="t">Change redirects A1–A4 to 301 in <code>server.ts</code></div>
+      <div class="d">kanjivaram-saree → kanjivaram-silk-sarees · view-all-kanjivaram → kanjivaram-silk-sarees · bridal-kanjivaram → bridal-kanjivaram-silk-sarees · engagement-sarees → engagement-kanjivaram-silk-sarees</div></div></label></li>
+    <li><label><input type="checkbox" data-id="a4"><div><div class="t">Point the hub's "engagement" link straight at the new URL</div>
+      <div class="d">It should not go through a redirect.</div></div></label></li>
+    <li><label><input type="checkbox" data-id="a-sitemap"><div><div class="t">Remove redirect source URLs from <code>sitemap.xml</code></div>
+      <div class="d">The sitemap comes from the backend API.</div></div></label></li>
+  </ul>
+
+  <p class="phase">By 6 Nov</p>
+  <ul class="checklist">
+    <li><label><input type="checkbox" data-id="b-noindex"><div><div class="t">Noindex the B-list pages</div>
+      <div class="d">The list is already in <code>category-seo.constants.ts</code>. Output: <code>&lt;meta name="robots" content="noindex, follow"&gt;</code></div></div></label></li>
+    <li><label><input type="checkbox" data-id="b-sitemap"><div><div class="t">Remove noindex pages from the sitemap</div>
+      <div class="d">Backend change.</div></div></label></li>
+    <li><label><input type="checkbox" data-id="b-blank"><div><div class="t">Check 8 pages by hand for product count</div>
+      <div class="d">mustard, pastel, silver, khaki, fancy, handwoven, linen, silk-cotton (Kanjivaram). Any with 0 get noindex.</div></div></label></li>
+    <li><label><input type="checkbox" data-id="prices"><div><div class="t">Show real prices on product cards (not ₹0)</div>
+      <div class="d">Backend or API fix.</div></div></label></li>
+    <li><label><input type="checkbox" data-id="faq"><div><div class="t">Make the FAQ visible on the page</div>
+      <div class="d">Render the HTML and the FAQPage JSON-LD from the same data so they always match.</div></div></label></li>
+    <li><label><input type="checkbox" data-id="title"><div><div class="t">New hub title</div>
+      <div class="d"><code>Kanjivaram Silk Sarees, Handpicked in Chennai | Tulsi Silks</code></div></div></label></li>
+    <li><label><input type="checkbox" data-id="admin"><div><div class="t">Admin-editable SEO fields, rendered on the server (SSR)</div>
+      <div class="d">Title, H1, meta, intro, H2 sections and link blocks per category, so Content can enter the C, D and E copy themselves.</div></div></label></li>
+  </ul>
+
+  <p class="phase">By 4 Dec · after sign-off</p>
+  <ul class="checklist">
+    <li><label><input type="checkbox" data-id="a5a6"><div><div class="t">Add 301s for A5 and A6, if approved</div>
+      <div class="d">wedding-kanjivaram → bridal-kanjivaram · traditional-kanjivaram → kanjivaram-classic. Do this only after Merchandising re-tags the products.</div></div></label></li>
+    <li><label><input type="checkbox" data-id="b12"><div><div class="t">Noindex B1 and B2 if they weren't restocked by 22 Nov</div></div></label></li>
+  </ul>
+
+  <p class="phase">By 20 Dec</p>
+  <ul class="checklist">
+    <li><label><input type="checkbox" data-id="auto"><div><div class="t">Automatic noindex rule</div>
+      <div class="d">Under 4 products means noindex; 8 or more means indexable. With 4–7, keep the current state so pages don't flip back and forth.</div></div></label></li>
+  </ul>
+  </div>
+</section>
+
+<section id="others">
+  <h2>5. Not your job (other teams)</h2>
+  <div class="grid3">
+    <div class="card"><span class="tag content">Content</span>
+      <ul class="plain"><li>Enter copy for C, D and E (already written in the plan)</li><li>Add blog links (G)</li><li>Write 5 new guides (H)</li></ul></div>
+    <div class="card"><span class="tag merch">Merchandising</span>
+      <ul class="plain"><li>Restock soft silk, lightweight and pattu pages</li><li>Re-tag products before the A5/A6 merges</li><li>Confirm silk cotton stock origin</li></ul></div>
+    <div class="card"><span class="tag strat">Strategist</span>
+      <ul class="plain"><li>Approve A5, A6 and B3 merges</li><li>Pick D15 option 1 or 2</li><li>Run the 25 Jan review</li></ul></div>
+  </div>
+</section>
+
+<section id="timeline">
+  <h2>6. Date-wise task list (all teams)</h2>
+  <p>Every task in the plan, week by week. The current week has a red border. Tick tasks as they're finished; ticks are saved in this browser only.</p>
+  <div class="progress"><div data-bar="dates"></div></div>
+  <p data-count="dates" style="color:var(--muted);font-size:.85rem"></p>
+
+  <div data-group="dates">
+
+  <div class="week" data-start="2026-10-26" data-end="2026-11-01">
+    <div class="week-head"><span class="dates">Week 1 · Mon 26 Oct – Fri 30 Oct</span><span class="label">Redirects and cleanup start</span><span class="now-badge">THIS WEEK</span></div>
+    <ul class="checklist">
+      <li><label><input type="checkbox" data-id="w1-301"><div><div class="t"><span class="tag dev">Dev</span>Change A1–A4 redirects from 302 to 301 <span class="deadline">by 30 Oct</span></div>
+        <div class="d">kanjivaram-saree, view-all-kanjivaram, bridal-kanjivaram, engagement-sarees</div></div></label></li>
+      <li><label><input type="checkbox" data-id="w1-sitemap"><div><div class="t"><span class="tag dev">Dev</span>Remove the 4 redirect sources from <code>sitemap.xml</code> <span class="deadline">by 30 Oct</span></div></div></label></li>
+      <li><label><input type="checkbox" data-id="w1-eng"><div><div class="t"><span class="tag dev">Dev</span>Point the hub's occasion "engagement" link at engagement-kanjivaram-silk-sarees <span class="deadline">by 30 Oct</span></div></div></label></li>
+      <li><label><input type="checkbox" data-id="w1-noindex-start"><div><div class="t"><span class="tag dev">Dev</span>Start noindex for the B-list pages (finish by 6 Nov)</div></div></label></li>
+      <li><label><input type="checkbox" data-id="w1-notes-start"><div><div class="t"><span class="tag dev">Dev</span>Start developer notes items 1–4: pagination, real prices, visible FAQ, new hub title and meta (finish by 6 Nov)</div></div></label></li>
+    </ul>
+    <p class="kpi"><b>Target:</b> "kanjivaram saree" impressions stay at or above the 7,152 baseline; no new 404s in GSC.</p>
+  </div>
+
+  <div class="week" data-start="2026-11-02" data-end="2026-11-08">
+    <div class="week-head"><span class="dates">Week 2 · Mon 2 Nov – Fri 6 Nov</span><span class="label">Dev foundations finish</span><span class="now-badge">THIS WEEK</span></div>
+    <ul class="checklist">
+      <li><label><input type="checkbox" data-id="w2-noindex"><div><div class="t"><span class="tag dev">Dev</span>Noindex 25 of the 28 empty pages plus the 4 "colour mood" pages <span class="deadline">by 6 Nov</span></div>
+        <div class="d">B1 and B2 wait for restock; B3 waits for the merge decision.</div></div></label></li>
+      <li><label><input type="checkbox" data-id="w2-sitemap"><div><div class="t"><span class="tag dev">Dev</span>Remove all noindex pages from the sitemap <span class="deadline">by 6 Nov</span></div></div></label></li>
+      <li><label><input type="checkbox" data-id="w2-blank"><div><div class="t"><span class="tag dev">Dev</span>Check product counts by hand on the 8 blank pages; noindex any with 0 <span class="deadline">by 6 Nov</span></div>
+        <div class="d">mustard, pastel, silver, khaki, fancy, handwoven, linen, silk-cotton</div></div></label></li>
+      <li><label><input type="checkbox" data-id="w2-prices"><div><div class="t"><span class="tag dev">Dev</span>Real prices on product cards (no more ₹0) <span class="deadline">by 6 Nov</span></div></div></label></li>
+      <li><label><input type="checkbox" data-id="w2-faq"><div><div class="t"><span class="tag dev">Dev</span>Visible FAQ on the hub, matching the JSON-LD <span class="deadline">by 6 Nov</span></div></div></label></li>
+      <li><label><input type="checkbox" data-id="w2-title"><div><div class="t"><span class="tag dev">Dev</span>New hub title and meta live <span class="deadline">by 6 Nov</span></div></div></label></li>
+      <li><label><input type="checkbox" data-id="w2-admin"><div><div class="t"><span class="tag dev">Dev</span>Admin-editable title, H1, meta, intro and link blocks, all SSR-rendered <span class="deadline">by 6 Nov</span></div>
+        <div class="d">Content can't start next week without this.</div></div></label></li>
+    </ul>
+    <p class="kpi"><b>Target:</b> hub CTR above 1.13%; "kanjivaram saree" CTR above 0.21%; hub position stops sliding.</p>
+  </div>
+
+  <div class="week" data-start="2026-11-09" data-end="2026-11-15">
+    <div class="week-head"><span class="dates">Week 3 · Mon 9 Nov – Fri 13 Nov</span><span class="label">Hub content goes live</span><span class="now-badge">THIS WEEK</span></div>
+    <ul class="checklist">
+      <li><label><input type="checkbox" data-id="w3-intro"><div><div class="t"><span class="tag content">Content</span>Hub intro (E1, 192 words) under the H1 <span class="deadline">by 13 Nov</span></div></div></label></li>
+      <li><label><input type="checkbox" data-id="w3-h2"><div><div class="t"><span class="tag content">Content</span>Hub's 7 H2 sections below the product grid (E2) <span class="deadline">by 13 Nov</span></div></div></label></li>
+      <li><label><input type="checkbox" data-id="w3-faq"><div><div class="t"><span class="tag content">Content</span>Hub's 8 FAQs (E3) <span class="deadline">by 13 Nov</span></div></div></label></li>
+      <li><label><input type="checkbox" data-id="w3-links"><div><div class="t"><span class="tag content">Content</span>Hub link rows: L1 chips, L2 colours, L3 guides (E4) <span class="deadline">by 13 Nov</span></div></div></label></li>
+      <li><label><input type="checkbox" data-id="w3-cd-start"><div><div class="t"><span class="tag content">Content</span>Start copy for the C and D pages (finish by 20 Nov)</div></div></label></li>
+      <li><label><input type="checkbox" data-id="w3-blog-start"><div><div class="t"><span class="tag content">Content</span>Start adding links in the 12 existing blogs (G) (finish by 20 Nov)</div></div></label></li>
+      <li><label><input type="checkbox" data-id="w3-verify"><div><div class="t"><span class="tag dev">Dev</span>View-source check that the hub content is in the raw HTML, and run the Rich Results Test on the FAQ</div></div></label></li>
+    </ul>
+    <p class="kpi"><b>Target:</b> hub better than position 20 for "kanjivaram saree" (baseline 24.3).</p>
+  </div>
+
+  <div class="week" data-start="2026-11-16" data-end="2026-11-22">
+    <div class="week-head"><span class="dates">Week 4 · Mon 16 Nov – Sun 22 Nov</span><span class="label">Sub-pages, sign-offs, restock</span><span class="now-badge">THIS WEEK</span></div>
+    <ul class="checklist">
+      <li><label><input type="checkbox" data-id="w4-c"><div><div class="t"><span class="tag content">Content</span>Copy for the 5 default-title pages (C) <span class="deadline">by 20 Nov</span></div>
+        <div class="d">brocade, burgundy, black raw silk, chanderi, daily sarees</div></div></label></li>
+      <li><label><input type="checkbox" data-id="w4-d"><div><div class="t"><span class="tag content">Content</span>Copy for D1 and D3–D14 (13 sub-pages) <span class="deadline">by 20 Nov</span></div></div></label></li>
+      <li><label><input type="checkbox" data-id="w4-g"><div><div class="t"><span class="tag content">Content</span>Blog links in all 12 existing posts (G) <span class="deadline">by 20 Nov</span></div></div></label></li>
+      <li><label><input type="checkbox" data-id="w4-sign"><div><div class="t"><span class="tag strat">Strategist</span>Sign off A5, A6, B3 and the D15 option (1 or 2) <span class="deadline">by 20 Nov</span></div></div></label></li>
+      <li><label><input type="checkbox" data-id="w4-restock"><div><div class="t"><span class="tag merch">Merchandising</span>Restock B1 (soft silk), B2 (lightweight) and D2 (pattu, 12 or more products) <span class="deadline">by 22 Nov</span></div></div></label></li>
+      <li><label><input type="checkbox" data-id="w4-origin"><div><div class="t"><span class="tag merch">Merchandising</span>Confirm whether the silk-cotton stock is Kanchi cotton (for D15) <span class="deadline">by 22 Nov</span></div></div></label></li>
+      <li><label><input type="checkbox" data-id="w4-retag"><div><div class="t"><span class="tag merch">Merchandising</span>If A5 and A6 are approved: tag the 29 wedding products into bridal and the 77 traditional products into classic</div></div></label></li>
+    </ul>
+    <p class="kpi"><b>Target:</b> hub impressions for the Kanjeevaram (10,998) and Kanchipuram (10,040) spellings improve; hub clicks run ahead of their monthly average.</p>
+  </div>
+
+  <div class="week" data-start="2026-11-23" data-end="2026-12-06">
+    <div class="week-head"><span class="dates">Weeks 5–6 · Mon 23 Nov – Fri 4 Dec</span><span class="label">Merges and remaining pages</span><span class="now-badge">THIS WEEK</span></div>
+    <ul class="checklist">
+      <li><label><input type="checkbox" data-id="w5-a56"><div><div class="t"><span class="tag dev">Dev</span>A5 and A6 301 redirects, if approved, and remove both from the sitemap <span class="deadline">by 4 Dec</span></div>
+        <div class="d">Only after the products are re-tagged.</div></div></label></li>
+      <li><label><input type="checkbox" data-id="w5-b12"><div><div class="t"><span class="tag dev">Dev</span>Noindex B1 and B2 if they weren't restocked <span class="deadline">by 4 Dec</span></div></div></label></li>
+      <li><label><input type="checkbox" data-id="w5-d2"><div><div class="t"><span class="tag content">Content</span>D2 (Kanchipuram pattu) copy live <span class="deadline">by 4 Dec</span></div></div></label></li>
+      <li><label><input type="checkbox" data-id="w5-d15"><div><div class="t"><span class="tag content">Content</span><span class="tag dev">Dev</span>D15 live: retitle silk-cotton (option 1) or create kanchi-cotton-sarees (option 2) <span class="deadline">by 4 Dec</span></div></div></label></li>
+      <li><label><input type="checkbox" data-id="w5-b3"><div><div class="t"><span class="tag dev">Dev</span>B3 merge: 301 kanjivaram-pure-silk-cotton-sarees to the D15 page, if approved</div></div></label></li>
+      <li><label><input type="checkbox" data-id="w5-g4link"><div><div class="t"><span class="tag content">Content</span>Switch the "Kanchipuram pattu sarees" blog link from the hub to D2 once D2 is restocked</div></div></label></li>
+    </ul>
+    <p class="kpi"><b>Target:</b> brand query "tulasi kanchipuram saree" stays near position 1.48 and 113 clicks.</p>
+  </div>
+
+  <div class="week" data-start="2026-12-07" data-end="2026-12-20">
+    <div class="week-head"><span class="dates">Weeks 7–8 · Mon 7 Dec – Sun 20 Dec</span><span class="label">First guides and auto rule</span><span class="now-badge">THIS WEEK</span></div>
+    <ul class="checklist">
+      <li><label><input type="checkbox" data-id="w7-g1"><div><div class="t"><span class="tag content">Content</span>Publish G1: "Kanjivaram, Kanchipuram or Kanjeevaram" <span class="deadline">7 Dec</span></div></div></label></li>
+      <li><label><input type="checkbox" data-id="w7-g4"><div><div class="t"><span class="tag content">Content</span>Publish G4: "Kanchipuram Pattu Borders and Motifs" <span class="deadline">14 Dec</span></div>
+        <div class="d">Needs D2 restocked.</div></div></label></li>
+      <li><label><input type="checkbox" data-id="w7-l3"><div><div class="t"><span class="tag content">Content</span>Add G1 and G4 to the hub's guides row (L3) and the sitemap</div></div></label></li>
+      <li><label><input type="checkbox" data-id="w7-auto"><div><div class="t"><span class="tag dev">Dev</span>Automatic noindex rule: under 4 products means noindex, 8 or more means indexable <span class="deadline">by 20 Dec</span></div></div></label></li>
+    </ul>
+    <p class="kpi"><b>Target:</b> Kanjeevaram spelling impressions above 10,998.</p>
+  </div>
+
+  <div class="week" data-start="2027-01-04" data-end="2027-01-24">
+    <div class="week-head"><span class="dates">Weeks 9–11 · Mon 4 Jan – Fri 22 Jan 2027</span><span class="label">Remaining guides</span><span class="now-badge">THIS WEEK</span></div>
+    <ul class="checklist">
+      <li><label><input type="checkbox" data-id="w9-g2"><div><div class="t"><span class="tag content">Content</span>Publish G2: "What Decides the Price of a Kanjivaram Saree" <span class="deadline">4 Jan</span></div>
+        <div class="d">Needs real card prices. No rupee figures in the article.</div></div></label></li>
+      <li><label><input type="checkbox" data-id="w9-g3"><div><div class="t"><span class="tag content">Content</span>Publish G3: "Kanchi Cotton Sarees" guide <span class="deadline">11 Jan</span></div>
+        <div class="d">Needs D15 live.</div></div></label></li>
+      <li><label><input type="checkbox" data-id="w9-g5"><div><div class="t"><span class="tag content">Content</span>Publish G5: "Choosing a Kanjivaram Colour" <span class="deadline">18 Jan</span></div></div></label></li>
+      <li><label><input type="checkbox" data-id="w9-l3"><div><div class="t"><span class="tag content">Content</span>Add G2, G3 and G5 to the hub's guides row (L3) and the sitemap</div></div></label></li>
+      <li><label><input type="checkbox" data-id="w9-faq"><div><div class="t"><span class="tag content">Content</span>Optional: bring the cotton FAQ back on the hub now that D15 is live</div></div></label></li>
+    </ul>
+    <p class="kpi"><b>Target:</b> hub heading back towards March's 52,230 monthly impressions at position 11.2.</p>
+  </div>
+
+  <div class="week" data-start="2027-01-25" data-end="2027-01-31">
+    <div class="week-head"><span class="dates">Mon 25 Jan 2027</span><span class="label">Review</span><span class="now-badge">THIS WEEK</span></div>
+    <ul class="checklist">
+      <li><label><input type="checkbox" data-id="w12-review"><div><div class="t"><span class="tag strat">Strategist</span>Export hub queries from GSC again and check that no sub-page is stealing the hub's queries <span class="deadline">25 Jan</span></div></div></label></li>
+    </ul>
+    <p class="kpi"><b>Target:</b> desktop position moves from 31.2 towards mobile's 14.5.</p>
+  </div>
+
+  </div>
+</section>
+
+<section id="verify">
+  <h2>7. How to check your work</h2>
+  <div class="card">
+    <ul class="plain">
+      <li><b>Redirects:</b> run <code>curl -sI &lt;old-url&gt;</code>. It should show <code>301</code> and the correct <code>Location</code>.</li>
+      <li><b>Page content:</b> open <b>view-source</b> (raw HTML, not DevTools). The title, H1, meta, intro, robots tag, FAQ text and links must all be there.</li>
+      <li><b>Sitemap:</b> noindex pages and redirect sources must not appear in <code>/sitemap.xml</code>.</li>
+      <li><b>Links:</b> no internal link should point at a URL that redirects.</li>
+      <li><b>FAQ:</b> the visible text and the JSON-LD must match word for word. Test with Google's Rich Results Test.</li>
+      <li><b>Google:</b> within 14 days, URL Inspection on old URLs shows "Page with redirect".</li>
+    </ul>
+  </div>
+</section>
+
+<footer>Simplified from the Kanjivaram domination plan (crawl of 25 Oct 2026). The full plan has the exact copy for every page.</footer>
+</main>
+
+<script>
+  (function () {
+    var KEY = 'kanjivaram-plan-checks';
+    var saved = {};
+    try { saved = JSON.parse(localStorage.getItem(KEY) || '{}'); } catch (e) {}
+    var boxes = document.querySelectorAll('.checklist input');
+    function update() {
+      document.querySelectorAll('[data-group]').forEach(function (g) {
+        var name = g.dataset.group;
+        var list = g.querySelectorAll('.checklist input');
+        var done = 0;
+        list.forEach(function (b) { if (b.checked) done++; });
+        document.querySelector('[data-bar="' + name + '"]').style.width = (done / list.length * 100) + '%';
+        document.querySelector('[data-count="' + name + '"]').textContent = done + ' of ' + list.length + ' done';
+      });
+    }
+    var today = new Date().toISOString().slice(0, 10);
+    document.querySelectorAll('.week').forEach(function (w) {
+      if (today >= w.dataset.start && today <= w.dataset.end) w.classList.add('now');
+      else if (today > w.dataset.end) w.classList.add('past');
+    });
+    boxes.forEach(function (b) {
+      b.checked = !!saved[b.dataset.id];
+      b.addEventListener('change', function () {
+        saved[b.dataset.id] = b.checked;
+        try { localStorage.setItem(KEY, JSON.stringify(saved)); } catch (e) {}
+        update();
+      });
+    });
+    update();
+  })();
+</script>
+</body>
+</html>

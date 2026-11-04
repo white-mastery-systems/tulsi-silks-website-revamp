@@ -60,7 +60,14 @@ export interface CatalogPageSegment {
   sub_heading?: string;
   description?: string;
   icon_card_list?: any[];
-  layout?: 'bordered' | 'plain';
+  /**
+   * internal_links display (all optional — omit for accordion like "Explore Our Weaves"):
+   * - no layout/theme → accordion (group_list panels)
+   * - layout or section_grid_type `chips` → pill links
+   * - theme or section_grid_type `above_grid` → chips under intro, above grid
+   */
+  layout?: 'bordered' | 'plain' | 'chips' | 'accordion';
+  theme?: string;
   founder_intro?: any;
   founder_faq_list?: any[];
   highlight_points?: any[];
@@ -68,7 +75,6 @@ export interface CatalogPageSegment {
   checklist_config?: any;
   checklist_items?: any[];
   cta_list?: any[];
-  theme?: string;
   bg_color?: string;
   feature_list?: any[];
   image_list?: any[];

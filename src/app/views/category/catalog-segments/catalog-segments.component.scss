@@ -526,6 +526,64 @@
   }
 }
 
+/* ── link chips (hub L1, guide row) ── */
+.catalog-link-chips {
+  padding-top: 0.5rem;
+  padding-bottom: 0.25rem;
+
+  &__header {
+    margin-bottom: 0.75rem;
+  }
+
+  &__nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 0.65rem;
+    align-items: center;
+  }
+
+  &__groups {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+  }
+
+  &__group-title {
+    font-size: 1rem;
+    font-weight: 400;
+    margin: 0 0 0.5rem;
+    color: #3d2914;
+  }
+
+  &__chip {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.45rem 0.95rem;
+    border: 1px solid #d4c4b0;
+    border-radius: 999px;
+    background: #fff;
+    color: #3d2914;
+    font-size: 0.8125rem;
+    line-height: 1.35;
+    text-decoration: none;
+    transition: background 0.2s ease, border-color 0.2s ease;
+
+    &:hover {
+      background: #f5ebe0;
+      border-color: #8b4513;
+      text-decoration: none;
+      color: #3d2914;
+    }
+  }
+}
+
+.catalog-segments--above-grid {
+  .catalog-link-chips {
+    padding-top: 0;
+    margin-bottom: 0.5rem;
+  }
+}
+
 /* ── internal links + faq (accordion styles in custom.scss) ── */
 
 @media (max-width: 767px) {

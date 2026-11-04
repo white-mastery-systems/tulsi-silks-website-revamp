@@ -64,12 +64,6 @@ export class ProductComponent implements OnInit {
   related_products: any = []; reviews: any = []; avg_review: any;
   page: number; pageSize: number = 10; review_sort: string;
   prodFeatures: any = {}; pageUrl: string = "";
-  shippingDuration: any = {
-    ship_start: new Date(new Date().setDate(new Date().getDate() + 1)),
-    ship_end: new Date(new Date().setDate(new Date().getDate() + 4)),
-    delivery_start: new Date(new Date().setDate(new Date().getDate() + 5)),
-    delivery_end: new Date(new Date().setDate(new Date().getDate() + 6))
-  };
   shippingExists: boolean;
 
   constructor(
