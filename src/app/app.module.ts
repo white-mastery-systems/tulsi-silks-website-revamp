@@ -88,6 +88,9 @@ import { serverSeoInitializerFactory, SERVER_SEO_INITIALIZER_DEPS } from './serv
           if (u.includes('graph.instagram.com')) return false;
           // Below-fold APIs are not called during SSR; exclude from transfer cache.
           if (u.includes('/store_details/ai_styles')) return false;
+          // Order/invoice data: private, not needed for SEO, and pages convert amounts
+          // in place — always fetch fresh in the browser.
+          if (u.includes('/store_details/order_details') || u.includes('/others/order_details/')) return false;
           return true;
         },
       })

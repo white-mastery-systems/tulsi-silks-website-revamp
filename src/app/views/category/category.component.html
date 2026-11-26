@@ -754,7 +754,10 @@
         <i class="material-icons">{{ priceFilterOpen ? 'remove' : 'add' }}</i>
       </button>
       <div class="filter-panel-v2__body filter-panel-v2__body--price" [class.is-open]="priceFilterOpen">
-        <ngx-slider [(value)]="sliderMin" [(highValue)]="sliderMax" [options]="range_disp"
+        <!-- Create the slider only once both values exist: ngx-slider binds the MAX handle's
+             drag events only if highValue is set at init, and never re-binds them later. -->
+        <ngx-slider *ngIf="sliderMin != null && sliderMax != null"
+          [(value)]="sliderMin" [(highValue)]="sliderMax" [options]="range_disp" [manualRefresh]="priceSliderRefresh"
           (userChange)="onPriceUserChange($event)"
           (userChangeEnd)="onPriceRangeEnd()"></ngx-slider>
         <div class="filter-price-inputs">
@@ -840,7 +843,7 @@
 
 <!-- filter modal / desktop sidebar drawer -->
 <div bsModal #filterModal="bs-modal" class="modal fade filter-modal-v2" [config]="filterModalConfig"
-  tabindex="-1" role="dialog" aria-labelledby="filter-dialog" (onHidden)="onFiltersHidden()">
+  tabindex="-1" role="dialog" aria-labelledby="filter-dialog" (onShown)="onFiltersShown()" (onHidden)="onFiltersHidden()">
   <div class="modal-dialog modal-dialog-scrollable filter-modal-v2__dialog" role="document">
     <div class="modal-content">
       <div class="filter-modal-v2__header">

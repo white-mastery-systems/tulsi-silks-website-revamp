@@ -62,7 +62,10 @@ export class OrderSummaryComponent implements OnInit {
       this.storeApi.STORE_ORDER_DETAILS(this.params.order_id).subscribe(result => {
         setTimeout(() => { this.pageLoader = false; }, 500);
         if(result.status) {
-          this.order_details = result.data;
+          // Work on a copy: on SSR the HTTP transfer cache holds a reference to result.data and
+          // serialises it after this mutation, so the browser would replay already-converted
+          // amounts and divide by country_inr_value a second time ($316.32 -> $3.35).
+          this.order_details = structuredClone(result.data);
           this.order_details.base_final_price = this.order_details.final_price;
           this.order_details.base_shipping_cost = this.order_details.shipping_cost;
           let countryInr = this.order_details.currency_type.country_inr_value;
@@ -144,8 +147,8 @@ export class OrderSummaryComponent implements OnInit {
         this.api.COUPON_DETAILS(this.params.order_id).subscribe(result => {
           setTimeout(() => { this.pageLoader = false; }, 500);
           if(result.status) {
-            this.order_details = result.data;
-            this.order_details.price = (this.order_details.price/this.order_details.currency_type.country_inr_value).toFixed(2);
+            this.order_details = structuredClone(result.data);
+            this.order_details.price =(this.order_details.price/this.order_details.currency_type.country_inr_value).toFixed(2);
           }
           else {
             console.log("response", result);

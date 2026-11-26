@@ -198,6 +198,9 @@ export class ProductOrderDetailsComponent implements OnInit {
   }
 
   onMakePayment(paymentDetails) {
+    // Block re-entry while an order request is in flight (double-tap on the COD modal
+    // "Place Order" / Enter on the OTP form would otherwise create duplicate orders).
+    if(this.orderForm.submit) return;
     let packDetails = this.commonService.store_details.package_details;
     if(packDetails && packDetails.billing_status)
     {
@@ -411,9 +414,12 @@ export class ProductOrderDetailsComponent implements OnInit {
       });
     }
     // create order
-    this.api.CREATE_ORDER(checkoutDetails).subscribe(result => {
-      if(result.status) this.router.navigate(["/checkout/order-summary/product/"+result.data.order_id]);
-      else this.orderErrResponse(result);
+    this.api.CREATE_ORDER(checkoutDetails).subscribe({
+      next: result => {
+        if(result.status) this.router.navigate(["/checkout/order-summary/product/"+result.data.order_id]);
+        else this.orderErrResponse(result);
+      },
+      error: err => this.orderErrResponse({ message: "Unable to place the order. Please check your orders before trying again.", err })
     });
   }
 

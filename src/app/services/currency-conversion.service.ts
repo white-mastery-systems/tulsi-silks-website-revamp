@@ -41,8 +41,20 @@ export class CurrencyConversionService {
     return code === 'INR' ? 'en-IN' : 'en-US';
   }
 
+  /**
+   * No currency selected yet (always the case during SSR, and on first paint before the
+   * store currencies load): prices are stored in the store currency (INR) and pipeCurrencyCode
+   * already falls back to INR, so show the stored amount unchanged instead of 0.
+   * Previously every SSR product card rendered "₹0".
+   */
+  private baseCurrencyAmount(price: any): number {
+    const n = parseFloat(price);
+    return isNaN(n) ? 0 : parseFloat(n.toFixed(2));
+  }
+
   CALC(price) {
     if(!price) price = 0;
+    if(!this.commonService.selected_currency) return this.baseCurrencyAmount(price);
     if(this.commonService.selected_currency) {
       this.currency = this.commonService.selected_currency;
       let additonalCost: any = 0;
@@ -74,6 +86,7 @@ export class CurrencyConversionService {
 
   CALC_WO_AC(price) {
     if(!price) price = 0;
+    if(!this.commonService.selected_currency) return this.baseCurrencyAmount(price);
     if(this.commonService.selected_currency) {
       this.currency = this.commonService.selected_currency;
       let finalPrice = (price/this.currency.country_inr_value).toFixed(2);

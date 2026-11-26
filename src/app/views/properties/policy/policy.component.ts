@@ -28,8 +28,7 @@ export class PolicyComponent implements OnInit {
         this.storeApi.POLICY_DETAILS("privacy").subscribe(result => {
           setTimeout(() => { this.pageLoader = false; }, 500);
           if(result.status) {
-            this.commonService.privacy_policy = result.data;
-            this.commonService.privacy_policy.content = this.sanitizer.bypassSecurityTrustHtml(this.commonService.privacy_policy.content);
+            this.commonService.privacy_policy = { ...result.data, content: this.sanitizer.bypassSecurityTrustHtml(result.data.content) }; // copy: never mutate the SSR transfer-cache response
           }
           else {
             console.log("response", result);
@@ -47,8 +46,7 @@ export class PolicyComponent implements OnInit {
         this.storeApi.POLICY_DETAILS("shipping").subscribe(result => {
           setTimeout(() => { this.pageLoader = false; }, 500);
           if(result.status) {
-            this.commonService.shipping_policy = result.data;
-            this.commonService.shipping_policy.content = this.sanitizer.bypassSecurityTrustHtml(this.commonService.shipping_policy.content);
+            this.commonService.shipping_policy = { ...result.data, content: this.sanitizer.bypassSecurityTrustHtml(result.data.content) }; // copy: never mutate the SSR transfer-cache response
           }
           else {
             console.log("response", result);
@@ -66,8 +64,7 @@ export class PolicyComponent implements OnInit {
         this.storeApi.POLICY_DETAILS("cancellation").subscribe(result => {
           setTimeout(() => { this.pageLoader = false; }, 500);
           if(result.status) {
-            this.commonService.cancellation_policy = result.data;
-            this.commonService.cancellation_policy.content = this.sanitizer.bypassSecurityTrustHtml(this.commonService.cancellation_policy.content);
+            this.commonService.cancellation_policy = { ...result.data, content: this.sanitizer.bypassSecurityTrustHtml(result.data.content) }; // copy: never mutate the SSR transfer-cache response
           }
           else {
             console.log("response", result);
@@ -85,8 +82,7 @@ export class PolicyComponent implements OnInit {
         this.storeApi.POLICY_DETAILS("terms_conditions").subscribe(result => {
           setTimeout(() => { this.pageLoader = false; }, 500);
           if(result.status) {
-            this.commonService.terms_conditions = result.data;
-            this.commonService.terms_conditions.content = this.sanitizer.bypassSecurityTrustHtml(this.commonService.terms_conditions.content);
+            this.commonService.terms_conditions = { ...result.data, content: this.sanitizer.bypassSecurityTrustHtml(result.data.content) }; // copy: never mutate the SSR transfer-cache response
           }
           else {
             console.log("response", result);

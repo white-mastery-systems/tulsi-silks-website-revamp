@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tulsi-silks — Order amount mismatch</title>
+  <style>
+    :root {
+      --bg: #f4f6f9;
+      --card: #ffffff;
+      --text: #1a1d26;
+      --muted: #5c6370;
+      --accent: #5b2c6f;
+      --accent-light: #f0e8f4;
+      --border: #dde1e8;
+      --ok: #047857;
+      --ok-bg: #ecfdf5;
+      --warn: #b45309;
+      --warn-bg: #fffbeb;
+      --danger: #b91c1c;
+      --danger-bg: #fef2f2;
+      --info-bg: #eff6ff;
+      --info: #1d4ed8;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.65;
+      font-size: 15px;
+    }
+    .page { max-width: 920px; margin: 0 auto; padding: 36px 20px 60px; }
+    header {
+      background: linear-gradient(135deg, #3d1f4e 0%, #5b2c6f 45%, #7d4a8f 100%);
+      color: #fff;
+      padding: 36px 40px;
+      border-radius: 12px;
+      margin-bottom: 24px;
+    }
+    header h1 { margin: 0 0 8px; font-size: 1.7rem; font-weight: 600; }
+    header .sub { margin: 0; opacity: 0.92; font-size: 1.02rem; }
+    header .meta { margin-top: 18px; font-size: 0.84rem; opacity: 0.85; }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 24px 28px;
+      margin-bottom: 18px;
+    }
+    .card h2 {
+      margin: 0 0 14px;
+      font-size: 1.18rem;
+      color: var(--accent);
+      border-bottom: 2px solid var(--accent-light);
+      padding-bottom: 8px;
+    }
+    .card h3 { margin: 18px 0 8px; font-size: 1rem; }
+    p { margin: 0 0 12px; }
+    ul, ol { margin: 0 0 12px; padding-left: 1.4rem; }
+    li { margin-bottom: 6px; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.92rem;
+      margin: 12px 0;
+    }
+    th, td {
+      border: 1px solid var(--border);
+      padding: 10px 12px;
+      text-align: left;
+      vertical-align: top;
+    }
+    th { background: var(--accent-light); color: var(--accent); font-weight: 600; }
+    tr:nth-child(even) td { background: #fafbfc; }
+    .badge {
+      display: inline-block;
+      padding: 2px 9px;
+      border-radius: 999px;
+      font-size: 0.76rem;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+    .badge-ok { background: var(--ok-bg); color: var(--ok); }
+    .badge-warn { background: var(--warn-bg); color: var(--warn); }
+    .badge-danger { background: var(--danger-bg); color: var(--danger); }
+    .badge-info { background: var(--info-bg); color: var(--info); }
+    .callout {
+      border-radius: 8px;
+      padding: 14px 16px;
+      margin: 14px 0;
+      border-left: 4px solid;
+    }
+    .callout-ok { background: var(--ok-bg); border-color: var(--ok); }
+    .callout-warn { background: var(--warn-bg); border-color: var(--warn); }
+    .callout-info { background: var(--info-bg); border-color: var(--info); }
+    .callout-danger { background: var(--danger-bg); border-color: var(--danger); }
+    .flow {
+      background: #eef0f4;
+      border-radius: 8px;
+      padding: 16px 20px;
+      font-family: Consolas, "Courier New", monospace;
+      font-size: 0.86rem;
+      line-height: 1.75;
+      white-space: pre-wrap;
+      margin: 12px 0;
+    }
+    code {
+      background: #eef0f4;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.88em;
+    }
+    pre {
+      background: #1e2433;
+      color: #e8eaed;
+      padding: 16px 18px;
+      border-radius: 8px;
+      overflow-x: auto;
+      font-size: 0.82rem;
+      line-height: 1.5;
+      margin: 12px 0;
+    }
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin: 12px 0;
+    }
+    @media (max-width: 640px) { .grid-2 { grid-template-columns: 1fr; } }
+    .stat-box {
+      background: #fafbfc;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 14px 16px;
+      text-align: center;
+    }
+    .stat-box .num { font-size: 1.8rem; font-weight: 700; color: var(--accent); }
+    .stat-box .lbl { font-size: 0.82rem; color: var(--muted); margin-top: 4px; }
+    .stat-box.bad .num { color: var(--danger); }
+    .stat-box.good .num { color: var(--ok); }
+    footer {
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.84rem;
+      margin-top: 28px;
+    }
+    @media print {
+      body { background: #fff; }
+      header { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .card { break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+
+    <header>
+      <h1>Tulsi-silks — Order amount mismatch</h1>
+      <p class="sub">Same Tulsi Silks order shows $316.32 in the email and $3.35 on the website</p>
+      <p class="meta">Store: Tulsi Silks · Order 719932-061126 · Fix owner: website (Angular) · Backend payment and email stay as they are · 10 Nov 2026</p>
+    </header>
+
+    <div class="card">
+      <h2>1. What the client reported</h2>
+      <p>
+        Order <strong>719932-061126</strong> is one order. The customer paid with <strong>Razorpay</strong>.
+        The product is <strong>Orangish Pink Kanjivaram Silk Saree</strong>, SKU <strong>T808898</strong>, quantity 1.
+        Shipping address is in Bangalore. The two screens do not show the same total.
+      </p>
+      <div class="grid-2">
+        <div class="stat-box good">
+          <div class="num">$316.32</div>
+          <div class="lbl">Order email — correct</div>
+        </div>
+        <div class="stat-box bad">
+          <div class="num">$3.35</div>
+          <div class="lbl">Checkout confirmation page — wrong</div>
+        </div>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th></th>
+            <th>Email</th>
+            <th>Website confirmation</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Where</td>
+            <td>Order-placed email, opened in the browser</td>
+            <td><code>tulsisilks.co.in/checkout/order-summary/product/…</code></td>
+          </tr>
+          <tr>
+            <td>Item</td>
+            <td>$314.57</td>
+            <td>$3.33</td>
+          </tr>
+          <tr>
+            <td>Shipping</td>
+            <td>$1.75</td>
+            <td>$0.02</td>
+          </tr>
+          <tr>
+            <td>Total</td>
+            <td><strong>$316.32</strong></td>
+            <td><strong>$3.35</strong></td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="callout callout-danger">
+        <strong>The website total is the email total divided by about 94.5.</strong>
+        That number is <code>currency_type.country_inr_value</code> — rupees per 1 US dollar.
+        $316.32 / 94.5 = $3.35. Shipping $1.75 / 94.5 = $0.018, which rounds to $0.02.
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>2. Which amount is correct</h2>
+      <div class="callout callout-ok">
+        <strong>Correct amount: $316.32.</strong>
+        That is the dollar value of this order, and it is the amount Razorpay was asked to charge.
+        <strong>$3.35 is a display error.</strong> It is not the saree price and it is not the payment amount.
+      </div>
+      <p>The order is stored in the store currency, <strong>INR</strong>. A dollar amount is that rupee figure divided <strong>once</strong> by <code>country_inr_value</code>.</p>
+      <div class="flow">Correct display = stored rupee amount / currency_type.country_inr_value
+Example:        about ₹29,892 / 94.5  =  $316.32
+
+Wrong display  = $316.32 / 94.5        =  $3.35</div>
+      <p>Why $316.32 is the real order, not $3.35:</p>
+      <ul>
+        <li>The email uses this formula once, in <code>priceFormat</code> (<code>yourstore-server/services/common.service.js</code>).</li>
+        <li>Razorpay uses the same formula once, in <code>createRazorpay</code> (<code>yourstore-server/services/create_payment.service.js</code>). The charge is <code>final_price / country_inr_value</code>, currency <code>USD</code>.</li>
+        <li>$316.32 is about <strong>₹29,900</strong>. That is a normal Kanjivaram silk saree price, and it sits just under the store’s free-shipping line of <strong>₹30,000</strong>, which is why shipping was charged. $3.35 is about ₹316, which is not this product.</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h2>3. Which screen is which</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Screenshot</th>
+            <th>Screen</th>
+            <th>File</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Desktop, “View order details”, ORDER NO., ITEMS ORDERED, Total $316.32</td>
+            <td>Customer <strong>order email</strong> (not a website page). Heading above the button is cropped; the body matches the order-placed mail.</td>
+            <td><code>yourstore-server/assets/store-std-mail-templates/order_placed.html</code></td>
+          </tr>
+          <tr>
+            <td>Phone, URL <code>/checkout/order-…</code>, Order Summary, Grand Total $3.35</td>
+            <td>Checkout <strong>order confirmation</strong></td>
+            <td><code>YS-Website-Angular/src/app/views/checkout/order-summary/</code></td>
+          </tr>
+        </tbody>
+      </table>
+      <p>Route: <code>/checkout/order-summary/:type/:order_id</code> — for this order, <code>type</code> is <code>product</code>.</p>
+    </div>
+
+    <div class="card">
+      <h2>4. Where to fix</h2>
+      <div class="callout callout-warn">
+        <strong>Fix the website (Angular). Do not change the backend.</strong>
+        Mail and Razorpay already convert once. Changing <code>priceFormat</code> or <code>createRazorpay</code> would change the amount the customer is charged.
+      </div>
+      <p>
+        The confirmation page loads the raw order from
+        <code>GET /store_details/order_details</code>
+        and then divides every money field by <code>country_inr_value</code>.
+        On this order the page ends up showing that conversion a second time.
+      </p>
+      <h3>Primary file — the screen in the screenshot</h3>
+      <p><code>YS-Website-Angular/src/app/views/checkout/order-summary/order-summary.component.ts</code></p>
+      <p>In <code>getOrderDetails()</code>, after the product-order API returns:</p>
+      <pre>let countryInr = this.order_details.currency_type.country_inr_value;
+this.order_details.sub_total          = (this.order_details.sub_total / countryInr).toFixed(2);
+this.order_details.gift_wrapper       = (this.order_details.gift_wrapper / countryInr).toFixed(2);
+this.order_details.packaging_charges  = (this.order_details.packaging_charges / countryInr).toFixed(2);
+this.order_details.shipping_cost      = (this.order_details.shipping_cost / countryInr).toFixed(2);
+this.order_details.cod_charges        = (this.order_details.cod_charges / countryInr).toFixed(2);
+this.order_details.discount_amount    = (this.order_details.discount_amount / countryInr).toFixed(2);
+this.order_details.final_price        = (this.order_details.final_price / countryInr).toFixed(2);
+
+// item line, same rate:
+product.final_price = (product.base_final_price / countryInr).toFixed(2);</pre>
+      <p>
+        The template then only adds the <code>$</code> symbol. It does not convert again:
+        <code>order-summary.component.html</code> uses the Angular currency pipe on these already-divided numbers.
+      </p>
+      <h3>Same division on other customer pages</h3>
+      <p>Fix these in the same pass. Otherwise the email can show $316.32 while My Orders and the invoice still show $3.35.</p>
+      <table>
+        <thead>
+          <tr><th>File</th><th>What it divides</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>src/app/views/checkout/order-summary/order-summary.component.ts</code></td>
+            <td>Confirmation page totals, item price, and gift-card price</td>
+          </tr>
+          <tr>
+            <td><code>src/app/views/account/my-orders/order-list/order-details/order-details.component.ts</code></td>
+            <td><code>processOrder()</code> — subtotal, shipping, discount, grand total, item price</td>
+          </tr>
+          <tr>
+            <td><code>src/app/views/account/my-orders/order-list/order-list.component.ts</code></td>
+            <td><code>temp_final_price</code> on the live / past order list</td>
+          </tr>
+          <tr>
+            <td><code>src/app/views/account/my-orders/invoice/invoice.component.ts</code></td>
+            <td>Invoice totals and <code>processItemList()</code></td>
+          </tr>
+          <tr>
+            <td><code>src/app/views/account/my-orders/vendor-invoice/vendor-invoice.component.ts</code></td>
+            <td>Vendor invoice totals</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card">
+      <h2>5. How the conversion is supposed to work</h2>
+      <div class="flow">Catalog price is stored in INR
+        ↓
+Checkout saves the order in INR
+currency_type = { country_code: "USD", html_code: "$", country_inr_value: ~94.5 }
+        ↓
+Email and Razorpay divide once  →  $316.32     ← correct
+        ↓
+Website divides that dollar amount again  →  $3.35     ← bug</div>
+      <p><code>country_inr_value</code> is saved when the order is created:</p>
+      <pre>country_inr_value: liveCurrencyDetails.rates[baseCurrency]</pre>
+      <p>
+        <code>baseCurrency</code> is the store currency, INR.
+        On the USD rate row, <code>rates.INR</code> is about 94.5 (rupees for 1 dollar).
+        Product prices are not converted before they are saved. <code>CALC_AC</code> only adds an extra charge percent. It does not divide by the rate.
+      </p>
+      <div class="callout callout-info">
+        <strong>Rule for the page:</strong> show <code>storedAmount / country_inr_value</code> <strong>once</strong>.
+        The result must equal the email and the Razorpay amount.
+        Do not divide a number that is already in dollars.
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>6. What to check before editing</h2>
+      <p>
+        Open this order’s API response and compare it with the two screens.
+        Endpoint used by the confirmation page:
+      </p>
+      <pre>GET /store_details/order_details?store_id={storeId}&amp;id={orderId}</pre>
+      <table>
+        <thead>
+          <tr>
+            <th>API <code>final_price</code></th>
+            <th>API <code>country_inr_value</code></th>
+            <th>What the page should do</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>About <strong>29892</strong> (rupees)</td>
+            <td>About <strong>94.5</strong></td>
+            <td>Divide <strong>once</strong>. 29892 / 94.5 = <strong>$316.32</strong>. If the UI still shows $3.35, this function is dividing a second time (it ran again on the already-divided object, or another copy of the same math runs later). Remove the second pass only.</td>
+          </tr>
+          <tr>
+            <td>About <strong>316.32</strong> (already dollars)</td>
+            <td>About <strong>94.5</strong></td>
+            <td>Do <strong>not</strong> divide. Dividing here is what produces $3.35. Print <code>final_price</code> with the <code>$</code> symbol.</td>
+          </tr>
+          <tr>
+            <td>About <strong>316.32</strong></td>
+            <td><strong>1</strong></td>
+            <td>Divide by 1 and show <strong>$316.32</strong>. Do not replace this rate with the live USD rate of 94.5.</td>
+          </tr>
+        </tbody>
+      </table>
+      <p>From the server code, the saved order is the first row: rupee totals, and <code>country_inr_value</code> about 94.5. Confirm that on this order’s JSON before changing the formula.</p>
+    </div>
+
+    <div class="card">
+      <h2>7. What “done” looks like</h2>
+      <p>For order <strong>719932-061126</strong>, these three places must all show the same money:</p>
+      <table>
+        <thead>
+          <tr><th>Place</th><th>Item</th><th>Shipping</th><th>Total</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Order email</td>
+            <td>$314.57</td>
+            <td>$1.75</td>
+            <td>$316.32</td>
+          </tr>
+          <tr>
+            <td>Checkout confirmation</td>
+            <td>$314.57</td>
+            <td>$1.75</td>
+            <td>$316.32</td>
+          </tr>
+          <tr>
+            <td>My Orders, order details, invoice</td>
+            <td>$314.57</td>
+            <td>$1.75</td>
+            <td>$316.32</td>
+          </tr>
+        </tbody>
+      </table>
+      <ul>
+        <li>Place one more USD test order. The amount on the payment screen, the Razorpay charge, the email, the confirmation page, and My Orders must match.</li>
+        <li>Repeat with the store currency (INR). <code>country_inr_value</code> is 1, so the page must show the rupee total, not the total divided by 94.5.</li>
+        <li>Do not change Razorpay amount creation or the email <code>priceFormat</code> helper.</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h2>8. Date on the two screens</h2>
+      <p>
+        The email says <strong>November 06 2026 at 09:09 AM</strong>.
+        The phone says <strong>05 Nov 2026</strong>.
+        This is separate from the amount bug.
+      </p>
+      <ul>
+        <li>The email formats <code>created_on</code> in the <strong>store timezone</strong> (India).</li>
+        <li>The confirmation page uses the Angular date pipe, which uses the <strong>phone’s timezone</strong>. 09:09 AM IST is still 5 November on a US phone.</li>
+      </ul>
+      <p>No change is required for the amount fix. Mention it only if the client also asks about the date.</p>
+    </div>
+
+    <div class="card">
+      <h2>9. Do not change</h2>
+      <table>
+        <thead>
+          <tr><th>File</th><th>Why it stays</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>yourstore-server/services/common.service.js</code> — <code>priceFormat</code></td>
+            <td>Email amounts. Already correct ($316.32).</td>
+          </tr>
+          <tr>
+            <td><code>yourstore-server/services/create_payment.service.js</code> — <code>createRazorpay</code></td>
+            <td>Amount sent to Razorpay. Already the same one-time conversion.</td>
+          </tr>
+          <tr>
+            <td><code>yourstore-server/src/controllers/store_details/order.controller.js</code> — <code>order_details</code></td>
+            <td>Returns the stored order. The website is responsible for displaying it in the customer currency.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card">
+      <h2>10. Fix done in the website code</h2>
+      <p>
+        Repository: <code>tulsi-silks-website-revamp</code> (Angular storefront). The files are the same ones that
+        section 4 lists under <code>YS-Website-Angular</code>. No backend, email or Razorpay code was changed.
+      </p>
+
+      <h3>Actual root cause: the server render and the browser both divide</h3>
+      <p>
+        The division in <code>getOrderDetails()</code> is correct and runs only once per call. The bug is that the
+        call runs twice on the same data:
+      </p>
+      <div class="flow">Razorpay success → backend redirect → full page load of /checkout/order-summary/product/…
+   ↓
+Server render: GET /store_details/order_details → ₹29,892
+   ↓
+Component divides the response object in place → $316.32
+   ↓
+Angular HTTP transfer cache had kept a reference to that same object,
+and saves it into the page HTML at the end of the render → page ships $316.32
+   ↓
+Browser: component runs again, reuses the saved response ($316.32) and divides again
+   ↓
+$316.32 / 94.5 = $3.35  ← wrong</div>
+      <ul>
+        <li><strong>Why only Razorpay:</strong> Razorpay returns through a server redirect, which is a full page load
+          with a server render. COD goes to the summary page inside the app with no server render, so it divides only
+          once and is correct.</li>
+        <li><strong>Why INR orders look fine:</strong> <code>country_inr_value</code> is 1, so dividing twice changes
+          nothing.</li>
+      </ul>
+
+      <h3>Changes</h3>
+      <table>
+        <thead>
+          <tr><th>File</th><th>Change</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>src/app/views/checkout/order-summary/order-summary.component.ts</code> — <code>getOrderDetails()</code></td>
+            <td><code>this.order_details = structuredClone(result.data);</code> for both the product order and the gift
+              card branch. The page converts a copy, so the saved server response stays in rupees and the browser
+              divides only once.</td>
+          </tr>
+          <tr>
+            <td><code>src/app/views/account/my-orders/invoice/invoice.component.ts</code> — gift card (coupon) branch</td>
+            <td>Same <code>structuredClone</code> fix. This branch also loads its data during the server render.</td>
+          </tr>
+          <tr>
+            <td><code>src/app/app.module.ts</code> — transfer cache <code>filter</code></td>
+            <td>Excludes <code>/store_details/order_details</code> and <code>/others/order_details/</code> from the
+              HTTP transfer cache. The browser always fetches order and invoice data fresh. Order data is also no
+              longer embedded in the page HTML.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="callout callout-info">
+        <strong>No change needed</strong> in this repository for order details, order list, the order invoice or the
+        vendor invoice (section 4's other files). They only load data in the browser, either because the code checks
+        <code>isPlatformBrowser</code> or because the login guard does not pass on the server. So they divide only
+        once.
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>11. How to test</h2>
+      <p>
+        The bug only happens when the page is rendered on the server, so <code>npm start</code> (plain
+        <code>ng serve</code>) cannot show it. Test on staging or with <code>npm run dev:ssr</code>, or
+        <code>npm run build:ssr</code> then <code>npm run serve:ssr</code>. Keep Chrome DevTools open on the
+        <strong>Network</strong> tab.
+      </p>
+      <table>
+        <thead>
+          <tr><th>#</th><th>Steps</th><th>Expected result</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1</td>
+            <td>Open the confirmation page for order <strong>719932-061126</strong>
+              (<code>/checkout/order-summary/product/{order id}</code>) in a new tab and hard reload (Ctrl+F5).</td>
+            <td>Item <strong>$314.57</strong>, shipping <strong>$1.75</strong>, total <strong>$316.32</strong>. This
+              matches the email. Before the fix it showed $3.35.</td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td>On the same page press Ctrl+U (View Source) and search for <code>ng-state</code>.</td>
+            <td>The order's <code>final_price</code> is <strong>not</strong> in that block. Before the fix it was
+              embedded there, already divided.</td>
+          </tr>
+          <tr>
+            <td>3</td>
+            <td>Switch the store currency to <strong>USD</strong> and place a test order with
+              <strong>Razorpay</strong> (test mode).</td>
+            <td>The same amount appears in the Razorpay window, on the confirmation page after the redirect, in the
+              order email, in My Orders → order details, and on the invoice.</td>
+          </tr>
+          <tr>
+            <td>4</td>
+            <td>Repeat test 3 in <strong>INR</strong>.</td>
+            <td>Rupee totals everywhere; nothing is divided by ~94.5.</td>
+          </tr>
+          <tr>
+            <td>5</td>
+            <td>Place a <strong>USD COD</strong> order.</td>
+            <td>Amounts still correct. This path was never broken, so it checks for regressions.</td>
+          </tr>
+          <tr>
+            <td>6</td>
+            <td>On the confirmation page from test 3, press F5 a few times.</td>
+            <td>The amount stays the same on every reload.</td>
+          </tr>
+          <tr>
+            <td>7</td>
+            <td>If gift cards are enabled: buy a gift card in USD, then open its invoice and reload the page.</td>
+            <td>The invoice price matches the amount paid.</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="callout callout-ok">
+        <strong>Done when:</strong> the table in section 7 holds for order 719932-061126 and for the new USD and INR
+        test orders.
+      </div>
+    </div>
+
+    <footer>
+      Tulsi Silks · Order 719932-061126 · Frontend handoff · Website fix applied (sections 10–11)<br />
+      Tulsi_Silks_Order_Amount_Mismatch.html
+    </footer>
+
+  </div>
+</body>
+</html>

@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Negative Stock Investigation — TE111935</title>
+  <style>
+    :root {
+      --bg: #f4f6f9;
+      --card: #ffffff;
+      --text: #1a1d26;
+      --muted: #5c6370;
+      --accent: #5b2c6f;
+      --accent-light: #f0e8f4;
+      --border: #dde1e8;
+      --ok: #047857;
+      --ok-bg: #ecfdf5;
+      --warn: #b45309;
+      --warn-bg: #fffbeb;
+      --danger: #b91c1c;
+      --danger-bg: #fef2f2;
+      --info-bg: #eff6ff;
+      --info: #1d4ed8;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.65;
+      font-size: 15px;
+    }
+    .page { max-width: 920px; margin: 0 auto; padding: 36px 20px 60px; }
+    header {
+      background: linear-gradient(135deg, #3d1f4e 0%, #5b2c6f 45%, #7d4a8f 100%);
+      color: #fff;
+      padding: 36px 40px;
+      border-radius: 12px;
+      margin-bottom: 24px;
+    }
+    header h1 { margin: 0 0 8px; font-size: 1.7rem; font-weight: 600; }
+    header .sub { margin: 0; opacity: 0.92; font-size: 1.02rem; }
+    header .meta { margin-top: 18px; font-size: 0.84rem; opacity: 0.85; }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 24px 28px;
+      margin-bottom: 18px;
+    }
+    .card h2 {
+      margin: 0 0 14px;
+      font-size: 1.18rem;
+      color: var(--accent);
+      border-bottom: 2px solid var(--accent-light);
+      padding-bottom: 8px;
+    }
+    .card h3 { margin: 18px 0 8px; font-size: 1rem; }
+    p { margin: 0 0 12px; }
+    ul, ol { margin: 0 0 12px; padding-left: 1.4rem; }
+    li { margin-bottom: 6px; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.92rem;
+      margin: 12px 0;
+    }
+    th, td {
+      border: 1px solid var(--border);
+      padding: 10px 12px;
+      text-align: left;
+      vertical-align: top;
+    }
+    th { background: var(--accent-light); color: var(--accent); font-weight: 600; }
+    tr:nth-child(even) td { background: #fafbfc; }
+    .badge {
+      display: inline-block;
+      padding: 2px 9px;
+      border-radius: 999px;
+      font-size: 0.76rem;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+    .badge-ok { background: var(--ok-bg); color: var(--ok); }
+    .badge-warn { background: var(--warn-bg); color: var(--warn); }
+    .badge-danger { background: var(--danger-bg); color: var(--danger); }
+    .badge-info { background: var(--info-bg); color: var(--info); }
+    .callout {
+      border-radius: 8px;
+      padding: 14px 16px;
+      margin: 14px 0;
+      border-left: 4px solid;
+    }
+    .callout-ok { background: var(--ok-bg); border-color: var(--ok); }
+    .callout-warn { background: var(--warn-bg); border-color: var(--warn); }
+    .callout-info { background: var(--info-bg); border-color: var(--info); }
+    .callout-danger { background: var(--danger-bg); border-color: var(--danger); }
+    .flow {
+      background: #eef0f4;
+      border-radius: 8px;
+      padding: 16px 20px;
+      font-family: Consolas, "Courier New", monospace;
+      font-size: 0.86rem;
+      line-height: 1.75;
+      white-space: pre-wrap;
+      margin: 12px 0;
+    }
+    code {
+      background: #eef0f4;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.88em;
+    }
+    pre {
+      background: #1e2433;
+      color: #e8eaed;
+      padding: 16px 18px;
+      border-radius: 8px;
+      overflow-x: auto;
+      font-size: 0.82rem;
+      line-height: 1.5;
+      margin: 12px 0;
+    }
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin: 12px 0;
+    }
+    @media (max-width: 640px) { .grid-2 { grid-template-columns: 1fr; } }
+    .stat-box {
+      background: #fafbfc;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 14px 16px;
+      text-align: center;
+    }
+    .stat-box .num { font-size: 1.8rem; font-weight: 700; color: var(--accent); }
+    .stat-box .lbl { font-size: 0.82rem; color: var(--muted); margin-top: 4px; }
+    footer {
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.84rem;
+      margin-top: 28px;
+    }
+    @media print {
+      body { background: #fff; }
+      header { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .card { break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+
+    <header>
+      <h1>Negative Stock Investigation</h1>
+      <p class="sub">Why "Yellow Soft Silk Saree" (SKU TE111935) dropped to -1 stock and kept selling</p>
+      <p class="meta">Project: Yourstore · Reported by: client (Tulsi Silks) · Status: Root cause confirmed — frontend fix done (website), backend fix pending</p>
+    </header>
+
+    <div class="card">
+      <h2>1. What happened</h2>
+      <p>
+        This product only ever had <strong>1 unit</strong> in stock. Stock dropped to <strong>-1</strong>, and even
+        after that, the website kept letting customers order and pay for it. There are two separate bugs behind
+        this, not one:
+      </p>
+      <ol>
+        <li><strong>Why stock went negative</strong> — the same checkout was submitted twice by one customer, and
+        nothing stopped the second one from deducting stock that was already gone.</li>
+        <li><strong>Why it kept being orderable afterward</strong> — the website's "Add to Cart" / "Buy Now" buttons,
+        and the Cash-on-Delivery checkout itself, never actually check whether stock is above zero.</li>
+      </ol>
+    </div>
+
+    <div class="card">
+      <h2>2. Evidence — the three orders for this product</h2>
+      <p>Checked <code>order_list</code> for this product. Three orders exist:</p>
+      <table>
+        <thead>
+          <tr><th>Order number</th><th>Created on</th><th>Customer</th><th>Status</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>384920-201126</code></td>
+            <td>2026-11-20 15:08:55</td>
+            <td>Sharmila Radha Krishnan</td>
+            <td><span class="badge badge-warn">Placed, not paid</span></td>
+          </tr>
+          <tr>
+            <td><code>931757-201126</code></td>
+            <td>2026-11-20 <strong>15:09:53</strong> (54 sec later)</td>
+            <td>Sharmila Radha Krishnan <em>(same customer)</em></td>
+            <td><span class="badge badge-warn">Placed, not paid</span></td>
+          </tr>
+          <tr>
+            <td><code>421861-241126</code></td>
+            <td>2026-11-24 01:12:05</td>
+            <td>Arunthathi Nachimuthu <em>(different customer)</em></td>
+            <td><span class="badge badge-ok">Confirmed, paid</span></td>
+          </tr>
+        </tbody>
+      </table>
+      <p>
+        The first two orders were checked against <code>customer_id</code>, <code>session_id</code>,
+        <code>client_ip_address</code>, and <code>userAgent</code> — every field matched exactly. Same person, same
+        phone, same checkout session, 54 seconds apart. The third order was checked the same way and belongs to a
+        <strong>completely different, unrelated customer</strong>.
+      </p>
+      <p>
+        The third order on 2026-11-24 is the one the client noticed ("we received an order today"). It did not
+        cause the negative stock — stock was already -1 four days earlier. It only exposed the problem.
+      </p>
+    </div>
+
+    <div class="card">
+      <h2>3. Cause 1 — how stock went negative</h2>
+      <div class="flow">Customer taps "Place Order" (1st request)
+    ↓
+Order created → stock deducted immediately (does not wait for payment)
+    ↓
+Customer taps "Place Order" again, 54 seconds later (2nd request)
+    ↓
+A second order is created → stock deducted again
+    ↓
+Nothing checked "is there still stock left?" before either deduction
+    ↓
+Result: stock goes 1 → 0 → -1</div>
+      <p>Two things had to be true for this to happen:</p>
+      <ul>
+        <li><strong>Stock is deducted the moment an order is created</strong> — not only when payment is confirmed.
+        So even an unpaid, duplicate order still reduces stock.</li>
+        <li><strong>The deduction has no floor</strong> — it never checks "is stock still enough" before
+        subtracting, so it can go below zero with no warning or block.</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h2>4. Cause 2 — why it kept showing as orderable on the website</h2>
+      <p>
+        This is a separate bug from Cause 1, found by checking the storefront product page and the
+        Cash-on-Delivery checkout:
+      </p>
+      <table>
+        <thead>
+          <tr><th>Where</th><th>What's wrong</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>"Buy Now" button</strong></td>
+            <td>Has no stock check at all. It's only disabled while a request is in progress — never based on the
+            actual stock number.</td>
+          </tr>
+          <tr>
+            <td><strong>"Add to Cart" button</strong></td>
+            <td>Does have a stock check, but a separate line of code silently reduces the requested quantity down
+            to match whatever stock is — even when stock is negative. After that adjustment, the check always
+            passes, so the button shows as available no matter how negative stock gets. There's also no
+            "Out of Stock" message shown in its place.</td>
+          </tr>
+          <tr>
+            <td><strong>Cash-on-Delivery checkout</strong></td>
+            <td>Creates the order and deducts stock directly — it never asks "is there enough stock" at all. The
+            real stock check only exists on the online prepaid (card/UPI) checkout path, and even there it only
+            runs once, early, when the cart is first built — not again when the order is actually placed.</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="callout callout-danger">
+        <strong>Net effect:</strong> once stock goes negative for any reason, nothing on the website or in
+        Cash-on-Delivery checkout stops the next customer from ordering and paying for it too — which is exactly
+        what happened on 2026-11-24.
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>5. Other risks found while checking</h2>
+      <table>
+        <thead>
+          <tr><th>Area</th><th>Finding</th><th>Severity</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Payment gateway callbacks</td>
+            <td>20+ separate places reduce stock on payment success; no "already deducted" flag per order, so a
+            repeated gateway callback could deduct stock twice</td>
+            <td><span class="badge badge-warn">Should fix</span></td>
+          </tr>
+          <tr>
+            <td>Admin product edit screen</td>
+            <td>Stock number field has no minimum enforced — a manual edit could also set it negative</td>
+            <td><span class="badge badge-info">Worth checking</span></td>
+          </tr>
+          <tr>
+            <td>Product listing / search</td>
+            <td>Correctly hides out-of-stock products in most cases — except when a store setting called
+            "show all products" is turned on, which skips that filter too</td>
+            <td><span class="badge badge-info">Worth checking</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card">
+      <h2>6. What needs to change</h2>
+      <table>
+        <thead>
+          <tr><th>#</th><th>Fix</th><th>Backend</th><th>Frontend</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1</td>
+            <td><strong>Add a floor to the stock deduction</strong> — it should only succeed when enough stock
+            remains, otherwise fail cleanly instead of going negative</td>
+            <td><span class="badge badge-danger">Required</span></td>
+            <td>—</td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td><strong>Add a stock check to Cash-on-Delivery checkout</strong>, and re-run the stock check at the
+            moment an order is created on every checkout path — not just when the cart was first opened</td>
+            <td><span class="badge badge-danger">Required</span></td>
+            <td>—</td>
+          </tr>
+          <tr>
+            <td>3</td>
+            <td><strong>Fix the Add to Cart / Buy Now buttons</strong> to actually check stock, and show
+            "Out of Stock" instead of letting a negative-stock product render as normal</td>
+            <td>—</td>
+            <td><span class="badge badge-danger">Required</span> — product page buttons</td>
+          </tr>
+          <tr>
+            <td>4</td>
+            <td><strong>Prevent duplicate order creation</strong> from the same checkout (double-click / retry)</td>
+            <td><span class="badge badge-danger">Required</span> — reject a repeat order if the same cart/session
+            submits again within a few seconds</td>
+            <td><span class="badge badge-warn">Recommended</span> — disable the "Place Order" button immediately on
+            click</td>
+          </tr>
+          <tr>
+            <td>5</td>
+            <td><strong>Deduct stock once per order</strong> (mark the order as "stock already deducted")</td>
+            <td><span class="badge badge-danger">Required</span></td>
+            <td>—</td>
+          </tr>
+          <tr>
+            <td>6</td>
+            <td><strong>Block negative values on the admin Stock field</strong></td>
+            <td>—</td>
+            <td><span class="badge badge-danger">Required</span> — Admin Panel product edit screen</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card">
+      <h2>7. Scope of the fix</h2>
+      <table>
+        <thead>
+          <tr><th>Change</th><th>Touches</th><th>Risk to other stores</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Floor on stock deduction</td>
+            <td>Shared stock-update function</td>
+            <td><span class="badge badge-ok">None</span> — makes the existing update safer everywhere it runs;
+            normal in-stock orders are unaffected</td>
+          </tr>
+          <tr>
+            <td>Stock check on COD + re-check at order creation</td>
+            <td>Order creation step</td>
+            <td><span class="badge badge-ok">None</span> — only blocks orders that are already invalid</td>
+          </tr>
+          <tr>
+            <td>Add to Cart / Buy Now stock check</td>
+            <td>Product page buttons only</td>
+            <td><span class="badge badge-ok">None</span> — only affects display/enabling of buttons for
+            out-of-stock items</td>
+          </tr>
+          <tr>
+            <td>Duplicate order prevention</td>
+            <td>Checkout submission handling</td>
+            <td><span class="badge badge-ok">None</span> — only blocks an immediate repeat of the same
+            cart/checkout, not separate legitimate orders</td>
+          </tr>
+          <tr>
+            <td>Once-per-order deduction</td>
+            <td>Payment callback handlers</td>
+            <td><span class="badge badge-ok">None</span> — skips only duplicate calls, never the first valid one</td>
+          </tr>
+          <tr>
+            <td>Admin field guard</td>
+            <td>Product edit screen only</td>
+            <td><span class="badge badge-ok">None</span> — single input validation</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="callout callout-ok">
+        Every change is scoped to the stock/order logic itself and does not touch any other store or workflow
+        sharing the same codebase.
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>8. Fix done in the website code</h2>
+      <p>
+        Repository: <code>tulsi-silks-website-revamp</code> (Angular storefront). These cover frontend items
+        <strong>#3</strong> and <strong>#4</strong> from section 6. Items #1, #2 and #5 are backend, and #6 is in the
+        Admin Panel. None of those are part of this change.
+      </p>
+
+      <div class="callout callout-info">
+        <strong>Correction to section 4:</strong> in this storefront the Add to Cart and Buy Now buttons were already
+        hidden when stock is below the minimum quantity (default 1). The main product section then shows "SOLD OUT".
+        The gaps that remained are listed below. The product page always loads fresh stock in the browser, because
+        the product details request is a POST and is not reused from the server render.
+      </div>
+
+      <h3>A. Duplicate order from the COD popup (item #4, frontend part)</h3>
+      <table>
+        <thead>
+          <tr><th>File</th><th>Change</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>src/app/views/checkout/product-order-details/product-order-details.component.html</code></td>
+            <td>The two <strong>Place Order</strong> buttons in the Cash-on-Delivery popup (with and without OTP) are now
+              <code>[disabled]="orderForm.submit"</code> and show a spinner. Before, only the payment list buttons were
+              disabled, so the popup button could be tapped again while the first order request was still running.</td>
+          </tr>
+          <tr>
+            <td><code>…/product-order-details.component.ts</code> — <code>onMakePayment()</code></td>
+            <td>Returns immediately if <code>orderForm.submit</code> is already true. This also blocks pressing Enter
+              more than once on the OTP form.</td>
+          </tr>
+          <tr>
+            <td><code>…/product-order-details.component.ts</code> — <code>continuePlaceCodOrder()</code></td>
+            <td>Added an error handler to the COD <code>CREATE_ORDER</code> call. If the network request fails, the
+              page unlocks and shows "Unable to place the order. Please check your orders before trying again."
+              Before, it stayed on the loader.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>B. Product page stock checks (item #3)</h3>
+      <table>
+        <thead>
+          <tr><th>File</th><th>Change</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>src/app/views/product/product.component.ts</code> — new <code>hasStockForSelection()</code></td>
+            <td>Returns true only when stock covers the minimum quantity and the selected quantity.
+              <code>addtoCart()</code> and <code>buyNow()</code> now call it first. If it fails, they stop and show
+              "This product is out of stock".</td>
+          </tr>
+          <tr>
+            <td><code>product.component.ts</code> — 5 quantity adjustments</td>
+            <td>Where the quantity is reduced to match stock (page load, variant change, customization,
+              <code>incQty()</code>), it now uses <code>Math.max(0, …)</code>. The quantity can no longer become
+              negative when stock is negative.</td>
+          </tr>
+          <tr>
+            <td><code>src/app/views/product/product.component.html</code></td>
+            <td>The compact (sticky) button bar now shows a disabled <strong>"Out of Stock"</strong> button when stock is
+              below the minimum and pre-order is off. Before, that area was empty. Also added the
+              <code>out_of_stock</code> alert message.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="callout callout-warn">
+        <strong>What the website fix cannot do alone:</strong> it blocks fast double taps and buttons on a product
+        that is visibly out of stock. It cannot stop a repeat order sent ~1 minute later (the 54-second gap in this
+        incident), or a tab that was opened while stock was still 1. Those need backend fixes #1, #2 and #4 (reject
+        when stock is not enough, and reject a repeat order for the same checkout).
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>9. How to test</h2>
+      <p>
+        Test on staging or locally with <code>npm run dev:ssr</code>. Keep Chrome DevTools open on the
+        <strong>Network</strong> tab. Use a test product, not a live one.
+      </p>
+
+      <h3>Website fix (can be tested now)</h3>
+      <table>
+        <thead>
+          <tr><th>#</th><th>Steps</th><th>Expected result</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1</td>
+            <td>In the Admin Panel set a test product's stock to <strong>0</strong>. Open its product page and scroll
+              until the compact button bar appears.</td>
+            <td>Main section shows "SOLD OUT". The compact bar shows a disabled "Out of Stock" button. No Add to Cart or
+              Buy Now anywhere.</td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td>Set stock to <strong>2</strong>. On the product page press <strong>+</strong> several times.</td>
+            <td>Quantity stops at 2.</td>
+          </tr>
+          <tr>
+            <td>3</td>
+            <td>DevTools → Network → throttle <em>Slow 3G</em>. Go to checkout, pick <strong>COD</strong>, and click
+              <strong>Place Order</strong> in the popup 3–4 times quickly. If COD OTP is on, enter the OTP and press
+              Enter several times.</td>
+            <td>The button greys out with a spinner after the first click. The Network tab (filter <code>order</code>)
+              shows <strong>one</strong> create-order request. The Admin Panel shows <strong>one</strong> new order.</td>
+          </tr>
+          <tr>
+            <td>4</td>
+            <td>DevTools → Network → <em>Offline</em>, then click Place Order in the COD popup.</td>
+            <td>The page shows "Unable to place the order…" and the buttons work again (not stuck on the loader).</td>
+          </tr>
+          <tr>
+            <td>5</td>
+            <td>Normal order: product with stock 3, COD and prepaid (Razorpay test mode), quantity 1.</td>
+            <td>Order is placed normally. Stock in Admin goes 3 → 2. (No regression.)</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>After the backend fix is deployed</h3>
+      <table>
+        <thead>
+          <tr><th>#</th><th>Steps</th><th>Expected result</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>6</td>
+            <td><strong>Stale tab:</strong> product with stock 1. Open it in tab A. Buy it in tab B. Go back to tab A
+              and check out with COD.</td>
+            <td>Order is rejected. Checkout shows the backend's error message and marks the item as unavailable. Stock stays 0.</td>
+          </tr>
+          <tr>
+            <td>7</td>
+            <td><strong>Repeat order:</strong> place a COD order, then use the browser Back button and press Place Order
+              again within a minute.</td>
+            <td>Second order is rejected. Only one order exists.</td>
+          </tr>
+          <tr>
+            <td>8</td>
+            <td><strong>Repeated payment callback:</strong> for a Razorpay test order, resend the same success callback
+              (backend team).</td>
+            <td>Stock is deducted only once.</td>
+          </tr>
+          <tr>
+            <td>9</td>
+            <td>Admin Panel product edit: type <strong>-1</strong> in the Stock field and save.</td>
+            <td>Save is blocked with a validation message.</td>
+          </tr>
+          <tr>
+            <td>10</td>
+            <td>After all tests above, check the test product in Admin.</td>
+            <td>Stock is never below 0.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <footer>
+      Yourstore · Internal investigation note — website fix applied (sections 8–9), backend fix pending<br />
+      stock-issue-report.html
+    </footer>
+
+  </div>
+</body>
+</html>

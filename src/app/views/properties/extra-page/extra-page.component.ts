@@ -32,8 +32,10 @@ export class ExtraPageComponent implements OnInit {
         this.storeApi.EXTRA_PAGE(params['type']).subscribe(result => {
           setTimeout(() => { this.pageLoader = false; }, 500);
           if(result.status) {
-            this.details = result.data;
-            this.details.content = this.sanitizer.bypassSecurityTrustHtml(this.details.content);
+            // Build a new object — never mutate result.data. On SSR the HTTP transfer cache holds a
+            // reference to it; replacing `content` with a SafeHtml there serialises it as an object,
+            // and on direct page load the browser rendered "[object Object]".
+            this.details = { ...result.data, content: this.sanitizer.bypassSecurityTrustHtml(result.data.content) };
             this.commonService.extra_pages[params['type']] = this.details;
             if(this.details.seo_status) this.commonService.setSiteMetaData(this.details.seo_details, null);
             this.setBreadCrumbSchema();

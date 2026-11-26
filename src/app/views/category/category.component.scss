@@ -1315,8 +1315,12 @@ $catalog-filter-accent: #9a7d4a;
 .filter-panel-v2__body,
 .filter-modal-v2__body {
   ::ng-deep {
+    // Global custom.scss forces `margin: 5px 0 20px !important`. The slider's hit area
+    // (.ngx-slider-bar-wrapper) extends 16px above the bar, so with 5px it overlapped the
+    // "Price" header and the handle's top was clipped by the body's overflow:hidden.
+    // Push it down so the whole hit area sits inside the price body.
     .ngx-slider {
-      margin: 12px 0 8px;
+      margin: 20px 0 12px !important;
     }
 
     .ngx-slider .ngx-slider-bar {

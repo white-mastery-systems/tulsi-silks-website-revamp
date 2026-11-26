@@ -51,8 +51,9 @@ export class InvoiceComponent implements OnInit {
         this.pageLoader = true;
         this.api.INVOICE_ORDER_DETAILS(this.params).subscribe(result => {
           if(result.status) {
-            this.invoice_details = result.data;
-            this.invoice_details.price = (this.invoice_details.price/this.invoice_details.currency_type.country_inr_value).toFixed(2);
+            // Copy before converting — the SSR transfer cache holds a reference to result.data.
+            this.invoice_details = structuredClone(result.data);
+            this.invoice_details.price =(this.invoice_details.price/this.invoice_details.currency_type.country_inr_value).toFixed(2);
           }
           else console.log("response", result);
           setTimeout(() => { this.pageLoader = false; }, 500);

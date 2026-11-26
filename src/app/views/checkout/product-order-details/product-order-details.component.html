@@ -715,7 +715,12 @@
       </div>
       <div class="modal-footer">
         <button class="secondary-btn" type="button" (click)="accept_cod_tc=false; codModal.hide();">Decline</button>
-        <button class="primary-btn" type="button" (click)="accept_cod_tc=true; onMakePayment({name: 'COD'});">Place Order</button>
+        <button class="primary-btn d-flex justify-content-center align-items-center" type="button" [disabled]="orderForm.submit" (click)="accept_cod_tc=true; onMakePayment({name: 'COD'});">
+          Place Order
+          <div class="box" *ngIf="orderForm.submit">
+            <div class="spinner"></div>
+          </div>
+        </button>
       </div>
     </div>
     <!-- with sms config -->
@@ -809,7 +814,12 @@
         </div>
         <div class="modal-footer">
           <button class="secondary-btn" type="button" (click)="accept_cod_tc=false; codModal.hide();">Decline</button>
-          <button class="primary-btn" type="submit">Place Order</button>
+          <button class="primary-btn d-flex justify-content-center align-items-center" type="submit" [disabled]="orderForm.submit">
+            Place Order
+            <div class="box" *ngIf="orderForm.submit">
+              <div class="spinner"></div>
+            </div>
+          </button>
         </div>
       </form>
     </div>

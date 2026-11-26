@@ -2470,10 +2470,28 @@ $catalog-filter-accent: #9a7d4a;
 }
 
 .tulsi-blog-detail__faq-acc {
-  accordion-group .panel .panel-collapse .panel-body p {
-    margin: 0;
+  // Body-copy type (same as blog body: 1rem / 1.65). Set on .panel-body itself, not only on
+  // <p>: category FAQs render API HTML via [innerHTML] (often a bare <div> or text), which
+  // otherwise fell back to the global 14px / line-height 14px.
+  accordion-group .panel .panel-collapse .panel-body {
+    font-size: 1rem;
     line-height: 1.65;
     color: rgba(31, 27, 36, 0.78);
+
+    p, div, li, span {
+      font-size: inherit;
+      line-height: inherit;
+      color: inherit;
+    }
+
+    p {
+      margin: 0;
+    }
+
+    p + p,
+    ul, ol {
+      margin-top: 0.75em;
+    }
   }
 }
 

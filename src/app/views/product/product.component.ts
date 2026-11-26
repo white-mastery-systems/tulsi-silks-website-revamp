@@ -217,7 +217,7 @@ export class ProductComponent implements OnInit {
               if(new Date() < new Date(this.productDetails.hold_till)) balanceStock = this.productDetails.stock - this.productDetails.hold_qty;
               this.productDetails.stock = balanceStock;
             }
-            if(this.productDetails.quantity > this.productDetails.stock) this.productDetails.quantity = this.productDetails.stock;
+            if(this.productDetails.quantity > this.productDetails.stock) this.productDetails.quantity = Math.max(0, this.productDetails.stock);
             // variants
             if(this.productDetails.variant_status && Array.isArray(this.productDetails.variant_types)) {
               // for first option checked
@@ -736,7 +736,7 @@ export class ProductComponent implements OnInit {
   }
 
   onChangeAddon() {
-    if(this.productDetails.quantity > this.productDetails.stock) this.productDetails.quantity = this.productDetails.stock;
+    if(this.productDetails.quantity > this.productDetails.stock) this.productDetails.quantity = Math.max(0, this.productDetails.stock);
     if(this.productDetails.quantity < this.commonService.min_qty[this.productDetails.unit]) this.productDetails.quantity = this.commonService.min_qty[this.productDetails.unit];
     this.customized_model = null;
     this.productDetails.addon_alert = false;
@@ -802,7 +802,7 @@ export class ProductComponent implements OnInit {
       this.productDetails.stock = balanceStock;
     }
     this.productDetails.quantity = this.commonService.min_qty[this.productDetails.unit];
-    if(this.productDetails.quantity > this.productDetails.stock) this.productDetails.quantity = this.productDetails.stock;
+    if(this.productDetails.quantity > this.productDetails.stock) this.productDetails.quantity = Math.max(0, this.productDetails.stock);
     if(this.productDetails.quantity < this.commonService.min_qty[this.productDetails.unit]) this.productDetails.quantity = this.commonService.min_qty[this.productDetails.unit];
     // update image list
     this.productDetails.image_list = productImgList;
@@ -897,7 +897,16 @@ export class ProductComponent implements OnInit {
     else step.filtered_option_list.forEach(obj => { obj.disabled = false; });
   }
 
+  /** True only when stock covers the minimum and the selected quantity (guards against zero/negative stock). */
+  hasStockForSelection(): boolean {
+    const stock = Number(this.productDetails?.stock);
+    const minQty = this.commonService.min_qty[this.productDetails?.unit] || 1;
+    const qty = (Number(this.productDetails?.quantity) || 0) + (Number(this.productDetails?.additional_qty) || 0);
+    return Number.isFinite(stock) && stock >= minQty && qty >= minQty && qty <= stock;
+  }
+
   addtoCart(openPopup) {
+    if(!this.hasStockForSelection()) { this.productDetails.buynow_alert = "out_of_stock"; return; }
     this.prepareAddonForCheckout();
     // addon section
     if(this.productDetails.selected_addon && this.productDetails.selected_addon!=undefined) {
@@ -955,6 +964,7 @@ export class ProductComponent implements OnInit {
   }
 
   buyNow() {
+    if(!this.hasStockForSelection()) { this.productDetails.buynow_alert = "out_of_stock"; return; }
     if(isPlatformBrowser(this.platformId)) sessionStorage.removeItem("qo-cd");
     this.prepareAddonForCheckout();
     // addon section
@@ -1173,7 +1183,7 @@ export class ProductComponent implements OnInit {
   onCreateCustomization(existingListModal) {
     if(this.productDetails.selected_addon) {
       if(this.productDetails.selected_addon.custom_list.length || this.productDetails.selected_addon.updated_mm_list.length ||  this.productDetails.selected_addon.notes_list.length) {
-        if(this.productDetails.quantity > this.productDetails.stock) this.productDetails.quantity = this.productDetails.stock;
+        if(this.productDetails.quantity > this.productDetails.stock) this.productDetails.quantity = Math.max(0, this.productDetails.stock);
         if(this.productDetails.quantity < this.commonService.min_qty[this.productDetails.unit]) this.productDetails.quantity = this.commonService.min_qty[this.productDetails.unit];
         this.customIndex = 0; this.mmIndex = 0; this.addonForm = {};
         this.returnToReviewAfterEdit = false;
@@ -1945,7 +1955,7 @@ export class ProductComponent implements OnInit {
     this.productDetails.added_to_cart = false;
     this.productDetails.quantity += this.commonService.step_qty[this.productDetails.unit];
     if((this.productDetails.quantity % 1) != 0) this.productDetails.quantity = parseFloat(this.productDetails.quantity.toFixed(2));
-    if((this.productDetails.quantity+this.productDetails.additional_qty) > this.productDetails.stock) this.productDetails.quantity = this.productDetails.stock-this.productDetails.additional_qty;
+    if((this.productDetails.quantity+this.productDetails.additional_qty) > this.productDetails.stock) this.productDetails.quantity = Math.max(0, this.productDetails.stock-this.productDetails.additional_qty);
   }
   decQty() {
     this.productDetails.buynow_alert = "";

@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, AfterViewChecked, Inject, PLATFORM_ID, ViewChild, ElementRef, DOCUMENT, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, AfterViewChecked, Inject, PLATFORM_ID, ViewChild, ElementRef, DOCUMENT, ChangeDetectorRef, EventEmitter } from '@angular/core';
 import { Router, ActivatedRoute, Params } from '@angular/router';
 import { isPlatformBrowser, DecimalPipe, CurrencyPipe } from '@angular/common';
 import { Meta } from '@angular/platform-browser';
@@ -159,6 +159,17 @@ export class CategoryComponent implements OnInit, OnDestroy, AfterViewChecked {
   readonly filterModalConfig = { backdrop: true, ignoreBackdropClick: false, keyboard: true };
   readonly sortModalConfig = { backdrop: true, ignoreBackdropClick: false, keyboard: true };
 
+  /**
+   * ngx-slider measures its width once; inside the hidden filter modal that width is 0,
+   * so the handles jump into place while the drawer slides in (flicker). Emitting this
+   * makes the slider re-measure as soon as the modal is visible.
+   */
+  readonly priceSliderRefresh = new EventEmitter<void>();
+
+  onFiltersShown() {
+    this.priceSliderRefresh.emit();
+  }
+
   openFilters() {
     this.captureFilterDraftSnapshot();
     this.appliedTagListSnapshot = this.cloneTagListSnapshot(this.tag_list);
@@ -169,6 +180,8 @@ export class CategoryComponent implements OnInit, OnDestroy, AfterViewChecked {
     this.filterApplyCommitted = false;
     this.filtersDrawerOpen = true;
     this.filterModal?.show();
+    // Modal is display:block after show(); re-measure before the slide-in animation runs.
+    if (isPlatformBrowser(this.platformId)) setTimeout(() => this.priceSliderRefresh.emit());
     if (this.commonService.screen_width < 992) {
       this.commonService.scrollModalTop(500);
     }
@@ -1309,6 +1322,15 @@ export class CategoryComponent implements OnInit, OnDestroy, AfterViewChecked {
     this.priceFilterOpen = true;
     this.useV4Catalog = true;
     this.catalog_page_segments = [];
+
+    // The same component instance is reused across /category/:id navigations. Clear the
+    // previous category's price range and filters, otherwise list_v4 is called with the old
+    // min/max price and can return 0 products for the new category.
+    this.rangeMin = undefined; this.rangeMax = undefined;
+    this.sliderMin = undefined; this.sliderMax = undefined;
+    this.priceRangeBase = { min: 0, max: 0 };
+    this.range_disp = { floor: 0, ceil: 0, animate: false };
+    this.priceRangeDirty = false;
 
     const hasQueryFilters = Object.keys(this.qParams || {}).some((k) => !!this.qParams[k]);
 

@@ -202,6 +202,12 @@
                   </button>
                 </div>
               </div>
+              <!-- out of stock (no pre-order) -->
+              <div *ngIf="!productDetails.allow_preorder && productDetails.stock < commonService.min_qty[productDetails.unit]" class="row m-0">
+                <div class="col-md-12 p-0">
+                  <button class="primary-btn w-100" type="button" disabled>Out of Stock</button>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -495,6 +501,9 @@
                   </p>
                   <p class="m-0" *ngIf="productDetails?.buynow_alert=='max_shipping'">
                     Too much items in your purchase
+                  </p>
+                  <p class="m-0" *ngIf="productDetails?.buynow_alert=='out_of_stock'">
+                    This product is out of stock
                   </p>
                 </div>
               </div>
